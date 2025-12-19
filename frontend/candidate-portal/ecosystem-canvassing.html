@@ -35,13 +35,83 @@
         .map-container { height: 400px; background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 16px; display: flex; align-items: center; justify-content: center; }
         .map-placeholder { text-align: center; color: #56ab2f; }
         .map-placeholder i { font-size: 64px; opacity: 0.5; }
+    
+        .candidate-card { margin: 16px; padding: 14px; background: var(--bg-secondary); border-radius: 12px; }
+        .candidate-info { display: flex; align-items: center; gap: 12px; }
+        .candidate-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #e8e8ed, #d2d2d7); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; color: var(--text-secondary); }
+        .candidate-name { font-size: 14px; font-weight: 600; }
+        .candidate-office { font-size: 11px; color: var(--text-secondary); }
     </style>
 </head>
 <body>
     <div class="app">
-        <aside class="sidebar">
-            <div class="sidebar-header"><a href="index.html" class="logo"><div class="logo-icon">B</div><span class="logo-text">BroyhillGOP</span></a></div>
-            <a href="index.html" class="back-btn"><i class="ti ti-arrow-left"></i> Back to Dashboard</a>
+                <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../command-center/DAVE_BOLIEK_COMMAND_CENTER.html" class="logo">
+                    <div class="logo-icon">B</div>
+                    <span class="logo-text">BroyhillGOP</span>
+                </a>
+            </div>
+            
+            <div class="candidate-card">
+                <div class="candidate-info">
+                    <div class="candidate-avatar">DB</div>
+                    <div>
+                        <div class="candidate-name">Dave Boliek</div>
+                        <div class="candidate-office">NC House District 68</div>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="../command-center/DAVE_BOLIEK_COMMAND_CENTER.html" class="back-btn" style="background: linear-gradient(135deg, #5856d6, #af52de); color: white;">
+                <i class="ti ti-home"></i> Command Center
+            </a>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Communication</div>
+                    <a href="ecosystem-email.html" class="nav-item "><i class="ti ti-mail"></i> Email Studio</a>
+                    <a href="ecosystem-sms.html" class="nav-item "><i class="ti ti-message"></i> SMS Center</a>
+                    <a href="ecosystem-voice.html" class="nav-item "><i class="ti ti-microphone"></i> ULTRA Voice</a>
+                    <a href="ecosystem-video.html" class="nav-item "><i class="ti ti-video"></i> Video Studio</a>
+                    <a href="ecosystem-direct-mail.html" class="nav-item "><i class="ti ti-mail-forward"></i> Direct Mail</a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Fundraising</div>
+                    <a href="ecosystem-donor-intelligence.html" class="nav-item "><i class="ti ti-users"></i> Donor Intelligence</a>
+                    <a href="ecosystem-donations.html" class="nav-item "><i class="ti ti-wallet"></i> Donations</a>
+                    <a href="ecosystem-events.html" class="nav-item "><i class="ti ti-calendar-event"></i> Events & RSVP</a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Operations</div>
+                    <a href="ecosystem-volunteers.html" class="nav-item "><i class="ti ti-heart-handshake"></i> Volunteers</a>
+                    <a href="ecosystem-canvassing.html" class="nav-item active"><i class="ti ti-map-pin"></i> Canvassing</a>
+                    <a href="ecosystem-phone-banking.html" class="nav-item "><i class="ti ti-phone"></i> Phone Banking</a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Intelligence</div>
+                    <a href="ecosystem-ai-hub.html" class="nav-item "><i class="ti ti-sparkles"></i> AI Hub</a>
+                    <a href="ecosystem-analytics.html" class="nav-item "><i class="ti ti-chart-line"></i> Analytics</a>
+                    <a href="ecosystem-social.html" class="nav-item "><i class="ti ti-brand-twitter"></i> Social Media</a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Management</div>
+                    <a href="ecosystem-budget.html" class="nav-item "><i class="ti ti-currency-dollar"></i> Budget</a>
+                    <a href="ecosystem-compliance.html" class="nav-item "><i class="ti ti-shield-check"></i> Compliance & FEC</a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer" style="padding: 16px; border-top: 1px solid var(--border-light); margin-top: auto;">
+                <div class="ai-brain-status" style="display: flex; align-items: center; gap: 8px; padding: 12px; background: linear-gradient(135deg, rgba(88,86,214,0.1), rgba(175,82,222,0.1)); border-radius: 10px; font-size: 12px; font-weight: 600; color: #5856d6;">
+                    <i class="ti ti-brain" style="font-size: 18px;"></i>
+                    <span>AI Brain: Active</span>
+                    <div class="status-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #34c759; margin-left: auto; box-shadow: 0 0 8px #34c759;"></div>
+                </div>
+            </div>
         </aside>
         <main class="main">
             <header class="topbar">
