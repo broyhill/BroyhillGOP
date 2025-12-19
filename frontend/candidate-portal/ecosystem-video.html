@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Video Studio | BroyhillGOP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
+    <style>
+        :root {
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --text-tertiary: #6e6e73;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f7;
+            --bg-tertiary: #fbfbfd;
+            --border-color: #d2d2d7;
+            --border-light: #e8e8ed;
+            --accent: #0071e3;
+            --accent-hover: #0077ed;
+            --success: #34c759;
+            --warning: #ff9500;
+            --danger: #ff3b30;
+            --purple: #af52de;
+            --sidebar-width: 280px;
+            --pricing-width: 340px;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .app { display: flex; min-height: 100vh; }
+        
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border-light);
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border-light); }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 40px; height: 40px;
+            background: var(--text-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+        
+        .logo-text { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 20px;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+        
+        .back-btn:hover { background: var(--border-light); }
+        
+        .ecosystem-status-card {
+            margin: 0 20px 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(175,82,222,0.1) 0%, rgba(0,113,227,0.1) 100%);
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+        }
+        
+        .ecosystem-status-header { display: flex; align-items: center; gap: 12px; }
+        
+        .ecosystem-status-icon {
+            width: 44px; height: 44px;
+            background: var(--purple);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .ecosystem-status-title { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+        .ecosystem-status-subtitle { font-size: 12px; color: var(--text-secondary); }
+        
+        /* Control Panel */
+        .control-panel {
+            margin: 0 20px 20px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .control-panel-header {
+            padding: 16px;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        
+        .control-panel-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+        .control-panel-body { padding: 16px; display: none; }
+        .control-panel.open .control-panel-body { display: block; }
+        
+        .control-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .control-item:last-child { border-bottom: none; }
+        .control-label { font-size: 13px; color: var(--text-primary); }
+        
+        .toggle-group {
+            display: flex;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 3px;
+        }
+        
+        .toggle-option {
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.15s ease;
+        }
+        
+        .toggle-option.active {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .toggle-option.timer.active { background: var(--purple); color: white; }
+        
+        .sidebar-nav { flex: 1; padding: 12px; }
+        .nav-section { margin-bottom: 24px; }
+        
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover { background: var(--bg-secondary); }
+        .nav-item.active { background: var(--text-primary); color: white; }
+        .nav-item i { font-size: 20px; opacity: 0.7; }
+        
+        /* Main */
+        .main {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            margin-right: var(--pricing-width);
+            min-height: 100vh;
+        }
+        
+        .topbar {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-light);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .page-title { font-size: 24px; font-weight: 600; color: var(--text-primary); }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-decoration: none;
+        }
+        
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-secondary { background: var(--bg-secondary); color: var(--text-primary); }
+        .btn-secondary:hover { background: var(--border-light); }
+        .btn-dark { background: var(--text-primary); color: white; }
+        .btn-ai { background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%); color: white; }
+        .btn-lg { padding: 16px 32px; font-size: 16px; }
+        
+        .page-content { padding: 32px; }
+        
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        
+        .stat-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        
+        .stat-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+        .stat-value { font-size: 28px; font-weight: 700; color: var(--text-primary); }
+        
+        .stat-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 8px;
+            color: var(--success);
+        }
+        
+        /* Card */
+        .card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-title { font-size: 17px; font-weight: 600; color: var(--text-primary); }
+        .card-body { padding: 24px; }
+        
+        /* Video Type Selection */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .video-type-card {
+            padding: 24px;
+            border: 2px solid var(--border-light);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .video-type-card:hover {
+            border-color: var(--border-color);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+        }
+        
+        .video-type-card.selected {
+            border-color: var(--purple);
+            background: rgba(175,82,222,0.05);
+        }
+        
+        .video-type-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 16px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+        
+        .video-type-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .video-type-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        
+        .video-type-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .video-type-price span {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        /* TV Preview */
+        .tv-preview {
+            background: var(--text-primary);
+            border-radius: 20px;
+            padding: 32px;
+            margin-top: 24px;
+        }
+        
+        .tv-frame {
+            background: #000;
+            border-radius: 12px;
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tv-placeholder {
+            color: white;
+            text-align: center;
+        }
+        
+        .tv-placeholder i {
+            font-size: 64px;
+            opacity: 0.3;
+            margin-bottom: 16px;
+        }
+        
+        .tv-placeholder p {
+            opacity: 0.5;
+            font-size: 14px;
+        }
+        
+        .tv-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .tv-control-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.15s ease;
+        }
+        
+        .tv-control-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .tv-control-btn.play {
+            width: 64px;
+            height: 64px;
+            background: var(--purple);
+            font-size: 28px;
+        }
+        
+        /* Form */
+        .form-group { margin-bottom: 24px; }
+        .form-label { display: block; font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+        .form-hint { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+        
+        .form-input:focus { border-color: var(--accent); }
+        .form-textarea { min-height: 150px; resize: vertical; }
+        
+        /* Avatar Selection */
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        
+        .avatar-card {
+            padding: 16px;
+            border: 2px solid var(--border-light);
+            border-radius: 16px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s ease;
+        }
+        
+        .avatar-card:hover { border-color: var(--border-color); }
+        .avatar-card.selected { border-color: var(--purple); background: rgba(175,82,222,0.05); }
+        
+        .avatar-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: var(--text-secondary);
+        }
+        
+        .avatar-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+        .avatar-style { font-size: 12px; color: var(--text-secondary); }
+        
+        /* AI Button */
+        .ai-improve-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(0,113,227,0.1) 0%, rgba(175,82,222,0.1) 100%);
+            border: 1px dashed var(--purple);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .ai-improve-btn:hover {
+            background: linear-gradient(135deg, rgba(0,113,227,0.15) 0%, rgba(175,82,222,0.15) 100%);
+        }
+        
+        .ai-improve-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .ai-improve-text h4 { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+        .ai-improve-text p { font-size: 13px; color: var(--text-secondary); }
+        
+        /* AI Advisor */
+        .ai-advisor-sidebar {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+        
+        .ai-advisor-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        
+        .ai-advisor-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .ai-advisor-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+        
+        .ai-advice {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            padding: 12px;
+            background: var(--bg-primary);
+            border-radius: 10px;
+        }
+        
+        /* Pricing Panel */
+        .pricing-panel {
+            width: var(--pricing-width);
+            background: var(--bg-primary);
+            border-left: 1px solid var(--border-light);
+            position: fixed;
+            top: 0; right: 0; bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+        
+        .pricing-header { padding: 24px; border-bottom: 1px solid var(--border-light); }
+        .pricing-title { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+        .pricing-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+        
+        .pricing-body { flex: 1; padding: 24px; overflow-y: auto; }
+        
+        .pricing-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .pricing-item:last-child { border-bottom: none; }
+        .pricing-item-label { font-size: 13px; color: var(--text-secondary); }
+        .pricing-item-value { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+        
+        .pricing-divider { height: 1px; background: var(--border-light); margin: 16px 0; }
+        
+        .pricing-total { display: flex; justify-content: space-between; padding: 16px 0; }
+        .pricing-total-label { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+        .pricing-total-value { font-size: 24px; font-weight: 700; color: var(--text-primary); }
+        
+        .pricing-footer { padding: 24px; border-top: 1px solid var(--border-light); }
+        .pricing-footer .btn { width: 100%; justify-content: center; }
+        
+        @media (max-width: 1400px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .video-grid { grid-template-columns: repeat(2, 1fr); }
+            .avatar-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (max-width: 1200px) {
+            .pricing-panel { display: none; }
+            .main { margin-right: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">B</div>
+                    <span class="logo-text">BroyhillGOP</span>
+                </a>
+            </div>
+            
+            <a href="index.html" class="back-btn">
+                <i class="ti ti-arrow-left"></i>
+                Back to Dashboard
+            </a>
+            
+            <div class="ecosystem-status-card">
+                <div class="ecosystem-status-header">
+                    <div class="ecosystem-status-icon">
+                        <i class="ti ti-video"></i>
+                    </div>
+                    <div>
+                        <div class="ecosystem-status-title">Video Studio</div>
+                        <div class="ecosystem-status-subtitle">AI-Powered Production</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Control Panel -->
+            <div class="control-panel open">
+                <div class="control-panel-header">
+                    <span class="control-panel-title">Control Panel</span>
+                    <i class="ti ti-chevron-down"></i>
+                </div>
+                <div class="control-panel-body">
+                    <div class="control-item">
+                        <span class="control-label">Video Rendering</span>
+                        <div class="toggle-group">
+                            <span class="toggle-option">Off</span>
+                            <span class="toggle-option active">On</span>
+                            <span class="toggle-option timer">Timer</span>
+                        </div>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-label">Auto-Personalize</span>
+                        <div class="toggle-group">
+                            <span class="toggle-option">Off</span>
+                            <span class="toggle-option active">On</span>
+                            <span class="toggle-option timer">Timer</span>
+                        </div>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-label">AI Voice Sync</span>
+                        <div class="toggle-group">
+                            <span class="toggle-option">Off</span>
+                            <span class="toggle-option active">On</span>
+                            <span class="toggle-option timer">Timer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Video Studio</div>
+                    <a href="#" class="nav-item active">
+                        <i class="ti ti-plus"></i>
+                        <span>Create Video</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="ti ti-video"></i>
+                        <span>My Videos</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="ti ti-template"></i>
+                        <span>Templates</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="ti ti-user-circle"></i>
+                        <span>Avatars</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Assets</div>
+                    <a href="#" class="nav-item">
+                        <i class="ti ti-microphone"></i>
+                        <span>Voice Library</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="ti ti-music"></i>
+                        <span>Music</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Main -->
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h1 class="page-title">Create AI Video</h1>
+                </div>
+                <div class="topbar-right">
+                    <button class="btn btn-secondary">
+                        <i class="ti ti-device-floppy"></i>
+                        Save Draft
+                    </button>
+                    <button class="btn btn-ai">
+                        <i class="ti ti-sparkles"></i>
+                        AI Assist
+                    </button>
+                </div>
+            </header>
+            
+            <div class="page-content">
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Videos Created</div>
+                        <div class="stat-value">156</div>
+                        <div class="stat-change"><i class="ti ti-trending-up"></i> +24 this month</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Views</div>
+                        <div class="stat-value">45,280</div>
+                        <div class="stat-change"><i class="ti ti-trending-up"></i> +12% growth</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Avg. Cost</div>
+                        <div class="stat-value">$6.40</div>
+                        <div class="stat-change"><i class="ti ti-trending-down"></i> 99% savings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Donations Attributed</div>
+                        <div class="stat-value">$34,500</div>
+                        <div class="stat-change"><i class="ti ti-trending-up"></i> 5.4x ROI</div>
+                    </div>
+                </div>
+                
+                <!-- Video Type Selection -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Select Video Type</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="video-grid">
+                            <div class="video-type-card selected" onclick="selectVideo(this)">
+                                <div class="video-type-icon" style="background: rgba(52,199,89,0.1); color: var(--success);">
+                                    <i class="ti ti-currency-dollar"></i>
+                                </div>
+                                <div class="video-type-title">Fundraising Video</div>
+                                <div class="video-type-desc">Personalized donation appeal with AI avatar</div>
+                                <div class="video-type-price">$4-8 <span>per video</span></div>
+                            </div>
+                            <div class="video-type-card" onclick="selectVideo(this)">
+                                <div class="video-type-icon" style="background: rgba(0,113,227,0.1); color: var(--accent);">
+                                    <i class="ti ti-user"></i>
+                                </div>
+                                <div class="video-type-title">Introduction Video</div>
+                                <div class="video-type-desc">Introduce yourself to new supporters</div>
+                                <div class="video-type-price">$6-12 <span>per video</span></div>
+                            </div>
+                            <div class="video-type-card" onclick="selectVideo(this)">
+                                <div class="video-type-icon" style="background: rgba(175,82,222,0.1); color: var(--purple);">
+                                    <i class="ti ti-heart"></i>
+                                </div>
+                                <div class="video-type-title">Thank You Video</div>
+                                <div class="video-type-desc">Personalized gratitude for donors</div>
+                                <div class="video-type-price">$4-6 <span>per video</span></div>
+                            </div>
+                            <div class="video-type-card" onclick="selectVideo(this)">
+                                <div class="video-type-icon" style="background: rgba(255,149,0,0.1); color: var(--warning);">
+                                    <i class="ti ti-speakerphone"></i>
+                                </div>
+                                <div class="video-type-title">Policy Explainer</div>
+                                <div class="video-type-desc">Explain your positions clearly</div>
+                                <div class="video-type-price">$8-15 <span>per video</span></div>
+                            </div>
+                            <div class="video-type-card" onclick="selectVideo(this)">
+                                <div class="video-type-icon" style="background: rgba(255,59,48,0.1); color: var(--danger);">
+                                    <i class="ti ti-target"></i>
+                                </div>
+                                <div class="video-type-title">Attack Ad</div>
+                                <div class="video-type-desc">Contrast with opponent</div>
+                                <div class="video-type-price">$10-20 <span>per video</span></div>
+                            </div>
+                            <div class="video-type-card" onclick="selectVideo(this)">
+                                <div class="video-type-icon" style="background: rgba(0,199,190,0.1); color: #00c7be;">
+                                    <i class="ti ti-calendar-event"></i>
+                                </div>
+                                <div class="video-type-title">Event Invitation</div>
+                                <div class="video-type-desc">Invite supporters to events</div>
+                                <div class="video-type-price">$5-10 <span>per video</span></div>
+                            </div>
+                        </div>
+                        
+                        <button class="ai-improve-btn" style="margin-top: 24px;">
+                            <div class="ai-improve-icon">
+                                <i class="ti ti-sparkles"></i>
+                            </div>
+                            <div class="ai-improve-text">
+                                <h4>AI Video Recommendation</h4>
+                                <p>Let AI suggest the best video type based on your campaign goals</p>
+                            </div>
+                        </button>
+                        
+                        <div class="ai-advisor-sidebar">
+                            <div class="ai-advisor-header">
+                                <div class="ai-advisor-icon"><i class="ti ti-brain"></i></div>
+                                <span class="ai-advisor-title">AI Advisor</span>
+                            </div>
+                            <div class="ai-advice">
+                                🎬 Based on your recent donations, a <strong>personalized Thank You video</strong> to your top 50 donors would have the highest ROI. Thank you videos increase repeat donations by 34%.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Avatar Selection -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Select AI Avatar</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="avatar-grid">
+                            <div class="avatar-card selected" onclick="selectAvatar(this)">
+                                <div class="avatar-img"><i class="ti ti-user"></i></div>
+                                <div class="avatar-name">Dave Boliek</div>
+                                <div class="avatar-style">Professional</div>
+                            </div>
+                            <div class="avatar-card" onclick="selectAvatar(this)">
+                                <div class="avatar-img"><i class="ti ti-user"></i></div>
+                                <div class="avatar-name">Dave Boliek</div>
+                                <div class="avatar-style">Casual</div>
+                            </div>
+                            <div class="avatar-card" onclick="selectAvatar(this)">
+                                <div class="avatar-img"><i class="ti ti-user"></i></div>
+                                <div class="avatar-name">Dave Boliek</div>
+                                <div class="avatar-style">Energetic</div>
+                            </div>
+                            <div class="avatar-card" onclick="selectAvatar(this)">
+                                <div class="avatar-img"><i class="ti ti-plus"></i></div>
+                                <div class="avatar-name">Create New</div>
+                                <div class="avatar-style">Custom Avatar</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Script -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Video Script</h2>
+                        <button class="btn btn-ai" style="padding: 8px 16px;">
+                            <i class="ti ti-sparkles"></i>
+                            Generate Script
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Script Content</label>
+                            <textarea class="form-input form-textarea" rows="6">Hi {{first_name}}, this is Dave Boliek.
+
+I wanted to personally thank you for your generous donation of ${{amount}} to my campaign for NC Utilities Commission.
+
+Your support means everything. Together, we're going to fight for affordable energy and protect North Carolina families.
+
+Thank you again, and God bless.</textarea>
+                            <p class="form-hint">Use {{first_name}}, {{amount}}, {{city}} for personalization</p>
+                        </div>
+                        
+                        <button class="ai-improve-btn">
+                            <div class="ai-improve-icon"><i class="ti ti-sparkles"></i></div>
+                            <div class="ai-improve-text">
+                                <h4>AI Script Enhancement</h4>
+                                <p>Optimize your script for maximum emotional impact</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- TV Preview -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Video Preview</h2>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <div class="tv-preview">
+                            <div class="tv-frame">
+                                <div class="tv-placeholder">
+                                    <i class="ti ti-video"></i>
+                                    <p>Click Generate to preview your AI video</p>
+                                </div>
+                            </div>
+                            <div class="tv-controls">
+                                <button class="tv-control-btn"><i class="ti ti-player-skip-back"></i></button>
+                                <button class="tv-control-btn play"><i class="ti ti-player-play"></i></button>
+                                <button class="tv-control-btn"><i class="ti ti-player-skip-forward"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Pricing Panel -->
+        <aside class="pricing-panel">
+            <div class="pricing-header">
+                <div class="pricing-title">Video Cost</div>
+                <div class="pricing-subtitle">Real-time estimate</div>
+            </div>
+            
+            <div class="pricing-body">
+                <div class="pricing-item">
+                    <span class="pricing-item-label">Video Type</span>
+                    <span class="pricing-item-value">Thank You</span>
+                </div>
+                <div class="pricing-item">
+                    <span class="pricing-item-label">Duration</span>
+                    <span class="pricing-item-value">30 seconds</span>
+                </div>
+                <div class="pricing-item">
+                    <span class="pricing-item-label">Avatar Rendering</span>
+                    <span class="pricing-item-value">$3.50</span>
+                </div>
+                <div class="pricing-item">
+                    <span class="pricing-item-label">Voice Synthesis</span>
+                    <span class="pricing-item-value">$0.50</span>
+                </div>
+                
+                <div class="pricing-divider"></div>
+                
+                <div class="pricing-item">
+                    <span class="pricing-item-label">Quantity</span>
+                    <span class="pricing-item-value">50 videos</span>
+                </div>
+                <div class="pricing-item">
+                    <span class="pricing-item-label">Personalization</span>
+                    <span class="pricing-item-value">Included</span>
+                </div>
+                
+                <div class="pricing-divider"></div>
+                
+                <div class="pricing-item">
+                    <span class="pricing-item-label">Subtotal</span>
+                    <span class="pricing-item-value">$200.00</span>
+                </div>
+                <div class="pricing-item">
+                    <span class="pricing-item-label">Platform Fee</span>
+                    <span class="pricing-item-value">$0.00</span>
+                </div>
+                
+                <div class="pricing-total">
+                    <span class="pricing-total-label">Total</span>
+                    <span class="pricing-total-value">$200.00</span>
+                </div>
+                
+                <div style="background: rgba(52,199,89,0.1); border-radius: 12px; padding: 16px; margin-top: 16px;">
+                    <div style="font-size: 13px; font-weight: 600; color: var(--success); margin-bottom: 4px;">
+                        <i class="ti ti-discount-2"></i> Saving $249,800
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary);">
+                        vs. $5,000/video traditional production
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pricing-footer">
+                <button class="btn btn-dark btn-lg" style="margin-bottom: 12px;">
+                    <i class="ti ti-rocket"></i>
+                    Pay & Generate Videos
+                </button>
+                <button class="btn btn-secondary" style="width: 100%; justify-content: center;">
+                    <i class="ti ti-eye"></i>
+                    Preview First
+                </button>
+            </div>
+        </aside>
+    </div>
+    
+    <script>
+        function selectVideo(card) {
+            document.querySelectorAll('.video-type-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+        }
+        
+        function selectAvatar(card) {
+            document.querySelectorAll('.avatar-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+        }
+    </script>
+</body>
+</html>

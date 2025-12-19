@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Campaign Command Center | BroyhillGOP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
+    <style>
+        :root {
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --text-tertiary: #6e6e73;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f7;
+            --bg-tertiary: #fbfbfd;
+            --border-color: #d2d2d7;
+            --border-light: #e8e8ed;
+            --accent: #0071e3;
+            --accent-hover: #0077ed;
+            --success: #34c759;
+            --warning: #ff9500;
+            --danger: #ff3b30;
+            --purple: #af52de;
+            --sidebar-width: 280px;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* App Layout */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border-light);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--text-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        /* Candidate Card */
+        .candidate-card {
+            margin: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border-radius: 16px;
+            text-align: center;
+        }
+        
+        .candidate-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e8e8ed, #d2d2d7);
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .candidate-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .candidate-office {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        .candidate-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-light);
+        }
+        
+        .candidate-stat {
+            text-align: center;
+        }
+        
+        .candidate-stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .candidate-stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        /* Navigation */
+        .sidebar-nav {
+            flex: 1;
+            padding: 12px;
+        }
+        
+        .nav-section {
+            margin-bottom: 24px;
+        }
+        
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover {
+            background: var(--bg-secondary);
+        }
+        
+        .nav-item.active {
+            background: var(--text-primary);
+            color: white;
+        }
+        
+        .nav-item i {
+            font-size: 20px;
+            opacity: 0.7;
+        }
+        
+        .nav-item.active i {
+            opacity: 1;
+        }
+        
+        .nav-badge {
+            margin-left: auto;
+            padding: 2px 8px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .nav-item.active .nav-badge {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        /* Control Panel Toggle */
+        .control-panel-toggle {
+            margin: 20px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+        }
+        
+        .control-toggle-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .control-toggle-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .control-toggle-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: var(--bg-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.15s ease;
+        }
+        
+        .control-toggle-btn:hover {
+            background: var(--border-light);
+            color: var(--text-primary);
+        }
+        
+        /* Main Content */
+        .main {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+        
+        /* Top Bar */
+        .topbar {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-light);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+        
+        .breadcrumb a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .breadcrumb span {
+            color: var(--text-secondary);
+        }
+        
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: all 0.15s ease;
+        }
+        
+        .search-box:focus-within {
+            background: var(--bg-primary);
+            border-color: var(--border-color);
+        }
+        
+        .search-box i {
+            color: var(--text-secondary);
+        }
+        
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 14px;
+            width: 200px;
+            color: var(--text-primary);
+        }
+        
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: none;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            position: relative;
+        }
+        
+        .icon-btn:hover {
+            background: var(--border-light);
+            color: var(--text-primary);
+        }
+        
+        .icon-btn .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 18px;
+            height: 18px;
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Page Content */
+        .page-content {
+            padding: 32px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--text-primary) 0%, #2d2d2f 100%);
+            border-radius: 24px;
+            padding: 48px;
+            color: white;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: radial-gradient(circle at top right, rgba(0,113,227,0.3) 0%, transparent 60%);
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+        }
+        
+        .hero-greeting {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+        
+        .hero-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            font-size: 16px;
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        
+        .hero-stats {
+            display: flex;
+            gap: 48px;
+        }
+        
+        .hero-stat {
+            text-align: left;
+        }
+        
+        .hero-stat-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+        
+        .hero-stat-label {
+            font-size: 13px;
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        
+        .quick-action {
+            flex: 1;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .quick-action:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        
+        .quick-action-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .quick-action-icon.blue { background: rgba(0,113,227,0.1); color: var(--accent); }
+        .quick-action-icon.green { background: rgba(52,199,89,0.1); color: var(--success); }
+        .quick-action-icon.purple { background: rgba(175,82,222,0.1); color: var(--purple); }
+        .quick-action-icon.orange { background: rgba(255,149,0,0.1); color: var(--warning); }
+        
+        .quick-action-content h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .quick-action-content p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        /* Section Header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .section-link {
+            font-size: 14px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .section-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Ecosystem Grid */
+        .ecosystem-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        
+        .ecosystem-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 24px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .ecosystem-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+        }
+        
+        .ecosystem-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .ecosystem-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        
+        .ecosystem-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+        
+        .ecosystem-status.inactive {
+            background: var(--border-color);
+        }
+        
+        .ecosystem-status.warning {
+            background: var(--warning);
+        }
+        
+        .ecosystem-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+        
+        .ecosystem-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        
+        .ecosystem-metrics {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .ecosystem-metric {
+            flex: 1;
+        }
+        
+        .ecosystem-metric-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .ecosystem-metric-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        .ecosystem-launch {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 12px;
+            background: var(--text-primary);
+            color: white;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+        
+        .ecosystem-card:hover .ecosystem-launch {
+            background: var(--accent);
+        }
+        
+        /* Activity Feed */
+        .activity-feed {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 24px;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .activity-item:first-child {
+            padding-top: 0;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .activity-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        .activity-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+        }
+        
+        /* AI Advisor Widget */
+        .ai-advisor {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+        }
+        
+        .ai-advisor-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent) 0%, #5856d6 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 8px 32px rgba(0,113,227,0.4);
+            transition: all 0.2s ease;
+        }
+        
+        .ai-advisor-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 40px rgba(0,113,227,0.5);
+        }
+        
+        .ai-advisor-panel {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            background: var(--bg-primary);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: none;
+            overflow: hidden;
+        }
+        
+        .ai-advisor-panel.open {
+            display: block;
+        }
+        
+        .ai-panel-header {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, var(--accent) 0%, #5856d6 100%);
+            color: white;
+        }
+        
+        .ai-panel-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .ai-panel-subtitle {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+        
+        .ai-panel-body {
+            padding: 24px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .ai-suggestion {
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .ai-suggestion:hover {
+            background: var(--border-light);
+        }
+        
+        .ai-suggestion:last-child {
+            margin-bottom: 0;
+        }
+        
+        .ai-suggestion h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .ai-suggestion p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        .ai-panel-input {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            gap: 12px;
+        }
+        
+        .ai-panel-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .ai-panel-input input:focus {
+            border-color: var(--accent);
+        }
+        
+        .ai-panel-input button {
+            padding: 12px 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--border-light);
+        }
+        
+        .btn-dark {
+            background: var(--text-primary);
+            color: white;
+        }
+        
+        .btn-dark:hover {
+            background: #2d2d2f;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .ecosystem-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 1100px) {
+            .ecosystem-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .quick-actions {
+                flex-wrap: wrap;
+            }
+            .quick-action {
+                flex: 1 1 calc(50% - 6px);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main {
+                margin-left: 0;
+            }
+            .ecosystem-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="logo">
+                    <div class="logo-icon">B</div>
+                    <span class="logo-text">BroyhillGOP</span>
+                </a>
+            </div>
+            
+            <div class="candidate-card">
+                <div class="candidate-avatar">DB</div>
+                <div class="candidate-name">Dave Boliek</div>
+                <div class="candidate-office">NC Utilities Commission</div>
+                <div class="candidate-stats">
+                    <div class="candidate-stat">
+                        <div class="candidate-stat-value">$847K</div>
+                        <div class="candidate-stat-label">Raised</div>
+                    </div>
+                    <div class="candidate-stat">
+                        <div class="candidate-stat-value">2,847</div>
+                        <div class="candidate-stat-label">Donors</div>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Command Center</div>
+                    <a href="#" class="nav-item active">
+                        <i class="ti ti-layout-dashboard"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="ti ti-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="ti ti-calendar"></i>
+                        <span>Calendar</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Fundraising</div>
+                    <a href="ecosystem-donor-intelligence.html" class="nav-item">
+                        <i class="ti ti-users"></i>
+                        <span>Donor Intelligence</span>
+                        <span class="nav-badge">2.8K</span>
+                    </a>
+                    <a href="ecosystem-donations.html" class="nav-item">
+                        <i class="ti ti-currency-dollar"></i>
+                        <span>Donations</span>
+                    </a>
+                    <a href="ecosystem-campaigns.html" class="nav-item">
+                        <i class="ti ti-target"></i>
+                        <span>Campaigns</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Communications</div>
+                    <a href="ecosystem-email.html" class="nav-item">
+                        <i class="ti ti-mail"></i>
+                        <span>Email Studio</span>
+                        <span class="nav-badge">12</span>
+                    </a>
+                    <a href="ecosystem-sms.html" class="nav-item">
+                        <i class="ti ti-message"></i>
+                        <span>SMS Center</span>
+                    </a>
+                    <a href="ecosystem-voice.html" class="nav-item">
+                        <i class="ti ti-phone"></i>
+                        <span>Voice & RVM</span>
+                    </a>
+                    <a href="ecosystem-direct-mail.html" class="nav-item">
+                        <i class="ti ti-mail-forward"></i>
+                        <span>Direct Mail</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Content & Media</div>
+                    <a href="ecosystem-video.html" class="nav-item">
+                        <i class="ti ti-video"></i>
+                        <span>Video Studio</span>
+                    </a>
+                    <a href="ecosystem-social.html" class="nav-item">
+                        <i class="ti ti-brand-instagram"></i>
+                        <span>Social Media</span>
+                    </a>
+                    <a href="ecosystem-tv-radio.html" class="nav-item">
+                        <i class="ti ti-device-tv"></i>
+                        <span>TV & Radio</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Intelligence</div>
+                    <a href="ecosystem-ai-hub.html" class="nav-item">
+                        <i class="ti ti-brain"></i>
+                        <span>AI Hub</span>
+                    </a>
+                    <a href="ecosystem-news.html" class="nav-item">
+                        <i class="ti ti-news"></i>
+                        <span>News Monitor</span>
+                    </a>
+                    <a href="ecosystem-opposition.html" class="nav-item">
+                        <i class="ti ti-user-search"></i>
+                        <span>Opposition</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="control-panel-toggle">
+                <div class="control-toggle-header">
+                    <span class="control-toggle-title">Control Panel</span>
+                    <button class="control-toggle-btn">
+                        <i class="ti ti-settings"></i>
+                    </button>
+                </div>
+                <div style="font-size: 12px; color: var(--text-secondary);">
+                    12 ecosystems active
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h1 class="page-title">Campaign Dashboard</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="search-box">
+                        <i class="ti ti-search"></i>
+                        <input type="text" placeholder="Search anything...">
+                    </div>
+                    <button class="icon-btn">
+                        <i class="ti ti-bell"></i>
+                        <span class="badge">5</span>
+                    </button>
+                    <button class="icon-btn">
+                        <i class="ti ti-help"></i>
+                    </button>
+                </div>
+            </header>
+            
+            <div class="page-content">
+                <!-- Hero Section -->
+                <section class="hero">
+                    <div class="hero-content">
+                        <div class="hero-greeting">Good evening, Dave</div>
+                        <h1 class="hero-title">Your campaign is performing 23% above target</h1>
+                        <p class="hero-subtitle">You have 12 pending tasks and 3 AI recommendations ready to review. Your next fundraising milestone is $900K.</p>
+                        <div class="hero-stats">
+                            <div class="hero-stat">
+                                <div class="hero-stat-value">$847,235</div>
+                                <div class="hero-stat-label">Total Raised</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="hero-stat-value">47 Days</div>
+                                <div class="hero-stat-label">Until Primary</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="hero-stat-value">94%</div>
+                                <div class="hero-stat-label">Goal Progress</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Quick Actions -->
+                <section class="quick-actions">
+                    <a href="ecosystem-email.html?wizard=true" class="quick-action">
+                        <div class="quick-action-icon blue">
+                            <i class="ti ti-mail-forward"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <h3>Send Email Campaign</h3>
+                            <p>Launch a fundraising appeal</p>
+                        </div>
+                    </a>
+                    <a href="ecosystem-video.html?wizard=true" class="quick-action">
+                        <div class="quick-action-icon purple">
+                            <i class="ti ti-video"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <h3>Create Video</h3>
+                            <p>AI-powered video production</p>
+                        </div>
+                    </a>
+                    <a href="ecosystem-direct-mail.html?wizard=true" class="quick-action">
+                        <div class="quick-action-icon orange">
+                            <i class="ti ti-mail"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <h3>Direct Mail Piece</h3>
+                            <p>Design & send mailers</p>
+                        </div>
+                    </a>
+                    <a href="ecosystem-voice.html?wizard=true" class="quick-action">
+                        <div class="quick-action-icon green">
+                            <i class="ti ti-phone-outgoing"></i>
+                        </div>
+                        <div class="quick-action-content">
+                            <h3>Voice Broadcast</h3>
+                            <p>Ringless voicemail drops</p>
+                        </div>
+                    </a>
+                </section>
+                
+                <!-- Ecosystems Grid -->
+                <div class="section-header">
+                    <h2 class="section-title">Campaign Ecosystems</h2>
+                    <a href="#" class="section-link">View All 50+ Ecosystems →</a>
+                </div>
+                
+                <div class="ecosystem-grid">
+                    <!-- Donor Intelligence -->
+                    <a href="ecosystem-donor-intelligence.html" class="ecosystem-card">
+                        <div class="ecosystem-header">
+                            <div class="ecosystem-icon" style="background: rgba(0,113,227,0.1); color: var(--accent);">
+                                <i class="ti ti-users-group"></i>
+                            </div>
+                            <div class="ecosystem-status"></div>
+                        </div>
+                        <h3 class="ecosystem-title">Donor Intelligence</h3>
+                        <p class="ecosystem-desc">21-tier grading system with AI-powered upgrade predictions</p>
+                        <div class="ecosystem-metrics">
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">2,847</div>
+                                <div class="ecosystem-metric-label">Donors</div>
+                            </div>
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">847</div>
+                                <div class="ecosystem-metric-label">A-Grade</div>
+                            </div>
+                        </div>
+                        <div class="ecosystem-launch">
+                            <i class="ti ti-rocket"></i>
+                            Launch Ecosystem
+                        </div>
+                    </a>
+                    
+                    <!-- Email Studio -->
+                    <a href="ecosystem-email.html" class="ecosystem-card">
+                        <div class="ecosystem-header">
+                            <div class="ecosystem-icon" style="background: rgba(52,199,89,0.1); color: var(--success);">
+                                <i class="ti ti-mail"></i>
+                            </div>
+                            <div class="ecosystem-status"></div>
+                        </div>
+                        <h3 class="ecosystem-title">Email Studio</h3>
+                        <p class="ecosystem-desc">AI-crafted emails with 22+ campaign types</p>
+                        <div class="ecosystem-metrics">
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">42.8%</div>
+                                <div class="ecosystem-metric-label">Open Rate</div>
+                            </div>
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">$124K</div>
+                                <div class="ecosystem-metric-label">Generated</div>
+                            </div>
+                        </div>
+                        <div class="ecosystem-launch">
+                            <i class="ti ti-rocket"></i>
+                            Launch Ecosystem
+                        </div>
+                    </a>
+                    
+                    <!-- Video Studio -->
+                    <a href="ecosystem-video.html" class="ecosystem-card">
+                        <div class="ecosystem-header">
+                            <div class="ecosystem-icon" style="background: rgba(175,82,222,0.1); color: var(--purple);">
+                                <i class="ti ti-video"></i>
+                            </div>
+                            <div class="ecosystem-status"></div>
+                        </div>
+                        <h3 class="ecosystem-title">Video Studio</h3>
+                        <p class="ecosystem-desc">AI avatar videos and personalized donor content</p>
+                        <div class="ecosystem-metrics">
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">156</div>
+                                <div class="ecosystem-metric-label">Videos</div>
+                            </div>
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">$4-8</div>
+                                <div class="ecosystem-metric-label">Per Video</div>
+                            </div>
+                        </div>
+                        <div class="ecosystem-launch">
+                            <i class="ti ti-rocket"></i>
+                            Launch Ecosystem
+                        </div>
+                    </a>
+                    
+                    <!-- Direct Mail -->
+                    <a href="ecosystem-direct-mail.html" class="ecosystem-card">
+                        <div class="ecosystem-header">
+                            <div class="ecosystem-icon" style="background: rgba(255,149,0,0.1); color: var(--warning);">
+                                <i class="ti ti-mail-forward"></i>
+                            </div>
+                            <div class="ecosystem-status"></div>
+                        </div>
+                        <h3 class="ecosystem-title">Direct Mail</h3>
+                        <p class="ecosystem-desc">Variable data printing with donor personalization</p>
+                        <div class="ecosystem-metrics">
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">12,450</div>
+                                <div class="ecosystem-metric-label">Mailed</div>
+                            </div>
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">4.2%</div>
+                                <div class="ecosystem-metric-label">Response</div>
+                            </div>
+                        </div>
+                        <div class="ecosystem-launch">
+                            <i class="ti ti-rocket"></i>
+                            Launch Ecosystem
+                        </div>
+                    </a>
+                    
+                    <!-- Voice & RVM -->
+                    <a href="ecosystem-voice.html" class="ecosystem-card">
+                        <div class="ecosystem-header">
+                            <div class="ecosystem-icon" style="background: rgba(255,59,48,0.1); color: var(--danger);">
+                                <i class="ti ti-phone-call"></i>
+                            </div>
+                            <div class="ecosystem-status"></div>
+                        </div>
+                        <h3 class="ecosystem-title">Voice & RVM</h3>
+                        <p class="ecosystem-desc">ULTRA voice synthesis at 99.4% cost savings</p>
+                        <div class="ecosystem-metrics">
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">8,500</div>
+                                <div class="ecosystem-metric-label">Delivered</div>
+                            </div>
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">$0.02</div>
+                                <div class="ecosystem-metric-label">Per Call</div>
+                            </div>
+                        </div>
+                        <div class="ecosystem-launch">
+                            <i class="ti ti-rocket"></i>
+                            Launch Ecosystem
+                        </div>
+                    </a>
+                    
+                    <!-- SMS Center -->
+                    <a href="ecosystem-sms.html" class="ecosystem-card">
+                        <div class="ecosystem-header">
+                            <div class="ecosystem-icon" style="background: rgba(0,199,190,0.1); color: #00c7be;">
+                                <i class="ti ti-message-circle"></i>
+                            </div>
+                            <div class="ecosystem-status"></div>
+                        </div>
+                        <h3 class="ecosystem-title">SMS Center</h3>
+                        <p class="ecosystem-desc">P2P texting and broadcast messaging</p>
+                        <div class="ecosystem-metrics">
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">24,300</div>
+                                <div class="ecosystem-metric-label">Sent</div>
+                            </div>
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">12%</div>
+                                <div class="ecosystem-metric-label">Response</div>
+                            </div>
+                        </div>
+                        <div class="ecosystem-launch">
+                            <i class="ti ti-rocket"></i>
+                            Launch Ecosystem
+                        </div>
+                    </a>
+                    
+                    <!-- Social Media -->
+                    <a href="ecosystem-social.html" class="ecosystem-card">
+                        <div class="ecosystem-header">
+                            <div class="ecosystem-icon" style="background: rgba(255,45,85,0.1); color: #ff2d55;">
+                                <i class="ti ti-brand-instagram"></i>
+                            </div>
+                            <div class="ecosystem-status warning"></div>
+                        </div>
+                        <h3 class="ecosystem-title">Social Media</h3>
+                        <p class="ecosystem-desc">AI content creation and scheduling</p>
+                        <div class="ecosystem-metrics">
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">340</div>
+                                <div class="ecosystem-metric-label">Posts</div>
+                            </div>
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">45K</div>
+                                <div class="ecosystem-metric-label">Reach</div>
+                            </div>
+                        </div>
+                        <div class="ecosystem-launch">
+                            <i class="ti ti-rocket"></i>
+                            Launch Ecosystem
+                        </div>
+                    </a>
+                    
+                    <!-- AI Hub -->
+                    <a href="ecosystem-ai-hub.html" class="ecosystem-card">
+                        <div class="ecosystem-header">
+                            <div class="ecosystem-icon" style="background: linear-gradient(135deg, rgba(0,113,227,0.1), rgba(175,82,222,0.1)); color: var(--accent);">
+                                <i class="ti ti-brain"></i>
+                            </div>
+                            <div class="ecosystem-status"></div>
+                        </div>
+                        <h3 class="ecosystem-title">AI Hub</h3>
+                        <p class="ecosystem-desc">Central AI gateway for all ecosystems</p>
+                        <div class="ecosystem-metrics">
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">1,247</div>
+                                <div class="ecosystem-metric-label">AI Tasks</div>
+                            </div>
+                            <div class="ecosystem-metric">
+                                <div class="ecosystem-metric-value">$12K</div>
+                                <div class="ecosystem-metric-label">Saved</div>
+                            </div>
+                        </div>
+                        <div class="ecosystem-launch">
+                            <i class="ti ti-rocket"></i>
+                            Launch Ecosystem
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Activity Feed -->
+                <div class="section-header">
+                    <h2 class="section-title">Recent Activity</h2>
+                    <a href="#" class="section-link">View All →</a>
+                </div>
+                
+                <div class="activity-feed">
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: rgba(52,199,89,0.1); color: var(--success);">
+                            <i class="ti ti-currency-dollar"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">New donation received</div>
+                            <div class="activity-desc">James Wilson donated $2,500 via Year-End Campaign</div>
+                        </div>
+                        <div class="activity-time">2 min ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: rgba(0,113,227,0.1); color: var(--accent);">
+                            <i class="ti ti-mail-opened"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Email campaign completed</div>
+                            <div class="activity-desc">December Newsletter delivered to 2,341 recipients • 42.8% open rate</div>
+                        </div>
+                        <div class="activity-time">1 hour ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: rgba(175,82,222,0.1); color: var(--purple);">
+                            <i class="ti ti-video"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Video rendered</div>
+                            <div class="activity-desc">Personalized thank you video for major donors complete</div>
+                        </div>
+                        <div class="activity-time">3 hours ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: rgba(255,149,0,0.1); color: var(--warning);">
+                            <i class="ti ti-brain"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">AI recommendation</div>
+                            <div class="activity-desc">47 donors identified for upgrade potential - review suggested</div>
+                        </div>
+                        <div class="activity-time">5 hours ago</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- AI Advisor Widget -->
+    <div class="ai-advisor">
+        <div class="ai-advisor-panel" id="aiPanel">
+            <div class="ai-panel-header">
+                <div class="ai-panel-title">AI Campaign Advisor</div>
+                <div class="ai-panel-subtitle">Powered by BroyhillGOP Intelligence</div>
+            </div>
+            <div class="ai-panel-body">
+                <div class="ai-suggestion">
+                    <h4>📈 Upgrade Opportunity</h4>
+                    <p>47 B-grade donors show A-grade potential based on recent engagement patterns. Send targeted upgrade appeal?</p>
+                </div>
+                <div class="ai-suggestion">
+                    <h4>📧 Email Timing Alert</h4>
+                    <p>Best send time for your audience is Tuesday 10am. Schedule pending campaign for optimal delivery?</p>
+                </div>
+                <div class="ai-suggestion">
+                    <h4>🎯 Opposition Alert</h4>
+                    <p>John Smith scheduled press conference for 2pm today. Prepare response messaging?</p>
+                </div>
+            </div>
+            <div class="ai-panel-input">
+                <input type="text" placeholder="Ask your AI advisor...">
+                <button>Send</button>
+            </div>
+        </div>
+        <button class="ai-advisor-btn" onclick="toggleAI()">
+            <i class="ti ti-sparkles"></i>
+        </button>
+    </div>
+    
+    <script>
+        function toggleAI() {
+            document.getElementById('aiPanel').classList.toggle('open');
+        }
+        
+        // Navigation active state
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (this.getAttribute('href') === '#') {
+                    e.preventDefault();
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
