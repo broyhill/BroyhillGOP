@@ -2,1117 +2,645 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>James R. Wilson | Donor Profile | BroyhillGOP</title>
+    <title>James Wilson | Donor Profile</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
     <style>
         :root {
-            --gop-red: #e31837;
-            --gop-blue: #002868;
-            --success: #22c55e;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --info: #3b82f6;
-            --ai-purple: #8b5cf6;
-            --ai-gradient: linear-gradient(135deg, #8b5cf6, #6366f1);
-        }
-        * { font-family: 'Inter', sans-serif; }
-        body { background: #f1f5f9; }
-        
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: #64748b;
-            text-decoration: none;
-            font-size: 0.85rem;
-            padding: 8px 0;
-            margin-bottom: 16px;
-        }
-        .back-btn:hover { color: var(--gop-red); }
-        
-        .profile-header {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 20px;
-            color: #fff;
-        }
-        .profile-header-top {
-            display: flex;
-            align-items: flex-start;
-            gap: 24px;
-            flex-wrap: wrap;
-        }
-        .profile-photo-container { position: relative; }
-        .profile-photo {
-            width: 120px;
-            height: 120px;
-            border-radius: 16px;
-            border: 4px solid rgba(255,255,255,0.2);
-            object-fit: cover;
-            background: linear-gradient(135deg, #475569, #334155);
-        }
-        .profile-grade {
-            position: absolute;
-            bottom: -8px;
-            right: -8px;
-            background: linear-gradient(135deg, #ffd700, #f59e0b);
-            color: #000;
-            font-size: 1rem;
-            font-weight: 800;
-            padding: 6px 12px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        .profile-info { flex: 1; min-width: 250px; }
-        .profile-name { font-size: 1.75rem; font-weight: 700; margin-bottom: 4px; }
-        .profile-title { font-size: 1rem; color: #94a3b8; margin-bottom: 8px; }
-        .profile-location { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #94a3b8; }
-        .profile-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
-        .profile-actions .btn {
-            padding: 10px 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-gop { background: var(--gop-red); color: #fff; border: none; }
-        .btn-gop:hover { background: #c41530; color: #fff; }
-        .btn-intel {
-            background: linear-gradient(135deg, #1e293b, #334155);
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            border-radius: 8px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-intel:hover {
-            background: linear-gradient(135deg, #334155, #475569);
-            transform: translateY(-1px);
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --text-tertiary: #6e6e73;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f7;
+            --bg-tertiary: #fbfbfd;
+            --border-color: #d2d2d7;
+            --border-light: #e8e8ed;
+            --accent: #0071e3;
+            --accent-hover: #0077ed;
+            --success: #34c759;
+            --warning: #ff9500;
+            --danger: #ff3b30;
         }
         
-        .ai-assistant-btn {
-            background: var(--ai-gradient);
-            color: #fff;
-            border: none;
-            padding: 14px 24px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
-            transition: all 0.3s ease;
-            animation: ai-pulse 2s infinite;
-        }
-        .ai-assistant-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
-        }
-        @keyframes ai-pulse {
-            0%, 100% { box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4); }
-            50% { box-shadow: 0 4px 25px rgba(139, 92, 246, 0.6); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
         
-        .ai-panel-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 9998;
-            backdrop-filter: blur(4px);
-        }
-        .ai-panel-overlay.active { display: block; }
-        
-        .ai-panel {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            background: #fff;
-            border-radius: 20px;
-            z-index: 9999;
-            overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-        }
-        .ai-panel.active { display: block; }
-        
-        .ai-panel-header {
-            background: var(--ai-gradient);
-            padding: 20px 24px;
-            color: #fff;
+        /* Header */
+        .page-header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-light);
+            padding: 20px 40px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
-        .ai-panel-header h3 {
-            margin: 0;
-            font-size: 1.25rem;
-            font-weight: 700;
+        
+        .breadcrumb {
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-        .ai-panel-close {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: #fff;
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .ai-panel-body {
-            padding: 24px;
-            max-height: calc(90vh - 180px);
-            overflow-y: auto;
+            gap: 8px;
+            font-size: 13px;
         }
         
-        .ai-recommendation {
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            transition: all 0.3s ease;
-        }
-        .ai-recommendation:hover {
-            border-color: var(--ai-purple);
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
-        }
-        .ai-recommendation.executed {
-            background: #f0fdf4;
-            border-color: var(--success);
-        }
-        .ai-recommendation.skipped {
-            opacity: 0.5;
-            background: #fafafa;
+        .breadcrumb a {
+            color: var(--accent);
+            text-decoration: none;
         }
         
-        .ai-rec-header {
+        .breadcrumb span {
+            color: var(--text-secondary);
+        }
+        
+        .header-actions {
             display: flex;
-            align-items: flex-start;
             gap: 12px;
-            margin-bottom: 12px;
         }
-        .ai-rec-number {
-            background: var(--ai-gradient);
-            color: #fff;
-            width: 32px;
-            height: 32px;
-            border-radius: 10px;
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--border-light);
+        }
+        
+        /* Main Content */
+        .page-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        
+        /* Profile Header */
+        .profile-header {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-light);
+        }
+        
+        .profile-top {
+            display: flex;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 40px;
+            font-weight: 600;
+            color: var(--text-secondary);
             flex-shrink: 0;
         }
-        .ai-rec-title { font-size: 1rem; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
-        .ai-rec-reason { font-size: 0.8rem; color: #64748b; }
         
-        .ai-rec-content {
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 16px;
-            margin: 12px 0;
-            font-size: 0.85rem;
-            color: #334155;
-            line-height: 1.6;
+        .profile-info {
+            flex: 1;
         }
-        .ai-rec-content strong { color: #1e293b; }
         
-        .ai-rec-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-        }
-        .ai-rec-btn {
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 0.85rem;
+        .profile-name {
+            font-size: 32px;
             font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
+            color: var(--text-primary);
+            margin-bottom: 4px;
         }
-        .ai-rec-btn.yes { background: var(--success); color: #fff; border: none; }
-        .ai-rec-btn.yes:hover { background: #16a34a; }
-        .ai-rec-btn.edit { background: #fff; color: var(--info); border: 2px solid var(--info); }
-        .ai-rec-btn.edit:hover { background: #eff6ff; }
-        .ai-rec-btn.skip { background: #fff; color: #64748b; border: 2px solid #e2e8f0; }
-        .ai-rec-btn.skip:hover { background: #f8fafc; }
         
-        .ai-personality-section {
-            background: linear-gradient(135deg, #fefce8, #fff);
-            border: 2px solid #eab308;
-            border-radius: 16px;
-            margin-top: 20px;
-            overflow: hidden;
-        }
-        .ai-personality-header {
-            background: linear-gradient(135deg, #eab308, #ca8a04);
-            padding: 16px 20px;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .ai-personality-header h4 { margin: 0; font-size: 1rem; font-weight: 700; }
-        .ai-personality-body { padding: 20px; }
-        .ai-feedback-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .profile-location {
+            font-size: 16px;
+            color: var(--text-secondary);
             margin-bottom: 16px;
+        }
+        
+        .profile-tags {
+            display: flex;
+            gap: 8px;
             flex-wrap: wrap;
         }
-        .ai-feedback-label { font-size: 0.85rem; color: #64748b; min-width: 180px; }
-        .ai-feedback-stars { display: flex; gap: 4px; }
-        .ai-star {
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #e2e8f0;
-            transition: all 0.2s ease;
-        }
-        .ai-star:hover, .ai-star.active { color: #eab308; }
         
-        .ai-style-options { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
-        .ai-style-btn {
-            padding: 8px 16px;
-            border: 2px solid #e2e8f0;
+        .tag {
+            padding: 6px 14px;
+            background: var(--bg-secondary);
             border-radius: 20px;
-            background: #fff;
-            font-size: 0.8rem;
+            font-size: 13px;
             font-weight: 500;
-            color: #64748b;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .ai-style-btn:hover, .ai-style-btn.active {
-            border-color: var(--ai-purple);
-            color: var(--ai-purple);
-            background: #f5f3ff;
+            color: var(--text-primary);
         }
         
-        .ai-quick-feedback { display: flex; gap: 10px; margin-top: 16px; }
-        .ai-feedback-btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-        }
-        .ai-feedback-btn.positive {
-            background: #f0fdf4;
-            border: 2px solid var(--success);
+        .tag.grade {
+            background: rgba(52, 199, 89, 0.1);
             color: var(--success);
         }
-        .ai-feedback-btn.positive:hover { background: #dcfce7; }
-        .ai-feedback-btn.negative {
-            background: #fef2f2;
-            border: 2px solid var(--danger);
-            color: var(--danger);
+        
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border-light);
         }
-        .ai-feedback-btn.negative:hover { background: #fee2e2; }
+        
+        .profile-stat {
+            text-align: center;
+        }
+        
+        .profile-stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .profile-stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
         
         .card {
-            background: #fff;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 16px;
+            background: var(--bg-primary);
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
             overflow: hidden;
         }
+        
         .card-header {
-            padding: 14px 18px;
-            background: #f8fafc;
-            border-bottom: 1px solid #e2e8f0;
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: #1e293b;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-light);
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: space-between;
         }
-        .card-body { padding: 18px; }
         
-        .lead-score-circle {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: conic-gradient(var(--success) 0% 89.2%, #e2e8f0 89.2% 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px;
+        .card-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
         }
-        .lead-score-inner {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .lead-score-value { font-size: 1.75rem; font-weight: 800; color: var(--success); }
-        .lead-score-label { font-size: 0.7rem; color: #64748b; }
         
-        .score-breakdown { font-size: 0.8rem; }
-        .score-item {
+        .card-body {
+            padding: 24px;
+        }
+        
+        /* Donation History */
+        .donation-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #f1f5f9;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-light);
         }
-        .score-item:last-child { border-bottom: none; }
-        .score-bar {
-            width: 60px;
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-        .score-fill { height: 100%; background: var(--success); border-radius: 3px; }
         
-        .contact-link {
+        .donation-item:last-child {
+            border-bottom: none;
+        }
+        
+        .donation-info h4 {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .donation-info p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        .donation-amount {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        /* Contact Info */
+        .info-row {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            background: #f8fafc;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            text-decoration: none;
-            color: #334155;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border-light);
         }
-        .contact-link:hover { background: #e2e8f0; color: var(--gop-red); }
-        .contact-link i { width: 20px; color: var(--gop-red); }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-row i {
+            width: 20px;
+            color: var(--text-secondary);
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            width: 80px;
+        }
+        
+        .info-value {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        /* Timeline */
+        .timeline {
+            position: relative;
+        }
         
         .timeline-item {
             display: flex;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid #f1f5f9;
+            gap: 16px;
+            padding-bottom: 24px;
+            position: relative;
         }
-        .timeline-item:last-child { border-bottom: none; }
-        .timeline-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+        
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 32px;
+            bottom: 0;
+            width: 1px;
+            background: var(--border-light);
+        }
+        
+        .timeline-item:last-child::before {
+            display: none;
+        }
+        
+        .timeline-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            z-index: 1;
         }
-        .timeline-icon.donation { background: #dcfce7; color: var(--success); }
-        .timeline-icon.email { background: #dbeafe; color: var(--info); }
-        .timeline-icon.event { background: #fef3c7; color: var(--warning); }
-        .timeline-icon.call { background: #f3e8ff; color: var(--ai-purple); }
-        .timeline-icon.ai { background: var(--ai-gradient); color: #fff; }
-        .timeline-content { flex: 1; }
-        .timeline-title { font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 2px; }
-        .timeline-desc { font-size: 0.8rem; color: #64748b; }
-        .timeline-time { font-size: 0.7rem; color: #94a3b8; }
         
-        .network-card {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px;
-            background: #f8fafc;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            transition: all 0.2s ease;
+        .timeline-dot i {
+            font-size: 14px;
+            color: var(--text-secondary);
         }
-        .network-card:hover { background: #e2e8f0; }
-        .network-photo {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #475569, #334155);
+        
+        .timeline-content h4 {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
         }
-        .network-info { flex: 1; }
-        .network-name { font-size: 0.9rem; font-weight: 600; color: #1e293b; }
-        .network-relationship { font-size: 0.75rem; color: #64748b; }
-        .network-score { text-align: center; }
-        .network-score-value { font-size: 1.25rem; font-weight: 800; color: var(--success); }
-        .network-score-label { font-size: 0.65rem; color: #94a3b8; }
-        .network-action {
-            background: var(--ai-gradient);
-            color: #fff;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 0.75rem;
+        
+        .timeline-content p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        .timeline-date {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+        
+        /* AI Insights */
+        .insight-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .insight-card:last-child {
+            margin-bottom: 0;
+        }
+        
+        .insight-title {
+            font-size: 13px;
             font-weight: 600;
-            cursor: pointer;
+            color: var(--text-primary);
+            margin-bottom: 4px;
         }
         
-        .issue-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            background: #f1f5f9;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: #334155;
-            margin: 4px;
+        .insight-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
         }
-        .issue-tag i { color: var(--gop-red); }
         
-        @media (max-width: 768px) {
-            .profile-header-top { flex-direction: column; align-items: center; text-align: center; }
-            .profile-actions { justify-content: center; }
-            .ai-rec-actions { flex-direction: column; }
+        /* Notes Section */
+        .note-input {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            transition: border-color 0.15s ease;
+        }
+        
+        .note-input:focus {
+            border-color: var(--accent);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .profile-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .profile-top {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .profile-tags {
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid py-4" style="max-width: 1400px;">
-        <a href="DAVE_BOLIEK_COMMAND_CENTER.html" class="back-btn">
-            <i class="ti ti-arrow-left"></i> Back to Command Center
-        </a>
-        
-        <div class="profile-header">
-            <div class="profile-header-top">
-                <div class="profile-photo-container">
-                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face" class="profile-photo" alt="James Wilson">
-                    <div class="profile-grade">A++</div>
-                </div>
-                <div class="profile-info">
-                    <div class="profile-name">James R. Wilson</div>
-                    <div class="profile-title">CEO, Wilson Industries • Major Donor</div>
-                    <div class="profile-location">
-                        <i class="ti ti-map-pin"></i> Winston-Salem, NC 27104
-                    </div>
-                    <div class="profile-actions">
-                        <button class="btn btn-gop"><i class="ti ti-phone"></i> Call</button>
-                        <button class="btn btn-outline-light"><i class="ti ti-mail"></i> Email</button>
-                        <button class="btn btn-outline-light"><i class="ti ti-message"></i> Text</button>
-                        <button class="btn btn-outline-light"><i class="ti ti-calendar"></i> Schedule</button>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <button class="btn btn-intel" title="Know everything. Miss nothing." onclick="showIntelPanel()">
-                            <i class="ti ti-search"></i> Donor Intel
-                        </button>
-                        <div style="font-size: 0.65rem; color: #94a3b8; margin-top: 4px;">Updated Daily</div>
-                    </div>
-                </div>
-                
-                <div style="margin-left: auto;">
-                    <button class="ai-assistant-btn" onclick="toggleAIPanel()">
-                        <i class="ti ti-sparkles" style="font-size: 1.25rem;"></i>
-                        <div style="text-align: left;">
-                            <div style="font-size: 0.95rem;">AI: Raise More Money</div>
-                            <div style="font-size: 0.7rem; font-weight: 400; opacity: 0.9;">From This Donor</div>
-                        </div>
-                        <i class="ti ti-chevron-right"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <div style="display: flex; gap: 24px; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap;">
-                <div>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Total Given</div>
-                    <div style="font-size: 1.5rem; font-weight: 700; color: #22c55e;">$47,250</div>
-                </div>
-                <div>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">This Cycle</div>
-                    <div style="font-size: 1.5rem; font-weight: 700;">$6,800</div>
-                </div>
-                <div>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Capacity</div>
-                    <div style="font-size: 1.5rem; font-weight: 700; color: #f59e0b;">$25K-$50K</div>
-                </div>
-                <div>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Last Contact</div>
-                    <div style="font-size: 1.5rem; font-weight: 700;">3 days ago</div>
-                </div>
-                <div>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">AI Status</div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 1rem; font-weight: 700; color: #22c55e;">MANAGED</span>
-                        <label style="cursor: pointer;">
-                            <input type="checkbox" checked style="width: 40px; height: 22px; cursor: pointer;">
-                        </label>
-                    </div>
-                </div>
-            </div>
+    <header class="page-header">
+        <nav class="breadcrumb">
+            <a href="#">Donors</a>
+            <span>/</span>
+            <span>James Wilson</span>
+        </nav>
+        <div class="header-actions">
+            <button class="btn btn-secondary">
+                <i class="ti ti-mail"></i>
+                Send Email
+            </button>
+            <button class="btn btn-secondary">
+                <i class="ti ti-phone"></i>
+                Call
+            </button>
+            <button class="btn btn-primary">
+                <i class="ti ti-edit"></i>
+                Edit Profile
+            </button>
         </div>
-        
-        <div class="row">
-            <div class="col-lg-4">
-                <div class="card">
-                    <div class="card-header"><i class="ti ti-chart-dots"></i> Lead Score</div>
-                    <div class="card-body">
-                        <div class="lead-score-circle">
-                            <div class="lead-score-inner">
-                                <div class="lead-score-value">892</div>
-                                <div class="lead-score-label">/ 1,000</div>
-                            </div>
-                        </div>
-                        <div class="score-breakdown">
-                            <div class="score-item">
-                                <span>Giving Capacity</span>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <div class="score-bar"><div class="score-fill" style="width: 92.5%;"></div></div>
-                                    <span style="font-weight: 600;">185/200</span>
-                                </div>
-                            </div>
-                            <div class="score-item">
-                                <span>Giving History</span>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <div class="score-bar"><div class="score-fill" style="width: 87.5%;"></div></div>
-                                    <span style="font-weight: 600;">175/200</span>
-                                </div>
-                            </div>
-                            <div class="score-item">
-                                <span>Engagement Level</span>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <div class="score-bar"><div class="score-fill" style="width: 94.7%;"></div></div>
-                                    <span style="font-weight: 600;">142/150</span>
-                                </div>
-                            </div>
-                            <div class="score-item">
-                                <span>Recency</span>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <div class="score-bar"><div class="score-fill" style="width: 100%;"></div></div>
-                                    <span style="font-weight: 600;">150/150</span>
-                                </div>
-                            </div>
-                            <div class="score-item">
-                                <span>Political Alignment</span>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <div class="score-bar"><div class="score-fill" style="width: 80%;"></div></div>
-                                    <span style="font-weight: 600;">120/150</span>
-                                </div>
-                            </div>
-                            <div class="score-item">
-                                <span>Network Influence</span>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <div class="score-bar"><div class="score-fill" style="width: 80%;"></div></div>
-                                    <span style="font-weight: 600;">80/100</span>
-                                </div>
-                            </div>
-                            <div class="score-item">
-                                <span>Event Participation</span>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <div class="score-bar"><div class="score-fill" style="width: 80%;"></div></div>
-                                    <span style="font-weight: 600;">40/50</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header"><i class="ti ti-address-book"></i> Contact Information</div>
-                    <div class="card-body">
-                        <a href="tel:+13365551234" class="contact-link">
-                            <i class="ti ti-phone"></i>
-                            <div>
-                                <div style="font-weight: 600;">(336) 555-1234</div>
-                                <div style="font-size: 0.75rem; color: #94a3b8;">Mobile • Primary</div>
-                            </div>
-                        </a>
-                        <a href="tel:+13365559876" class="contact-link">
-                            <i class="ti ti-building"></i>
-                            <div>
-                                <div style="font-weight: 600;">(336) 555-9876</div>
-                                <div style="font-size: 0.75rem; color: #94a3b8;">Office</div>
-                            </div>
-                        </a>
-                        <a href="mailto:james.wilson@wilsonindustries.com" class="contact-link">
-                            <i class="ti ti-mail"></i>
-                            <div>
-                                <div style="font-weight: 600;">james.wilson@wilsonindustries.com</div>
-                                <div style="font-size: 0.75rem; color: #94a3b8;">Work Email</div>
-                            </div>
-                        </a>
-                        <a href="mailto:jrwilson@gmail.com" class="contact-link">
-                            <i class="ti ti-mail"></i>
-                            <div>
-                                <div style="font-weight: 600;">jrwilson@gmail.com</div>
-                                <div style="font-size: 0.75rem; color: #94a3b8;">Personal Email</div>
-                            </div>
-                        </a>
-                        <a href="https://maps.google.com" class="contact-link" target="_blank">
-                            <i class="ti ti-home"></i>
-                            <div>
-                                <div style="font-weight: 600;">1842 Country Club Dr</div>
-                                <div style="font-size: 0.75rem; color: #94a3b8;">Winston-Salem, NC 27104</div>
-                            </div>
-                        </a>
-                        <a href="https://linkedin.com" class="contact-link" target="_blank">
-                            <i class="ti ti-brand-linkedin"></i>
-                            <div>
-                                <div style="font-weight: 600;">linkedin.com/in/jameswilson</div>
-                                <div style="font-size: 0.75rem; color: #94a3b8;">LinkedIn</div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header"><i class="ti ti-diamond"></i> Wealth Indicators</div>
-                    <div class="card-body">
-                        <div style="font-size: 0.85rem; line-height: 1.8;">
-                            <div><strong>Est. Net Worth:</strong> $15M - $25M</div>
-                            <div><strong>Business:</strong> Wilson Industries (120 employees)</div>
-                            <div><strong>Real Estate:</strong> 3 properties in NC</div>
-                            <div><strong>Country Club:</strong> Forsyth Country Club</div>
-                            <div><strong>Vehicles:</strong> 2 luxury vehicles registered</div>
-                            <div><strong>Philanthropy:</strong> Wilson Family Foundation</div>
-                        </div>
+    </header>
+    
+    <main class="page-content">
+        <section class="profile-header">
+            <div class="profile-top">
+                <div class="profile-avatar">JW</div>
+                <div class="profile-info">
+                    <h1 class="profile-name">James Wilson</h1>
+                    <p class="profile-location">Winston-Salem, North Carolina</p>
+                    <div class="profile-tags">
+                        <span class="tag grade">A+ Donor</span>
+                        <span class="tag">Major Donor</span>
+                        <span class="tag">2nd Amendment</span>
+                        <span class="tag">Business Owner</span>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-lg-5">
-                <div class="card">
-                    <div class="card-header"><i class="ti ti-flame"></i> Hot Button Issues</div>
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <div class="profile-stat-value">$15,500</div>
+                    <div class="profile-stat-label">Total Contributed</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-value">12</div>
+                    <div class="profile-stat-label">Donations</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-value">$1,292</div>
+                    <div class="profile-stat-label">Average Gift</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-value">3 yrs</div>
+                    <div class="profile-stat-label">Donor Since</div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="content-grid">
+            <div>
+                <div class="card" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <h2 class="card-title">Donation History</h2>
+                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;">
+                            Export
+                        </button>
+                    </div>
                     <div class="card-body">
-                        <div class="issue-tag"><i class="ti ti-building-factory"></i> Business/Economy</div>
-                        <div class="issue-tag"><i class="ti ti-coin"></i> Tax Reform</div>
-                        <div class="issue-tag"><i class="ti ti-shield"></i> 2nd Amendment</div>
-                        <div class="issue-tag"><i class="ti ti-scale"></i> Limited Government</div>
-                        <div class="issue-tag"><i class="ti ti-school"></i> School Choice</div>
-                        <div style="margin-top: 12px; padding: 12px; background: #f0fdf4; border-radius: 8px; font-size: 0.8rem; color: #166534;">
-                            <strong>AI Insight:</strong> James responds best to economic messaging. His last 3 donations came after tax reform content. Avoid social issues in outreach.
+                        <div class="donation-item">
+                            <div class="donation-info">
+                                <h4>Year-End Campaign</h4>
+                                <p>December 18, 2025</p>
+                            </div>
+                            <div class="donation-amount">$2,500</div>
+                        </div>
+                        <div class="donation-item">
+                            <div class="donation-info">
+                                <h4>Q4 Fundraising Drive</h4>
+                                <p>October 5, 2025</p>
+                            </div>
+                            <div class="donation-amount">$1,500</div>
+                        </div>
+                        <div class="donation-item">
+                            <div class="donation-info">
+                                <h4>Primary Victory Fund</h4>
+                                <p>August 22, 2025</p>
+                            </div>
+                            <div class="donation-amount">$3,000</div>
+                        </div>
+                        <div class="donation-item">
+                            <div class="donation-info">
+                                <h4>Spring Gala Event</h4>
+                                <p>April 15, 2025</p>
+                            </div>
+                            <div class="donation-amount">$2,000</div>
+                        </div>
+                        <div class="donation-item">
+                            <div class="donation-info">
+                                <h4>Campaign Kickoff</h4>
+                                <p>January 10, 2025</p>
+                            </div>
+                            <div class="donation-amount">$1,000</div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="card">
                     <div class="card-header">
-                        <i class="ti ti-users"></i> Friends & Network
-                        <span style="margin-left: auto; background: var(--ai-gradient); color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 600;">AI WARM INTRO</span>
+                        <h2 class="card-title">Activity Timeline</h2>
                     </div>
                     <div class="card-body">
-                        <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 16px;">AI identified these connections for warm introductions to new prospects:</p>
-                        
-                        <div class="network-card">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" class="network-photo" alt="">
-                            <div class="network-info">
-                                <div class="network-name">Robert Thompson</div>
-                                <div class="network-relationship">Business Partner • Golf Buddy • 15 yrs</div>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-dot">
+                                    <i class="ti ti-currency-dollar"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h4>Donated $2,500</h4>
+                                    <p>Year-End Campaign contribution</p>
+                                    <div class="timeline-date">December 18, 2025</div>
+                                </div>
                             </div>
-                            <div class="network-score">
-                                <div class="network-score-value">94</div>
-                                <div class="network-score-label">Relationship</div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot">
+                                    <i class="ti ti-mail-opened"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h4>Opened Email</h4>
+                                    <p>December Newsletter</p>
+                                    <div class="timeline-date">December 15, 2025</div>
+                                </div>
                             </div>
-                            <button class="network-action"><i class="ti ti-sparkles me-1"></i>Request Intro</button>
-                        </div>
-                        
-                        <div class="network-card">
-                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face" class="network-photo" alt="">
-                            <div class="network-info">
-                                <div class="network-name">Susan Reynolds</div>
-                                <div class="network-relationship">Rotary Club • Chamber Board</div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot">
+                                    <i class="ti ti-phone"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h4>Phone Call</h4>
+                                    <p>Thank you call from campaign manager</p>
+                                    <div class="timeline-date">October 8, 2025</div>
+                                </div>
                             </div>
-                            <div class="network-score">
-                                <div class="network-score-value">78</div>
-                                <div class="network-score-label">Relationship</div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot">
+                                    <i class="ti ti-calendar-event"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h4>Attended Event</h4>
+                                    <p>Fall Fundraiser Reception</p>
+                                    <div class="timeline-date">September 20, 2025</div>
+                                </div>
                             </div>
-                            <button class="network-action"><i class="ti ti-sparkles me-1"></i>Request Intro</button>
-                        </div>
-                        
-                        <div class="network-card">
-                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face" class="network-photo" alt="">
-                            <div class="network-info">
-                                <div class="network-name">Michael Chen</div>
-                                <div class="network-relationship">Country Club • Investor Group</div>
-                            </div>
-                            <div class="network-score">
-                                <div class="network-score-value">71</div>
-                                <div class="network-score-label">Relationship</div>
-                            </div>
-                            <button class="network-action"><i class="ti ti-sparkles me-1"></i>Request Intro</button>
-                        </div>
-                        
-                        <div style="margin-top: 12px; padding: 12px; background: #f5f3ff; border-radius: 8px; font-size: 0.8rem; color: #5b21b6;">
-                            <strong><i class="ti ti-sparkles me-1"></i>AI:</strong> Robert Thompson has capacity of $50K+ and 94% relationship strength. James can make a warm intro via text - AI has a draft ready.
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header"><i class="ti ti-timeline"></i> Activity Timeline</div>
-                    <div class="card-body" style="max-height: 400px; overflow-y: auto;">
-                        <div class="timeline-item">
-                            <div class="timeline-icon ai"><i class="ti ti-sparkles"></i></div>
-                            <div class="timeline-content">
-                                <div class="timeline-title">AI Sent Thank You Email</div>
-                                <div class="timeline-desc">Automated personalized thank you for $2,500 donation</div>
-                            </div>
-                            <div class="timeline-time">2 hours ago</div>
-                        </div>
-                        
-                        <div class="timeline-item">
-                            <div class="timeline-icon donation"><i class="ti ti-coin"></i></div>
-                            <div class="timeline-content">
-                                <div class="timeline-title">Donated $2,500</div>
-                                <div class="timeline-desc">Online via WinRed • Campaign: Year-End Push</div>
-                            </div>
-                            <div class="timeline-time">3 hours ago</div>
-                        </div>
-                        
-                        <div class="timeline-item">
-                            <div class="timeline-icon email"><i class="ti ti-mail-opened"></i></div>
-                            <div class="timeline-content">
-                                <div class="timeline-title">Opened Email: "Final 48 Hours"</div>
-                                <div class="timeline-desc">Clicked donation link • 4 min read time</div>
-                            </div>
-                            <div class="timeline-time">3 hours ago</div>
-                        </div>
-                        
-                        <div class="timeline-item">
-                            <div class="timeline-icon call"><i class="ti ti-phone"></i></div>
-                            <div class="timeline-content">
-                                <div class="timeline-title">Phone Call with Dave Boliek</div>
-                                <div class="timeline-desc">12 min call • Discussed Q1 fundraiser hosting</div>
-                            </div>
-                            <div class="timeline-time">3 days ago</div>
-                        </div>
-                        
-                        <div class="timeline-item">
-                            <div class="timeline-icon event"><i class="ti ti-calendar-event"></i></div>
-                            <div class="timeline-content">
-                                <div class="timeline-title">Attended: Holiday Reception</div>
-                                <div class="timeline-desc">Brought 2 guests • Spoke with Dave for 20 min</div>
-                            </div>
-                            <div class="timeline-time">Dec 14</div>
-                        </div>
-                        
-                        <div class="timeline-item">
-                            <div class="timeline-icon donation"><i class="ti ti-coin"></i></div>
-                            <div class="timeline-content">
-                                <div class="timeline-title">Donated $1,000</div>
-                                <div class="timeline-desc">At Holiday Reception • Check</div>
-                            </div>
-                            <div class="timeline-time">Dec 14</div>
-                        </div>
-                        
-                        <div class="timeline-item">
-                            <div class="timeline-icon ai"><i class="ti ti-sparkles"></i></div>
-                            <div class="timeline-content">
-                                <div class="timeline-title">AI Grade Upgrade: A+ → A++</div>
-                                <div class="timeline-desc">Based on engagement pattern and giving velocity</div>
-                            </div>
-                            <div class="timeline-time">Dec 15</div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="col-lg-3">
-                <div class="card">
-                    <div class="card-header"><i class="ti ti-bolt"></i> Quick Actions</div>
+            <div>
+                <div class="card" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <h2 class="card-title">Contact Information</h2>
+                    </div>
                     <div class="card-body">
-                        <button class="btn btn-gop w-100 mb-2"><i class="ti ti-phone me-2"></i>Call with AI Script</button>
-                        <button class="btn btn-outline-secondary w-100 mb-2"><i class="ti ti-mail me-2"></i>Send Personal Email</button>
-                        <button class="btn btn-outline-secondary w-100 mb-2"><i class="ti ti-message me-2"></i>Send Text Message</button>
-                        <button class="btn btn-outline-secondary w-100 mb-2"><i class="ti ti-calendar me-2"></i>Schedule Meeting</button>
-                        <button class="btn btn-outline-secondary w-100"><i class="ti ti-notes me-2"></i>Add Note</button>
+                        <div class="info-row">
+                            <i class="ti ti-mail"></i>
+                            <span class="info-label">Email</span>
+                            <span class="info-value">james.wilson@email.com</span>
+                        </div>
+                        <div class="info-row">
+                            <i class="ti ti-phone"></i>
+                            <span class="info-label">Phone</span>
+                            <span class="info-value">(336) 555-0142</span>
+                        </div>
+                        <div class="info-row">
+                            <i class="ti ti-map-pin"></i>
+                            <span class="info-label">Address</span>
+                            <span class="info-value">1234 Reynolda Rd, Winston-Salem</span>
+                        </div>
+                        <div class="info-row">
+                            <i class="ti ti-building"></i>
+                            <span class="info-label">Company</span>
+                            <span class="info-value">Wilson Manufacturing Inc.</span>
+                        </div>
+                        <div class="info-row">
+                            <i class="ti ti-briefcase"></i>
+                            <span class="info-label">Title</span>
+                            <span class="info-value">CEO & President</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <h2 class="card-title">AI Insights</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="insight-card">
+                            <div class="insight-title">Upgrade Potential</div>
+                            <div class="insight-text">Based on giving history and capacity indicators, this donor could increase annual giving by 40% with targeted cultivation.</div>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-title">Best Contact Time</div>
+                            <div class="insight-text">Email engagement peaks Tuesday-Thursday mornings. Phone calls most successful after 4pm.</div>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-title">Issue Alignment</div>
+                            <div class="insight-text">Strongly aligned with 2nd Amendment and business regulation messaging. Responds well to economic policy content.</div>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="card">
-                    <div class="card-header"><i class="ti ti-flag"></i> Political Profile</div>
-                    <div class="card-body" style="font-size: 0.85rem; line-height: 1.8;">
-                        <div><strong>Ideology Score:</strong> <span style="color: var(--gop-red); font-weight: 700;">87/100</span> (Very Conservative)</div>
-                        <div><strong>Party:</strong> Republican (since 2002)</div>
-                        <div><strong>Primary Voter:</strong> Yes - 100% R primaries</div>
-                        <div><strong>General Voter:</strong> 100% participation</div>
-                        <div style="margin-top: 10px;"><strong>Previous Candidates:</strong></div>
-                        <ul style="margin: 4px 0; padding-left: 20px; font-size: 0.8rem;">
-                            <li>Trump 2020: $2,000</li>
-                            <li>Trump 2024: $3,300</li>
-                            <li>Ted Budd: $5,000</li>
-                            <li>Virginia Foxx: $8,500</li>
-                            <li>Dan Bishop: $2,500</li>
-                        </ul>
+                    <div class="card-header">
+                        <h2 class="card-title">Notes</h2>
                     </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header"><i class="ti ti-users"></i> Family</div>
-                    <div class="card-body" style="font-size: 0.85rem;">
-                        <div style="margin-bottom: 12px;">
-                            <div style="font-weight: 600;">Margaret Wilson (Spouse)</div>
-                            <div style="color: #64748b; font-size: 0.8rem;">Also a donor • Grade: A • $12,500 lifetime</div>
-                        </div>
-                        <div style="margin-bottom: 12px;">
-                            <div style="font-weight: 600;">James Wilson Jr. (Son)</div>
-                            <div style="color: #64748b; font-size: 0.8rem;">Age 28 • Not yet a donor • High potential</div>
-                        </div>
-                        <div>
-                            <div style="font-weight: 600;">Elizabeth Wilson (Daughter)</div>
-                            <div style="color: #64748b; font-size: 0.8rem;">Age 25 • Donated $250 in 2023</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="ai-panel-overlay" id="aiPanelOverlay" onclick="toggleAIPanel()"></div>
-    
-    <div class="ai-panel" id="aiPanel">
-        <div class="ai-panel-header">
-            <h3><i class="ti ti-sparkles"></i> AI: How to Raise More Money from James Wilson</h3>
-            <button class="ai-panel-close" onclick="toggleAIPanel()"><i class="ti ti-x"></i></button>
-        </div>
-        <div class="ai-panel-body">
-            <p style="color: #64748b; margin-bottom: 20px;">Based on James's profile, giving history, and engagement patterns, here are my top 4 recommendations:</p>
-            
-            <div class="ai-recommendation" id="rec1">
-                <div class="ai-rec-header">
-                    <div class="ai-rec-number">1</div>
-                    <div>
-                        <div class="ai-rec-title">Personal Thank You Call from Dave</div>
-                        <div class="ai-rec-reason">James donated $2,500 three hours ago. High-value donors respond 3x better when personally thanked within 24 hours.</div>
-                    </div>
-                </div>
-                <div class="ai-rec-content">
-                    <strong>Suggested Script:</strong><br>
-                    "James, Dave Boliek here. I just saw your incredibly generous contribution come through and wanted to personally thank you. Your support means the world to our campaign for honest government. [Pause for response] I'd love to grab coffee next week and share some exciting plans for Q1 - would Tuesday or Wednesday work better for you?"
-                </div>
-                <div class="ai-rec-actions">
-                    <button class="ai-rec-btn yes" onclick="executeAction(1, 'yes')"><i class="ti ti-check"></i> Yes - Schedule Call</button>
-                    <button class="ai-rec-btn edit" onclick="executeAction(1, 'edit')"><i class="ti ti-pencil"></i> Edit Script</button>
-                    <button class="ai-rec-btn skip" onclick="executeAction(1, 'skip')"><i class="ti ti-x"></i> Skip</button>
-                </div>
-            </div>
-            
-            <div class="ai-recommendation" id="rec2">
-                <div class="ai-rec-header">
-                    <div class="ai-rec-number">2</div>
-                    <div>
-                        <div class="ai-rec-title">Ask James to Host Q1 Fundraiser</div>
-                        <div class="ai-rec-reason">He mentioned hosting interest on Dec 14 call. His home can accommodate 50+ guests. Similar hosts generate $15K-$25K per event.</div>
-                    </div>
-                </div>
-                <div class="ai-rec-content">
-                    <strong>Suggested Approach:</strong><br>
-                    During thank you call, transition to: "James, you mentioned possibly hosting something at your place. I think a small gathering of 30-40 of your business colleagues in late January would be incredible. We'd handle all the logistics - you just invite the guests. What do you think?"
-                </div>
-                <div class="ai-rec-actions">
-                    <button class="ai-rec-btn yes" onclick="executeAction(2, 'yes')"><i class="ti ti-check"></i> Yes - Include in Call</button>
-                    <button class="ai-rec-btn edit" onclick="executeAction(2, 'edit')"><i class="ti ti-pencil"></i> Edit Approach</button>
-                    <button class="ai-rec-btn skip" onclick="executeAction(2, 'skip')"><i class="ti ti-x"></i> Skip</button>
-                </div>
-            </div>
-            
-            <div class="ai-recommendation" id="rec3">
-                <div class="ai-rec-header">
-                    <div class="ai-rec-number">3</div>
-                    <div>
-                        <div class="ai-rec-title">Request Warm Intro to Robert Thompson</div>
-                        <div class="ai-rec-reason">Robert is James's business partner with $50K+ capacity. 94% relationship score. He has never been contacted by our campaign.</div>
-                    </div>
-                </div>
-                <div class="ai-rec-content">
-                    <strong>Suggested Text from James to Robert:</strong><br>
-                    "Bob - I've been supporting Dave Boliek for State Auditor. He's the real deal on fiscal accountability. Would you be open to a quick intro call with him? I think you'd really connect on the business regulation issues."
-                </div>
-                <div class="ai-rec-actions">
-                    <button class="ai-rec-btn yes" onclick="executeAction(3, 'yes')"><i class="ti ti-check"></i> Yes - Ask James</button>
-                    <button class="ai-rec-btn edit" onclick="executeAction(3, 'edit')"><i class="ti ti-pencil"></i> Edit Message</button>
-                    <button class="ai-rec-btn skip" onclick="executeAction(3, 'skip')"><i class="ti ti-x"></i> Skip</button>
-                </div>
-            </div>
-            
-            <div class="ai-recommendation" id="rec4">
-                <div class="ai-rec-header">
-                    <div class="ai-rec-number">4</div>
-                    <div>
-                        <div class="ai-rec-title">Invite to Exclusive Donor Briefing</div>
-                        <div class="ai-rec-reason">James responds to exclusivity. His open rate on "exclusive" subject lines is 94% vs 67% average.</div>
-                    </div>
-                </div>
-                <div class="ai-rec-content">
-                    <strong>Suggested Email:</strong><br>
-                    Subject: Private briefing for our top supporters<br><br>
-                    "James - I'm hosting a small, off-the-record briefing for our most committed supporters on [DATE]. Limited to 12 people. I'll be sharing our Q1 strategy and some intel on the opposition that isn't public yet. Interested?"
-                </div>
-                <div class="ai-rec-actions">
-                    <button class="ai-rec-btn yes" onclick="executeAction(4, 'yes')"><i class="ti ti-check"></i> Yes - Send Email</button>
-                    <button class="ai-rec-btn edit" onclick="executeAction(4, 'edit')"><i class="ti ti-pencil"></i> Edit Email</button>
-                    <button class="ai-rec-btn skip" onclick="executeAction(4, 'skip')"><i class="ti ti-x"></i> Skip</button>
-                </div>
-            </div>
-            
-            <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 12px; padding: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 20px;">
-                <div style="color: #fff;">
-                    <div style="font-size: 0.9rem; font-weight: 700;">Execute All Recommended Actions?</div>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">AI will handle everything in the optimal sequence</div>
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="executeAction('all', 'yes')" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer;"><i class="ti ti-checks"></i> Yes - Do All 4</button>
-                    <button onclick="toggleAIPanel()" style="background: rgba(255,255,255,0.1); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer;">Do Nothing & Close</button>
-                </div>
-            </div>
-            
-            <div class="ai-personality-section">
-                <div class="ai-personality-header">
-                    <i class="ti ti-brain" style="font-size: 1.25rem;"></i>
-                    <h4>Train AI to Match Your Style</h4>
-                </div>
-                <div class="ai-personality-body">
-                    <div class="ai-feedback-row">
-                        <span class="ai-feedback-label">Rate these recommendations:</span>
-                        <div class="ai-feedback-stars">
-                            <span class="ai-star" onclick="setRating(1)">★</span>
-                            <span class="ai-star" onclick="setRating(2)">★</span>
-                            <span class="ai-star" onclick="setRating(3)">★</span>
-                            <span class="ai-star active" onclick="setRating(4)">★</span>
-                            <span class="ai-star active" onclick="setRating(5)">★</span>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-bottom: 16px;">
-                        <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 8px;">My preferred communication style:</div>
-                        <div class="ai-style-options">
-                            <button class="ai-style-btn active">Direct & Brief</button>
-                            <button class="ai-style-btn">Warm & Personal</button>
-                            <button class="ai-style-btn">Formal & Professional</button>
-                            <button class="ai-style-btn">Casual & Friendly</button>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-bottom: 16px;">
-                        <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 8px;">AI aggressiveness level:</div>
-                        <div class="ai-style-options">
-                            <button class="ai-style-btn">Conservative</button>
-                            <button class="ai-style-btn active">Moderate</button>
-                            <button class="ai-style-btn">Aggressive</button>
-                        </div>
-                    </div>
-                    
-                    <div class="ai-quick-feedback">
-                        <button class="ai-feedback-btn positive" onclick="sendFeedback('positive')">
-                            <i class="ti ti-thumb-up"></i> These are helpful
-                        </button>
-                        <button class="ai-feedback-btn negative" onclick="sendFeedback('negative')">
-                            <i class="ti ti-thumb-down"></i> Not my style
+                    <div class="card-body">
+                        <textarea class="note-input" rows="4" placeholder="Add a note about this donor..."></textarea>
+                        <button class="btn btn-primary" style="margin-top: 12px; width: 100%;">
+                            Save Note
                         </button>
                     </div>
-                    
-                    <div style="margin-top: 16px; padding: 12px; background: #fff; border-radius: 8px; font-size: 0.8rem; color: #64748b;">
-                        <strong>AI Learning:</strong> Based on your feedback, I've learned you prefer direct scripts, respond better to exclusivity messaging, and like to make personal calls within 24 hours of large donations. I'll adjust future recommendations accordingly.
-                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function toggleAIPanel() {
-            document.getElementById('aiPanel').classList.toggle('active');
-            document.getElementById('aiPanelOverlay').classList.toggle('active');
-        }
-        
-        function showIntelPanel() {
-            alert('🔍 DONOR INTEL: James R. Wilson\n\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                'WEALTH SIGNALS\n' +
-                '• Net Worth: $15M-$25M (verified)\n' +
-                '• Real Estate: 3 properties, $4.2M total\n' +
-                '• Business: Wilson Industries - 120 employees\n' +
-                '• Foundation: Wilson Family Foundation (active)\n\n' +
-                'POLITICAL DNA\n' +
-                '• Republican since 2002\n' +
-                '• 100% primary voter (always R)\n' +
-                '• Top issues: Business/Economy, Tax Reform\n' +
-                '• Gave to: Trump, Budd, Foxx, Bishop\n\n' +
-                'RELATIONSHIP MAP\n' +
-                '• Robert Thompson (94% - biz partner)\n' +
-                '• Susan Reynolds (78% - Rotary)\n' +
-                '• Michael Chen (71% - Country Club)\n\n' +
-                'HOT BUTTONS (what makes him give)\n' +
-                '• Tax reform messaging = 3x response\n' +
-                '• "Exclusive" subject lines = 94% open\n' +
-                '• Avoid social issues\n\n' +
-                'Know everything. Miss nothing.');
-        }
-        
-        function executeAction(recNum, action) {
-            if (recNum === 'all') {
-                for (let i = 1; i <= 4; i++) {
-                    document.getElementById('rec' + i).classList.add('executed');
-                }
-                alert('✅ All 4 actions queued!\n\n1. Thank you call scheduled\n2. Fundraiser ask added\n3. Warm intro prepared\n4. Exclusive briefing drafted');
-            } else {
-                const rec = document.getElementById('rec' + recNum);
-                if (action === 'yes') {
-                    rec.classList.add('executed');
-                    alert('✅ Action ' + recNum + ' scheduled!');
-                } else if (action === 'edit') {
-                    alert('📝 Opening editor...');
-                } else if (action === 'skip') {
-                    rec.classList.add('skipped');
-                }
-            }
-        }
-        
-        function setRating(stars) {
-            const allStars = document.querySelectorAll('.ai-feedback-stars .ai-star');
-            allStars.forEach((star, index) => {
-                star.classList.toggle('active', index < stars);
-            });
-        }
-        
-        function sendFeedback(type) {
-            alert(type === 'positive' ? '👍 AI will continue similar recommendations.' : '👎 Tell me what to change.');
-        }
-        
-        document.querySelectorAll('.ai-style-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                this.parentElement.querySelectorAll('.ai-style-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-    </script>
+    </main>
 </body>
 </html>
