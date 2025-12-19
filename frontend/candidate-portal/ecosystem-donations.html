@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Donations | BroyhillGOP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
+    <style>
+        :root { --text-primary: #1d1d1f; --text-secondary: #86868b; --bg-primary: #ffffff; --bg-secondary: #f5f5f7; --border-light: #e8e8ed; --accent: #34c759; --success: #34c759; --warning: #ff9500; --danger: #ff3b30; --sidebar-width: 280px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Inter, -apple-system, sans-serif; background: var(--bg-secondary); color: var(--text-primary); font-size: 14px; -webkit-font-smoothing: antialiased; }
+        .app { display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background: var(--bg-primary); border-right: 1px solid var(--border-light); position: fixed; top: 0; left: 0; bottom: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border-light); }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-icon { width: 40px; height: 40px; background: var(--text-primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .logo-text { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+        .back-btn { display: flex; align-items: center; gap: 8px; margin: 20px; padding: 12px 16px; background: var(--bg-secondary); border-radius: 10px; color: var(--text-primary); text-decoration: none; font-weight: 500; }
+        .sidebar-nav { padding: 12px; flex: 1; }
+        .nav-section { margin-bottom: 24px; }
+        .nav-section-title { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; color: var(--text-primary); text-decoration: none; font-weight: 500; transition: background 0.2s; }
+        .nav-item:hover { background: var(--bg-secondary); }
+        .nav-item.active { background: var(--accent); color: white; }
+        .main { flex: 1; margin-left: var(--sidebar-width); min-height: 100vh; }
+        .topbar { background: var(--bg-primary); border-bottom: 1px solid var(--border-light); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+        .page-title { font-size: 24px; font-weight: 600; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-secondary { background: var(--bg-secondary); color: var(--text-primary); }
+        .page-content { padding: 32px; }
+        .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px; }
+        .hero-stat { background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 20px; padding: 28px; }
+        .hero-stat-value { font-size: 36px; font-weight: 800; margin-bottom: 4px; }
+        .hero-stat-value.green { color: var(--accent); }
+        .hero-stat-label { font-size: 14px; color: var(--text-secondary); }
+        .hero-stat-change { font-size: 12px; margin-top: 8px; }
+        .hero-stat-change.positive { color: var(--success); }
+        .card { background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 20px; margin-bottom: 24px; }
+        .card-header { padding: 20px 24px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+        .card-title { font-size: 17px; font-weight: 600; }
+        .card-body { padding: 24px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        .goal-progress { margin-bottom: 32px; }
+        .goal-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
+        .goal-title { font-size: 20px; font-weight: 700; }
+        .goal-amount { font-size: 20px; font-weight: 700; color: var(--accent); }
+        .goal-bar { height: 24px; background: var(--bg-secondary); border-radius: 12px; overflow: hidden; }
+        .goal-fill { height: 100%; background: linear-gradient(90deg, #34c759, #30d158); border-radius: 12px; transition: width 0.5s ease; }
+        .goal-meta { display: flex; justify-content: space-between; margin-top: 8px; font-size: 13px; color: var(--text-secondary); }
+        .donation-list { display: flex; flex-direction: column; gap: 12px; }
+        .donation-item { display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-secondary); border-radius: 12px; }
+        .donation-avatar { width: 48px; height: 48px; background: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .donation-info { flex: 1; }
+        .donation-name { font-weight: 600; }
+        .donation-meta { font-size: 13px; color: var(--text-secondary); }
+        .donation-amount { font-size: 18px; font-weight: 700; color: var(--accent); }
+        .donation-table { width: 100%; border-collapse: collapse; }
+        .donation-table th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-light); }
+        .donation-table td { padding: 16px; border-bottom: 1px solid var(--border-light); }
+        .donation-table tr:hover { background: var(--bg-secondary); }
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-badge.success { background: #dcf5e3; color: #1b7d3a; }
+        .status-badge.pending { background: #fef3c7; color: #92400e; }
+        .status-badge.failed { background: #fee2e2; color: #b91c1c; }
+        .chart-placeholder { height: 200px; background: linear-gradient(180deg, rgba(52,199,89,0.1) 0%, rgba(52,199,89,0) 100%); border-radius: 12px; display: flex; align-items: flex-end; justify-content: space-around; padding: 20px; }
+        .chart-bar { width: 40px; background: var(--accent); border-radius: 6px 6px 0 0; }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">B</div>
+                    <span class="logo-text">BroyhillGOP</span>
+                </a>
+            </div>
+            <a href="index.html" class="back-btn">
+                <i class="ti ti-arrow-left"></i> Back to Dashboard
+            </a>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Donations</div>
+                    <a href="#" class="nav-item active"><i class="ti ti-wallet"></i> Overview</a>
+                    <a href="#" class="nav-item"><i class="ti ti-list"></i> All Transactions</a>
+                    <a href="#" class="nav-item"><i class="ti ti-repeat"></i> Recurring</a>
+                    <a href="#" class="nav-item"><i class="ti ti-star"></i> Major Gifts</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Fundraising</div>
+                    <a href="#" class="nav-item"><i class="ti ti-target"></i> Goals</a>
+                    <a href="#" class="nav-item"><i class="ti ti-speakerphone"></i> Campaigns</a>
+                    <a href="#" class="nav-item"><i class="ti ti-calendar-event"></i> Events</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Reports</div>
+                    <a href="#" class="nav-item"><i class="ti ti-file-analytics"></i> FEC Reports</a>
+                    <a href="#" class="nav-item"><i class="ti ti-download"></i> Export</a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">Donations</h1>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-secondary"><i class="ti ti-download"></i> Export</button>
+                    <button class="btn btn-primary"><i class="ti ti-plus"></i> Record Donation</button>
+                </div>
+            </header>
+            
+            <div class="page-content">
+                <div class="goal-progress">
+                    <div class="goal-header">
+                        <span class="goal-title">Year-End Goal Progress</span>
+                        <span class="goal-amount">$847,234 / $1,000,000</span>
+                    </div>
+                    <div class="goal-bar">
+                        <div class="goal-fill" style="width: 84.7%;"></div>
+                    </div>
+                    <div class="goal-meta">
+                        <span>84.7% Complete</span>
+                        <span>$152,766 to go • 12 days remaining</span>
+                    </div>
+                </div>
+                
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-value green">$847,234</div>
+                        <div class="hero-stat-label">Total Raised (YTD)</div>
+                        <div class="hero-stat-change positive">↑ 34% vs last year</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value" style="color: #0071e3;">4,847</div>
+                        <div class="hero-stat-label">Total Donations</div>
+                        <div class="hero-stat-change positive">↑ 847 this month</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value" style="color: #af52de;">$174.79</div>
+                        <div class="hero-stat-label">Average Gift</div>
+                        <div class="hero-stat-change positive">↑ 12% increase</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value" style="color: #ff9500;">847</div>
+                        <div class="hero-stat-label">Recurring Donors</div>
+                        <div class="hero-stat-change positive">↑ 34 new this month</div>
+                    </div>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Recent Donations</h2>
+                            <button class="btn btn-secondary" style="padding: 8px 16px;">View All</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="donation-list">
+                                <div class="donation-item">
+                                    <div class="donation-avatar">JW</div>
+                                    <div class="donation-info">
+                                        <div class="donation-name">James Wilson</div>
+                                        <div class="donation-meta">2 minutes ago • Credit Card</div>
+                                    </div>
+                                    <div class="donation-amount">$2,500</div>
+                                </div>
+                                <div class="donation-item">
+                                    <div class="donation-avatar" style="background: #0071e3;">SM</div>
+                                    <div class="donation-info">
+                                        <div class="donation-name">Sarah Mitchell</div>
+                                        <div class="donation-meta">15 minutes ago • ACH</div>
+                                    </div>
+                                    <div class="donation-amount">$1,000</div>
+                                </div>
+                                <div class="donation-item">
+                                    <div class="donation-avatar" style="background: #af52de;">RC</div>
+                                    <div class="donation-info">
+                                        <div class="donation-name">Robert Chen</div>
+                                        <div class="donation-meta">1 hour ago • Credit Card</div>
+                                    </div>
+                                    <div class="donation-amount">$500</div>
+                                </div>
+                                <div class="donation-item">
+                                    <div class="donation-avatar" style="background: #ff9500;">PA</div>
+                                    <div class="donation-info">
+                                        <div class="donation-name">Patricia Adams</div>
+                                        <div class="donation-meta">2 hours ago • Check</div>
+                                    </div>
+                                    <div class="donation-amount">$250</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Monthly Trend</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-placeholder">
+                                <div class="chart-bar" style="height: 60%;"></div>
+                                <div class="chart-bar" style="height: 75%;"></div>
+                                <div class="chart-bar" style="height: 65%;"></div>
+                                <div class="chart-bar" style="height: 85%;"></div>
+                                <div class="chart-bar" style="height: 70%;"></div>
+                                <div class="chart-bar" style="height: 95%;"></div>
+                                <div class="chart-bar" style="height: 100%;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-around; margin-top: 12px; font-size: 12px; color: var(--text-secondary);">
+                                <span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Transaction History</h2>
+                        <div style="display: flex; gap: 8px;">
+                            <select style="padding: 8px 16px; border: 1px solid var(--border-light); border-radius: 8px;">
+                                <option>All Time</option>
+                                <option>This Month</option>
+                                <option>This Quarter</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <table class="donation-table">
+                            <thead>
+                                <tr>
+                                    <th>Donor</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span style="font-weight: 600;">James Wilson</span></td>
+                                    <td style="font-weight: 600; color: var(--accent);">$2,500.00</td>
+                                    <td>Credit Card</td>
+                                    <td><span class="status-badge success">Completed</span></td>
+                                    <td>Dec 19, 2025 3:42 PM</td>
+                                    <td><button class="btn btn-secondary" style="padding: 6px 12px;">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td><span style="font-weight: 600;">Sarah Mitchell</span></td>
+                                    <td style="font-weight: 600; color: var(--accent);">$1,000.00</td>
+                                    <td>ACH Transfer</td>
+                                    <td><span class="status-badge success">Completed</span></td>
+                                    <td>Dec 19, 2025 3:27 PM</td>
+                                    <td><button class="btn btn-secondary" style="padding: 6px 12px;">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td><span style="font-weight: 600;">Robert Chen</span></td>
+                                    <td style="font-weight: 600; color: var(--accent);">$500.00</td>
+                                    <td>Credit Card</td>
+                                    <td><span class="status-badge pending">Processing</span></td>
+                                    <td>Dec 19, 2025 2:45 PM</td>
+                                    <td><button class="btn btn-secondary" style="padding: 6px 12px;">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td><span style="font-weight: 600;">Patricia Adams</span></td>
+                                    <td style="font-weight: 600; color: var(--accent);">$250.00</td>
+                                    <td>Check</td>
+                                    <td><span class="status-badge success">Completed</span></td>
+                                    <td>Dec 19, 2025 1:30 PM</td>
+                                    <td><button class="btn btn-secondary" style="padding: 6px 12px;">View</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

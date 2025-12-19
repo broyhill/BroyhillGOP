@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SMS Center | BroyhillGOP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
+    <style>
+        :root { --text-primary: #1d1d1f; --text-secondary: #86868b; --bg-primary: #ffffff; --bg-secondary: #f5f5f7; --border-light: #e8e8ed; --accent: #af52de; --success: #34c759; --warning: #ff9500; --danger: #ff3b30; --sidebar-width: 280px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Inter, -apple-system, sans-serif; background: var(--bg-secondary); color: var(--text-primary); font-size: 14px; -webkit-font-smoothing: antialiased; }
+        .app { display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background: var(--bg-primary); border-right: 1px solid var(--border-light); position: fixed; top: 0; left: 0; bottom: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border-light); }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-icon { width: 40px; height: 40px; background: var(--text-primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .logo-text { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+        .back-btn { display: flex; align-items: center; gap: 8px; margin: 20px; padding: 12px 16px; background: var(--bg-secondary); border-radius: 10px; color: var(--text-primary); text-decoration: none; font-weight: 500; transition: background 0.2s; }
+        .back-btn:hover { background: var(--border-light); }
+        .sidebar-nav { padding: 12px; flex: 1; }
+        .nav-section { margin-bottom: 24px; }
+        .nav-section-title { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; color: var(--text-primary); text-decoration: none; font-weight: 500; transition: background 0.2s; }
+        .nav-item:hover { background: var(--bg-secondary); }
+        .nav-item.active { background: var(--accent); color: white; }
+        .main { flex: 1; margin-left: var(--sidebar-width); min-height: 100vh; }
+        .topbar { background: var(--bg-primary); border-bottom: 1px solid var(--border-light); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+        .page-title { font-size: 24px; font-weight: 600; }
+        .topbar-actions { display: flex; gap: 12px; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: #9b3dc7; }
+        .btn-secondary { background: var(--bg-secondary); color: var(--text-primary); }
+        .page-content { padding: 32px; }
+        .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px; }
+        .hero-stat { background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 20px; padding: 28px; transition: transform 0.2s, box-shadow 0.2s; }
+        .hero-stat:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+        .hero-stat-value { font-size: 36px; font-weight: 800; margin-bottom: 4px; }
+        .hero-stat-value.purple { color: var(--accent); }
+        .hero-stat-value.green { color: var(--success); }
+        .hero-stat-label { font-size: 14px; color: var(--text-secondary); }
+        .hero-stat-change { font-size: 12px; margin-top: 8px; }
+        .hero-stat-change.positive { color: var(--success); }
+        .card { background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 20px; margin-bottom: 24px; }
+        .card-header { padding: 20px 24px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+        .card-title { font-size: 17px; font-weight: 600; }
+        .card-body { padding: 24px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        .phone-preview { background: #1d1d1f; border-radius: 36px; padding: 12px; max-width: 320px; margin: 0 auto; }
+        .phone-screen { background: var(--bg-primary); border-radius: 28px; padding: 20px; min-height: 400px; }
+        .phone-header { text-align: center; padding-bottom: 16px; border-bottom: 1px solid var(--border-light); margin-bottom: 16px; }
+        .phone-contact { font-weight: 600; font-size: 16px; }
+        .phone-number { font-size: 13px; color: var(--text-secondary); }
+        .message-bubble { max-width: 85%; padding: 12px 16px; border-radius: 18px; margin-bottom: 8px; font-size: 14px; line-height: 1.4; }
+        .message-bubble.sent { background: var(--accent); color: white; margin-left: auto; border-bottom-right-radius: 4px; }
+        .message-bubble.received { background: var(--bg-secondary); color: var(--text-primary); border-bottom-left-radius: 4px; }
+        .message-time { font-size: 11px; color: var(--text-secondary); text-align: right; margin-top: 4px; }
+        .compose-area { display: flex; gap: 8px; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-light); }
+        .compose-input { flex: 1; padding: 12px 16px; border: 1px solid var(--border-light); border-radius: 24px; font-size: 14px; }
+        .compose-input:focus { outline: none; border-color: var(--accent); }
+        .send-btn { width: 44px; height: 44px; background: var(--accent); border: none; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .template-list { display: flex; flex-direction: column; gap: 12px; }
+        .template-item { padding: 16px; background: var(--bg-secondary); border-radius: 12px; cursor: pointer; transition: all 0.2s; }
+        .template-item:hover { background: var(--border-light); }
+        .template-name { font-weight: 600; margin-bottom: 4px; }
+        .template-preview { font-size: 13px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .campaign-table { width: 100%; border-collapse: collapse; }
+        .campaign-table th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-light); }
+        .campaign-table td { padding: 16px; border-bottom: 1px solid var(--border-light); }
+        .campaign-table tr:hover { background: var(--bg-secondary); }
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-badge.active { background: #dcf5e3; color: #1b7d3a; }
+        .status-badge.scheduled { background: #fef3c7; color: #92400e; }
+        .status-badge.completed { background: #ede9fe; color: #5b21b6; }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">B</div>
+                    <span class="logo-text">BroyhillGOP</span>
+                </a>
+            </div>
+            <a href="index.html" class="back-btn">
+                <i class="ti ti-arrow-left"></i> Back to Dashboard
+            </a>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Messaging</div>
+                    <a href="#" class="nav-item active"><i class="ti ti-message"></i> Compose</a>
+                    <a href="#" class="nav-item"><i class="ti ti-inbox"></i> Inbox</a>
+                    <a href="#" class="nav-item"><i class="ti ti-send"></i> Sent</a>
+                    <a href="#" class="nav-item"><i class="ti ti-template"></i> Templates</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Campaigns</div>
+                    <a href="#" class="nav-item"><i class="ti ti-speakerphone"></i> Broadcast</a>
+                    <a href="#" class="nav-item"><i class="ti ti-users"></i> P2P Texting</a>
+                    <a href="#" class="nav-item"><i class="ti ti-robot"></i> Auto-Response</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Settings</div>
+                    <a href="#" class="nav-item"><i class="ti ti-settings"></i> SMS Settings</a>
+                    <a href="#" class="nav-item"><i class="ti ti-ban"></i> Opt-Outs</a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">SMS Center</h1>
+                <div class="topbar-actions">
+                    <button class="btn btn-secondary"><i class="ti ti-upload"></i> Import Contacts</button>
+                    <button class="btn btn-primary"><i class="ti ti-message-plus"></i> New Broadcast</button>
+                </div>
+            </header>
+            
+            <div class="page-content">
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-value purple">847,234</div>
+                        <div class="hero-stat-label">Messages Sent</div>
+                        <div class="hero-stat-change positive">↑ 23% this month</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value green">98.2%</div>
+                        <div class="hero-stat-label">Delivery Rate</div>
+                        <div class="hero-stat-change positive">↑ 0.8% improvement</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value" style="color: #0071e3;">34.7%</div>
+                        <div class="hero-stat-label">Response Rate</div>
+                        <div class="hero-stat-change positive">↑ 5.2% vs benchmark</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value" style="color: #ff9500;">$0.008</div>
+                        <div class="hero-stat-label">Cost per Message</div>
+                        <div class="hero-stat-change positive">Optimized pricing</div>
+                    </div>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Message Preview</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="phone-preview">
+                                <div class="phone-screen">
+                                    <div class="phone-header">
+                                        <div class="phone-contact">BroyhillGOP</div>
+                                        <div class="phone-number">+1 (336) 555-0100</div>
+                                    </div>
+                                    <div class="message-bubble sent">
+                                        Hi {first_name}! This is Eddie Broyhill. We're $50K away from our year-end goal. Can I count on you for a special gift? Reply YES to donate or STOP to opt-out.
+                                    </div>
+                                    <div class="message-time">Sent • 2:34 PM</div>
+                                    <div class="message-bubble received">
+                                        YES - happy to help Eddie!
+                                    </div>
+                                    <div class="message-time">Received • 2:36 PM</div>
+                                    <div class="message-bubble sent">
+                                        Thank you! Here's your secure donation link: donate.broyhillgop.com/yearend
+                                    </div>
+                                    <div class="message-time">Sent • 2:36 PM</div>
+                                    <div class="compose-area">
+                                        <input type="text" class="compose-input" placeholder="Type a message...">
+                                        <button class="send-btn"><i class="ti ti-send"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Quick Templates</h2>
+                            <button class="btn btn-secondary" style="padding: 8px 16px;"><i class="ti ti-plus"></i> New</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="template-list">
+                                <div class="template-item">
+                                    <div class="template-name">Year-End Appeal</div>
+                                    <div class="template-preview">Hi {first_name}! This is Eddie Broyhill. We're $50K away from our year-end goal...</div>
+                                </div>
+                                <div class="template-item">
+                                    <div class="template-name">Event Reminder</div>
+                                    <div class="template-preview">Don't forget! {event_name} is tomorrow at {time}. Reply YES to confirm...</div>
+                                </div>
+                                <div class="template-item">
+                                    <div class="template-name">Thank You</div>
+                                    <div class="template-preview">Thank you for your generous gift of ${amount}! Your support means everything...</div>
+                                </div>
+                                <div class="template-item">
+                                    <div class="template-name">GOTV Reminder</div>
+                                    <div class="template-preview">Election Day is {date}! Your polling location is {location}. Need a ride? Reply RIDE...</div>
+                                </div>
+                                <div class="template-item">
+                                    <div class="template-name">Volunteer Ask</div>
+                                    <div class="template-preview">Hi {first_name}, we need volunteers for {event}. Can you help? Reply YES to sign up...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Campaigns</h2>
+                        <button class="btn btn-secondary" style="padding: 8px 16px;">View All</button>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <table class="campaign-table">
+                            <thead>
+                                <tr>
+                                    <th>Campaign</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Sent</th>
+                                    <th>Response</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span style="font-weight: 600;">Year-End Donation Ask</span></td>
+                                    <td>Broadcast</td>
+                                    <td><span class="status-badge active">Active</span></td>
+                                    <td>45,847</td>
+                                    <td>34.2%</td>
+                                    <td>Dec 19, 2025</td>
+                                    <td><button class="btn btn-secondary" style="padding: 6px 12px;">Details</button></td>
+                                </tr>
+                                <tr>
+                                    <td><span style="font-weight: 600;">Holiday Event RSVP</span></td>
+                                    <td>P2P</td>
+                                    <td><span class="status-badge scheduled">Scheduled</span></td>
+                                    <td>—</td>
+                                    <td>—</td>
+                                    <td>Dec 20, 2025</td>
+                                    <td><button class="btn btn-secondary" style="padding: 6px 12px;">Edit</button></td>
+                                </tr>
+                                <tr>
+                                    <td><span style="font-weight: 600;">Donor Thank You</span></td>
+                                    <td>Broadcast</td>
+                                    <td><span class="status-badge completed">Completed</span></td>
+                                    <td>12,453</td>
+                                    <td>28.7%</td>
+                                    <td>Dec 15, 2025</td>
+                                    <td><button class="btn btn-secondary" style="padding: 6px 12px;">Report</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

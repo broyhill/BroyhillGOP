@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>ULTRA Voice | BroyhillGOP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
+    <style>
+        :root { --text-primary: #1d1d1f; --text-secondary: #86868b; --bg-primary: #ffffff; --bg-secondary: #f5f5f7; --border-light: #e8e8ed; --accent: #ff3b30; --success: #34c759; --warning: #ff9500; --danger: #ff3b30; --sidebar-width: 280px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Inter, -apple-system, sans-serif; background: var(--bg-secondary); color: var(--text-primary); font-size: 14px; -webkit-font-smoothing: antialiased; }
+        .app { display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background: var(--bg-primary); border-right: 1px solid var(--border-light); position: fixed; top: 0; left: 0; bottom: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border-light); }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-icon { width: 40px; height: 40px; background: var(--text-primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .logo-text { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+        .back-btn { display: flex; align-items: center; gap: 8px; margin: 20px; padding: 12px 16px; background: var(--bg-secondary); border-radius: 10px; color: var(--text-primary); text-decoration: none; font-weight: 500; transition: background 0.2s; }
+        .back-btn:hover { background: var(--border-light); }
+        .sidebar-nav { padding: 12px; flex: 1; }
+        .nav-section { margin-bottom: 24px; }
+        .nav-section-title { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; color: var(--text-primary); text-decoration: none; font-weight: 500; transition: background 0.2s; }
+        .nav-item:hover { background: var(--bg-secondary); }
+        .nav-item.active { background: var(--accent); color: white; }
+        .main { flex: 1; margin-left: var(--sidebar-width); min-height: 100vh; }
+        .topbar { background: var(--bg-primary); border-bottom: 1px solid var(--border-light); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+        .page-title { font-size: 24px; font-weight: 600; }
+        .topbar-actions { display: flex; gap: 12px; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: #e0342b; }
+        .btn-secondary { background: var(--bg-secondary); color: var(--text-primary); }
+        .btn-secondary:hover { background: var(--border-light); }
+        .page-content { padding: 32px; }
+        .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px; }
+        .hero-stat { background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 20px; padding: 28px; transition: transform 0.2s, box-shadow 0.2s; }
+        .hero-stat:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+        .hero-stat-value { font-size: 36px; font-weight: 800; margin-bottom: 4px; }
+        .hero-stat-value.red { color: var(--accent); }
+        .hero-stat-value.green { color: var(--success); }
+        .hero-stat-label { font-size: 14px; color: var(--text-secondary); }
+        .hero-stat-change { font-size: 12px; margin-top: 8px; }
+        .hero-stat-change.positive { color: var(--success); }
+        .card { background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 20px; margin-bottom: 24px; }
+        .card-header { padding: 20px 24px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+        .card-title { font-size: 17px; font-weight: 600; }
+        .card-body { padding: 24px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        .voice-preview { background: linear-gradient(135deg, #ff3b30 0%, #ff6b6b 100%); border-radius: 16px; padding: 32px; color: white; text-align: center; }
+        .voice-waveform { height: 80px; display: flex; align-items: center; justify-content: center; gap: 4px; margin: 24px 0; }
+        .wave-bar { width: 6px; background: rgba(255,255,255,0.8); border-radius: 3px; animation: wave 1s ease-in-out infinite; }
+        .wave-bar:nth-child(1) { height: 20px; animation-delay: 0s; }
+        .wave-bar:nth-child(2) { height: 40px; animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { height: 60px; animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { height: 80px; animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { height: 60px; animation-delay: 0.4s; }
+        .wave-bar:nth-child(6) { height: 40px; animation-delay: 0.5s; }
+        .wave-bar:nth-child(7) { height: 20px; animation-delay: 0.6s; }
+        @keyframes wave { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.5); } }
+        .play-btn { width: 64px; height: 64px; background: white; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .play-btn i { font-size: 28px; color: var(--accent); margin-left: 4px; }
+        .voice-list { display: flex; flex-direction: column; gap: 12px; }
+        .voice-item { display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-secondary); border-radius: 12px; cursor: pointer; transition: all 0.2s; }
+        .voice-item:hover { background: var(--border-light); }
+        .voice-item.selected { background: #fff0f0; border: 2px solid var(--accent); }
+        .voice-avatar { width: 48px; height: 48px; background: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .voice-info { flex: 1; }
+        .voice-name { font-weight: 600; margin-bottom: 4px; }
+        .voice-desc { font-size: 13px; color: var(--text-secondary); }
+        .script-editor { width: 100%; min-height: 200px; padding: 16px; border: 1px solid var(--border-light); border-radius: 12px; font-family: inherit; font-size: 14px; line-height: 1.6; resize: vertical; }
+        .script-editor:focus { outline: none; border-color: var(--accent); }
+        .campaign-table { width: 100%; border-collapse: collapse; }
+        .campaign-table th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-light); }
+        .campaign-table td { padding: 16px; border-bottom: 1px solid var(--border-light); }
+        .campaign-table tr:hover { background: var(--bg-secondary); }
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-badge.active { background: #dcf5e3; color: #1b7d3a; }
+        .status-badge.scheduled { background: #fef3c7; color: #92400e; }
+        .status-badge.completed { background: #dbeafe; color: #1e40af; }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">B</div>
+                    <span class="logo-text">BroyhillGOP</span>
+                </a>
+            </div>
+            <a href="index.html" class="back-btn">
+                <i class="ti ti-arrow-left"></i> Back to Dashboard
+            </a>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Voice Studio</div>
+                    <a href="#" class="nav-item active"><i class="ti ti-microphone"></i> Create Message</a>
+                    <a href="#" class="nav-item"><i class="ti ti-playlist"></i> Voice Library</a>
+                    <a href="#" class="nav-item"><i class="ti ti-waveform"></i> My Recordings</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Campaigns</div>
+                    <a href="#" class="nav-item"><i class="ti ti-send"></i> Active Campaigns</a>
+                    <a href="#" class="nav-item"><i class="ti ti-calendar"></i> Scheduled</a>
+                    <a href="#" class="nav-item"><i class="ti ti-history"></i> History</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Settings</div>
+                    <a href="#" class="nav-item"><i class="ti ti-settings"></i> Voice Settings</a>
+                    <a href="#" class="nav-item"><i class="ti ti-phone"></i> Caller ID</a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">ULTRA Voice Synthesis</h1>
+                <div class="topbar-actions">
+                    <button class="btn btn-secondary"><i class="ti ti-history"></i> History</button>
+                    <button class="btn btn-primary"><i class="ti ti-microphone"></i> New Voice Message</button>
+                </div>
+            </header>
+            
+            <div class="page-content">
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-value red">47,892</div>
+                        <div class="hero-stat-label">Messages Delivered</div>
+                        <div class="hero-stat-change positive">↑ 12% this week</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value green">94.7%</div>
+                        <div class="hero-stat-label">Delivery Rate</div>
+                        <div class="hero-stat-change positive">↑ 2.3% improvement</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value" style="color: #5856d6;">23.4%</div>
+                        <div class="hero-stat-label">Listen Rate</div>
+                        <div class="hero-stat-change positive">↑ 5.1% vs benchmark</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value" style="color: #ff9500;">$0.018</div>
+                        <div class="hero-stat-label">Cost per Message</div>
+                        <div class="hero-stat-change positive">↓ 40% vs traditional</div>
+                    </div>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Voice Preview</h2>
+                            <button class="btn btn-secondary" style="padding: 8px 16px;"><i class="ti ti-refresh"></i> Regenerate</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="voice-preview">
+                                <div style="font-size: 13px; opacity: 0.9; margin-bottom: 8px;">AI-Generated Voice Message</div>
+                                <div style="font-size: 20px; font-weight: 600;">Campaign: Year-End Appeal</div>
+                                <div class="voice-waveform">
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                </div>
+                                <button class="play-btn"><i class="ti ti-player-play-filled"></i></button>
+                                <div style="margin-top: 16px; font-size: 14px;">Duration: 0:45 • 127 words</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Select Voice</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="voice-list">
+                                <div class="voice-item selected">
+                                    <div class="voice-avatar">EB</div>
+                                    <div class="voice-info">
+                                        <div class="voice-name">Eddie Broyhill (Cloned)</div>
+                                        <div class="voice-desc">Your voice clone • Natural, conversational</div>
+                                    </div>
+                                    <i class="ti ti-check" style="color: var(--accent);"></i>
+                                </div>
+                                <div class="voice-item">
+                                    <div class="voice-avatar" style="background: #5856d6;">JM</div>
+                                    <div class="voice-info">
+                                        <div class="voice-name">Professional Male</div>
+                                        <div class="voice-desc">Authoritative, clear delivery</div>
+                                    </div>
+                                </div>
+                                <div class="voice-item">
+                                    <div class="voice-avatar" style="background: #ff2d55;">SF</div>
+                                    <div class="voice-info">
+                                        <div class="voice-name">Professional Female</div>
+                                        <div class="voice-desc">Warm, persuasive tone</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Script Editor</h2>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary" style="padding: 8px 16px;"><i class="ti ti-sparkles"></i> AI Enhance</button>
+                            <button class="btn btn-secondary" style="padding: 8px 16px;"><i class="ti ti-template"></i> Templates</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <textarea class="script-editor" placeholder="Write your voice message script here...">Hi {first_name}, this is Eddie Broyhill calling with an important message about our year-end campaign. 
+
+As we approach the final days of 2025, I wanted to personally reach out to thank you for your incredible support this year. Your contributions have made a real difference in our fight for conservative values in North Carolina.
+
+We're just $50,000 away from our year-end goal, and with your help, I know we can get there. Would you consider making a special year-end gift today?
+
+Thank you again for everything you do. Together, we're making North Carolina stronger.
+
+God bless.</textarea>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
+                            <div style="color: var(--text-secondary); font-size: 13px;">
+                                <span style="font-weight: 600;">127</span> words • <span style="font-weight: 600;">~45 seconds</span> estimated duration
+                            </div>
+                            <button class="btn btn-primary"><i class="ti ti-waveform"></i> Generate Voice</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Campaigns</h2>
+                        <button class="btn btn-secondary" style="padding: 8px 16px;">View All</button>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <table class="campaign-table">
+                            <thead>
+                                <tr>
+                                    <th>Campaign</th>
+                                    <th>Status</th>
+                                    <th>Delivered</th>
+                                    <th>Listen Rate</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span style="font-weight: 600;">Year-End Appeal 2025</span></td>
+                                    <td><span class="status-badge active">Active</span></td>
+                                    <td>12,847</td>
+                                    <td>24.3%</td>
+                                    <td>Dec 19, 2025</td>
+                                    <td><button class="btn btn-secondary" style="padding: 6px 12px;">Details</button></td>
+                                </tr>
+                                <tr>
+                                    <td><span style="font-weight: 600;">Holiday Thank You</span></td>
+                                    <td><span class="status-badge scheduled">Scheduled</span></td>
+                                    <td>—</td>
+                                    <td>—</td>
+                                    <td>Dec 24, 2025</td>
+                                    <td><button class="btn btn-secondary" style="padding: 6px 12px;">Edit</button></td>
+                                </tr>
+                                <tr>
+                                    <td><span style="font-weight: 600;">Q4 Donor Outreach</span></td>
+                                    <td><span class="status-badge completed">Completed</span></td>
+                                    <td>35,045</td>
+                                    <td>22.1%</td>
+                                    <td>Dec 1, 2025</td>
+                                    <td><button class="btn btn-secondary" style="padding: 6px 12px;">Report</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

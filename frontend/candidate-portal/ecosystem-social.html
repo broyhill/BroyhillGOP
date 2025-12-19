@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Social Media | BroyhillGOP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
+    <style>
+        :root { --text-primary: #1d1d1f; --text-secondary: #86868b; --bg-primary: #ffffff; --bg-secondary: #f5f5f7; --border-light: #e8e8ed; --accent: #ff2d55; --success: #34c759; --warning: #ff9500; --danger: #ff3b30; --twitter: #1DA1F2; --facebook: #1877F2; --instagram: #E4405F; --sidebar-width: 280px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Inter, -apple-system, sans-serif; background: var(--bg-secondary); color: var(--text-primary); font-size: 14px; -webkit-font-smoothing: antialiased; }
+        .app { display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background: var(--bg-primary); border-right: 1px solid var(--border-light); position: fixed; top: 0; left: 0; bottom: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border-light); }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-icon { width: 40px; height: 40px; background: var(--text-primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .logo-text { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+        .back-btn { display: flex; align-items: center; gap: 8px; margin: 20px; padding: 12px 16px; background: var(--bg-secondary); border-radius: 10px; color: var(--text-primary); text-decoration: none; font-weight: 500; }
+        .sidebar-nav { padding: 12px; flex: 1; }
+        .nav-section { margin-bottom: 24px; }
+        .nav-section-title { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; color: var(--text-primary); text-decoration: none; font-weight: 500; transition: background 0.2s; }
+        .nav-item:hover { background: var(--bg-secondary); }
+        .nav-item.active { background: var(--accent); color: white; }
+        .main { flex: 1; margin-left: var(--sidebar-width); min-height: 100vh; }
+        .topbar { background: var(--bg-primary); border-bottom: 1px solid var(--border-light); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+        .page-title { font-size: 24px; font-weight: 600; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-secondary { background: var(--bg-secondary); color: var(--text-primary); }
+        .page-content { padding: 32px; }
+        .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px; }
+        .hero-stat { background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 20px; padding: 28px; }
+        .hero-stat-value { font-size: 36px; font-weight: 800; margin-bottom: 4px; }
+        .hero-stat-value.pink { color: var(--accent); }
+        .hero-stat-value.green { color: var(--success); }
+        .hero-stat-label { font-size: 14px; color: var(--text-secondary); }
+        .hero-stat-change { font-size: 12px; margin-top: 8px; }
+        .hero-stat-change.positive { color: var(--success); }
+        .card { background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 20px; margin-bottom: 24px; }
+        .card-header { padding: 20px 24px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+        .card-title { font-size: 17px; font-weight: 600; }
+        .card-body { padding: 24px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .platform-card { background: var(--bg-secondary); border-radius: 16px; padding: 24px; text-align: center; transition: all 0.2s; }
+        .platform-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .platform-icon { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px; color: white; }
+        .platform-icon.twitter { background: var(--twitter); }
+        .platform-icon.facebook { background: var(--facebook); }
+        .platform-icon.instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+        .platform-name { font-weight: 600; margin-bottom: 4px; }
+        .platform-handle { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+        .platform-stats { display: flex; justify-content: center; gap: 24px; }
+        .platform-stat { text-align: center; }
+        .platform-stat-value { font-size: 18px; font-weight: 700; }
+        .platform-stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; }
+        .compose-box { border: 2px dashed var(--border-light); border-radius: 16px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .compose-box:hover { border-color: var(--accent); background: rgba(255,45,85,0.05); }
+        .compose-icon { font-size: 48px; color: var(--accent); margin-bottom: 16px; }
+        .compose-title { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+        .compose-subtitle { font-size: 14px; color: var(--text-secondary); }
+        .post-list { display: flex; flex-direction: column; gap: 16px; }
+        .post-item { padding: 20px; background: var(--bg-secondary); border-radius: 16px; }
+        .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .post-avatar { width: 44px; height: 44px; background: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .post-meta { flex: 1; }
+        .post-author { font-weight: 600; }
+        .post-time { font-size: 12px; color: var(--text-secondary); }
+        .post-content { line-height: 1.5; margin-bottom: 16px; }
+        .post-stats { display: flex; gap: 24px; }
+        .post-stat { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 13px; }
+        .post-platforms { display: flex; gap: 8px; }
+        .platform-badge { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; }
+        .scheduled-post { border-left: 4px solid var(--warning); }
+        .scheduled-label { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #fef3c7; color: #92400e; border-radius: 6px; font-size: 11px; font-weight: 600; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">B</div>
+                    <span class="logo-text">BroyhillGOP</span>
+                </a>
+            </div>
+            <a href="index.html" class="back-btn">
+                <i class="ti ti-arrow-left"></i> Back to Dashboard
+            </a>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Social</div>
+                    <a href="#" class="nav-item active"><i class="ti ti-dashboard"></i> Overview</a>
+                    <a href="#" class="nav-item"><i class="ti ti-pencil"></i> Compose</a>
+                    <a href="#" class="nav-item"><i class="ti ti-calendar"></i> Scheduled</a>
+                    <a href="#" class="nav-item"><i class="ti ti-history"></i> Published</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Monitoring</div>
+                    <a href="#" class="nav-item"><i class="ti ti-bell"></i> Mentions</a>
+                    <a href="#" class="nav-item"><i class="ti ti-message-circle"></i> Messages</a>
+                    <a href="#" class="nav-item"><i class="ti ti-hash"></i> Hashtags</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Analytics</div>
+                    <a href="#" class="nav-item"><i class="ti ti-chart-line"></i> Performance</a>
+                    <a href="#" class="nav-item"><i class="ti ti-users"></i> Audience</a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">Social Media</h1>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-secondary"><i class="ti ti-calendar"></i> Schedule</button>
+                    <button class="btn btn-primary"><i class="ti ti-pencil"></i> Create Post</button>
+                </div>
+            </header>
+            
+            <div class="page-content">
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-value pink">847K</div>
+                        <div class="hero-stat-label">Total Followers</div>
+                        <div class="hero-stat-change positive">↑ 12K this month</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value green">4.8%</div>
+                        <div class="hero-stat-label">Engagement Rate</div>
+                        <div class="hero-stat-change positive">↑ 0.8% improvement</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value" style="color: #0071e3;">2.4M</div>
+                        <div class="hero-stat-label">Total Reach</div>
+                        <div class="hero-stat-change positive">↑ 34% this week</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value" style="color: #ff9500;">247</div>
+                        <div class="hero-stat-label">Posts This Month</div>
+                        <div class="hero-stat-change positive">On track</div>
+                    </div>
+                </div>
+                
+                <div class="grid-3" style="margin-bottom: 24px;">
+                    <div class="platform-card">
+                        <div class="platform-icon twitter"><i class="ti ti-brand-x"></i></div>
+                        <div class="platform-name">X (Twitter)</div>
+                        <div class="platform-handle">@BroyhillGOP</div>
+                        <div class="platform-stats">
+                            <div class="platform-stat"><div class="platform-stat-value">324K</div><div class="platform-stat-label">Followers</div></div>
+                            <div class="platform-stat"><div class="platform-stat-value">5.2%</div><div class="platform-stat-label">Engage</div></div>
+                        </div>
+                    </div>
+                    <div class="platform-card">
+                        <div class="platform-icon facebook"><i class="ti ti-brand-facebook"></i></div>
+                        <div class="platform-name">Facebook</div>
+                        <div class="platform-handle">BroyhillGOP</div>
+                        <div class="platform-stats">
+                            <div class="platform-stat"><div class="platform-stat-value">412K</div><div class="platform-stat-label">Followers</div></div>
+                            <div class="platform-stat"><div class="platform-stat-value">3.8%</div><div class="platform-stat-label">Engage</div></div>
+                        </div>
+                    </div>
+                    <div class="platform-card">
+                        <div class="platform-icon instagram"><i class="ti ti-brand-instagram"></i></div>
+                        <div class="platform-name">Instagram</div>
+                        <div class="platform-handle">@broyhillgop</div>
+                        <div class="platform-stats">
+                            <div class="platform-stat"><div class="platform-stat-value">111K</div><div class="platform-stat-label">Followers</div></div>
+                            <div class="platform-stat"><div class="platform-stat-value">6.4%</div><div class="platform-stat-label">Engage</div></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Quick Compose</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="compose-box">
+                                <div class="compose-icon"><i class="ti ti-pencil-plus"></i></div>
+                                <div class="compose-title">Create New Post</div>
+                                <div class="compose-subtitle">Share updates across all platforms</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Scheduled Posts</h2>
+                            <button class="btn btn-secondary" style="padding: 8px 16px;">View All</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="post-list">
+                                <div class="post-item scheduled-post">
+                                    <div class="scheduled-label"><i class="ti ti-clock"></i> Tomorrow 9:00 AM</div>
+                                    <div class="post-content">🎄 As we celebrate this Christmas season, let's remember what truly matters - faith, family, and freedom. Merry Christmas to all!</div>
+                                    <div class="post-platforms">
+                                        <div class="platform-badge" style="background: var(--twitter);"><i class="ti ti-brand-x"></i></div>
+                                        <div class="platform-badge" style="background: var(--facebook);"><i class="ti ti-brand-facebook"></i></div>
+                                        <div class="platform-badge" style="background: var(--instagram);"><i class="ti ti-brand-instagram"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Posts</h2>
+                        <button class="btn btn-secondary" style="padding: 8px 16px;">View All</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="post-list">
+                            <div class="post-item">
+                                <div class="post-header">
+                                    <div class="post-avatar">EB</div>
+                                    <div class="post-meta">
+                                        <div class="post-author">Eddie Broyhill</div>
+                                        <div class="post-time">2 hours ago • X, Facebook</div>
+                                    </div>
+                                    <div class="post-platforms">
+                                        <div class="platform-badge" style="background: var(--twitter);"><i class="ti ti-brand-x"></i></div>
+                                        <div class="platform-badge" style="background: var(--facebook);"><i class="ti ti-brand-facebook"></i></div>
+                                    </div>
+                                </div>
+                                <div class="post-content">Just finished meeting with local business leaders about reducing regulations that hurt NC small businesses. The energy in the room was incredible! #NCFirst #SmallBusiness</div>
+                                <div class="post-stats">
+                                    <div class="post-stat"><i class="ti ti-heart"></i> 847</div>
+                                    <div class="post-stat"><i class="ti ti-message-circle"></i> 124</div>
+                                    <div class="post-stat"><i class="ti ti-repeat"></i> 287</div>
+                                    <div class="post-stat"><i class="ti ti-eye"></i> 24.7K</div>
+                                </div>
+                            </div>
+                            <div class="post-item">
+                                <div class="post-header">
+                                    <div class="post-avatar">EB</div>
+                                    <div class="post-meta">
+                                        <div class="post-author">Eddie Broyhill</div>
+                                        <div class="post-time">Yesterday • All platforms</div>
+                                    </div>
+                                    <div class="post-platforms">
+                                        <div class="platform-badge" style="background: var(--twitter);"><i class="ti ti-brand-x"></i></div>
+                                        <div class="platform-badge" style="background: var(--facebook);"><i class="ti ti-brand-facebook"></i></div>
+                                        <div class="platform-badge" style="background: var(--instagram);"><i class="ti ti-brand-instagram"></i></div>
+                                    </div>
+                                </div>
+                                <div class="post-content">We're just $50,000 away from our year-end fundraising goal! Every donation makes a difference. Will you help us cross the finish line? 🎯 Link in bio.</div>
+                                <div class="post-stats">
+                                    <div class="post-stat"><i class="ti ti-heart"></i> 1.2K</div>
+                                    <div class="post-stat"><i class="ti ti-message-circle"></i> 89</div>
+                                    <div class="post-stat"><i class="ti ti-repeat"></i> 412</div>
+                                    <div class="post-stat"><i class="ti ti-eye"></i> 47.3K</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

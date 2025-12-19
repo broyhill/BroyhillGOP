@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Donor Intelligence | BroyhillGOP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
+    <style>
+        :root { --text-primary: #1d1d1f; --text-secondary: #86868b; --bg-primary: #ffffff; --bg-secondary: #f5f5f7; --border-light: #e8e8ed; --accent: #0071e3; --success: #34c759; --warning: #ff9500; --danger: #ff3b30; --purple: #af52de; --sidebar-width: 280px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Inter, -apple-system, sans-serif; background: var(--bg-secondary); color: var(--text-primary); font-size: 14px; -webkit-font-smoothing: antialiased; }
+        .app { display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background: var(--bg-primary); border-right: 1px solid var(--border-light); position: fixed; top: 0; left: 0; bottom: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border-light); }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-icon { width: 40px; height: 40px; background: var(--text-primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .logo-text { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+        .back-btn { display: flex; align-items: center; gap: 8px; margin: 20px; padding: 12px 16px; background: var(--bg-secondary); border-radius: 10px; color: var(--text-primary); text-decoration: none; font-weight: 500; transition: background 0.2s; }
+        .back-btn:hover { background: var(--border-light); }
+        .sidebar-nav { padding: 12px; flex: 1; }
+        .nav-section { margin-bottom: 24px; }
+        .nav-section-title { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; color: var(--text-primary); text-decoration: none; font-weight: 500; transition: background 0.2s; }
+        .nav-item:hover { background: var(--bg-secondary); }
+        .nav-item.active { background: var(--accent); color: white; }
+        .main { flex: 1; margin-left: var(--sidebar-width); min-height: 100vh; }
+        .topbar { background: var(--bg-primary); border-bottom: 1px solid var(--border-light); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+        .page-title { font-size: 24px; font-weight: 600; }
+        .topbar-actions { display: flex; gap: 12px; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: #005bb5; }
+        .btn-secondary { background: var(--bg-secondary); color: var(--text-primary); }
+        .btn-secondary:hover { background: var(--border-light); }
+        .page-content { padding: 32px; }
+        .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px; }
+        .hero-stat { background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 20px; padding: 28px; transition: transform 0.2s, box-shadow 0.2s; }
+        .hero-stat:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+        .hero-stat-value { font-size: 36px; font-weight: 800; margin-bottom: 4px; }
+        .hero-stat-value.blue { color: var(--accent); }
+        .hero-stat-value.green { color: var(--success); }
+        .hero-stat-value.purple { color: var(--purple); }
+        .hero-stat-value.orange { color: var(--warning); }
+        .hero-stat-label { font-size: 14px; color: var(--text-secondary); }
+        .hero-stat-change { font-size: 12px; margin-top: 8px; }
+        .hero-stat-change.positive { color: var(--success); }
+        .hero-stat-change.negative { color: var(--danger); }
+        .card { background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 20px; margin-bottom: 24px; }
+        .card-header { padding: 20px 24px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+        .card-title { font-size: 17px; font-weight: 600; }
+        .card-body { padding: 24px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        .grade-distribution { display: flex; flex-direction: column; gap: 12px; }
+        .grade-row { display: flex; align-items: center; gap: 16px; }
+        .grade-label { width: 50px; font-weight: 600; font-size: 16px; }
+        .grade-bar-container { flex: 1; height: 32px; background: var(--bg-secondary); border-radius: 8px; overflow: hidden; }
+        .grade-bar { height: 100%; border-radius: 8px; display: flex; align-items: center; justify-content: flex-end; padding-right: 12px; color: white; font-weight: 600; font-size: 13px; }
+        .grade-bar.a-plus { background: linear-gradient(90deg, #34c759, #30d158); }
+        .grade-bar.a { background: linear-gradient(90deg, #0071e3, #007aff); }
+        .grade-bar.b { background: linear-gradient(90deg, #5856d6, #5e5ce6); }
+        .grade-bar.c { background: linear-gradient(90deg, #ff9500, #ff9f0a); }
+        .grade-bar.d { background: linear-gradient(90deg, #ff3b30, #ff453a); }
+        .grade-count { width: 80px; text-align: right; color: var(--text-secondary); font-size: 14px; }
+        .donor-table { width: 100%; border-collapse: collapse; }
+        .donor-table th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-light); }
+        .donor-table td { padding: 16px; border-bottom: 1px solid var(--border-light); }
+        .donor-table tr:hover { background: var(--bg-secondary); }
+        .donor-name { font-weight: 600; color: var(--text-primary); }
+        .donor-email { font-size: 13px; color: var(--text-secondary); }
+        .grade-badge { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; font-weight: 700; font-size: 14px; }
+        .grade-badge.a-plus { background: #dcf5e3; color: #1b7d3a; }
+        .grade-badge.a { background: #dbeafe; color: #1e40af; }
+        .grade-badge.b { background: #ede9fe; color: #5b21b6; }
+        .grade-badge.c { background: #fef3c7; color: #92400e; }
+        .amount { font-weight: 600; color: var(--success); }
+        .intensity-bar { width: 100px; height: 8px; background: var(--bg-secondary); border-radius: 4px; overflow: hidden; }
+        .intensity-fill { height: 100%; background: var(--accent); border-radius: 4px; }
+        .filter-bar { display: flex; gap: 12px; margin-bottom: 24px; }
+        .filter-input { flex: 1; padding: 12px 16px; border: 1px solid var(--border-light); border-radius: 10px; font-size: 14px; background: var(--bg-primary); }
+        .filter-select { padding: 12px 16px; border: 1px solid var(--border-light); border-radius: 10px; font-size: 14px; background: var(--bg-primary); min-width: 150px; }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">B</div>
+                    <span class="logo-text">BroyhillGOP</span>
+                </a>
+            </div>
+            <a href="index.html" class="back-btn">
+                <i class="ti ti-arrow-left"></i> Back to Dashboard
+            </a>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Donor Tools</div>
+                    <a href="#" class="nav-item active"><i class="ti ti-users"></i> All Donors</a>
+                    <a href="#" class="nav-item"><i class="ti ti-star"></i> A++ Elite</a>
+                    <a href="#" class="nav-item"><i class="ti ti-trending-up"></i> Upgrade Candidates</a>
+                    <a href="#" class="nav-item"><i class="ti ti-alert-circle"></i> At-Risk</a>
+                    <a href="#" class="nav-item"><i class="ti ti-sparkles"></i> New This Week</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Analysis</div>
+                    <a href="#" class="nav-item"><i class="ti ti-chart-pie"></i> Grade Distribution</a>
+                    <a href="#" class="nav-item"><i class="ti ti-chart-line"></i> Giving Trends</a>
+                    <a href="#" class="nav-item"><i class="ti ti-bulb"></i> AI Insights</a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="main">
+            <header class="topbar">
+                <h1 class="page-title">Donor Intelligence</h1>
+                <div class="topbar-actions">
+                    <button class="btn btn-secondary"><i class="ti ti-download"></i> Export</button>
+                    <button class="btn btn-secondary"><i class="ti ti-refresh"></i> Recalculate Grades</button>
+                    <button class="btn btn-primary"><i class="ti ti-plus"></i> Add Donor</button>
+                </div>
+            </header>
+            
+            <div class="page-content">
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-value blue">243,575</div>
+                        <div class="hero-stat-label">Total Donors</div>
+                        <div class="hero-stat-change positive">↑ 1,247 this month</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value green">$28.4M</div>
+                        <div class="hero-stat-label">Lifetime Value</div>
+                        <div class="hero-stat-change positive">↑ 12.3% YoY</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value purple">8,742</div>
+                        <div class="hero-stat-label">A-Grade Donors</div>
+                        <div class="hero-stat-change positive">↑ 342 upgraded</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value orange">$116.58</div>
+                        <div class="hero-stat-label">Avg. Donation</div>
+                        <div class="hero-stat-change positive">↑ 8.2% vs last quarter</div>
+                    </div>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Grade Distribution</h2>
+                            <button class="btn btn-secondary" style="padding: 8px 16px;"><i class="ti ti-filter"></i> Filter</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="grade-distribution">
+                                <div class="grade-row">
+                                    <div class="grade-label">A++</div>
+                                    <div class="grade-bar-container"><div class="grade-bar a-plus" style="width: 15%;">1,247</div></div>
+                                    <div class="grade-count">$8.2M</div>
+                                </div>
+                                <div class="grade-row">
+                                    <div class="grade-label">A+</div>
+                                    <div class="grade-bar-container"><div class="grade-bar a-plus" style="width: 22%;">2,847</div></div>
+                                    <div class="grade-count">$6.4M</div>
+                                </div>
+                                <div class="grade-row">
+                                    <div class="grade-label">A</div>
+                                    <div class="grade-bar-container"><div class="grade-bar a" style="width: 35%;">4,648</div></div>
+                                    <div class="grade-count">$5.1M</div>
+                                </div>
+                                <div class="grade-row">
+                                    <div class="grade-label">B+</div>
+                                    <div class="grade-bar-container"><div class="grade-bar b" style="width: 45%;">12,847</div></div>
+                                    <div class="grade-count">$3.8M</div>
+                                </div>
+                                <div class="grade-row">
+                                    <div class="grade-label">B</div>
+                                    <div class="grade-bar-container"><div class="grade-bar b" style="width: 60%;">28,472</div></div>
+                                    <div class="grade-count">$2.4M</div>
+                                </div>
+                                <div class="grade-row">
+                                    <div class="grade-label">C</div>
+                                    <div class="grade-bar-container"><div class="grade-bar c" style="width: 80%;">89,247</div></div>
+                                    <div class="grade-count">$1.8M</div>
+                                </div>
+                                <div class="grade-row">
+                                    <div class="grade-label">D/F</div>
+                                    <div class="grade-bar-container"><div class="grade-bar d" style="width: 95%;">104,267</div></div>
+                                    <div class="grade-count">$0.7M</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">AI Upgrade Recommendations</h2>
+                            <span style="color: var(--success); font-weight: 500;">+$847K potential</span>
+                        </div>
+                        <div class="card-body">
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                                <div style="padding: 16px; background: var(--bg-secondary); border-radius: 12px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span style="font-weight: 600;">B → A Upgrade Candidates</span>
+                                        <span style="color: var(--accent); font-weight: 600;">847 donors</span>
+                                    </div>
+                                    <div style="font-size: 13px; color: var(--text-secondary);">High engagement, consistent giving pattern. Ask amount: $250-500</div>
+                                </div>
+                                <div style="padding: 16px; background: var(--bg-secondary); border-radius: 12px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span style="font-weight: 600;">Lapsed A-Grade Recovery</span>
+                                        <span style="color: var(--warning); font-weight: 600;">234 donors</span>
+                                    </div>
+                                    <div style="font-size: 13px; color: var(--text-secondary);">No donation in 90+ days. Re-engagement campaign recommended.</div>
+                                </div>
+                                <div style="padding: 16px; background: var(--bg-secondary); border-radius: 12px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span style="font-weight: 600;">Recurring Conversion</span>
+                                        <span style="color: var(--success); font-weight: 600;">1,247 donors</span>
+                                    </div>
+                                    <div style="font-size: 13px; color: var(--text-secondary);">One-time donors ready for monthly commitment.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Top Donors</h2>
+                        <button class="btn btn-secondary" style="padding: 8px 16px;">View All</button>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <div class="filter-bar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-light);">
+                            <input type="text" class="filter-input" placeholder="Search donors...">
+                            <select class="filter-select">
+                                <option>All Grades</option>
+                                <option>A++ Only</option>
+                                <option>A-Grade</option>
+                                <option>B-Grade</option>
+                            </select>
+                            <select class="filter-select">
+                                <option>All Time</option>
+                                <option>This Month</option>
+                                <option>This Quarter</option>
+                                <option>This Year</option>
+                            </select>
+                        </div>
+                        <table class="donor-table">
+                            <thead>
+                                <tr>
+                                    <th>Donor</th>
+                                    <th>Grade</th>
+                                    <th>Lifetime Value</th>
+                                    <th>Last Gift</th>
+                                    <th>Intensity</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="donor-name">James R. Wilson</div>
+                                        <div class="donor-email">jwilson@enterprise.com</div>
+                                    </td>
+                                    <td><span class="grade-badge a-plus">A++</span></td>
+                                    <td class="amount">$247,500</td>
+                                    <td>Dec 15, 2025</td>
+                                    <td><div class="intensity-bar"><div class="intensity-fill" style="width: 95%;"></div></div></td>
+                                    <td><button class="btn btn-secondary" style="padding: 6px 12px;">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="donor-name">Sarah Mitchell</div>
+                                        <div class="donor-email">sarah.m@foundation.org</div>
+                                    </td>
+                                    <td><span class="grade-badge a-plus">A++</span></td>
+                                    <td class="amount">$189,200</td>
+                                    <td>Dec 12, 2025</td>
+                                    <td><div class="intensity-bar"><div class="intensity-fill" style="width: 88%;"></div></div></td>
+                                    <td><button class="btn btn-secondary" style="padding: 6px 12px;">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="donor-name">Robert Chen</div>
+                                        <div class="donor-email">rchen@techventures.com</div>
+                                    </td>
+                                    <td><span class="grade-badge a">A+</span></td>
+                                    <td class="amount">$124,800</td>
+                                    <td>Dec 10, 2025</td>
+                                    <td><div class="intensity-bar"><div class="intensity-fill" style="width: 82%;"></div></div></td>
+                                    <td><button class="btn btn-secondary" style="padding: 6px 12px;">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="donor-name">Patricia Adams</div>
+                                        <div class="donor-email">padams@lawfirm.com</div>
+                                    </td>
+                                    <td><span class="grade-badge a">A</span></td>
+                                    <td class="amount">$87,400</td>
+                                    <td>Dec 8, 2025</td>
+                                    <td><div class="intensity-bar"><div class="intensity-fill" style="width: 75%;"></div></div></td>
+                                    <td><button class="btn btn-secondary" style="padding: 6px 12px;">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="donor-name">Michael Torres</div>
+                                        <div class="donor-email">mtorres@investment.com</div>
+                                    </td>
+                                    <td><span class="grade-badge b">B+</span></td>
+                                    <td class="amount">$42,150</td>
+                                    <td>Dec 5, 2025</td>
+                                    <td><div class="intensity-bar"><div class="intensity-fill" style="width: 65%;"></div></div></td>
+                                    <td><button class="btn btn-secondary" style="padding: 6px 12px;">View</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
