@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Dave Boliek | Campaign Command Center | BroyhillGOP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
+    <style>
+        :root {
+            --gop-red: #e31837;
+            --gop-blue: #002868;
+            --gop-gold: #ffd700;
+            --sidebar-width: 280px;
+            --topbar-height: 70px;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --ai-purple: #8b5cf6;
+            --ai-gradient: linear-gradient(135deg, #8b5cf6, #6366f1);
+        }
+        * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
+        body { background: #f1f5f9; margin: 0; }
+        
+        .wrapper { display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            min-height: 100vh;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 1050;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .candidate-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .candidate-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #475569, #334155);
+            border: 2px solid var(--gop-red);
+        }
+        .candidate-name {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .candidate-office {
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+        
+        .notification-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .notif-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .notif-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        .notif-btn .badge {
+            background: var(--gop-red);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .notif-btn.ai-btn {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+        .notif-btn.ai-btn .badge {
+            background: var(--ai-purple);
+        }
+        
+        .sidebar-nav {
+            padding: 16px 12px;
+            flex: 1;
+        }
+        .nav-section {
+            margin-bottom: 20px;
+        }
+        .nav-section-title {
+            color: #64748b;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 8px;
+            margin-bottom: 8px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+        }
+        .nav-item.active {
+            background: var(--gop-red);
+            color: #fff;
+        }
+        .nav-item i {
+            font-size: 1.1rem;
+            width: 20px;
+        }
+        .nav-item .count {
+            margin-left: auto;
+            background: rgba(255,255,255,0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 24px;
+        }
+        
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #1e293b;
+        }
+        .page-subtitle {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 16px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-body { padding: 20px; }
+        
+        .ai-advisor-card {
+            background: linear-gradient(135deg, #1e1b4b, #312e81);
+            border: none;
+            color: #fff;
+        }
+        .ai-advisor-card .card-header {
+            background: transparent;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        .ai-section {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        .ai-section.today {
+            background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(220,38,38,0.1));
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+        .ai-section.week {
+            background: linear-gradient(135deg, rgba(249,115,22,0.2), rgba(234,88,12,0.1));
+            border: 1px solid rgba(249,115,22,0.3);
+        }
+        .ai-section.month {
+            background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(37,99,235,0.1));
+            border: 1px solid rgba(59,130,246,0.3);
+        }
+        .ai-section.longterm {
+            background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(22,163,74,0.1));
+            border: 1px solid rgba(34,197,94,0.3);
+        }
+        .ai-section-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ai-section.today .ai-section-title { color: #fca5a5; }
+        .ai-section.week .ai-section-title { color: #fdba74; }
+        .ai-section.month .ai-section-title { color: #93c5fd; }
+        .ai-section.longterm .ai-section-title { color: #86efac; }
+        
+        .ai-task {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.85rem;
+        }
+        .ai-task:last-child { border-bottom: none; }
+        .ai-task-check {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .ai-task-check:hover { border-color: #fff; }
+        .ai-task-check.done {
+            background: var(--success);
+            border-color: var(--success);
+        }
+        .ai-task-text { flex: 1; line-height: 1.4; }
+        .ai-task-action {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+        .ai-task-action:hover { background: rgba(255,255,255,0.2); }
+        
+        .news-item {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            gap: 12px;
+        }
+        .news-item:last-child { border-bottom: none; }
+        .news-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .news-icon.positive { background: #dcfce7; color: var(--success); }
+        .news-icon.neutral { background: #dbeafe; color: var(--info); }
+        .news-icon.interview { background: #fef3c7; color: var(--warning); }
+        .news-content { flex: 1; }
+        .news-title { font-size: 0.9rem; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
+        .news-source { font-size: 0.75rem; color: #64748b; }
+        .news-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .news-badge.positive { background: #dcfce7; color: #166534; }
+        .news-badge.neutral { background: #dbeafe; color: #1e40af; }
+        .news-badge.interview { background: #fef3c7; color: #92400e; }
+        
+        .activity-item {
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .activity-item.donor {
+            background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.02));
+            border-left: 4px solid var(--success);
+        }
+        .activity-item.volunteer {
+            background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.02));
+            border-left: 4px solid var(--info);
+        }
+        .activity-item.ai {
+            background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(139,92,246,0.02));
+            border-left: 4px solid var(--ai-purple);
+        }
+        .activity-photo {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #475569, #334155);
+            flex-shrink: 0;
+        }
+        .activity-content { flex: 1; }
+        .activity-title { font-size: 0.9rem; font-weight: 600; color: #1e293b; }
+        .activity-desc { font-size: 0.8rem; color: #64748b; margin-top: 2px; }
+        .activity-time { font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
+        .activity-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .activity-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+        .activity-btn.primary { background: var(--gop-red); color: #fff; }
+        .activity-btn.secondary { background: #f1f5f9; color: #64748b; }
+        
+        .candidate-list-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .candidate-list-item:last-child { border-bottom: none; }
+        .candidate-list-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #475569, #334155);
+        }
+        .candidate-list-info { flex: 1; }
+        .candidate-list-name { font-size: 0.9rem; font-weight: 600; color: #1e293b; }
+        .candidate-list-office { font-size: 0.75rem; color: #64748b; }
+        .candidate-ai-btn {
+            background: var(--ai-gradient);
+            border: none;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .candidate-ai-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+        
+        .eod-card {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            border: none;
+            color: #fff;
+        }
+        .eod-card .card-header {
+            background: transparent;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        .eod-message-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .eod-message-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .eod-message-label strong {
+            color: #fbbf24;
+        }
+        .eod-message-input {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 12px;
+            color: #fff;
+            font-size: 0.9rem;
+            resize: none;
+        }
+        .eod-message-input::placeholder { color: #64748b; }
+        .eod-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .eod-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .eod-btn.email {
+            background: var(--info);
+            border: none;
+            color: #fff;
+        }
+        .eod-btn.text {
+            background: var(--success);
+            border: none;
+            color: #fff;
+        }
+        
+        .alert-template {
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .alert-template:hover { transform: translateX(4px); }
+        .alert-template.emergency {
+            background: linear-gradient(135deg, rgba(239,68,68,0.1), #fff);
+            border: 2px solid var(--danger);
+        }
+        .alert-template.family {
+            background: linear-gradient(135deg, rgba(236,72,153,0.1), #fff);
+            border: 2px solid #ec4899;
+        }
+        .alert-template.act-now {
+            background: linear-gradient(135deg, rgba(249,115,22,0.1), #fff);
+            border: 2px solid var(--warning);
+        }
+        .alert-template.money {
+            background: linear-gradient(135deg, rgba(34,197,94,0.1), #fff);
+            border: 2px solid var(--success);
+        }
+        .alert-template.news {
+            background: linear-gradient(135deg, rgba(59,130,246,0.1), #fff);
+            border: 2px solid var(--info);
+        }
+        .alert-template.fyi {
+            background: linear-gradient(135deg, rgba(100,116,139,0.1), #fff);
+            border: 2px solid #64748b;
+        }
+        .alert-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .alert-desc {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        
+        .automation-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        .automation-status.active {
+            background: linear-gradient(135deg, rgba(34,197,94,0.1), #fff);
+            border: 1px solid var(--success);
+        }
+        .automation-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .automation-info { flex: 1; }
+        .automation-title { font-size: 0.9rem; font-weight: 600; color: #1e293b; }
+        .automation-desc { font-size: 0.8rem; color: #64748b; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #1e293b;
+        }
+        .stat-change {
+            font-size: 0.8rem;
+            margin-top: 6px;
+        }
+        .stat-change.positive { color: var(--success); }
+        .stat-change.negative { color: var(--danger); }
+        
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="candidate-profile">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop&crop=face" class="candidate-photo" alt="Dave Boliek">
+                    <div>
+                        <div class="candidate-name">Dave Boliek</div>
+                        <div class="candidate-office">NC State Auditor</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="notification-grid">
+                <div class="notif-btn">
+                    <span><i class="ti ti-bell"></i> Alerts</span>
+                    <span class="badge">7</span>
+                </div>
+                <div class="notif-btn">
+                    <span><i class="ti ti-mail"></i> Messages</span>
+                    <span class="badge">12</span>
+                </div>
+                <div class="notif-btn">
+                    <span><i class="ti ti-check"></i> Approvals</span>
+                    <span class="badge">5</span>
+                </div>
+                <div class="notif-btn ai-btn">
+                    <span><i class="ti ti-sparkles"></i> AI Actions</span>
+                    <span class="badge">23</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Donors</div>
+                    <a class="nav-item active" href="#"><i class="ti ti-users"></i> All Donors <span class="count">2,847</span></a>
+                    <a class="nav-item" href="#"><i class="ti ti-star"></i> Matched to Me <span class="count">312</span></a>
+                    <a class="nav-item" href="#"><i class="ti ti-coin"></i> Contributed <span class="count">847</span></a>
+                    <a class="nav-item" href="#"><i class="ti ti-diamond"></i> A++ Elite <span class="count">23</span></a>
+                    <a class="nav-item" href="#"><i class="ti ti-alert-triangle"></i> At Risk <span class="count">45</span></a>
+                    <a class="nav-item" href="#"><i class="ti ti-sparkles"></i> New This Week <span class="count">18</span></a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Volunteers</div>
+                    <a class="nav-item" href="#"><i class="ti ti-users-group"></i> All Volunteers <span class="count">156</span></a>
+                    <a class="nav-item" href="#"><i class="ti ti-heart"></i> My Team <span class="count">34</span></a>
+                    <a class="nav-item" href="#"><i class="ti ti-clock"></i> Available Now <span class="count">12</span></a>
+                    <a class="nav-item" href="#"><i class="ti ti-trophy"></i> Top Performers <span class="count">8</span></a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Campaign</div>
+                    <a class="nav-item" href="#"><i class="ti ti-calendar"></i> Schedule</a>
+                    <a class="nav-item" href="#"><i class="ti ti-ticket"></i> Fundraisers <span class="count">3</span></a>
+                    <a class="nav-item" href="#"><i class="ti ti-currency-dollar"></i> Finances</a>
+                    <a class="nav-item" href="#"><i class="ti ti-spy"></i> Intelligence</a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Good Morning, Dave! ☀️</div>
+                    <div class="page-subtitle">Wednesday, December 18, 2024 • 47 days until Primary</div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button style="background: var(--ai-gradient); color: #fff; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <i class="ti ti-sparkles"></i> AI Daily Briefing
+                    </button>
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Raised</div>
+                    <div class="stat-value" style="color: var(--success);">$247,850</div>
+                    <div class="stat-change positive">↑ $12,300 this week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Donors</div>
+                    <div class="stat-value">847</div>
+                    <div class="stat-change positive">↑ 23 new this week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Volunteers</div>
+                    <div class="stat-value">156</div>
+                    <div class="stat-change positive">↑ 8 new this week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Events</div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-change">Next: Holiday Gala (Dec 21)</div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card ai-advisor-card">
+                        <div class="card-header">
+                            <i class="ti ti-sparkles" style="color: #a78bfa;"></i>
+                            AI Campaign Advisor
+                            <span style="margin-left: auto; background: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 500;">Personalized for Dave</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="ai-section today">
+                                <div class="ai-section-title">
+                                    <i class="ti ti-flame"></i> DO TODAY (Critical)
+                                </div>
+                                <div class="ai-task">
+                                    <div class="ai-task-check" onclick="this.classList.toggle('done')"></div>
+                                    <div class="ai-task-text"><strong>Call James Wilson</strong> - He donated $2,500 this morning. Thank him and ask about hosting Q1 fundraiser.</div>
+                                    <button class="ai-task-action">Call Now</button>
+                                </div>
+                                <div class="ai-task">
+                                    <div class="ai-task-check" onclick="this.classList.toggle('done')"></div>
+                                    <div class="ai-task-text"><strong>Approve year-end email</strong> - AI drafted "Final 48 Hours" campaign. Expected: $8,200-$12,400.</div>
+                                    <button class="ai-task-action">Review</button>
+                                </div>
+                                <div class="ai-task">
+                                    <div class="ai-task-check" onclick="this.classList.toggle('done')"></div>
+                                    <div class="ai-task-text"><strong>WRAL Interview prep</strong> - 2pm today. AI prepared talking points on lottery audit findings.</div>
+                                    <button class="ai-task-action">View Prep</button>
+                                </div>
+                            </div>
+                            
+                            <div class="ai-section week">
+                                <div class="ai-section-title">
+                                    <i class="ti ti-calendar-week"></i> DO THIS WEEK
+                                </div>
+                                <div class="ai-task">
+                                    <div class="ai-task-check" onclick="this.classList.toggle('done')"></div>
+                                    <div class="ai-task-text"><strong>Call 23 lapsed donors</strong> - A/B graded donors who haven't given in 90+ days. AI has personalized scripts ready.</div>
+                                    <button class="ai-task-action">View List</button>
+                                </div>
+                                <div class="ai-task">
+                                    <div class="ai-task-check" onclick="this.classList.toggle('done')"></div>
+                                    <div class="ai-task-text"><strong>Holiday Gala final prep</strong> - 127 RSVPs confirmed. Review seating chart and VIP list.</div>
+                                    <button class="ai-task-action">View Details</button>
+                                </div>
+                            </div>
+                            
+                            <div class="ai-section month">
+                                <div class="ai-section-title">
+                                    <i class="ti ti-calendar-month"></i> DO THIS MONTH
+                                </div>
+                                <div class="ai-task">
+                                    <div class="ai-task-check" onclick="this.classList.toggle('done')"></div>
+                                    <div class="ai-task-text"><strong>FEC Q4 deadline (Dec 31)</strong> - All donations processed. Report 94% ready.</div>
+                                    <button class="ai-task-action">Review</button>
+                                </div>
+                                <div class="ai-task">
+                                    <div class="ai-task-check" onclick="this.classList.toggle('done')"></div>
+                                    <div class="ai-task-text"><strong>Schedule Q1 house parties</strong> - 5 hosts confirmed, need 3 more. Target: Winston-Salem, Greensboro, Charlotte.</div>
+                                    <button class="ai-task-action">View Hosts</button>
+                                </div>
+                            </div>
+                            
+                            <div class="ai-section longterm">
+                                <div class="ai-section-title">
+                                    <i class="ti ti-target"></i> LONG-TERM STRATEGY
+                                </div>
+                                <div class="ai-task">
+                                    <div class="ai-task-check" onclick="this.classList.toggle('done')"></div>
+                                    <div class="ai-task-text"><strong>Major donor cultivation</strong> - 12 prospects with $10K+ capacity identified. Schedule personal meetings in January.</div>
+                                    <button class="ai-task-action">View Prospects</button>
+                                </div>
+                                <div class="ai-task">
+                                    <div class="ai-task-check" onclick="this.classList.toggle('done')"></div>
+                                    <div class="ai-task-text"><strong>Volunteer recruitment drive</strong> - Need 200 volunteers by primary. Currently at 156. AI outreach campaign ready.</div>
+                                    <button class="ai-task-action">Launch</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-news"></i> Dave Boliek in the News Today
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <div class="news-item">
+                                <div class="news-icon positive"><i class="ti ti-check"></i></div>
+                                <div class="news-content">
+                                    <div class="news-title">State Auditor Boliek's lottery audit uncovers $2.3M in irregularities</div>
+                                    <div class="news-source">WLOS Asheville • 6 hours ago</div>
+                                </div>
+                                <span class="news-badge positive">Positive Coverage</span>
+                            </div>
+                            <div class="news-item">
+                                <div class="news-icon neutral"><i class="ti ti-file-text"></i></div>
+                                <div class="news-content">
+                                    <div class="news-title">NC maintains AAA bond rating following Auditor's fiscal review</div>
+                                    <div class="news-source">Charlotte Observer • 12 hours ago</div>
+                                </div>
+                                <span class="news-badge neutral">Official Release</span>
+                            </div>
+                            <div class="news-item">
+                                <div class="news-icon interview"><i class="ti ti-microphone"></i></div>
+                                <div class="news-content">
+                                    <div class="news-title">Auditor discusses Hurricane Helene accountability measures</div>
+                                    <div class="news-source">WRAL • Yesterday</div>
+                                </div>
+                                <span class="news-badge interview">Interview</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-activity"></i> Live Activity Feed
+                        </div>
+                        <div class="card-body">
+                            <div class="activity-item ai">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" class="activity-photo" alt="">
+                                <div class="activity-content">
+                                    <div class="activity-title">🤖 AI sent thank you to James Wilson</div>
+                                    <div class="activity-desc">Automated personalized email sent after $2,500 donation. Open rate prediction: 94%</div>
+                                    <div class="activity-time">2 hours ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item donor">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" class="activity-photo" alt="">
+                                <div class="activity-content">
+                                    <div class="activity-title">James Wilson donated $2,500</div>
+                                    <div class="activity-desc">Via WinRed • Year-End Push campaign • Lifetime: $47,250</div>
+                                    <div class="activity-time">3 hours ago</div>
+                                    <div class="activity-actions">
+                                        <button class="activity-btn primary">Call</button>
+                                        <button class="activity-btn secondary">View Profile</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item volunteer">
+                                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face" class="activity-photo" alt="">
+                                <div class="activity-content">
+                                    <div class="activity-title">Sarah Mitchell completed 42 calls</div>
+                                    <div class="activity-desc">Phone banking shift • 8 pledges secured • $1,250 committed</div>
+                                    <div class="activity-time">4 hours ago</div>
+                                    <div class="activity-actions">
+                                        <button class="activity-btn primary">Thank</button>
+                                        <button class="activity-btn secondary">View Profile</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item ai">
+                                <div class="activity-photo" style="background: var(--ai-gradient); display: flex; align-items: center; justify-content: center;">
+                                    <i class="ti ti-sparkles" style="color: #fff; font-size: 1.25rem;"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">🤖 AI discovered new lead: Robert Thompson</div>
+                                    <div class="activity-desc">$50K+ capacity • Connected to James Wilson (94% relationship) • Never contacted</div>
+                                    <div class="activity-time">5 hours ago</div>
+                                    <div class="activity-actions">
+                                        <button class="activity-btn primary">Request Intro</button>
+                                        <button class="activity-btn secondary">View Profile</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card eod-card">
+                        <div class="card-header">
+                            <i class="ti ti-moon"></i> End of Day Report
+                        </div>
+                        <div class="card-body">
+                            <div class="eod-message-box">
+                                <div class="eod-message-label">
+                                    <i class="ti ti-heart" style="color: #ec4899;"></i>
+                                    <strong>Message from Sarah</strong> (wife)
+                                </div>
+                                <textarea class="eod-message-input" rows="3" placeholder="Type a personal message to include in tonight's report...">Great job on the WLOS interview today! The kids are proud of you. See you for dinner at 7. ❤️</textarea>
+                            </div>
+                            
+                            <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 12px;">
+                                <strong>Today's Summary:</strong>
+                                <ul style="margin: 8px 0; padding-left: 20px;">
+                                    <li>$4,750 raised (3 donations)</li>
+                                    <li>42 calls completed by volunteers</li>
+                                    <li>2 media appearances</li>
+                                    <li>1 new A++ donor identified</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="eod-actions">
+                                <button class="eod-btn email"><i class="ti ti-mail"></i> Send Email</button>
+                                <button class="eod-btn text"><i class="ti ti-message"></i> Send Text</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-robot"></i> Campaign Manager AI
+                            <span style="margin-left: auto; background: var(--success); color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">ACTIVE</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="automation-status active">
+                                <div class="automation-dot"></div>
+                                <div class="automation-info">
+                                    <div class="automation-title">Auto Thank-You Emails</div>
+                                    <div class="automation-desc">Sent 3 today • 100% open rate</div>
+                                </div>
+                            </div>
+                            <div class="automation-status active">
+                                <div class="automation-dot"></div>
+                                <div class="automation-info">
+                                    <div class="automation-title">Donor Engagement Tracking</div>
+                                    <div class="automation-desc">Monitoring 847 donors • 23 at-risk flagged</div>
+                                </div>
+                            </div>
+                            <div class="automation-status active">
+                                <div class="automation-dot"></div>
+                                <div class="automation-info">
+                                    <div class="automation-title">Auto-Nudge Sequences</div>
+                                    <div class="automation-desc">45 donors in 7-day re-engagement</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-alert-circle"></i> Quick Alert Templates
+                        </div>
+                        <div class="card-body">
+                            <div class="alert-template emergency" onclick="sendAlert('emergency')">
+                                <div class="alert-title" style="color: var(--danger);">🚨 EMERGENCY</div>
+                                <div class="alert-desc">Crisis response needed immediately</div>
+                            </div>
+                            <div class="alert-template family" onclick="sendAlert('family')">
+                                <div class="alert-title" style="color: #ec4899;">💝 PERSONAL/FAMILY</div>
+                                <div class="alert-desc">Family milestone or personal message</div>
+                            </div>
+                            <div class="alert-template act-now" onclick="sendAlert('act-now')">
+                                <div class="alert-title" style="color: var(--warning);">⚡ ACT NOW</div>
+                                <div class="alert-desc">Time-sensitive opportunity</div>
+                            </div>
+                            <div class="alert-template money" onclick="sendAlert('money')">
+                                <div class="alert-title" style="color: var(--success);">💰 MONEY</div>
+                                <div class="alert-desc">Donation or fundraising update</div>
+                            </div>
+                            <div class="alert-template news" onclick="sendAlert('news')">
+                                <div class="alert-title" style="color: var(--info);">📰 NEWS</div>
+                                <div class="alert-desc">Media coverage or press update</div>
+                            </div>
+                            <div class="alert-template fyi" onclick="sendAlert('fyi')">
+                                <div class="alert-title" style="color: #64748b;">ℹ️ FYI</div>
+                                <div class="alert-desc">General information, no action needed</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="ti ti-users"></i> Other Candidates
+                            <span style="margin-left: auto; font-size: 0.75rem; color: #64748b;">Click AI for guidance</span>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <div class="candidate-list-item">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" class="candidate-list-photo" alt="">
+                                <div class="candidate-list-info">
+                                    <div class="candidate-list-name">Ted Budd</div>
+                                    <div class="candidate-list-office">US Senate</div>
+                                </div>
+                                <button class="candidate-ai-btn" onclick="showCandidateAI('Ted Budd')">
+                                    <i class="ti ti-sparkles"></i> AI
+                                </button>
+                            </div>
+                            <div class="candidate-list-item">
+                                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&crop=face" class="candidate-list-photo" alt="">
+                                <div class="candidate-list-info">
+                                    <div class="candidate-list-name">Virginia Foxx</div>
+                                    <div class="candidate-list-office">US House NC-05</div>
+                                </div>
+                                <button class="candidate-ai-btn" onclick="showCandidateAI('Virginia Foxx')">
+                                    <i class="ti ti-sparkles"></i> AI
+                                </button>
+                            </div>
+                            <div class="candidate-list-item">
+                                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop&crop=face" class="candidate-list-photo" alt="">
+                                <div class="candidate-list-info">
+                                    <div class="candidate-list-name">Mark Robinson</div>
+                                    <div class="candidate-list-office">Governor</div>
+                                </div>
+                                <button class="candidate-ai-btn" onclick="showCandidateAI('Mark Robinson')">
+                                    <i class="ti ti-sparkles"></i> AI
+                                </button>
+                            </div>
+                            <div class="candidate-list-item">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" class="candidate-list-photo" alt="">
+                                <div class="candidate-list-info">
+                                    <div class="candidate-list-name">Dan Bishop</div>
+                                    <div class="candidate-list-office">Attorney General</div>
+                                </div>
+                                <button class="candidate-ai-btn" onclick="showCandidateAI('Dan Bishop')">
+                                    <i class="ti ti-sparkles"></i> AI
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function sendAlert(type) {
+            const messages = {
+                'emergency': '🚨 EMERGENCY ALERT - Action required immediately!',
+                'family': '💝 Personal message from Sarah included in your EOD report',
+                'act-now': '⚡ Time-sensitive opportunity - Review within 1 hour',
+                'money': '💰 New donation received! Check your dashboard.',
+                'news': '📰 New media coverage detected. AI analysis ready.',
+                'fyi': 'ℹ️ FYI notification sent to team.'
+            };
+            alert(messages[type]);
+        }
+        
+        function showCandidateAI(name) {
+            alert('🤖 AI Guidance for ' + name + '\n\n' +
+                '• 23 shared donors between you and ' + name + '\n' +
+                '• 5 donors gave to ' + name + ' but not you (opportunity)\n' +
+                '• Best joint event type: Business roundtable\n' +
+                '• Recommended ask: $1,000-$2,500 range\n\n' +
+                'Click "View Details" for full analysis and contact list.');
+        }
+    </script>
+</body>
+</html>

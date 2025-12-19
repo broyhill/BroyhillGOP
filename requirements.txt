@@ -1,0 +1,21 @@
+# BroyhillGOP Platform - Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Database
+psycopg2-binary>=2.9.9
+
+# AI
+anthropic>=0.18.0
+
+# HTTP
+requests>=2.31.0
+
+# Data processing
+pandas>=2.0.0
+
+# Environment
+python-dotenv>=1.0.0
+
+# Optional: Advanced features
+# numpy>=1.24.0
+# scikit-learn>=1.3.0

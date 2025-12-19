@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Opposition Profile: John Smith | BroyhillGOP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
+    <style>
+        :root {
+            --gop-red: #e31837;
+            --gop-blue: #002868;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --ai-purple: #8b5cf6;
+        }
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f1f5f9; }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 8px 0;
+            margin-bottom: 16px;
+        }
+        .back-btn:hover { color: var(--gop-red); }
+        
+        /* OPPONENT HEADER - HOSTILE STYLING */
+        .opponent-header {
+            background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            color: #fff;
+            border: 3px solid #dc2626;
+        }
+        .opponent-header-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .opponent-photo-container { position: relative; }
+        .opponent-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 16px;
+            border: 4px solid rgba(255,255,255,0.2);
+            object-fit: cover;
+            background: linear-gradient(135deg, #475569, #334155);
+            filter: grayscale(30%);
+        }
+        .threat-badge {
+            position: absolute;
+            bottom: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 6px 12px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .threat-badge.high { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+        .threat-badge.medium { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .threat-badge.low { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        
+        .opponent-info { flex: 1; min-width: 250px; }
+        .opponent-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #fca5a5;
+            margin-bottom: 4px;
+        }
+        .opponent-name { font-size: 1.75rem; font-weight: 700; margin-bottom: 4px; }
+        .opponent-race { font-size: 1rem; color: #fca5a5; margin-bottom: 8px; }
+        .opponent-party {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #fca5a5;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+        
+        .opponent-stats {
+            display: flex;
+            gap: 32px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            flex-wrap: wrap;
+        }
+        .opponent-stat-label { font-size: 0.7rem; color: #fca5a5; text-transform: uppercase; }
+        .opponent-stat-value { font-size: 1.4rem; font-weight: 700; }
+        .opponent-stat-value.money { color: #86efac; }
+        
+        /* CARDS */
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 14px 18px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-body { padding: 18px; }
+        
+        /* DANGER CARD STYLING */
+        .card.danger-card .card-header {
+            background: linear-gradient(135deg, #fef2f2, #fff);
+            border-bottom: 2px solid #fecaca;
+            color: #991b1b;
+        }
+        
+        /* STAT ROWS */
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .stat-row:last-child { border-bottom: none; }
+        .stat-label { font-size: 0.85rem; color: #64748b; }
+        .stat-value { font-size: 1rem; font-weight: 700; color: #1e293b; }
+        .stat-value.money { color: var(--success); }
+        .stat-value.danger { color: var(--danger); }
+        .stat-value.warning { color: var(--warning); }
+        .stat-compare {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+        .stat-compare.behind { background: #dcfce7; color: #166534; }
+        .stat-compare.ahead { background: #fef2f2; color: #991b1b; }
+        
+        /* VULNERABILITY ITEMS */
+        .vulnerability-item {
+            padding: 12px 14px;
+            background: #fef2f2;
+            border-left: 4px solid var(--danger);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 10px;
+        }
+        .vulnerability-item:last-child { margin-bottom: 0; }
+        .vulnerability-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #991b1b;
+            margin-bottom: 4px;
+        }
+        .vulnerability-desc {
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+        
+        /* NEWS ITEMS */
+        .news-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .news-item:hover { background: #f8fafc; margin: 0 -18px; padding: 12px 18px; }
+        .news-item:last-child { border-bottom: none; }
+        .news-date {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            min-width: 50px;
+            padding-top: 2px;
+        }
+        .news-content { flex: 1; }
+        .news-headline {
+            font-size: 0.85rem;
+            color: #1e293b;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .news-source {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+        .news-impact {
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .news-impact.helps-us { background: #dcfce7; color: #166534; }
+        .news-impact.hurts-us { background: #fef2f2; color: #991b1b; }
+        .news-impact.neutral { background: #f1f5f9; color: #64748b; }
+        .news-arrow { color: #94a3b8; padding-top: 2px; }
+        
+        .see-more-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+            color: var(--info);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            padding-top: 12px;
+            border-top: 1px solid #f1f5f9;
+            margin-top: 8px;
+        }
+        .see-more-link:hover { color: #1d4ed8; }
+        
+        /* MESSAGING POINTS */
+        .messaging-point {
+            padding: 10px 14px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #334155;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .messaging-point:last-child { margin-bottom: 0; }
+        .messaging-bullet {
+            color: var(--danger);
+            font-weight: 700;
+        }
+        
+        /* ATTACK LINES */
+        .attack-line {
+            padding: 12px 14px;
+            background: linear-gradient(135deg, #fef2f2, #fff);
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            color: #991b1b;
+            font-style: italic;
+        }
+        .attack-line:last-child { margin-bottom: 0; }
+        .attack-label {
+            font-size: 0.7rem;
+            color: #b91c1c;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            font-style: normal;
+        }
+        
+        /* DIGITAL STATS */
+        .digital-stat {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .digital-stat:last-child { border-bottom: none; }
+        .digital-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        .digital-icon.facebook { background: #dbeafe; color: #1d4ed8; }
+        .digital-icon.twitter { background: #f1f5f9; color: #1e293b; }
+        .digital-icon.web { background: #dcfce7; color: #166534; }
+        .digital-icon.ads { background: #fef3c7; color: #92400e; }
+        .digital-info { flex: 1; }
+        .digital-label { font-size: 0.8rem; color: #64748b; }
+        .digital-value { font-size: 0.95rem; font-weight: 700; color: #1e293b; }
+        .digital-compare {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .digital-compare.winning { background: #dcfce7; color: #166534; }
+        .digital-compare.losing { background: #fef2f2; color: #991b1b; }
+        
+        /* AI INSIGHT */
+        .ai-insight {
+            background: linear-gradient(135deg, #f5f3ff, #fff);
+            border: 2px solid var(--ai-purple);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .ai-insight-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--ai-purple);
+            margin-bottom: 10px;
+        }
+        .ai-insight-text {
+            font-size: 0.85rem;
+            color: #334155;
+            line-height: 1.6;
+        }
+        
+        /* DONOR OVERLAP WARNING */
+        .donor-overlap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: linear-gradient(135deg, #fef3c7, #fff);
+            border: 2px solid var(--warning);
+            border-radius: 12px;
+            margin-top: 12px;
+        }
+        .donor-overlap-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--warning);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .donor-overlap-info { flex: 1; }
+        .donor-overlap-title { font-size: 0.9rem; font-weight: 700; color: #92400e; }
+        .donor-overlap-desc { font-size: 0.8rem; color: #a16207; }
+        .donor-overlap-btn {
+            background: var(--warning);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* COUNTER ATTACK BUTTON */
+        .counter-btn {
+            background: var(--ai-purple);
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .counter-btn:hover {
+            background: #7c3aed;
+        }
+        
+        /* RECENT DONATION */
+        .recent-donation {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .recent-donation:last-child { margin-bottom: 0; }
+        .donation-amount {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--danger);
+            min-width: 70px;
+        }
+        .donation-info { flex: 1; }
+        .donation-name { font-size: 0.85rem; font-weight: 600; color: #1e293b; }
+        .donation-detail { font-size: 0.7rem; color: #64748b; }
+        .donation-date { font-size: 0.7rem; color: #94a3b8; }
+        
+        @media (max-width: 768px) {
+            .opponent-header-top { flex-direction: column; align-items: center; text-align: center; }
+            .opponent-stats { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4" style="max-width: 1400px;">
+        <a href="DAVE_BOLIEK_COMMAND_CENTER.html" class="back-btn">
+            <i class="ti ti-arrow-left"></i> Back to Command Center
+        </a>
+        
+        <!-- OPPONENT HEADER -->
+        <div class="opponent-header">
+            <div class="opponent-header-top">
+                <div class="opponent-photo-container">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face" class="opponent-photo" alt="John Smith">
+                    <div class="threat-badge high">🔴 High Threat</div>
+                </div>
+                <div class="opponent-info">
+                    <div class="opponent-label">Opposition Profile</div>
+                    <div class="opponent-name">John Smith</div>
+                    <div class="opponent-race">Candidate for NC State Auditor</div>
+                    <div class="opponent-party">
+                        <i class="ti ti-flag"></i> Democrat
+                    </div>
+                </div>
+                
+                <div style="margin-left: auto;">
+                    <button class="btn" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 8px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                        <i class="ti ti-search"></i> Opposition Intel
+                    </button>
+                    <div style="font-size: 0.65rem; color: #fca5a5; margin-top: 4px; text-align: center;">Updated Daily</div>
+                </div>
+            </div>
+            
+            <div class="opponent-stats">
+                <div>
+                    <div class="opponent-stat-label">Total Raised</div>
+                    <div class="opponent-stat-value money">$189,400</div>
+                </div>
+                <div>
+                    <div class="opponent-stat-label">Cash on Hand</div>
+                    <div class="opponent-stat-value">$142,300</div>
+                </div>
+                <div>
+                    <div class="opponent-stat-label">Burn Rate</div>
+                    <div class="opponent-stat-value" style="color: #fca5a5;">$12K/mo</div>
+                </div>
+                <div>
+                    <div class="opponent-stat-label">vs. Dave Boliek</div>
+                    <div class="opponent-stat-value" style="color: #86efac;">You lead by $58K</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- LEFT COLUMN -->
+            <div class="col-lg-4">
+                <!-- MONEY CARD -->
+                <div class="card danger-card">
+                    <div class="card-header">
+                        <i class="ti ti-currency-dollar"></i> Fundraising Intel
+                    </div>
+                    <div class="card-body">
+                        <div class="stat-row">
+                            <span class="stat-label">Total Raised</span>
+                            <span class="stat-value">$189,400 <span class="stat-compare behind">You: $247,850</span></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Cash on Hand</span>
+                            <span class="stat-value">$142,300 <span class="stat-compare behind">You: $198,200</span></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Avg. Donation</span>
+                            <span class="stat-value">$87 <span class="stat-compare ahead">You: $156</span></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Donor Count</span>
+                            <span class="stat-value">2,178 <span class="stat-compare ahead">You: 847</span></span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Monthly Burn</span>
+                            <span class="stat-value warning">$12,400</span>
+                        </div>
+                        
+                        <div style="margin-top: 16px;">
+                            <div style="font-size: 0.8rem; font-weight: 700; color: #64748b; margin-bottom: 10px;">Recent Large Donations</div>
+                            <div class="recent-donation">
+                                <div class="donation-amount">$5,000</div>
+                                <div class="donation-info">
+                                    <div class="donation-name">NC Democratic Party</div>
+                                    <div class="donation-detail">PAC Transfer</div>
+                                </div>
+                                <div class="donation-date">Dec 15</div>
+                            </div>
+                            <div class="recent-donation">
+                                <div class="donation-amount">$2,500</div>
+                                <div class="donation-info">
+                                    <div class="donation-name">AFSCME Local 2008</div>
+                                    <div class="donation-detail">Union PAC</div>
+                                </div>
+                                <div class="donation-date">Dec 12</div>
+                            </div>
+                            <div class="recent-donation">
+                                <div class="donation-amount">$1,000</div>
+                                <div class="donation-info">
+                                    <div class="donation-name">Martha Reynolds</div>
+                                    <div class="donation-detail">Attorney, Raleigh</div>
+                                </div>
+                                <div class="donation-date">Dec 10</div>
+                            </div>
+                        </div>
+                        
+                        <div class="donor-overlap">
+                            <div class="donor-overlap-icon">
+                                <i class="ti ti-alert-triangle"></i>
+                            </div>
+                            <div class="donor-overlap-info">
+                                <div class="donor-overlap-title">12 Donors Gave to BOTH</div>
+                                <div class="donor-overlap-desc">These donors are hedging bets. Lock them down.</div>
+                            </div>
+                            <button class="donor-overlap-btn">View List</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- DIGITAL INTEL CARD -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="ti ti-devices"></i> Digital Intel
+                    </div>
+                    <div class="card-body">
+                        <div class="digital-stat">
+                            <div class="digital-icon facebook"><i class="ti ti-brand-facebook"></i></div>
+                            <div class="digital-info">
+                                <div class="digital-label">Facebook Followers</div>
+                                <div class="digital-value">8,234</div>
+                            </div>
+                            <span class="digital-compare winning">You: 12,450</span>
+                        </div>
+                        <div class="digital-stat">
+                            <div class="digital-icon twitter"><i class="ti ti-brand-x"></i></div>
+                            <div class="digital-info">
+                                <div class="digital-label">X (Twitter) Followers</div>
+                                <div class="digital-value">3,891</div>
+                            </div>
+                            <span class="digital-compare losing">You: 2,100</span>
+                        </div>
+                        <div class="digital-stat">
+                            <div class="digital-icon web"><i class="ti ti-world"></i></div>
+                            <div class="digital-info">
+                                <div class="digital-label">Website Traffic (est.)</div>
+                                <div class="digital-value">~2,400/mo</div>
+                            </div>
+                            <span class="digital-compare winning">You: ~3,800/mo</span>
+                        </div>
+                        <div class="digital-stat">
+                            <div class="digital-icon ads"><i class="ti ti-ad"></i></div>
+                            <div class="digital-info">
+                                <div class="digital-label">Ad Spend (Dec)</div>
+                                <div class="digital-value">$4,200</div>
+                            </div>
+                            <span class="digital-compare losing">You: $2,800</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- MIDDLE COLUMN -->
+            <div class="col-lg-5">
+                <!-- NEWS CARD -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="ti ti-news"></i> John Smith in the News
+                    </div>
+                    <div class="card-body">
+                        <div class="news-item" onclick="window.location.href='OPPOSITION_NEWS_INTEL.html'">
+                            <div class="news-date">Dec 18</div>
+                            <div class="news-content">
+                                <div class="news-headline">Smith campaign under fire for missed FEC filings</div>
+                                <div class="news-source">WRAL News</div>
+                            </div>
+                            <span class="news-impact helps-us">Helps Us</span>
+                            <i class="ti ti-chevron-right news-arrow"></i>
+                        </div>
+                        
+                        <div class="news-item" onclick="window.location.href='OPPOSITION_NEWS_INTEL.html'">
+                            <div class="news-date">Dec 16</div>
+                            <div class="news-content">
+                                <div class="news-headline">Audit questions Smith's "accountability" claims</div>
+                                <div class="news-source">Charlotte Observer</div>
+                            </div>
+                            <span class="news-impact helps-us">Helps Us</span>
+                            <i class="ti ti-chevron-right news-arrow"></i>
+                        </div>
+                        
+                        <div class="news-item" onclick="window.location.href='OPPOSITION_NEWS_INTEL.html'">
+                            <div class="news-date">Dec 14</div>
+                            <div class="news-content">
+                                <div class="news-headline">Smith skips Chamber of Commerce forum</div>
+                                <div class="news-source">Winston-Salem Journal</div>
+                            </div>
+                            <span class="news-impact neutral">Neutral</span>
+                            <i class="ti ti-chevron-right news-arrow"></i>
+                        </div>
+                        
+                        <div class="news-item" onclick="window.location.href='OPPOSITION_NEWS_INTEL.html'">
+                            <div class="news-date">Dec 12</div>
+                            <div class="news-content">
+                                <div class="news-headline">Union PACs rally behind Smith candidacy</div>
+                                <div class="news-source">NC Political Report</div>
+                            </div>
+                            <span class="news-impact hurts-us">Hurts Us</span>
+                            <i class="ti ti-chevron-right news-arrow"></i>
+                        </div>
+                        
+                        <div class="news-item" onclick="window.location.href='OPPOSITION_NEWS_INTEL.html'">
+                            <div class="news-date">Dec 10</div>
+                            <div class="news-content">
+                                <div class="news-headline">Smith fundraiser draws 50 in Durham</div>
+                                <div class="news-source">Durham Herald-Sun</div>
+                            </div>
+                            <span class="news-impact neutral">Neutral</span>
+                            <i class="ti ti-chevron-right news-arrow"></i>
+                        </div>
+                        
+                        <a href="OPPOSITION_NEWS_INTEL.html" class="see-more-link">
+                            See All News & AI Responses <i class="ti ti-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- THEIR MESSAGING CARD -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="ti ti-speakerphone"></i> Their Messaging
+                    </div>
+                    <div class="card-body">
+                        <div style="font-size: 0.8rem; font-weight: 700; color: #64748b; margin-bottom: 10px;">Key Platform Points</div>
+                        <div class="messaging-point">
+                            <span class="messaging-bullet">•</span>
+                            <span>"Transparency in government spending"</span>
+                        </div>
+                        <div class="messaging-point">
+                            <span class="messaging-bullet">•</span>
+                            <span>"Hold politicians accountable regardless of party"</span>
+                        </div>
+                        <div class="messaging-point">
+                            <span class="messaging-bullet">•</span>
+                            <span>"Modernize state audit processes with technology"</span>
+                        </div>
+                        <div class="messaging-point">
+                            <span class="messaging-bullet">•</span>
+                            <span>"Protect taxpayer dollars from waste and fraud"</span>
+                        </div>
+                        
+                        <div style="font-size: 0.8rem; font-weight: 700; color: #991b1b; margin: 20px 0 10px;">Attack Lines Used Against You</div>
+                        <div class="attack-line">
+                            <div class="attack-label">On Experience</div>
+                            "Boliek is a politician, not an auditor. I have 15 years of CPA experience."
+                        </div>
+                        <div class="attack-line">
+                            <div class="attack-label">On Partisanship</div>
+                            "Boliek will only audit Democrats. I'll audit everyone equally."
+                        </div>
+                        
+                        <button class="counter-btn" onclick="showCounterAttack()">
+                            <i class="ti ti-sparkles"></i> AI Counter-Attack Responses
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- RIGHT COLUMN -->
+            <div class="col-lg-3">
+                <!-- VULNERABILITIES CARD -->
+                <div class="card danger-card">
+                    <div class="card-header">
+                        <i class="ti ti-target"></i> Vulnerabilities
+                    </div>
+                    <div class="card-body">
+                        <div class="vulnerability-item">
+                            <div class="vulnerability-title">Missed FEC Filings</div>
+                            <div class="vulnerability-desc">Late Q3 report flagged by FEC. $2,400 fine pending. Shows poor financial management.</div>
+                        </div>
+                        <div class="vulnerability-item">
+                            <div class="vulnerability-title">No Government Experience</div>
+                            <div class="vulnerability-desc">Never held public office. CPA experience is private sector only - no government audit background.</div>
+                        </div>
+                        <div class="vulnerability-item">
+                            <div class="vulnerability-title">Out-of-State Donors</div>
+                            <div class="vulnerability-desc">34% of donations from outside NC. Can paint as outsider-funded.</div>
+                        </div>
+                        <div class="vulnerability-item">
+                            <div class="vulnerability-title">Union PAC Money</div>
+                            <div class="vulnerability-desc">Heavy union backing ($18K+). May not play well in suburban/rural NC.</div>
+                        </div>
+                        
+                        <div class="ai-insight">
+                            <div class="ai-insight-header">
+                                <i class="ti ti-sparkles"></i> AI Analysis
+                            </div>
+                            <div class="ai-insight-text">
+                                <strong>Best angle of attack:</strong> The FEC filing issue. Frame it as: "How can someone who can't manage their own campaign finances be trusted to audit the state's books?"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI STRATEGY CARD -->
+                <div class="card">
+                    <div class="card-header" style="background: linear-gradient(135deg, #f5f3ff, #fff); border-bottom: 2px solid #c4b5fd;">
+                        <i class="ti ti-sparkles" style="color: var(--ai-purple);"></i> 
+                        <span style="color: var(--ai-purple);">AI Recommended Strategy</span>
+                    </div>
+                    <div class="card-body">
+                        <div style="font-size: 0.85rem; color: #334155; line-height: 1.7;">
+                            <p><strong>1. Exploit FEC weakness:</strong> Push earned media on filing issues. Local news loves "accountability candidate can't file paperwork" angle.</p>
+                            
+                            <p><strong>2. Out-fundraise visibly:</strong> You're ahead by $58K. Publicize momentum to demoralize his donors.</p>
+                            
+                            <p><strong>3. Lock down overlap donors:</strong> 12 donors gave to both. Personal calls from Dave this week to secure loyalty.</p>
+                            
+                            <p><strong>4. Counter CPA claim:</strong> "Private audits aren't government audits. I've actually DONE this job."</p>
+                        </div>
+                        
+                        <button class="counter-btn" style="width: 100%; justify-content: center; margin-top: 16px;">
+                            <i class="ti ti-sparkles"></i> Generate Full Battle Plan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showCounterAttack() {
+            alert('🤖 AI COUNTER-ATTACK RESPONSES\n\n' +
+                '━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
+                'THEIR ATTACK: "Boliek is a politician, not an auditor."\n\n' +
+                'YOUR RESPONSE:\n' +
+                '"I\'ve spent 20 years IN government ensuring accountability. My opponent has spent 15 years auditing private businesses - he\'s never touched a government ledger. There\'s a reason the State Auditor is an elected office, not an appointed one. Voters deserve someone who understands how Raleigh actually works."\n\n' +
+                '━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
+                'THEIR ATTACK: "Boliek will only audit Democrats."\n\n' +
+                'YOUR RESPONSE:\n' +
+                '"My record speaks for itself. I\'ve called out waste in both parties. Meanwhile, my opponent just received $18,000 from union PACs. Who\'s really beholden to special interests here?"');
+        }
+    </script>
+</body>
+</html>

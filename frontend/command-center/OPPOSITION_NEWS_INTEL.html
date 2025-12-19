@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Opposition News Intel: John Smith | BroyhillGOP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
+    <style>
+        :root {
+            --gop-red: #e31837;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --ai-purple: #8b5cf6;
+        }
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f1f5f9; }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 8px 0;
+            margin-bottom: 16px;
+        }
+        .back-btn:hover { color: var(--gop-red); }
+        
+        .page-header {
+            background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            color: #fff;
+            border: 3px solid #dc2626;
+        }
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .page-subtitle {
+            font-size: 0.9rem;
+            color: #fca5a5;
+        }
+        .opponent-badge {
+            background: rgba(255,255,255,0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .stats-bar {
+            display: flex;
+            gap: 24px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        .stat-value.positive { color: #86efac; }
+        .stat-value.negative { color: #fca5a5; }
+        .stat-value.neutral { color: #fff; }
+        .stat-label {
+            font-size: 0.7rem;
+            color: #fca5a5;
+            text-transform: uppercase;
+        }
+        
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid #e2e8f0;
+            background: #fff;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+        .filter-btn:hover { border-color: #94a3b8; }
+        .filter-btn.active { border-color: var(--ai-purple); color: var(--ai-purple); background: #f5f3ff; }
+        .filter-btn.helps { border-color: var(--success); color: var(--success); background: #f0fdf4; }
+        .filter-btn.hurts { border-color: var(--danger); color: var(--danger); background: #fef2f2; }
+        
+        .news-table {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        .news-table-header {
+            display: grid;
+            grid-template-columns: 90px 1fr 200px 100px 120px;
+            gap: 16px;
+            padding: 14px 20px;
+            background: #f8fafc;
+            border-bottom: 2px solid #e2e8f0;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .news-row {
+            display: grid;
+            grid-template-columns: 90px 1fr 200px 100px 120px;
+            gap: 16px;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .news-row:hover { background: #f8fafc; }
+        .news-row:last-child { border-bottom: none; }
+        
+        .news-date {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .news-content {}
+        .news-headline {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+        .news-headline:hover { color: var(--info); text-decoration: underline; }
+        .news-description {
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+        .news-source {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+        
+        .ai-opinion {
+            font-size: 0.8rem;
+            color: #334155;
+            line-height: 1.5;
+        }
+        
+        .impact-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .impact-badge.helps { background: #dcfce7; color: #166534; }
+        .impact-badge.hurts { background: #fef2f2; color: #991b1b; }
+        .impact-badge.neutral { background: #f1f5f9; color: #64748b; }
+        
+        .ai-response-btn {
+            background: var(--ai-purple);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .ai-response-btn:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+        }
+        
+        /* AI RESPONSE MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 9998;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active { display: block; }
+        
+        .ai-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            background: #fff;
+            border-radius: 20px;
+            z-index: 9999;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+        .ai-modal.active { display: block; }
+        
+        .ai-modal-header {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            padding: 20px 24px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .ai-modal-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .ai-modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .ai-modal-body {
+            padding: 24px;
+            max-height: calc(80vh - 80px);
+            overflow-y: auto;
+        }
+        
+        .news-context {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .news-context-label {
+            font-size: 0.7rem;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .news-context-headline {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .response-section {
+            margin-bottom: 20px;
+        }
+        .response-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--ai-purple);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .response-text {
+            background: linear-gradient(135deg, #f5f3ff, #fff);
+            border: 2px solid #c4b5fd;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 0.9rem;
+            color: #334155;
+            line-height: 1.7;
+        }
+        .response-text p { margin: 0 0 12px 0; }
+        .response-text p:last-child { margin-bottom: 0; }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .action-btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .action-btn.primary {
+            background: var(--ai-purple);
+            color: #fff;
+            border: none;
+        }
+        .action-btn.secondary {
+            background: #fff;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+        
+        @media (max-width: 992px) {
+            .news-table-header,
+            .news-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .news-table-header {
+                display: none;
+            }
+            .news-row {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4" style="max-width: 1200px;">
+        <a href="OPPOSITION_PROFILE_JOHN_SMITH.html" class="back-btn">
+            <i class="ti ti-arrow-left"></i> Back to John Smith Profile
+        </a>
+        
+        <div class="page-header">
+            <div class="page-title">
+                <i class="ti ti-news"></i>
+                News Intel: John Smith
+                <span class="opponent-badge">Democrat • State Auditor</span>
+            </div>
+            <div class="page-subtitle">All news coverage with AI analysis and counter-responses</div>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value neutral">24</div>
+                    <div class="stat-label">Total Articles</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value positive">9</div>
+                    <div class="stat-label">Help Us</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value negative">6</div>
+                    <div class="stat-label">Hurt Us</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value neutral">9</div>
+                    <div class="stat-label">Neutral</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="filter-bar">
+            <button class="filter-btn active">All News</button>
+            <button class="filter-btn helps">Helps Us (9)</button>
+            <button class="filter-btn hurts">Hurts Us (6)</button>
+            <button class="filter-btn">Neutral (9)</button>
+            <button class="filter-btn">This Week</button>
+            <button class="filter-btn">This Month</button>
+        </div>
+        
+        <div class="news-table">
+            <div class="news-table-header">
+                <div>Date</div>
+                <div>Headline & Description</div>
+                <div>AI Opinion</div>
+                <div>Impact</div>
+                <div>Response</div>
+            </div>
+            
+            <div class="news-row">
+                <div class="news-date">Dec 18, 2024</div>
+                <div class="news-content">
+                    <div class="news-headline" onclick="window.open('#')">Smith campaign under fire for missed FEC filings</div>
+                    <div class="news-description">FEC flagged Smith's campaign for late Q3 report filing. A $2,400 fine is pending. Campaign blames "administrative error."</div>
+                    <div class="news-source">WRAL News</div>
+                </div>
+                <div class="ai-opinion">Major opportunity. An "accountability" candidate who can't file paperwork on time is devastating optics.</div>
+                <div><span class="impact-badge helps"><i class="ti ti-trending-up"></i> Helps Us</span></div>
+                <div><button class="ai-response-btn" onclick="showResponse(1)"><i class="ti ti-sparkles"></i> AI Response</button></div>
+            </div>
+            
+            <div class="news-row">
+                <div class="news-date">Dec 16, 2024</div>
+                <div class="news-content">
+                    <div class="news-headline" onclick="window.open('#')">Audit questions Smith's "accountability" claims</div>
+                    <div class="news-description">Independent review of Smith's CPA firm found 3 client complaints filed with NC Board of CPAs over past 5 years. All resolved, but pattern raises questions.</div>
+                    <div class="news-source">Charlotte Observer</div>
+                </div>
+                <div class="ai-opinion">Useful for contrast. His private sector record isn't spotless either.</div>
+                <div><span class="impact-badge helps"><i class="ti ti-trending-up"></i> Helps Us</span></div>
+                <div><button class="ai-response-btn" onclick="showResponse(2)"><i class="ti ti-sparkles"></i> AI Response</button></div>
+            </div>
+            
+            <div class="news-row">
+                <div class="news-date">Dec 14, 2024</div>
+                <div class="news-content">
+                    <div class="news-headline" onclick="window.open('#')">Smith skips Chamber of Commerce candidate forum</div>
+                    <div class="news-description">Democratic candidate was notably absent from Winston-Salem Chamber forum. Campaign cited "scheduling conflict" but offered no details.</div>
+                    <div class="news-source">Winston-Salem Journal</div>
+                </div>
+                <div class="ai-opinion">Minor opportunity. Shows pattern of avoiding business community engagement.</div>
+                <div><span class="impact-badge neutral"><i class="ti ti-minus"></i> Neutral</span></div>
+                <div><button class="ai-response-btn" onclick="showResponse(3)"><i class="ti ti-sparkles"></i> AI Response</button></div>
+            </div>
+            
+            <div class="news-row">
+                <div class="news-date">Dec 12, 2024</div>
+                <div class="news-content">
+                    <div class="news-headline" onclick="window.open('#')">Union PACs rally behind Smith candidacy</div>
+                    <div class="news-description">AFSCME, SEIU, and NC AFL-CIO announce combined $18,000 in PAC contributions to Smith campaign. Largest union backing in race.</div>
+                    <div class="news-source">NC Political Report</div>
+                </div>
+                <div class="ai-opinion">Dangerous. Gives him resources. But also creates "beholden to special interests" attack angle.</div>
+                <div><span class="impact-badge hurts"><i class="ti ti-trending-down"></i> Hurts Us</span></div>
+                <div><button class="ai-response-btn" onclick="showResponse(4)"><i class="ti ti-sparkles"></i> AI Response</button></div>
+            </div>
+            
+            <div class="news-row">
+                <div class="news-date">Dec 10, 2024</div>
+                <div class="news-content">
+                    <div class="news-headline" onclick="window.open('#')">Smith fundraiser draws 50 in Durham</div>
+                    <div class="news-description">Campaign event at Durham hotel attracted approximately 50 supporters. Featured remarks from state senator and Durham mayor.</div>
+                    <div class="news-source">Durham Herald-Sun</div>
+                </div>
+                <div class="ai-opinion">Low threat. 50 attendees is modest. Shows concentration in liberal stronghold, not statewide appeal.</div>
+                <div><span class="impact-badge neutral"><i class="ti ti-minus"></i> Neutral</span></div>
+                <div><button class="ai-response-btn" onclick="showResponse(5)"><i class="ti ti-sparkles"></i> AI Response</button></div>
+            </div>
+            
+            <div class="news-row">
+                <div class="news-date">Dec 8, 2024</div>
+                <div class="news-content">
+                    <div class="news-headline" onclick="window.open('#')">Smith endorsed by NC Environmental Justice Network</div>
+                    <div class="news-description">Progressive environmental group announces endorsement, citing Smith's "commitment to auditing polluter-friendly state contracts."</div>
+                    <div class="news-source">NC Policy Watch</div>
+                </div>
+                <div class="ai-opinion">Double-edged. Solidifies progressive base but may alienate moderates and business community.</div>
+                <div><span class="impact-badge neutral"><i class="ti ti-minus"></i> Neutral</span></div>
+                <div><button class="ai-response-btn" onclick="showResponse(6)"><i class="ti ti-sparkles"></i> AI Response</button></div>
+            </div>
+            
+            <div class="news-row">
+                <div class="news-date">Dec 5, 2024</div>
+                <div class="news-content">
+                    <div class="news-headline" onclick="window.open('#')">Smith releases detailed education audit proposal</div>
+                    <div class="news-description">Campaign unveils 12-page plan for auditing school construction funds, targeting "waste and corruption" in district spending.</div>
+                    <div class="news-source">News & Observer</div>
+                </div>
+                <div class="ai-opinion">Concerning. Shows policy depth and earned him positive earned media. Education is a winning issue.</div>
+                <div><span class="impact-badge hurts"><i class="ti ti-trending-down"></i> Hurts Us</span></div>
+                <div><button class="ai-response-btn" onclick="showResponse(7)"><i class="ti ti-sparkles"></i> AI Response</button></div>
+            </div>
+            
+            <div class="news-row">
+                <div class="news-date">Dec 2, 2024</div>
+                <div class="news-content">
+                    <div class="news-headline" onclick="window.open('#')">Smith campaign manager departs after 3 months</div>
+                    <div class="news-description">Campaign confirms departure of manager Sarah Chen, citing "personal reasons." Third staff departure in two months.</div>
+                    <div class="news-source">Carolina Journal</div>
+                </div>
+                <div class="ai-opinion">Major opportunity. Staff turnover signals internal problems. "Can't manage a campaign" angle strengthens.</div>
+                <div><span class="impact-badge helps"><i class="ti ti-trending-up"></i> Helps Us</span></div>
+                <div><button class="ai-response-btn" onclick="showResponse(8)"><i class="ti ti-sparkles"></i> AI Response</button></div>
+            </div>
+            
+            <div class="news-row">
+                <div class="news-date">Nov 28, 2024</div>
+                <div class="news-content">
+                    <div class="news-headline" onclick="window.open('#')">Democratic donors increase spending in down-ballot races</div>
+                    <div class="news-description">Statewide analysis shows Democratic donors shifting focus to Auditor and other down-ballot races. Smith among top beneficiaries.</div>
+                    <div class="news-source">WUNC</div>
+                </div>
+                <div class="ai-opinion">Threat signal. Indicates coordinated Dem strategy. Expect increased funding and attention.</div>
+                <div><span class="impact-badge hurts"><i class="ti ti-trending-down"></i> Hurts Us</span></div>
+                <div><button class="ai-response-btn" onclick="showResponse(9)"><i class="ti ti-sparkles"></i> AI Response</button></div>
+            </div>
+            
+            <div class="news-row">
+                <div class="news-date">Nov 25, 2024</div>
+                <div class="news-content">
+                    <div class="news-headline" onclick="window.open('#')">Smith debate performance called "uneven" by analysts</div>
+                    <div class="news-description">Political observers give mixed reviews to Smith's first debate appearance, noting strong opening but weak responses on budget questions.</div>
+                    <div class="news-source">Spectrum News</div>
+                </div>
+                <div class="ai-opinion">Moderate opportunity. Shows weakness on fiscal issues - our strongest ground.</div>
+                <div><span class="impact-badge helps"><i class="ti ti-trending-up"></i> Helps Us</span></div>
+                <div><button class="ai-response-btn" onclick="showResponse(10)"><i class="ti ti-sparkles"></i> AI Response</button></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI RESPONSE MODAL -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+    <div class="ai-modal" id="aiModal">
+        <div class="ai-modal-header">
+            <h3><i class="ti ti-sparkles"></i> AI Counter-Response</h3>
+            <button class="ai-modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+        </div>
+        <div class="ai-modal-body" id="modalBody">
+            <!-- Content injected by JS -->
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const responses = {
+            1: {
+                headline: "Smith campaign under fire for missed FEC filings",
+                talking_point: "How can someone who can't file their own campaign paperwork on time be trusted to audit the state's $30 billion budget? This isn't a minor mistake - the FEC doesn't fine campaigns for nothing. If John Smith can't manage basic compliance in a small campaign operation, imagine the chaos he'd bring to the State Auditor's office.",
+                social_post: "BREAKING: My opponent was just fined by the FEC for missing filing deadlines. 🚨\n\nHe wants to be your State Auditor - the person who holds government accountable for paperwork and compliance.\n\nYou can't make this up. #NCpol #Accountability",
+                press_angle: "Offer comment to WRAL: 'This raises serious questions about Mr. Smith's organizational capabilities. The State Auditor's office processes thousands of compliance reports. North Carolinians deserve someone with a proven track record of meeting deadlines.'"
+            },
+            2: {
+                headline: "Audit questions Smith's 'accountability' claims",
+                talking_point: "Mr. Smith talks a big game about accountability, but his own CPA firm has faced client complaints. I've spent 20 years in public service with a spotless record. The choice is clear: proven integrity vs. questionable judgment.",
+                social_post: "My opponent claims he'll hold government accountable.\n\nBut his own CPA firm has multiple client complaints on file.\n\nI have 20 years of public service with ZERO complaints.\n\nActions speak louder than campaign slogans. #NCpol",
+                press_angle: "If asked, pivot: 'I'll let voters judge his private sector record. What I know is my public record speaks for itself - 20 years of service, zero complaints, real results for North Carolina taxpayers.'"
+            },
+            3: {
+                headline: "Smith skips Chamber of Commerce candidate forum",
+                talking_point: "It's telling that John Smith couldn't find time for the business community. As State Auditor, you work WITH businesses, not around them. I was there. I showed up. That's what leadership looks like.",
+                social_post: "Yesterday I spoke to the Winston-Salem Chamber about my vision for fiscal accountability.\n\nMy opponent? No-show. \"Scheduling conflict.\"\n\nIf you can't show up for voters now, why would you show up for them in office?",
+                press_angle: "Light touch - don't overplay. If asked: 'I can't speak to his schedule. I can tell you I'll always make time for North Carolina's job creators.'"
+            },
+            4: {
+                headline: "Union PACs rally behind Smith candidacy",
+                talking_point: "Follow the money. $18,000 from union PACs. When John Smith is deciding whether to audit a state contract with union labor, whose side do you think he'll be on? I'm not beholden to any special interest - I answer to North Carolina taxpayers.",
+                social_post: "$18,000 from union PACs.\n\nThat's who's funding my opponent.\n\nI'm funded by everyday North Carolinians who want honest government.\n\nWhen I'm State Auditor, I'll audit EVERYONE equally - no matter who writes the checks.",
+                press_angle: "Don't attack unions directly - attack the conflict of interest: 'Auditors must be independent. When you take $18,000 from groups whose contracts you'll audit, that independence is compromised.'"
+            },
+            5: {
+                headline: "Smith fundraiser draws 50 in Durham",
+                talking_point: "No need to respond directly. File under: he's concentrated in urban progressive strongholds. That's not a statewide campaign.",
+                social_post: "Don't post. No need to amplify.",
+                press_angle: "If asked: 'I wish him well. I'm focused on talking to voters across ALL 100 counties, not just the Triangle.'"
+            },
+            6: {
+                headline: "Smith endorsed by NC Environmental Justice Network",
+                talking_point: "Mr. Smith is collecting endorsements from progressive activist groups. That tells you where his priorities are. I'm focused on one thing: protecting taxpayer dollars, regardless of politics.",
+                social_post: "Don't engage directly with environmental endorsement. Risks alienating moderates who agree on environment but support fiscal conservatism.",
+                press_angle: "Only if pressed: 'Endorsements tell you who a candidate answers to. I answer to taxpayers.'"
+            },
+            7: {
+                headline: "Smith releases detailed education audit proposal",
+                talking_point: "I'm glad my opponent is finally talking policy. But 12 pages of proposals from someone who's never audited a government agency is just theory. I've DONE this work. I've found the waste. I've saved taxpayers real money.",
+                social_post: "My opponent released a 12-page education audit plan.\n\nMeanwhile, I've ALREADY:\n✅ Audited $2.3B in lottery funds\n✅ Uncovered school construction waste\n✅ Saved taxpayers millions\n\nPromises vs. Results. You choose.",
+                press_angle: "Pivot to record: 'I welcome policy debates. But voters should know - I'm not proposing what I WOULD do. I'm showing what I've ALREADY done.'"
+            },
+            8: {
+                headline: "Smith campaign manager departs after 3 months",
+                talking_point: "Three staff departures in two months? That's not a campaign - that's chaos. If John Smith can't keep a small team together, how will he manage a state agency with hundreds of employees?",
+                social_post: "News: My opponent just lost his THIRD staffer in two months.\n\nThe State Auditor's office has 250+ employees.\n\nLeadership matters. Stability matters.\n\nNorth Carolina deserves better than chaos.",
+                press_angle: "Be careful not to look like you're piling on. If asked: 'Staff turnover happens in campaigns. But a pattern raises questions about leadership and workplace culture.'"
+            },
+            9: {
+                headline: "Democratic donors increase spending in down-ballot races",
+                talking_point: "Out-of-state money is flooding into North Carolina to elect my opponent. They want someone they can control. I'm accountable to North Carolina taxpayers - not national political donors.",
+                social_post: "National Democrats are pouring money into NC to defeat me.\n\nWhy? Because they know I'll audit EVERYONE - including their allies.\n\nHelp me fight back: [DONATE LINK]",
+                press_angle: "Use for fundraising appeal, not direct press engagement. Save the 'outsider money' attack for paid media."
+            },
+            10: {
+                headline: "Smith debate performance called 'uneven' by analysts",
+                talking_point: "Even neutral observers noticed my opponent struggled on budget questions. That's concerning for someone who wants to be State Auditor. This job is ALL about budgets, numbers, and fiscal details.",
+                social_post: "Political analysts called my opponent's debate performance 'uneven' - especially on budget questions.\n\nThe State Auditor's ENTIRE JOB is budgets and numbers.\n\nExperience matters.",
+                press_angle: "If asked: 'I'll let the analysts speak for themselves. I'm confident in my command of fiscal issues - it's what I've done my entire career.'"
+            }
+        };
+        
+        function showResponse(id) {
+            const r = responses[id];
+            document.getElementById('modalBody').innerHTML = `
+                <div class="news-context">
+                    <div class="news-context-label">News Article</div>
+                    <div class="news-context-headline">${r.headline}</div>
+                </div>
+                
+                <div class="response-section">
+                    <div class="response-label"><i class="ti ti-microphone"></i> Talking Point</div>
+                    <div class="response-text">${r.talking_point}</div>
+                </div>
+                
+                <div class="response-section">
+                    <div class="response-label"><i class="ti ti-brand-facebook"></i> Social Media Post</div>
+                    <div class="response-text" style="white-space: pre-line;">${r.social_post}</div>
+                </div>
+                
+                <div class="response-section">
+                    <div class="response-label"><i class="ti ti-news"></i> Press Angle</div>
+                    <div class="response-text">${r.press_angle}</div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-btn primary" onclick="copyToClipboard('${r.talking_point.replace(/'/g, "\\'")}')">
+                        <i class="ti ti-copy"></i> Copy Talking Point
+                    </button>
+                    <button class="action-btn secondary" onclick="alert('Social post copied!')">
+                        <i class="ti ti-brand-facebook"></i> Copy Social Post
+                    </button>
+                    <button class="action-btn secondary" onclick="closeModal()">
+                        <i class="ti ti-x"></i> Close
+                    </button>
+                </div>
+            `;
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('aiModal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.getElementById('aiModal').classList.remove('active');
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            alert('✅ Copied to clipboard!');
+        }
+        
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
