@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BroyhillGOP - Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0f1419;
+            --bg-card: #1a1f2e;
+            --bg-input: #252b3b;
+            --border: #2d3548;
+            --text: #ffffff;
+            --text-muted: #8899a6;
+            --text-dim: #5c6b7a;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --red-brand: #c41e3a;
+            --red-dark: #8b0000;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* TOP HEADER BAR */
+        .top-header {
+            background: linear-gradient(135deg, var(--red-brand) 0%, var(--red-dark) 100%);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .save-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .save-indicator.saving { color: var(--warning); }
+        .save-indicator.saved { color: var(--success); }
+
+        /* MAIN LAYOUT */
+        .settings-layout {
+            display: flex;
+            min-height: calc(100vh - 56px);
+        }
+
+        /* LEFT SIDEBAR NAVIGATION */
+        .settings-nav {
+            width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 16px 0;
+            overflow-y: auto;
+            flex-shrink: 0;
+            position: sticky;
+            top: 56px;
+            height: calc(100vh - 56px);
+        }
+
+        .nav-section { margin-bottom: 4px; }
+
+        .nav-section-title {
+            padding: 16px 20px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+        }
+
+        .nav-item.active {
+            background: rgba(196, 30, 58, 0.15);
+            color: var(--red-brand);
+            border-left-color: var(--red-brand);
+        }
+
+        .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+        .nav-item .label { flex: 1; }
+
+        .nav-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 12px 20px;
+        }
+
+        .nav-subitems {
+            display: none;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .nav-item.expanded + .nav-subitems { display: block; }
+
+        .nav-subitem {
+            padding: 8px 20px 8px 52px;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-subitem:hover {
+            color: var(--text);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .nav-subitem.active { color: var(--red-brand); }
+
+        .nav-chevron {
+            font-size: 10px;
+            transition: transform 0.2s;
+            color: var(--text-dim);
+        }
+
+        .nav-item.expanded .nav-chevron { transform: rotate(90deg); }
+
+        /* MAIN CONTENT AREA */
+        .settings-content {
+            flex: 1;
+            padding: 24px 32px;
+            overflow-y: auto;
+            background: var(--bg-dark);
+        }
+
+        .settings-page {
+            display: none;
+            max-width: 800px;
+        }
+
+        .settings-page.active { display: block; }
+
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { font-size: 24px; font-weight: 600; margin-bottom: 6px; }
+        .page-header p { color: var(--text-muted); font-size: 14px; }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        .breadcrumb a { color: var(--accent); text-decoration: none; }
+
+        /* CARDS */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h3 { font-size: 15px; font-weight: 600; }
+        .card-body { padding: 20px; }
+
+        .card-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* FORM ELEMENTS */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-row.three { grid-template-columns: repeat(3, 1fr); }
+        .form-row.four { grid-template-columns: repeat(4, 1fr); }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group.full { grid-column: span 2; }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-group label .required { color: var(--danger); }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--red-brand);
+        }
+
+        .form-control::placeholder { color: var(--text-dim); }
+        .form-control:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        textarea.form-control { min-height: 100px; resize: vertical; }
+
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238899a6' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        .form-hint { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+        /* Toggle Switch */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toggle-group:last-child { border-bottom: none; }
+
+        .toggle-label { flex: 1; }
+        .toggle-label .title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+        .toggle-label .desc { font-size: 12px; color: var(--text-dim); }
+
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .toggle input { opacity: 0; width: 0; height: 0; }
+
+        .toggle-slider {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            transition: all 0.2s;
+        }
+
+        .toggle-slider:before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 2px;
+            bottom: 2px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .toggle input:checked + .toggle-slider {
+            background: var(--red-brand);
+            border-color: var(--red-brand);
+        }
+
+        .toggle input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+            background: white;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary { background: var(--red-brand); color: white; }
+        .btn-primary:hover { background: var(--red-dark); }
+
+        .btn-secondary {
+            background: var(--bg-input);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover { background: var(--border); }
+
+        .btn-ghost { background: transparent; color: var(--text-muted); }
+        .btn-ghost:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+
+        .btn-sm { padding: 6px 12px; font-size: 13px; }
+
+        /* Photo Upload */
+        .photo-upload {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: var(--bg-input);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+        }
+
+        .photo-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .photo-preview .placeholder { font-size: 36px; color: var(--text-dim); }
+        .photo-info h4 { font-size: 14px; margin-bottom: 4px; }
+        .photo-info p { font-size: 12px; color: var(--text-dim); margin-bottom: 12px; }
+        .photo-actions { display: flex; gap: 8px; }
+
+        /* Social Media */
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .social-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-input);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .social-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .social-icon.facebook { background: #1877f2; }
+        .social-icon.twitter { background: #000000; }
+        .social-icon.instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .social-icon.youtube { background: #ff0000; }
+        .social-icon.truth { background: #5448ee; }
+        .social-icon.rumble { background: #85c742; }
+
+        .social-info { flex: 1; min-width: 0; }
+        .social-info .name { font-size: 13px; font-weight: 500; }
+        .social-info .handle { font-size: 12px; color: var(--text-dim); }
+
+        .social-status { font-size: 18px; }
+        .social-status.connected { color: var(--success); }
+        .social-status.disconnected { color: var(--text-dim); }
+
+        /* Issue Chips */
+        .issue-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+
+        .issue-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .issue-chip:hover { border-color: var(--text-dim); }
+        .issue-chip.support { background: rgba(16, 185, 129, 0.15); border-color: var(--success); color: var(--success); }
+        .issue-chip.oppose { background: rgba(239, 68, 68, 0.15); border-color: var(--danger); color: var(--danger); }
+        .issue-chip.mixed { background: rgba(245, 158, 11, 0.15); border-color: var(--warning); color: var(--warning); }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.active { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .status-badge.pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .status-badge.inactive { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+
+        /* Alert */
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .alert-info { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); }
+        .alert-icon { font-size: 18px; }
+        .alert-content h4 { font-size: 14px; margin-bottom: 4px; }
+        .alert-content p { font-size: 13px; color: var(--text-muted); }
+
+        /* Table */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); background: var(--bg-input); }
+        td { font-size: 14px; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-input);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .settings-nav { width: 220px; }
+            .form-row { grid-template-columns: 1fr; }
+            .form-row.three, .form-row.four { grid-template-columns: 1fr; }
+            .form-group.full { grid-column: span 1; }
+        }
+
+        @media (max-width: 768px) {
+            .settings-layout { flex-direction: column; }
+            .settings-nav { width: 100%; height: auto; position: relative; top: 0; }
+            .settings-content { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- TOP HEADER -->
+    <header class="top-header">
+        <div class="header-left">
+            <a href="index.html" class="back-btn">
+                <span>←</span>
+                <span>Back to Dashboard</span>
+            </a>
+            <h1 class="header-title">⚙️ Settings</h1>
+        </div>
+        <div class="header-right">
+            <div class="save-indicator saved" id="saveIndicator">
+                <span>✓</span>
+                <span>All changes saved</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN LAYOUT -->
+    <div class="settings-layout">
+        <!-- LEFT NAVIGATION -->
+        <nav class="settings-nav">
+            <!-- PROFILE SECTION -->
+            <div class="nav-section">
+                <div class="nav-section-title">Profile</div>
+                <div class="nav-item active expanded" onclick="toggleNav(this, 'profile')">
+                    <span class="icon">👤</span>
+                    <span class="label">My Profile</span>
+                    <span class="nav-chevron">▶</span>
+                </div>
+                <div class="nav-subitems" style="display:block;">
+                    <div class="nav-subitem active" onclick="showPage('profile-personal')">Personal Info</div>
+                    <div class="nav-subitem" onclick="showPage('profile-office')">Office & Election</div>
+                    <div class="nav-subitem" onclick="showPage('profile-bio')">Biography</div>
+                    <div class="nav-subitem" onclick="showPage('profile-political')">Political Info</div>
+                    <div class="nav-subitem" onclick="showPage('profile-issues')">Issue Positions</div>
+                    <div class="nav-subitem" onclick="showPage('profile-district')">District Info</div>
+                </div>
+            </div>
+
+            <!-- CAMPAIGN SECTION -->
+            <div class="nav-section">
+                <div class="nav-item" onclick="toggleNav(this, 'campaign')">
+                    <span class="icon">🏛️</span>
+                    <span class="label">Campaign</span>
+                    <span class="nav-chevron">▶</span>
+                </div>
+                <div class="nav-subitems">
+                    <div class="nav-subitem" onclick="showPage('campaign-details')">Campaign Details</div>
+                    <div class="nav-subitem" onclick="showPage('campaign-contact')">Contact Info</div>
+                    <div class="nav-subitem" onclick="showPage('campaign-social')">Social Media</div>
+                    <div class="nav-subitem" onclick="showPage('campaign-staff')">Staff & Roles</div>
+                    <div class="nav-subitem" onclick="showPage('campaign-branding')">Branding</div>
+                </div>
+            </div>
+
+            <!-- MEDIA SECTION -->
+            <div class="nav-section">
+                <div class="nav-item" onclick="showPage('media')">
+                    <span class="icon">📸</span>
+                    <span class="label">Media Library</span>
+                </div>
+            </div>
+
+            <div class="nav-divider"></div>
+
+            <!-- TEAM SECTION -->
+            <div class="nav-section">
+                <div class="nav-item" onclick="toggleNav(this, 'team')">
+                    <span class="icon">👥</span>
+                    <span class="label">Team & Permissions</span>
+                    <span class="nav-chevron">▶</span>
+                </div>
+                <div class="nav-subitems">
+                    <div class="nav-subitem" onclick="showPage('team-users')">Users</div>
+                    <div class="nav-subitem" onclick="showPage('team-roles')">Roles & Permissions</div>
+                    <div class="nav-subitem" onclick="showPage('team-invites')">Pending Invites</div>
+                </div>
+            </div>
+
+            <!-- BILLING SECTION -->
+            <div class="nav-section">
+                <div class="nav-item" onclick="toggleNav(this, 'billing')">
+                    <span class="icon">💳</span>
+                    <span class="label">Billing</span>
+                    <span class="nav-chevron">▶</span>
+                </div>
+                <div class="nav-subitems">
+                    <div class="nav-subitem" onclick="showPage('billing-plan')">Current Plan</div>
+                    <div class="nav-subitem" onclick="showPage('billing-payment')">Payment Method</div>
+                    <div class="nav-subitem" onclick="showPage('billing-invoices')">Invoices</div>
+                </div>
+            </div>
+
+            <div class="nav-divider"></div>
+
+            <!-- COMPLIANCE SECTION -->
+            <div class="nav-section">
+                <div class="nav-item" onclick="toggleNav(this, 'compliance')">
+                    <span class="icon">📜</span>
+                    <span class="label">Compliance</span>
+                    <span class="nav-chevron">▶</span>
+                </div>
+                <div class="nav-subitems">
+                    <div class="nav-subitem" onclick="showPage('compliance-committee')">Committee Info</div>
+                    <div class="nav-subitem" onclick="showPage('compliance-disclaimers')">Disclaimers</div>
+                </div>
+            </div>
+
+            <!-- NOTIFICATIONS SECTION -->
+            <div class="nav-section">
+                <div class="nav-item" onclick="showPage('notifications')">
+                    <span class="icon">🔔</span>
+                    <span class="label">Notifications</span>
+                </div>
+            </div>
+
+            <!-- INTEGRATIONS SECTION -->
+            <div class="nav-section">
+                <div class="nav-item" onclick="toggleNav(this, 'integrations')">
+                    <span class="icon">🔗</span>
+                    <span class="label">Integrations</span>
+                    <span class="nav-chevron">▶</span>
+                </div>
+                <div class="nav-subitems">
+                    <div class="nav-subitem" onclick="showPage('integrations-donation')">Donation Processors</div>
+                    <div class="nav-subitem" onclick="showPage('integrations-social')">Social Accounts</div>
+                </div>
+            </div>
+
+            <!-- SECURITY SECTION -->
+            <div class="nav-section">
+                <div class="nav-item" onclick="toggleNav(this, 'security')">
+                    <span class="icon">🔒</span>
+                    <span class="label">Security</span>
+                    <span class="nav-chevron">▶</span>
+                </div>
+                <div class="nav-subitems">
+                    <div class="nav-subitem" onclick="showPage('security-password')">Password</div>
+                    <div class="nav-subitem" onclick="showPage('security-2fa')">Two-Factor Auth</div>
+                    <div class="nav-subitem" onclick="showPage('security-sessions')">Active Sessions</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT PAGES -->
+        <main class="settings-content">
+
+            <!-- PROFILE - PERSONAL INFO -->
+            <div class="settings-page active" id="page-profile-personal">
+                <div class="page-header">
+                    <div class="breadcrumb">
+                        <a href="#">Settings</a>
+                        <span>›</span>
+                        <span>Profile</span>
+                        <span>›</span>
+                        <span>Personal Info</span>
+                    </div>
+                    <h1>Personal Information</h1>
+                    <p>Basic information about you as the candidate</p>
+                </div>
+
+                <!-- Profile Photo -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Profile Photo</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="photo-upload">
+                            <div class="photo-preview">
+                                <span class="placeholder">👤</span>
+                            </div>
+                            <div class="photo-info">
+                                <h4>Upload your headshot</h4>
+                                <p>JPG, PNG or GIF. Max 5MB. Recommended: 400x400px</p>
+                                <div class="photo-actions">
+                                    <button class="btn btn-primary btn-sm">Upload Photo</button>
+                                    <button class="btn btn-ghost btn-sm">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Info -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Basic Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name <span class="required">*</span></label>
+                                <input type="text" class="form-control" placeholder="John" id="first_name">
+                            </div>
+                            <div class="form-group">
+                                <label>Middle Name</label>
+                                <input type="text" class="form-control" placeholder="Robert" id="middle_name">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Last Name <span class="required">*</span></label>
+                                <input type="text" class="form-control" placeholder="Smith" id="last_name">
+                            </div>
+                            <div class="form-group">
+                                <label>Suffix</label>
+                                <select class="form-control" id="suffix">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="Sr.">Sr.</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" class="form-control" placeholder="john@example.com" id="email">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" class="form-control" placeholder="(555) 123-4567" id="phone">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-secondary">Cancel</button>
+                        <button class="btn btn-primary" onclick="saveChanges()">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMPLIANCE - DISCLAIMERS -->
+            <div class="settings-page" id="page-compliance-disclaimers">
+                <div class="page-header">
+                    <div class="breadcrumb">
+                        <a href="#">Settings</a>
+                        <span>›</span>
+                        <span>Compliance</span>
+                        <span>›</span>
+                        <span>Disclaimers</span>
+                    </div>
+                    <h1>Disclaimer Templates</h1>
+                    <p>Required disclaimers for all campaign communications</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Committee Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Committee Name <span class="required">*</span></label>
+                                <input type="text" class="form-control" placeholder="Smith for Congress" id="committee_name">
+                            </div>
+                            <div class="form-group">
+                                <label>FEC Committee ID</label>
+                                <input type="text" class="form-control" placeholder="C00123456" id="fec_committee_id">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Treasurer Name <span class="required">*</span></label>
+                            <input type="text" class="form-control" placeholder="Jane Treasurer" id="treasurer_name">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Disclaimer Templates</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>TV / Radio Disclaimer</label>
+                            <input type="text" class="form-control" value="I'm John Smith and I approve this message." id="disclaimer_tv_radio">
+                            <div class="form-hint">Required for broadcast advertisements</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Digital / Print Disclaimer</label>
+                            <input type="text" class="form-control" value="Paid for by Smith for Congress" id="disclaimer_digital">
+                        </div>
+                        <div class="form-group">
+                            <label>SMS Disclaimer</label>
+                            <input type="text" class="form-control" value="Smith for Congress. Reply STOP to opt out." id="disclaimer_sms">
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-secondary">Cancel</button>
+                        <button class="btn btn-primary" onclick="saveChanges()">Save Changes</button>
+                    </div>
+                </div>
+
+                <!-- NCGOP Placeholder -->
+                <div class="card" style="border-style: dashed; opacity: 0.7;">
+                    <div class="card-header">
+                        <h3>🔮 NCGOP Affiliate Compliance</h3>
+                        <span class="status-badge pending">Coming Soon</span>
+                    </div>
+                    <div class="card-body">
+                        <p style="color: var(--text-muted); font-size: 14px;">
+                            Future NCGOP affiliate data compliance and reporting requirements will appear here once defined.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INTEGRATIONS - DONATION PROCESSORS -->
+            <div class="settings-page" id="page-integrations-donation">
+                <div class="page-header">
+                    <div class="breadcrumb">
+                        <a href="#">Settings</a>
+                        <span>›</span>
+                        <span>Integrations</span>
+                        <span>›</span>
+                        <span>Donation Processors</span>
+                    </div>
+                    <h1>Donation Processor Integration</h1>
+                    <p>Connect WinRed or Anedot to sync donation data</p>
+                </div>
+
+                <div class="alert alert-info">
+                    <span class="alert-icon">ℹ️</span>
+                    <div class="alert-content">
+                        <h4>How This Works</h4>
+                        <p>BroyhillGOP syncs donation data from your processor for donor intelligence and outreach. All payment processing, FEC compliance, and contribution limits are handled by WinRed/Anedot.</p>
+                    </div>
+                </div>
+
+                <!-- WinRed -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🔴 WinRed Integration</h3>
+                        <span class="status-badge active">Connected</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>WinRed API Key</label>
+                                <input type="password" class="form-control" placeholder="wr_live_xxxxxxxxxxxxxxxx" id="winred_api_key">
+                            </div>
+                            <div class="form-group">
+                                <label>WinRed Page ID</label>
+                                <input type="text" class="form-control" placeholder="smith-for-congress" id="winred_page_id">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Donation Page URL</label>
+                            <input type="url" class="form-control" placeholder="https://winred.com/smith-for-congress" id="winred_donation_url">
+                            <div class="form-hint">This URL will be used in all "Donate" buttons</div>
+                        </div>
+                        <div style="display: flex; gap: 12px; margin-top: 16px;">
+                            <button class="btn btn-secondary btn-sm">Test Connection</button>
+                            <button class="btn btn-ghost btn-sm">Sync Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anedot -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🟢 Anedot Integration</h3>
+                        <span class="status-badge inactive">Not Connected</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Anedot API Key</label>
+                                <input type="password" class="form-control" placeholder="an_xxxxxxxxxxxxxxxx" id="anedot_api_key">
+                            </div>
+                            <div class="form-group">
+                                <label>Anedot Account ID</label>
+                                <input type="text" class="form-control" placeholder="abc123" id="anedot_account_id">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 12px; margin-top: 16px;">
+                            <button class="btn btn-primary btn-sm">Connect Anedot</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOTIFICATIONS -->
+            <div class="settings-page" id="page-notifications">
+                <div class="page-header">
+                    <div class="breadcrumb">
+                        <a href="#">Settings</a>
+                        <span>›</span>
+                        <span>Notifications</span>
+                    </div>
+                    <h1>Notification Preferences</h1>
+                    <p>Control how and when you receive alerts</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Alert Types</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="toggle-group">
+                            <div class="toggle-label">
+                                <div class="title">💰 New Donations</div>
+                                <div class="desc">Alert when donations are received</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-group">
+                            <div class="toggle-label">
+                                <div class="title">🙋 New Volunteers</div>
+                                <div class="desc">Alert when volunteers sign up</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-group">
+                            <div class="toggle-label">
+                                <div class="title">📰 News Mentions</div>
+                                <div class="desc">Alert when you're mentioned in the news</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-group">
+                            <div class="toggle-label">
+                                <div class="title">🤖 AI Suggestions</div>
+                                <div class="desc">Alert when AI has recommendations</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-secondary">Cancel</button>
+                        <button class="btn btn-primary" onclick="saveChanges()">Save Preferences</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEAM - USERS -->
+            <div class="settings-page" id="page-team-users">
+                <div class="page-header">
+                    <div class="breadcrumb">
+                        <a href="#">Settings</a>
+                        <span>›</span>
+                        <span>Team</span>
+                        <span>›</span>
+                        <span>Users</span>
+                    </div>
+                    <h1>Team Members</h1>
+                    <p>Manage who has access to your campaign platform</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Active Users</h3>
+                        <button class="btn btn-primary btn-sm">+ Invite User</button>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Role</th>
+                                        <th>Last Active</th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <div class="avatar">JS</div>
+                                                <div>
+                                                    <div style="font-weight: 500;">John Smith</div>
+                                                    <div style="font-size: 12px; color: var(--text-dim);">john@smithforcongress.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Candidate</td>
+                                        <td>Now</td>
+                                        <td><span class="status-badge active">Active</span></td>
+                                        <td><button class="btn btn-ghost btn-sm">Edit</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <div class="avatar">MJ</div>
+                                                <div>
+                                                    <div style="font-weight: 500;">Mary Johnson</div>
+                                                    <div style="font-size: 12px; color: var(--text-dim);">mary@smithforcongress.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Campaign Manager</td>
+                                        <td>2 hours ago</td>
+                                        <td><span class="status-badge active">Active</span></td>
+                                        <td><button class="btn btn-ghost btn-sm">Edit</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECURITY - PASSWORD -->
+            <div class="settings-page" id="page-security-password">
+                <div class="page-header">
+                    <div class="breadcrumb">
+                        <a href="#">Settings</a>
+                        <span>›</span>
+                        <span>Security</span>
+                        <span>›</span>
+                        <span>Password</span>
+                    </div>
+                    <h1>Change Password</h1>
+                    <p>Update your account password</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Password</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" class="form-control" placeholder="••••••••">
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" class="form-control" placeholder="••••••••">
+                            <div class="form-hint">Minimum 8 characters with uppercase, lowercase, and number</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" class="form-control" placeholder="••••••••">
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-secondary">Cancel</button>
+                        <button class="btn btn-primary">Update Password</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECURITY - 2FA -->
+            <div class="settings-page" id="page-security-2fa">
+                <div class="page-header">
+                    <div class="breadcrumb">
+                        <a href="#">Settings</a>
+                        <span>›</span>
+                        <span>Security</span>
+                        <span>›</span>
+                        <span>Two-Factor Auth</span>
+                    </div>
+                    <h1>Two-Factor Authentication</h1>
+                    <p>Add an extra layer of security to your account</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>2FA Status</h3>
+                        <span class="status-badge inactive">Not Enabled</span>
+                    </div>
+                    <div class="card-body">
+                        <p style="color: var(--text-muted); margin-bottom: 16px;">
+                            Two-factor authentication adds an extra layer of security by requiring a code from your phone in addition to your password.
+                        </p>
+                        <button class="btn btn-primary">Enable 2FA</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Default placeholder -->
+            <div class="settings-page" id="page-default">
+                <div class="page-header">
+                    <h1>Settings</h1>
+                    <p>Select an option from the left menu</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        function toggleNav(element, section) {
+            const wasExpanded = element.classList.contains('expanded');
+            document.querySelectorAll('.nav-item.expanded').forEach(item => {
+                item.classList.remove('expanded');
+            });
+            if (!wasExpanded) {
+                element.classList.add('expanded');
+            }
+            const subitems = element.nextElementSibling;
+            if (subitems && subitems.classList.contains('nav-subitems') && !wasExpanded) {
+                const firstSubitem = subitems.querySelector('.nav-subitem');
+                if (firstSubitem) firstSubitem.click();
+            }
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.settings-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            const targetPage = document.getElementById('page-' + pageId);
+            if (targetPage) targetPage.classList.add('active');
+            document.querySelectorAll('.nav-subitem').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function saveChanges() {
+            const indicator = document.getElementById('saveIndicator');
+            indicator.className = 'save-indicator saving';
+            indicator.innerHTML = '<span>⟳</span><span>Saving...</span>';
+            setTimeout(() => {
+                indicator.className = 'save-indicator saved';
+                indicator.innerHTML = '<span>✓</span><span>All changes saved</span>';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
