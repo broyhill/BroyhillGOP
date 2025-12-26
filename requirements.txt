@@ -16,6 +16,11 @@ pandas>=2.0.0
 # Environment
 python-dotenv>=1.0.0
 
+# API Framework (December 2024)
+fastapi>=0.109.0
+uvicorn>=0.27.0
+pydantic>=2.5.0
+
 # Optional: Advanced features
 # numpy>=1.24.0
 # scikit-learn>=1.3.0
