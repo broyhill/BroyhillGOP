@@ -1,0 +1,83 @@
+name: Deploy Database Migration
+
+on:
+  workflow_dispatch:
+    inputs:
+      migration:
+        description: 'Migration to run'
+        required: true
+        default: '2024_12_enhancement_migration.sql'
+        type: choice
+        options:
+          - '2024_12_enhancement_migration.sql'
+          - 'CALCULATE_TRIPLE_GRADES.sql'
+          - 'all'
+      confirm:
+        description: 'Type "deploy" to confirm'
+        required: true
+        type: string
+
+jobs:
+  deploy-migration:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.confirm == 'deploy' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+      
+      - name: Run Migration
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "🚀 Deploying December 2024 Enhancement..."
+          echo "=================================="
+          
+          if [ "${{ github.event.inputs.migration }}" == "all" ]; then
+            echo "Running all migrations..."
+            psql "$DATABASE_URL" -f database/migrations/2024_12_enhancement_migration.sql
+            psql "$DATABASE_URL" -f database/schemas/CALCULATE_TRIPLE_GRADES.sql
+          else
+            echo "Running: ${{ github.event.inputs.migration }}"
+            if [ "${{ github.event.inputs.migration }}" == "2024_12_enhancement_migration.sql" ]; then
+              psql "$DATABASE_URL" -f database/migrations/2024_12_enhancement_migration.sql
+            else
+              psql "$DATABASE_URL" -f database/schemas/${{ github.event.inputs.migration }}
+            fi
+          fi
+          
+          echo ""
+          echo "✅ Migration complete!"
+      
+      - name: Verify Tables
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "📋 Verifying new tables..."
+          psql "$DATABASE_URL" -c "
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_schema = 'public' 
+            AND table_name IN (
+              'nc_districts',
+              'nc_office_types', 
+              'donation_menu_levels',
+              'microsegment_performance',
+              'volunteer_grades',
+              'special_guest_types'
+            )
+            ORDER BY table_name;
+          "
+      
+      - name: Recalculate District Grades
+        if: ${{ github.event.inputs.migration == 'all' || github.event.inputs.migration == 'CALCULATE_TRIPLE_GRADES.sql' }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "📊 Recalculating district grades..."
+          psql "$DATABASE_URL" -c "SELECT recalculate_district_grades();" || echo "Note: Run manually after district data is populated"
