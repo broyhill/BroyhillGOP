@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>AI Campaign Review | BroyhillGOP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --text-tertiary: #aeaeb2;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f7;
+            --bg-hover: #f0f0f2;
+            --border-color: #e5e5e7;
+            --accent-blue: #007aff;
+            --accent-green: #34c759;
+            --accent-orange: #ff9500;
+            --accent-red: #ff3b30;
+            --accent-purple: #af52de;
+            --ai-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --sidebar-width: 260px;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border-color);
+            z-index: 100;
+        }
+        
+        .sidebar-logo { padding: 20px; border-bottom: 1px solid var(--border-color); }
+        .sidebar-logo h1 { font-size: 17px; font-weight: 600; }
+        
+        .main {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Left Content */
+        .content-area {
+            flex: 1;
+            padding: 32px;
+            max-width: 900px;
+        }
+        
+        /* Right Panel - AI Summary */
+        .ai-summary-panel {
+            width: 380px;
+            background: var(--bg-primary);
+            border-left: 1px solid var(--border-color);
+            padding: 24px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .ai-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .ai-panel-header i {
+            font-size: 24px;
+            background: var(--ai-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .ai-panel-header h3 { font-size: 16px; font-weight: 600; }
+        
+        /* Header */
+        .page-header {
+            margin-bottom: 24px;
+        }
+        
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .page-header h1 i {
+            font-size: 32px;
+            background: var(--ai-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .page-header p {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+        
+        /* Campaign Summary Card */
+        .summary-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .summary-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .summary-card-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .summary-card-header h3 i { color: var(--text-secondary); }
+        
+        .edit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            background: transparent;
+            border: 1px solid var(--accent-blue);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .edit-btn:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .summary-item {
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+        
+        .summary-item.full-width {
+            grid-column: span 2;
+        }
+        
+        .summary-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        
+        .summary-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .summary-value.large {
+            font-size: 24px;
+            color: var(--accent-green);
+        }
+        
+        .summary-value.orange {
+            color: var(--accent-orange);
+        }
+        
+        /* Timeline Section */
+        .timeline-section {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .timeline-header h3 i { color: #667eea; }
+        
+        .timeline {
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 48px;
+            padding-bottom: 24px;
+        }
+        
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 6px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .timeline-dot i {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+        
+        .timeline-item.email .timeline-dot { border-color: var(--accent-blue); background: var(--accent-blue); }
+        .timeline-item.call .timeline-dot { border-color: var(--accent-orange); background: var(--accent-orange); }
+        .timeline-item.mail .timeline-dot { border-color: var(--accent-purple); background: var(--accent-purple); }
+        .timeline-item.sms .timeline-dot { border-color: var(--accent-green); background: var(--accent-green); }
+        .timeline-item.rvm .timeline-dot { border-color: #5856d6; background: #5856d6; }
+        .timeline-item.task .timeline-dot { border-color: var(--accent-orange); background: var(--accent-orange); }
+        
+        .timeline-item .timeline-dot i { color: white; }
+        
+        .timeline-content {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            padding: 14px;
+        }
+        
+        .timeline-day {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        
+        .timeline-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .timeline-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .timeline-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+        
+        .timeline-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .timeline-meta .expected-return {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+        
+        .timeline-toggle {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            width: 36px;
+            height: 20px;
+            background: var(--accent-green);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .timeline-toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .timeline-toggle.off {
+            background: #e5e5e7;
+        }
+        
+        .timeline-toggle.off::after {
+            right: auto;
+            left: 2px;
+        }
+        
+        /* Donation Levels */
+        .donation-levels {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .donation-level {
+            padding: 8px 14px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .donation-level-name {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+        
+        .donation-level-amount {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+        
+        /* AI Summary Stats */
+        .ai-stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .ai-stat-row:last-child {
+            border-bottom: none;
+        }
+        
+        .ai-stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .ai-stat-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .ai-total-box {
+            background: var(--ai-gradient);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            margin-top: 20px;
+        }
+        
+        .ai-total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        
+        .ai-total-row.big {
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            flex: 1;
+        }
+        
+        .btn-secondary {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .btn-secondary:hover { background: var(--bg-hover); }
+        
+        .btn-primary {
+            background: var(--accent-green);
+            border: none;
+            color: white;
+        }
+        
+        .btn-primary:hover { filter: brightness(1.1); }
+        
+        /* Audience Section */
+        .audience-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .audience-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .audience-pill.grade-a { background: rgba(52, 199, 89, 0.15); color: #1d8348; }
+        .audience-pill.grade-b { background: rgba(0, 122, 255, 0.15); color: #0056b3; }
+        .audience-pill.grade-c { background: rgba(255, 149, 0, 0.15); color: #b36b00; }
+        
+        /* Success Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.open {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+        
+        .modal h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .modal p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+        
+        .modal-info {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+        
+        .modal-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+        
+        .modal-info-row:not(:last-child) {
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-info-label { color: var(--text-secondary); }
+        .modal-info-value { font-weight: 600; }
+        
+        .modal-btn {
+            padding: 14px 32px;
+            font-size: 15px;
+            font-weight: 600;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        
+        .modal-btn:hover { filter: brightness(1.1); }
+    </style>
+</head>
+
+<body>
+    
+    <aside class="sidebar">
+        <div class="sidebar-logo"><h1>BroyhillGOP</h1></div>
+    </aside>
+    
+    <main class="main">
+        
+        <!-- Left Content Area -->
+        <div class="content-area">
+            
+            <div class="page-header">
+                <h1><i class="ti ti-sparkles"></i> AI Campaign Generated</h1>
+                <p>Review your AI-generated multi-channel campaign. Edit any section before approving.</p>
+            </div>
+            
+            <!-- Campaign Summary -->
+            <div class="summary-card">
+                <div class="summary-card-header">
+                    <h3><i class="ti ti-info-circle"></i> Campaign Overview</h3>
+                    <button class="edit-btn" onclick="editSection('overview')"><i class="ti ti-pencil"></i> Edit</button>
+                </div>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="summary-label">Campaign Name</div>
+                        <div class="summary-value" id="display-name">Reynolds House Reception Q1 2025</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Campaign Type</div>
+                        <div class="summary-value" id="display-type">Fundraising Event - Home Reception</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Fundraising Goal</div>
+                        <div class="summary-value large" id="display-goal">$100,000</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Campaign Budget</div>
+                        <div class="summary-value" id="display-budget">$5,000</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Event Date</div>
+                        <div class="summary-value" id="display-date">February 15, 2025</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Host</div>
+                        <div class="summary-value orange" id="display-host">TBD - Host Recruitment Required</div>
+                    </div>
+                </div>
+                
+                <div class="donation-levels">
+                    <div class="donation-level">
+                        <div class="donation-level-name">Co-Host</div>
+                        <div class="donation-level-amount">$6,800</div>
+                    </div>
+                    <div class="donation-level">
+                        <div class="donation-level-name">Co-Sponsor</div>
+                        <div class="donation-level-amount">$2,500</div>
+                    </div>
+                    <div class="donation-level">
+                        <div class="donation-level-name">Patron</div>
+                        <div class="donation-level-amount">$1,000</div>
+                    </div>
+                    <div class="donation-level">
+                        <div class="donation-level-name">Supporter</div>
+                        <div class="donation-level-amount">$500</div>
+                    </div>
+                    <div class="donation-level">
+                        <div class="donation-level-name">Friend</div>
+                        <div class="donation-level-amount">$250</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI-Selected Audience -->
+            <div class="summary-card">
+                <div class="summary-card-header">
+                    <h3><i class="ti ti-users"></i> AI-Selected Audience</h3>
+                    <button class="edit-btn" onclick="editSection('audience')"><i class="ti ti-pencil"></i> Edit</button>
+                </div>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="summary-label">Total Recipients</div>
+                        <div class="summary-value large">2,847</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Selection Method</div>
+                        <div class="summary-value">AI Optimized for Home Reception</div>
+                    </div>
+                </div>
+                <div class="audience-pills">
+                    <span class="audience-pill grade-a"><i class="ti ti-star"></i> A+ Grade: 234</span>
+                    <span class="audience-pill grade-a"><i class="ti ti-star"></i> A Grade: 567</span>
+                    <span class="audience-pill grade-b"><i class="ti ti-circle"></i> B+ Grade: 892</span>
+                    <span class="audience-pill grade-b"><i class="ti ti-circle"></i> B Grade: 654</span>
+                    <span class="audience-pill grade-c"><i class="ti ti-circle"></i> C+ Grade: 500</span>
+                </div>
+            </div>
+            
+            <!-- Multi-Channel Timeline -->
+            <div class="timeline-section">
+                <div class="timeline-header">
+                    <h3><i class="ti ti-timeline"></i> Multi-Channel Orchestration</h3>
+                    <button class="edit-btn" onclick="editSection('timeline')"><i class="ti ti-pencil"></i> Edit</button>
+                </div>
+                
+                <div class="timeline">
+                    
+                    <div class="timeline-item task">
+                        <div class="timeline-dot"><i class="ti ti-user-search"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-day">Day 1-7 • Priority Task</div>
+                            <div class="timeline-title">🎯 Recruit Host</div>
+                            <div class="timeline-desc">Campaign Manager solicits host from top A++ donors. Task assigned to Sarah Johnson.</div>
+                            <div class="timeline-meta">
+                                <span><i class="ti ti-users"></i> Assigned: Campaign Manager</span>
+                                <span class="expected-return"><i class="ti ti-trending-up"></i> Est. Return: $25,000</span>
+                            </div>
+                        </div>
+                        <div class="timeline-toggle" onclick="toggleStep(this)"></div>
+                    </div>
+                    
+                    <div class="timeline-item email">
+                        <div class="timeline-dot"><i class="ti ti-mail"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-day">Day 1 • Immediate</div>
+                            <div class="timeline-title">📧 Save the Date Email</div>
+                            <div class="timeline-desc">Initial announcement with event details and donation levels. Personalized by donor grade.</div>
+                            <div class="timeline-meta">
+                                <span><i class="ti ti-users"></i> 2,847 recipients</span>
+                                <span><i class="ti ti-currency-dollar"></i> $2.85</span>
+                                <span class="expected-return"><i class="ti ti-trending-up"></i> Est. Return: $8,500</span>
+                            </div>
+                        </div>
+                        <div class="timeline-toggle" onclick="toggleStep(this)"></div>
+                    </div>
+                    
+                    <div class="timeline-item call">
+                        <div class="timeline-dot"><i class="ti ti-phone"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-day">Day 2-7 • After Host Confirmed</div>
+                            <div class="timeline-title">📞 VIP Co-Host Recruitment</div>
+                            <div class="timeline-desc">Candidate personally calls top 25 A++ donors to secure Co-Hosts at $6,800.</div>
+                            <div class="timeline-meta">
+                                <span><i class="ti ti-users"></i> 25 calls</span>
+                                <span><i class="ti ti-currency-dollar"></i> $0 (Candidate)</span>
+                                <span class="expected-return"><i class="ti ti-trending-up"></i> Est. Return: $42,500</span>
+                            </div>
+                        </div>
+                        <div class="timeline-toggle" onclick="toggleStep(this)"></div>
+                    </div>
+                    
+                    <div class="timeline-item call">
+                        <div class="timeline-dot"><i class="ti ti-phone"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-day">Day 3-10</div>
+                            <div class="timeline-title">📞 Call Center: Co-Sponsor Recruitment</div>
+                            <div class="timeline-desc">Professional call center recruits Co-Sponsors from A+ tier at $2,500.</div>
+                            <div class="timeline-meta">
+                                <span><i class="ti ti-users"></i> 150 calls</span>
+                                <span><i class="ti ti-currency-dollar"></i> $375.00</span>
+                                <span class="expected-return"><i class="ti ti-trending-up"></i> Est. Return: $18,750</span>
+                            </div>
+                        </div>
+                        <div class="timeline-toggle" onclick="toggleStep(this)"></div>
+                    </div>
+                    
+                    <div class="timeline-item mail">
+                        <div class="timeline-dot"><i class="ti ti-mail-forward"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-day">Day 14</div>
+                            <div class="timeline-title">✉️ Printed Invitation</div>
+                            <div class="timeline-desc">Formal invitation with Co-Hosts listed, reply card, and WinRed donation link.</div>
+                            <div class="timeline-meta">
+                                <span><i class="ti ti-users"></i> 2,500 pieces</span>
+                                <span><i class="ti ti-currency-dollar"></i> $2,125.00</span>
+                                <span class="expected-return"><i class="ti ti-trending-up"></i> Est. Return: $12,500</span>
+                            </div>
+                        </div>
+                        <div class="timeline-toggle" onclick="toggleStep(this)"></div>
+                    </div>
+                    
+                    <div class="timeline-item sms">
+                        <div class="timeline-dot"><i class="ti ti-message"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-day">Day 21, 28, 35</div>
+                            <div class="timeline-title">💬 SMS Reminder Series</div>
+                            <div class="timeline-desc">3-text sequence with candidate video invitation and RSVP link.</div>
+                            <div class="timeline-meta">
+                                <span><i class="ti ti-users"></i> 8,541 texts</span>
+                                <span><i class="ti ti-currency-dollar"></i> $170.82</span>
+                                <span class="expected-return"><i class="ti ti-trending-up"></i> Est. Return: $6,250</span>
+                            </div>
+                        </div>
+                        <div class="timeline-toggle" onclick="toggleStep(this)"></div>
+                    </div>
+                    
+                    <div class="timeline-item rvm">
+                        <div class="timeline-dot"><i class="ti ti-volume"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-day">Day 30</div>
+                            <div class="timeline-title">🔊 Candidate RVM Drop</div>
+                            <div class="timeline-desc">Candidate voice message dropped to non-responders with personal invitation.</div>
+                            <div class="timeline-meta">
+                                <span><i class="ti ti-users"></i> 1,800 drops</span>
+                                <span><i class="ti ti-currency-dollar"></i> $54.00</span>
+                                <span class="expected-return"><i class="ti ti-trending-up"></i> Est. Return: $3,200</span>
+                            </div>
+                        </div>
+                        <div class="timeline-toggle" onclick="toggleStep(this)"></div>
+                    </div>
+                    
+                    <div class="timeline-item call">
+                        <div class="timeline-dot"><i class="ti ti-phone"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-day">Day 35-40</div>
+                            <div class="timeline-title">📞 Final Push Calls</div>
+                            <div class="timeline-desc">Call center contacts remaining non-responders for final RSVPs and donations.</div>
+                            <div class="timeline-meta">
+                                <span><i class="ti ti-users"></i> 500 calls</span>
+                                <span><i class="ti ti-currency-dollar"></i> $1,250.00</span>
+                                <span class="expected-return"><i class="ti ti-trending-up"></i> Est. Return: $8,750</span>
+                            </div>
+                        </div>
+                        <div class="timeline-toggle" onclick="toggleStep(this)"></div>
+                    </div>
+                    
+                    <div class="timeline-item email">
+                        <div class="timeline-dot"><i class="ti ti-mail"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-day">Day 42 • Event Day</div>
+                            <div class="timeline-title">📧 Day-Of Reminder</div>
+                            <div class="timeline-desc">Final reminder email with event details, parking info, and last-chance donation link.</div>
+                            <div class="timeline-meta">
+                                <span><i class="ti ti-users"></i> 150 attendees</span>
+                                <span><i class="ti ti-currency-dollar"></i> $0.15</span>
+                                <span class="expected-return"><i class="ti ti-trending-up"></i> Est. Return: $2,500</span>
+                            </div>
+                        </div>
+                        <div class="timeline-toggle" onclick="toggleStep(this)"></div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="goBack()">
+                    <i class="ti ti-arrow-left"></i> Back to Edit
+                </button>
+                <button class="btn btn-primary" onclick="approveCampaign()">
+                    <i class="ti ti-check"></i> Approve & Send to Campaign Manager
+                </button>
+            </div>
+            
+        </div>
+        
+        <!-- Right Panel - AI Summary -->
+        <div class="ai-summary-panel">
+            <div class="ai-panel-header">
+                <i class="ti ti-sparkles"></i>
+                <h3>Campaign Summary</h3>
+            </div>
+            
+            <div class="ai-stat-row">
+                <span class="ai-stat-label">Total Channels</span>
+                <span class="ai-stat-value">7 Active</span>
+            </div>
+            <div class="ai-stat-row">
+                <span class="ai-stat-label">Campaign Duration</span>
+                <span class="ai-stat-value">42 Days</span>
+            </div>
+            <div class="ai-stat-row">
+                <span class="ai-stat-label">Total Touchpoints</span>
+                <span class="ai-stat-value">16,363</span>
+            </div>
+            <div class="ai-stat-row">
+                <span class="ai-stat-label">Audience Size</span>
+                <span class="ai-stat-value">2,847 Donors</span>
+            </div>
+            
+            <div class="ai-total-box">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                    <span style="font-size: 11px; font-weight: 600; text-transform: uppercase;">Channel</span>
+                    <div style="display: flex; gap: 24px;">
+                        <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; width: 70px; text-align: right;">Cost</span>
+                        <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; width: 80px; text-align: right;">Est. Return</span>
+                    </div>
+                </div>
+                <div class="ai-total-row">
+                    <span>Host Recruit</span>
+                    <div style="display: flex; gap: 24px;">
+                        <span style="width: 70px; text-align: right;">$0</span>
+                        <span style="width: 80px; text-align: right; color: #90EE90;">$25,000</span>
+                    </div>
+                </div>
+                <div class="ai-total-row">
+                    <span>Email</span>
+                    <div style="display: flex; gap: 24px;">
+                        <span style="width: 70px; text-align: right;">$3.00</span>
+                        <span style="width: 80px; text-align: right; color: #90EE90;">$11,000</span>
+                    </div>
+                </div>
+                <div class="ai-total-row">
+                    <span>VIP Calls</span>
+                    <div style="display: flex; gap: 24px;">
+                        <span style="width: 70px; text-align: right;">$0</span>
+                        <span style="width: 80px; text-align: right; color: #90EE90;">$42,500</span>
+                    </div>
+                </div>
+                <div class="ai-total-row">
+                    <span>Call Center</span>
+                    <div style="display: flex; gap: 24px;">
+                        <span style="width: 70px; text-align: right;">$1,625</span>
+                        <span style="width: 80px; text-align: right; color: #90EE90;">$27,500</span>
+                    </div>
+                </div>
+                <div class="ai-total-row">
+                    <span>Direct Mail</span>
+                    <div style="display: flex; gap: 24px;">
+                        <span style="width: 70px; text-align: right;">$2,125</span>
+                        <span style="width: 80px; text-align: right; color: #90EE90;">$12,500</span>
+                    </div>
+                </div>
+                <div class="ai-total-row">
+                    <span>SMS</span>
+                    <div style="display: flex; gap: 24px;">
+                        <span style="width: 70px; text-align: right;">$171</span>
+                        <span style="width: 80px; text-align: right; color: #90EE90;">$6,250</span>
+                    </div>
+                </div>
+                <div class="ai-total-row">
+                    <span>RVM</span>
+                    <div style="display: flex; gap: 24px;">
+                        <span style="width: 70px; text-align: right;">$54</span>
+                        <span style="width: 80px; text-align: right; color: #90EE90;">$3,200</span>
+                    </div>
+                </div>
+                <div class="ai-total-row big" style="display: flex; justify-content: space-between;">
+                    <span>TOTAL</span>
+                    <div style="display: flex; gap: 24px;">
+                        <span style="width: 70px; text-align: right;">$3,978</span>
+                        <span style="width: 80px; text-align: right; color: #90EE90;">$127,950</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 16px; background: rgba(52, 199, 89, 0.1); border-radius: 12px;">
+                <div style="font-size: 12px; font-weight: 600; color: var(--accent-green); margin-bottom: 8px;">PROJECTED ROI</div>
+                <div style="font-size: 28px; font-weight: 700; color: var(--accent-green);">32:1</div>
+                <div style="font-size: 12px; color: var(--text-secondary);">$127,950 return on $3,978 investment</div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 16px; background: var(--bg-secondary); border-radius: 12px;">
+                <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">CAMPAIGN MANAGER</div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--ai-gradient); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">SJ</div>
+                    <div>
+                        <div style="font-weight: 600;">Sarah Johnson</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Will receive for execution</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+    
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal">
+            <div class="modal-icon"><i class="ti ti-check"></i></div>
+            <h2>Campaign Approved!</h2>
+            <p>Your AI-generated campaign has been saved and sent to your Campaign Manager for execution.</p>
+            
+            <div class="modal-info">
+                <div class="modal-info-row">
+                    <span class="modal-info-label">Campaign ID</span>
+                    <span class="modal-info-value">CAMP-2025-0047</span>
+                </div>
+                <div class="modal-info-row">
+                    <span class="modal-info-label">Assigned To</span>
+                    <span class="modal-info-value">Sarah Johnson</span>
+                </div>
+                <div class="modal-info-row">
+                    <span class="modal-info-label">First Task</span>
+                    <span class="modal-info-value">Host Recruitment</span>
+                </div>
+                <div class="modal-info-row">
+                    <span class="modal-info-label">Status</span>
+                    <span class="modal-info-value" style="color: var(--accent-orange);">Pending Host Confirmation</span>
+                </div>
+            </div>
+            
+            <button class="modal-btn" onclick="goToDashboard()">
+                <i class="ti ti-layout-dashboard"></i> Go to Campaign Dashboard
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Load data from session storage
+        document.addEventListener('DOMContentLoaded', function() {
+            const name = sessionStorage.getItem('campaignName');
+            const category = sessionStorage.getItem('campaignCategory');
+            const subCategory = sessionStorage.getItem('campaignSubCategory');
+            const goal = sessionStorage.getItem('campaignGoal');
+            const budget = sessionStorage.getItem('campaignBudget');
+            const eventDate = sessionStorage.getItem('eventDate');
+            const hostNames = sessionStorage.getItem('hostNames');
+            
+            if (name) document.getElementById('display-name').textContent = name;
+            if (category && subCategory) {
+                document.getElementById('display-type').textContent = 
+                    category.charAt(0).toUpperCase() + category.slice(1) + ' - ' + 
+                    subCategory.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            }
+            if (goal) document.getElementById('display-goal').textContent = '$' + parseInt(goal).toLocaleString();
+            if (budget) document.getElementById('display-budget').textContent = '$' + parseInt(budget).toLocaleString();
+            if (eventDate) {
+                const date = new Date(eventDate);
+                document.getElementById('display-date').textContent = date.toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+            }
+            if (hostNames) {
+                document.getElementById('display-host').textContent = hostNames;
+                if (hostNames.includes('TBD')) {
+                    document.getElementById('display-host').classList.add('orange');
+                } else {
+                    document.getElementById('display-host').classList.remove('orange');
+                }
+            }
+        });
+        
+        function toggleStep(toggle) {
+            toggle.classList.toggle('off');
+        }
+        
+        function editSection(section) {
+            alert('Edit ' + section + ' - would open edit modal');
+        }
+        
+        function goBack() {
+            history.back();
+        }
+        
+        function approveCampaign() {
+            document.getElementById('success-modal').classList.add('open');
+        }
+        
+        function goToDashboard() {
+            window.location.href = 'campaigns-dashboard.html';
+        }
+    </script>
+    
+</body>
+</html>

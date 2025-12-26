@@ -1,0 +1,2627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>All Donors | BroyhillGOP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Apple-style fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- SF Symbols style icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --text-tertiary: #aeaeb2;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f7;
+            --bg-hover: #f0f0f2;
+            --border-color: #e5e5e7;
+            --accent-blue: #007aff;
+            --accent-green: #34c759;
+            --accent-orange: #ff9500;
+            --accent-red: #ff3b30;
+            --accent-purple: #af52de;
+            --sidebar-width: 260px;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Fixed AI Advisor - Top Right */
+        .ai-advisor-fixed {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            z-index: 400;
+        }
+        
+        .ai-advisor-fixed:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .ai-advisor-fixed i {
+            font-size: 20px;
+        }
+        
+        /* Small AI Helper Buttons */
+        .ai-help-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+            font-size: 14px;
+            transition: all 0.15s ease;
+            opacity: 0.8;
+            margin-left: -4px;
+        }
+        
+        .ai-help-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .grade-select-wrapper,
+        .county-select-wrapper,
+        .date-select-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* ========== SIDEBAR ========== */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+        
+        .sidebar-logo {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .sidebar-logo h1 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+        
+        .candidate-profile {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .candidate-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 12px;
+            border: 2px solid var(--border-color);
+        }
+        
+        .candidate-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        
+        .candidate-office {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        
+        .settings-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .settings-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .nav-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            margin: 2px 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.15s ease;
+        }
+        
+        .nav-item:hover {
+            background: var(--bg-hover);
+        }
+        
+        .nav-item.active {
+            background: var(--bg-secondary);
+        }
+        
+        .nav-item i {
+            width: 20px;
+            font-size: 18px;
+            margin-right: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .nav-item.active i {
+            color: var(--accent-blue);
+        }
+        
+        .nav-item .badge {
+            margin-left: auto;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+        
+        .nav-item .badge.blue { background: var(--accent-blue); color: white; }
+        .nav-item .badge.red { background: var(--accent-red); color: white; }
+        
+        .nav-primary {
+            padding: 0 12px;
+            margin: 8px 0;
+        }
+        
+        .nav-primary-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        
+        .nav-primary-btn:hover {
+            filter: brightness(1.1);
+        }
+        
+        .nav-primary-btn i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .nav-primary-btn.secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        .nav-primary-btn.secondary:hover {
+            background: var(--bg-hover);
+        }
+        
+        .nav-primary-btn .dropdown-arrow {
+            margin-left: auto;
+            margin-right: 0;
+            font-size: 16px;
+            transition: transform 0.2s ease;
+        }
+        
+        .nav-primary-btn.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .nav-dropdown {
+            display: none;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+        
+        .nav-dropdown.open {
+            display: block;
+        }
+        
+        .nav-dropdown-item {
+            display: block;
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.15s ease;
+        }
+        
+        .nav-dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .nav-dropdown-item:hover {
+            background: var(--bg-hover);
+        }
+        
+        .nav-dropdown-item.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+        
+        .nav-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 12px 20px;
+        }
+        
+        .nav-section-label {
+            padding: 16px 20px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* ========== MAIN CONTENT ========== */
+        .main {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+        
+        /* Page Header */
+        .page-header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 32px;
+        }
+        
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .page-header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        /* Filter Bar */
+        .filter-bar {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0 12px;
+            flex: 1;
+            max-width: 320px;
+        }
+        
+        .search-box i {
+            color: var(--text-tertiary);
+            font-size: 18px;
+        }
+        
+        .search-box input {
+            border: none;
+            background: transparent;
+            padding: 10px 12px;
+            font-size: 14px;
+            width: 100%;
+            outline: none;
+            font-family: inherit;
+        }
+        
+        .filter-select {
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            appearance: none;
+            padding-right: 32px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+        
+        .filter-select:hover {
+            border-color: var(--text-tertiary);
+        }
+        
+        .filter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+        
+        .filter-btn:hover {
+            background: var(--bg-hover);
+        }
+        
+        .filter-btn.primary {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+        
+        .filter-btn.primary:hover {
+            filter: brightness(1.1);
+        }
+        
+        /* County Select Button */
+        .county-select-wrapper {
+            position: relative;
+        }
+        
+        .county-select-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            background: #1d1d1f;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+        
+        .county-select-btn:hover {
+            background: #3a3a3c;
+        }
+        
+        .county-select-btn i {
+            font-size: 16px;
+            transition: transform 0.2s ease;
+        }
+        
+        .county-select-btn.open i {
+            transform: rotate(180deg);
+        }
+        
+        .county-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            min-width: 220px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            z-index: 200;
+            overflow: hidden;
+        }
+        
+        .county-dropdown.open {
+            display: block;
+        }
+        
+        .county-dropdown-header {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+        
+        .county-all-btn {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        .county-all-btn:hover {
+            filter: brightness(1.1);
+        }
+        
+        .county-clear-btn {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        .county-clear-btn:hover {
+            background: var(--bg-hover);
+        }
+        
+        .county-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .county-option:last-child {
+            border-bottom: none;
+        }
+        
+        .county-option:hover {
+            background: var(--bg-hover);
+        }
+        
+        .county-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-blue);
+            cursor: pointer;
+        }
+        
+        .county-option span {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        /* Grade Select Button */
+        .grade-select-wrapper {
+            position: relative;
+        }
+        
+        .grade-select-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            background: #1d1d1f;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+        
+        .grade-select-btn:hover {
+            background: #3a3a3c;
+        }
+        
+        .grade-select-btn i {
+            font-size: 16px;
+            transition: transform 0.2s ease;
+        }
+        
+        .grade-select-btn.open i {
+            transform: rotate(180deg);
+        }
+        
+        .grade-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            min-width: 200px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            z-index: 200;
+            overflow: hidden;
+        }
+        
+        .grade-dropdown.open {
+            display: block;
+        }
+        
+        .grade-dropdown-header {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+        
+        .grade-all-btn {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        .grade-all-btn:hover {
+            filter: brightness(1.1);
+        }
+        
+        .grade-clear-btn {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        .grade-clear-btn:hover {
+            background: var(--bg-hover);
+        }
+        
+        .grade-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .grade-option:last-child {
+            border-bottom: none;
+        }
+        
+        .grade-option:hover {
+            background: var(--bg-hover);
+        }
+        
+        .grade-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-blue);
+            cursor: pointer;
+        }
+        
+        .grade-option span:last-child {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-left: auto;
+        }
+        
+        /* Date Select Button */
+        .date-select-wrapper {
+            position: relative;
+        }
+        
+        .date-select-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            background: #1d1d1f;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+        
+        .date-select-btn:hover {
+            background: #3a3a3c;
+        }
+        
+        .date-select-btn i {
+            font-size: 16px;
+            transition: transform 0.2s ease;
+        }
+        
+        .date-select-btn.open i {
+            transform: rotate(180deg);
+        }
+        
+        .date-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            min-width: 240px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            z-index: 200;
+            overflow: hidden;
+        }
+        
+        .date-dropdown.open {
+            display: block;
+        }
+        
+        .date-dropdown-header {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+        
+        .date-all-btn {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        .date-all-btn:hover {
+            filter: brightness(1.1);
+        }
+        
+        .date-clear-btn {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        .date-clear-btn:hover {
+            background: var(--bg-hover);
+        }
+        
+        .date-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .date-option:hover {
+            background: var(--bg-hover);
+        }
+        
+        .date-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-blue);
+            cursor: pointer;
+        }
+        
+        .date-option span {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .date-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 4px 0;
+        }
+        
+        .date-custom {
+            padding: 14px;
+            background: var(--bg-secondary);
+        }
+        
+        .date-custom-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+        
+        .date-inputs {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .date-inputs input[type="date"] {
+            flex: 1;
+            padding: 8px 10px;
+            font-size: 13px;
+            font-family: inherit;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .date-inputs span {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .date-apply-btn {
+            width: 100%;
+            padding: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        .date-apply-btn:hover {
+            filter: brightness(1.1);
+        }
+        
+        .filter-spacer {
+            flex: 1;
+        }
+        
+        .results-count {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .extended-btn {
+            background: var(--accent-orange) !important;
+            color: white !important;
+            border-color: var(--accent-orange) !important;
+            font-weight: 600 !important;
+        }
+        
+        .extended-btn:hover {
+            filter: brightness(1.1);
+            background: var(--accent-orange) !important;
+        }
+        
+        /* AI Advisor Button */
+        .ai-advisor-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+        
+        .ai-advisor-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+        }
+        
+        .ai-advisor-btn i {
+            font-size: 18px;
+        }
+        
+        /* AI Advisor Panel */
+        .ai-panel-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 500;
+        }
+        
+        .ai-panel-overlay.open {
+            display: block;
+        }
+        
+        .ai-panel {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: 420px;
+            height: 100vh;
+            background: var(--bg-primary);
+            box-shadow: -4px 0 30px rgba(0,0,0,0.15);
+            z-index: 600;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.3s ease;
+        }
+        
+        .ai-panel.open {
+            right: 0;
+        }
+        
+        .ai-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .ai-panel-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .ai-panel-header h3 i {
+            font-size: 22px;
+        }
+        
+        .ai-panel-close {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .ai-panel-close:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .ai-panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .ai-suggestions {
+            margin-bottom: 20px;
+        }
+        
+        .ai-suggestions-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .ai-suggestion-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .ai-suggestion-card:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .ai-suggestion-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .ai-suggestion-card p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        
+        .ai-panel-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+        }
+        
+        .ai-chat-input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .ai-chat-input {
+            flex: 1;
+            padding: 12px 14px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .ai-chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .ai-chat-send {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .ai-chat-send:hover {
+            filter: brightness(1.1);
+        }
+        
+        /* Saved Views Dropdown */
+        .saved-views-wrapper {
+            position: relative;
+        }
+        
+        .saved-views-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            background: var(--accent-purple);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+        
+        .saved-views-btn:hover {
+            filter: brightness(1.1);
+        }
+        
+        .saved-views-btn i:first-child {
+            font-size: 16px;
+        }
+        
+        .saved-views-btn i:last-child {
+            font-size: 14px;
+            transition: transform 0.2s ease;
+        }
+        
+        .saved-views-btn.open i:last-child {
+            transform: rotate(180deg);
+        }
+        
+        .saved-views-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            min-width: 280px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            z-index: 300;
+            overflow: hidden;
+        }
+        
+        .saved-views-dropdown.open {
+            display: block;
+        }
+        
+        .saved-views-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+        
+        .saved-views-header span {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .new-view-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        .new-view-btn:hover {
+            filter: brightness(1.1);
+        }
+        
+        .saved-view-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.15s ease;
+        }
+        
+        .saved-view-item:hover {
+            background: var(--bg-hover);
+        }
+        
+        .saved-view-item.active {
+            background: rgba(0, 122, 255, 0.08);
+        }
+        
+        .saved-view-item.active .saved-view-name {
+            color: var(--accent-blue);
+        }
+        
+        .saved-view-item i {
+            color: var(--accent-blue);
+            font-size: 18px;
+        }
+        
+        .saved-view-info {
+            flex: 1;
+        }
+        
+        .saved-view-name {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        
+        .saved-view-count {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .saved-views-footer {
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            text-align: center;
+        }
+        
+        .saved-views-footer a {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+        
+        .saved-views-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .save-view-btn {
+            background: var(--accent-green) !important;
+            color: white !important;
+            border-color: var(--accent-green) !important;
+        }
+        
+        .save-view-btn:hover {
+            filter: brightness(1.1);
+        }
+        
+        /* Save View Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.open {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 18px;
+        }
+        
+        .modal-close:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: border-color 0.15s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-hint {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+        
+        .current-filters {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .current-filters-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .filter-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 500;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin: 2px;
+            color: var(--text-primary);
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+        
+        .modal-btn.secondary {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .modal-btn.secondary:hover {
+            background: var(--bg-hover);
+        }
+        
+        .modal-btn.primary {
+            background: var(--accent-blue);
+            border: none;
+            color: white;
+        }
+        
+        .modal-btn.primary:hover {
+            filter: brightness(1.1);
+        }
+        
+        .modal-btn.campaign {
+            background: var(--ai-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+            border: none;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .modal-btn.campaign:hover {
+            filter: brightness(1.1);
+        }
+        
+        /* Data Table */
+        .table-container {
+            padding: 24px 32px;
+        }
+        
+        .data-table {
+            width: 100%;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            border-collapse: separate;
+            border-spacing: 0;
+            overflow: hidden;
+        }
+        
+        .data-table th {
+            text-align: left;
+            padding: 14px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+        
+        .data-table th:hover {
+            color: var(--text-primary);
+        }
+        
+        .data-table th .sort-icon {
+            margin-left: 4px;
+            opacity: 0.4;
+        }
+        
+        .data-table th.sorted .sort-icon {
+            opacity: 1;
+            color: var(--accent-blue);
+        }
+        
+        .data-table td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tbody tr:hover {
+            background: var(--bg-hover);
+        }
+        
+        .data-table tbody tr {
+            cursor: pointer;
+        }
+        
+        /* Cell Styles */
+        .donor-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .donor-name span {
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        .grade-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+        }
+        
+        .grade-badge.a-plus { background: #d4edda; color: #155724; }
+        .grade-badge.a { background: #d4edda; color: #155724; }
+        .grade-badge.a-minus { background: #d1ecf1; color: #0c5460; }
+        .grade-badge.b-plus { background: #d1ecf1; color: #0c5460; }
+        .grade-badge.b { background: #fff3cd; color: #856404; }
+        .grade-badge.b-minus { background: #fff3cd; color: #856404; }
+        .grade-badge.c-plus { background: #ffeeba; color: #856404; }
+        .grade-badge.c { background: #f8d7da; color: #721c24; }
+        .grade-badge.d { background: #f5c6cb; color: #721c24; }
+        .grade-badge.u { background: var(--bg-secondary); color: var(--text-secondary); }
+        
+        .amount {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .amount.high { color: var(--accent-green); }
+        .amount.medium { color: var(--accent-blue); }
+        .amount.low { color: var(--text-secondary); }
+        
+        .county-cell {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        
+        .date-cell {
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--accent-blue);
+            background: transparent;
+            border: 1px solid var(--accent-blue);
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+        
+        .action-btn:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+        
+        .rank-header .rank-label {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .rank-info-icon {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            cursor: help;
+        }
+        
+        .rank-tooltip {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            width: 220px;
+            padding: 10px 12px;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.5;
+            color: white;
+            background: #1d1d1f;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100;
+        }
+        
+        .rank-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 16px;
+            width: 12px;
+            height: 12px;
+            background: #1d1d1f;
+            transform: rotate(45deg);
+        }
+        
+        .rank-label:hover .rank-tooltip {
+            display: block;
+        }
+        
+        .rank-label:hover .rank-info-icon {
+            color: var(--accent-blue);
+        }
+        
+        .rank-number {
+            display: flex;
+            align-items: baseline;
+            gap: 2px;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .rank-number .rank-position {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+        
+        .rank-number .rank-total {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+        }
+        
+        .pagination-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pagination-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+        
+        .pagination-btn:hover {
+            background: var(--bg-hover);
+        }
+        
+        .pagination-btn.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <!-- Fixed AI Advisor Button - Top Right -->
+    <button class="ai-advisor-fixed" onclick="openAIAdvisor()">
+        <i class="ti ti-sparkles"></i>
+        <span>AI Advisor</span>
+    </button>
+    
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="sidebar">
+        
+        <div class="sidebar-logo">
+            <h1>BroyhillGOP</h1>
+        </div>
+        
+        <div class="candidate-profile">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&h=160&fit=crop&crop=face" 
+                 alt="Candidate" 
+                 class="candidate-photo">
+            <div class="candidate-name">Ed Broyhill</div>
+            <div class="candidate-office">State Auditor</div>
+            <button class="settings-btn">
+                <i class="ti ti-settings"></i>
+                Settings
+            </button>
+        </div>
+        
+        <nav class="nav-scroll">
+            
+            <a href="homepage.html" class="nav-item">
+                <i class="ti ti-home"></i>
+                Home
+            </a>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-chart-dots-2"></i>
+                Overview
+            </a>
+            
+            <div class="nav-divider"></div>
+            
+            <div class="nav-primary">
+                <button class="nav-primary-btn open" onclick="toggleDropdown('donors-dropdown')">
+                    <i class="ti ti-coin"></i>
+                    Donors
+                    <i class="ti ti-chevron-down dropdown-arrow"></i>
+                </button>
+                <div class="nav-dropdown open" id="donors-dropdown">
+                    <a href="donors-all.html" class="nav-dropdown-item active">All Donors</a>
+                    <a href="donors-district.html" class="nav-dropdown-item">District Donors</a>
+                    <a href="donors-county.html" class="nav-dropdown-item">County Donors</a>
+                    <a href="donors-mine.html" class="nav-dropdown-item">My Donors (Contributors)</a>
+                    <a href="donors-prospects.html" class="nav-dropdown-item">Your Top AI Donors</a>
+                </div>
+            </div>
+            
+            <div class="nav-primary">
+                <a href="#" class="nav-primary-btn secondary">
+                    <i class="ti ti-users"></i>
+                    Volunteers
+                </a>
+            </div>
+            
+            <div class="nav-divider"></div>
+            
+            <div class="nav-section-label">Outreach</div>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-mail"></i>
+                Email
+                <span class="badge blue">16</span>
+            </a>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-message"></i>
+                SMS
+            </a>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-phone"></i>
+                Calls
+            </a>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-brand-facebook"></i>
+                Social
+            </a>
+            
+            <div class="nav-section-label">Campaign</div>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-calendar"></i>
+                Calendar
+            </a>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-ticket"></i>
+                Events
+                <span class="badge red">2</span>
+            </a>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-video"></i>
+                Videos
+            </a>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-rocket"></i>
+                Campaigns
+            </a>
+            
+            <div class="nav-divider"></div>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-layout-dashboard"></i>
+                Admin Panel
+            </a>
+            
+        </nav>
+        
+    </aside>
+    
+    <!-- ========== MAIN ========== -->
+    <main class="main">
+        
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>All Donors</h1>
+            <p>Complete donor database with grading and contact information</p>
+        </div>
+        
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <!-- Saved Views Dropdown -->
+            <div class="saved-views-wrapper">
+                <button class="saved-views-btn" onclick="toggleSavedViewsDropdown()">
+                    <i class="ti ti-bookmark"></i>
+                    My Saved Lists
+                    <i class="ti ti-chevron-down"></i>
+                </button>
+                <div class="saved-views-dropdown" id="saved-views-dropdown">
+                    <div class="saved-views-header">
+                        <span>Campaign Lists</span>
+                        <button class="new-view-btn" onclick="openSaveViewModal()"><i class="ti ti-plus"></i> New</button>
+                    </div>
+                    <div class="saved-view-item active" onclick="loadSavedView('top-a')">
+                        <div class="saved-view-info">
+                            <span class="saved-view-name">Top A-Grade Donors 2024</span>
+                            <span class="saved-view-count">2,847 donors</span>
+                        </div>
+                        <i class="ti ti-check"></i>
+                    </div>
+                    <div class="saved-view-item" onclick="loadSavedView('holiday')">
+                        <div class="saved-view-info">
+                            <span class="saved-view-name">Holiday Giving Campaign</span>
+                            <span class="saved-view-count">1,234 donors</span>
+                        </div>
+                    </div>
+                    <div class="saved-view-item" onclick="loadSavedView('lapsed')">
+                        <div class="saved-view-info">
+                            <span class="saved-view-name">Lapsed Donors 2023</span>
+                            <span class="saved-view-count">892 donors</span>
+                        </div>
+                    </div>
+                    <div class="saved-view-item" onclick="loadSavedView('forsyth')">
+                        <div class="saved-view-info">
+                            <span class="saved-view-name">Forsyth High-Value</span>
+                            <span class="saved-view-count">456 donors</span>
+                        </div>
+                    </div>
+                    <div class="saved-views-footer">
+                        <a href="#" onclick="manageSavedViews()">Manage All Views</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="search-box">
+                <i class="ti ti-search"></i>
+                <input type="text" placeholder="Search by name, email, or city...">
+            </div>
+            
+            <div class="grade-select-wrapper">
+                <button class="grade-select-btn" onclick="toggleGradeDropdown()">
+                    GRADE SELECT
+                    <i class="ti ti-chevron-down"></i>
+                </button>
+                <button class="ai-help-btn" onclick="aiHelpGrade()" title="AI help with grades">
+                    <i class="ti ti-sparkles"></i>
+                </button>
+                <div class="grade-dropdown" id="grade-dropdown">
+                    <div class="grade-dropdown-header">
+                        <button class="grade-all-btn" onclick="selectAllGrades()">ALL</button>
+                        <button class="grade-clear-btn" onclick="clearAllGrades()">Clear</button>
+                    </div>
+                    <label class="grade-option">
+                        <input type="checkbox" value="a+" checked>
+                        <span class="grade-badge a-plus">A+</span>
+                        <span>Top Tier</span>
+                    </label>
+                    <label class="grade-option">
+                        <input type="checkbox" value="a" checked>
+                        <span class="grade-badge a">A</span>
+                        <span>Excellent</span>
+                    </label>
+                    <label class="grade-option">
+                        <input type="checkbox" value="a-" checked>
+                        <span class="grade-badge a-minus">A-</span>
+                        <span>Very Good</span>
+                    </label>
+                    <label class="grade-option">
+                        <input type="checkbox" value="b+">
+                        <span class="grade-badge b-plus">B+</span>
+                        <span>Good</span>
+                    </label>
+                    <label class="grade-option">
+                        <input type="checkbox" value="b">
+                        <span class="grade-badge b">B</span>
+                        <span>Above Average</span>
+                    </label>
+                    <label class="grade-option">
+                        <input type="checkbox" value="b-">
+                        <span class="grade-badge b-minus">B-</span>
+                        <span>Average</span>
+                    </label>
+                    <label class="grade-option">
+                        <input type="checkbox" value="c+">
+                        <span class="grade-badge c-plus">C+</span>
+                        <span>Below Average</span>
+                    </label>
+                    <label class="grade-option">
+                        <input type="checkbox" value="c">
+                        <span class="grade-badge c">C</span>
+                        <span>Low</span>
+                    </label>
+                    <label class="grade-option">
+                        <input type="checkbox" value="d">
+                        <span class="grade-badge d">D</span>
+                        <span>Minimal</span>
+                    </label>
+                    <label class="grade-option">
+                        <input type="checkbox" value="u">
+                        <span class="grade-badge u">U</span>
+                        <span>Unqualified</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="county-select-wrapper">
+                <button class="county-select-btn" onclick="toggleCountyDropdown()">
+                    COUNTY SELECT
+                    <i class="ti ti-chevron-down"></i>
+                </button>
+                <button class="ai-help-btn" onclick="aiHelpCounty()" title="AI help with counties">
+                    <i class="ti ti-sparkles"></i>
+                </button>
+                <div class="county-dropdown" id="county-dropdown">
+                    <div class="county-dropdown-header">
+                        <button class="county-all-btn" onclick="selectAllCounties()">ALL</button>
+                        <button class="county-clear-btn" onclick="clearAllCounties()">Clear</button>
+                    </div>
+                    <label class="county-option">
+                        <input type="checkbox" value="forsyth" checked>
+                        <span>Forsyth County</span>
+                    </label>
+                    <label class="county-option">
+                        <input type="checkbox" value="stokes" checked>
+                        <span>Stokes County</span>
+                    </label>
+                    <label class="county-option">
+                        <input type="checkbox" value="surry">
+                        <span>Surry County</span>
+                    </label>
+                    <label class="county-option">
+                        <input type="checkbox" value="yadkin">
+                        <span>Yadkin County</span>
+                    </label>
+                    <label class="county-option">
+                        <input type="checkbox" value="davie">
+                        <span>Davie County</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="date-select-wrapper">
+                <button class="date-select-btn" onclick="toggleDateDropdown()">
+                    DATE RANGE
+                    <i class="ti ti-chevron-down"></i>
+                </button>
+                <button class="ai-help-btn" onclick="aiHelpDate()" title="AI help with dates">
+                    <i class="ti ti-sparkles"></i>
+                </button>
+                <div class="date-dropdown" id="date-dropdown">
+                    <div class="date-dropdown-header">
+                        <button class="date-all-btn" onclick="selectAllDates()">ALL</button>
+                        <button class="date-clear-btn" onclick="clearAllDates()">Clear</button>
+                    </div>
+                    <label class="date-option">
+                        <input type="checkbox" value="ytd" checked>
+                        <span>YTD (2024)</span>
+                    </label>
+                    <label class="date-option">
+                        <input type="checkbox" value="2024" checked>
+                        <span>2024</span>
+                    </label>
+                    <label class="date-option">
+                        <input type="checkbox" value="2023">
+                        <span>2023</span>
+                    </label>
+                    <label class="date-option">
+                        <input type="checkbox" value="2022">
+                        <span>2022</span>
+                    </label>
+                    <label class="date-option">
+                        <input type="checkbox" value="2021">
+                        <span>2021</span>
+                    </label>
+                    <label class="date-option">
+                        <input type="checkbox" value="2020">
+                        <span>2020</span>
+                    </label>
+                    <label class="date-option">
+                        <input type="checkbox" value="2019">
+                        <span>2019</span>
+                    </label>
+                    <label class="date-option">
+                        <input type="checkbox" value="2018">
+                        <span>2018</span>
+                    </label>
+                    <div class="date-divider"></div>
+                    <div class="date-custom">
+                        <span class="date-custom-label">Custom Range</span>
+                        <div class="date-inputs">
+                            <input type="date" id="date-from" placeholder="From">
+                            <span>to</span>
+                            <input type="date" id="date-to" placeholder="To">
+                        </div>
+                        <button class="date-apply-btn" onclick="applyDateRange()">Apply</button>
+                    </div>
+                </div>
+            </div>
+            
+            <select class="filter-select">
+                <option value="">Sort By</option>
+                <option value="grade-desc">Grade (High → Low)</option>
+                <option value="grade-asc">Grade (Low → High)</option>
+                <option value="amount-desc">Total Given (High → Low)</option>
+                <option value="amount-asc">Total Given (Low → High)</option>
+                <option value="recent">Most Recent Donation</option>
+                <option value="name-asc">Name (A → Z)</option>
+                <option value="name-desc">Name (Z → A)</option>
+            </select>
+            
+            <button class="filter-btn extended-btn" onclick="goToExtendedSearch()">
+                <i class="ti ti-filter-cog"></i>
+                Extended Search & Sort
+            </button>
+            
+            <div class="filter-spacer"></div>
+            
+            <span class="results-count">5,789 donors</span>
+            
+            <button class="filter-btn save-view-btn" onclick="openSaveViewModal()">
+                <i class="ti ti-device-floppy"></i>
+                Save View
+            </button>
+            
+            <button class="filter-btn primary">
+                <i class="ti ti-download"></i>
+                Export
+            </button>
+        </div>
+        
+        <!-- Data Table -->
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;" class="rank-header">
+                            <span class="rank-label">
+                                Rank
+                                <i class="ti ti-info-circle rank-info-icon"></i>
+                                <span class="rank-tooltip">Position based on current sort & filters. Changes dynamically as you adjust Grade, County, Date Range, and Sort By selections.</span>
+                            </span>
+                            <i class="ti ti-chevron-down sort-icon"></i>
+                        </th>
+                        <th class="sorted">
+                            Name
+                            <i class="ti ti-chevron-down sort-icon"></i>
+                        </th>
+                        <th>
+                            Grade
+                            <i class="ti ti-chevron-down sort-icon"></i>
+                        </th>
+                        <th>
+                            Total Given
+                            <i class="ti ti-chevron-down sort-icon"></i>
+                        </th>
+                        <th>
+                            County
+                            <i class="ti ti-chevron-down sort-icon"></i>
+                        </th>
+                        <th>
+                            Last Donation
+                            <i class="ti ti-chevron-down sort-icon"></i>
+                        </th>
+                        <th>
+                            Employer
+                            <i class="ti ti-chevron-down sort-icon"></i>
+                        </th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">1</span><span class="rank-total">/5,789</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                James E. Broyhill
+                                <span>ed@broyhill.net</span>
+                            </div>
+                        </td>
+                        <td><span class="grade-badge a-plus">A+</span></td>
+                        <td><span class="amount high">$477,618</span></td>
+                        <td class="county-cell">Forsyth</td>
+                        <td class="date-cell">Dec 15, 2024</td>
+                        <td class="county-cell">Broyhill Management</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">2</span><span class="rank-total">/5,789</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Louis DeJoy
+                                <span>louis@dejoy.com</span>
+                            </div>
+                        </td>
+                        <td><span class="grade-badge a">A</span></td>
+                        <td><span class="amount high">$2,450,000</span></td>
+                        <td class="county-cell">Guilford</td>
+                        <td class="date-cell">Nov 28, 2024</td>
+                        <td class="county-cell">USPS</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">3</span><span class="rank-total">/5,789</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Art Pope
+                                <span>apope@varietywholesalers.com</span>
+                            </div>
+                        </td>
+                        <td><span class="grade-badge a">A</span></td>
+                        <td><span class="amount high">$1,875,000</span></td>
+                        <td class="county-cell">Wake</td>
+                        <td class="date-cell">Dec 02, 2024</td>
+                        <td class="county-cell">Variety Wholesalers</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">4</span><span class="rank-total">/5,789</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Sarah Mitchell
+                                <span>smitchell@gmail.com</span>
+                            </div>
+                        </td>
+                        <td><span class="grade-badge a-minus">A-</span></td>
+                        <td><span class="amount high">$125,400</span></td>
+                        <td class="county-cell">Mecklenburg</td>
+                        <td class="date-cell">Nov 15, 2024</td>
+                        <td class="county-cell">Bank of America</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">5</span><span class="rank-total">/5,789</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Robert Thompson
+                                <span>rthompson@law.com</span>
+                            </div>
+                        </td>
+                        <td><span class="grade-badge b-plus">B+</span></td>
+                        <td><span class="amount medium">$45,200</span></td>
+                        <td class="county-cell">Wake</td>
+                        <td class="date-cell">Oct 30, 2024</td>
+                        <td class="county-cell">Thompson & Associates</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">6</span><span class="rank-total">/5,789</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Jennifer Adams
+                                <span>jadams@realestate.com</span>
+                            </div>
+                        </td>
+                        <td><span class="grade-badge b">B</span></td>
+                        <td><span class="amount medium">$18,500</span></td>
+                        <td class="county-cell">Forsyth</td>
+                        <td class="date-cell">Sep 22, 2024</td>
+                        <td class="county-cell">Coldwell Banker</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">7</span><span class="rank-total">/5,789</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Michael Chen
+                                <span>mchen@techcorp.com</span>
+                            </div>
+                        </td>
+                        <td><span class="grade-badge b-minus">B-</span></td>
+                        <td><span class="amount medium">$8,750</span></td>
+                        <td class="county-cell">Durham</td>
+                        <td class="date-cell">Aug 14, 2024</td>
+                        <td class="county-cell">Red Hat</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">8</span><span class="rank-total">/5,789</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Patricia Williams
+                                <span>pwilliams@doctor.com</span>
+                            </div>
+                        </td>
+                        <td><span class="grade-badge c-plus">C+</span></td>
+                        <td><span class="amount low">$3,200</span></td>
+                        <td class="county-cell">Guilford</td>
+                        <td class="date-cell">Jul 08, 2024</td>
+                        <td class="county-cell">Cone Health</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">9</span><span class="rank-total">/5,789</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                David Brown
+                                <span>dbrown@email.com</span>
+                            </div>
+                        </td>
+                        <td><span class="grade-badge c">C</span></td>
+                        <td><span class="amount low">$1,450</span></td>
+                        <td class="county-cell">Buncombe</td>
+                        <td class="date-cell">Jun 20, 2024</td>
+                        <td class="county-cell">Retired</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">10</span><span class="rank-total">/5,789</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Nancy Wilson
+                                <span>nwilson@hotmail.com</span>
+                            </div>
+                        </td>
+                        <td><span class="grade-badge u">U</span></td>
+                        <td><span class="amount low">$0</span></td>
+                        <td class="county-cell">Catawba</td>
+                        <td class="date-cell">—</td>
+                        <td class="county-cell">Self-Employed</td>
+                        <td><button class="action-btn">View</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- Pagination -->
+            <div class="pagination">
+                <div class="pagination-info">
+                    Showing 1–10 of 111,266 donors
+                </div>
+                <div class="pagination-controls">
+                    <button class="pagination-btn" disabled>
+                        <i class="ti ti-chevron-left"></i>
+                    </button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">4</button>
+                    <button class="pagination-btn">5</button>
+                    <span style="color: var(--text-tertiary);">...</span>
+                    <button class="pagination-btn">11,127</button>
+                    <button class="pagination-btn">
+                        <i class="ti ti-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+    
+    <!-- Save View Modal -->
+    <div class="modal-overlay" id="save-view-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Save Campaign View</h3>
+                <button class="modal-close" onclick="closeSaveViewModal()">
+                    <i class="ti ti-x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="current-filters">
+                    <div class="current-filters-title">Current Filters Applied</div>
+                    <span class="filter-tag">Grade: A+, A, A-</span>
+                    <span class="filter-tag">County: Forsyth, Stokes</span>
+                    <span class="filter-tag">Date: 2024, YTD</span>
+                    <span class="filter-tag">Sort: Total Given (High → Low)</span>
+                </div>
+                <div class="form-group">
+                    <label for="view-name">View Name</label>
+                    <input type="text" id="view-name" placeholder="e.g., Holiday Giving Campaign">
+                    <div class="form-hint">Choose a descriptive name for this donor list</div>
+                </div>
+                <div class="form-group">
+                    <label for="view-description">Description (Optional)</label>
+                    <textarea id="view-description" placeholder="e.g., Top-tier donors in my district for year-end fundraising push"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeSaveViewModal()">Cancel</button>
+                <button class="modal-btn primary" onclick="saveView()">Save View</button>
+                <button class="modal-btn campaign" onclick="saveAndCreateCampaign()">
+                    <i class="ti ti-rocket"></i> Save & Create Campaign
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI Advisor Panel -->
+    <div class="ai-panel-overlay" id="ai-panel-overlay" onclick="closeAIAdvisor()"></div>
+    <div class="ai-panel" id="ai-panel">
+        <div class="ai-panel-header">
+            <h3><i class="ti ti-sparkles"></i> BroyhillGOP AI Advisor</h3>
+            <button class="ai-panel-close" onclick="closeAIAdvisor()">
+                <i class="ti ti-x"></i>
+            </button>
+        </div>
+        <div class="ai-panel-body">
+            <div class="ai-suggestions">
+                <div class="ai-suggestions-title">Suggested Actions</div>
+                <div class="ai-suggestion-card" onclick="applyAISuggestion('top-donors')">
+                    <h4>🎯 Find Your Top 100 Donors</h4>
+                    <p>Show A+ and A grade donors sorted by total giving for targeted outreach.</p>
+                </div>
+                <div class="ai-suggestion-card" onclick="applyAISuggestion('lapsed')">
+                    <h4>📉 Re-engage Lapsed Donors</h4>
+                    <p>Find donors who gave in 2022-2023 but not in 2024 - perfect for year-end appeals.</p>
+                </div>
+                <div class="ai-suggestion-card" onclick="applyAISuggestion('local-high')">
+                    <h4>📍 Local High-Value Prospects</h4>
+                    <p>A-grade donors in Forsyth & Stokes counties who haven't donated to you yet.</p>
+                </div>
+                <div class="ai-suggestion-card" onclick="applyAISuggestion('recurring')">
+                    <h4>🔄 Build Recurring Donor Base</h4>
+                    <p>Find donors who gave multiple times - ideal candidates for monthly giving.</p>
+                </div>
+            </div>
+            <div class="ai-suggestions">
+                <div class="ai-suggestions-title">Campaign Intelligence</div>
+                <div class="ai-suggestion-card" onclick="applyAISuggestion('event-donors')">
+                    <h4>🎪 Event Invitation List</h4>
+                    <p>Build a list of donors within 30 miles who typically attend fundraising events.</p>
+                </div>
+                <div class="ai-suggestion-card" onclick="applyAISuggestion('max-out')">
+                    <h4>💰 Max-Out Potential</h4>
+                    <p>Donors approaching contribution limits who could give more this cycle.</p>
+                </div>
+            </div>
+        </div>
+        <div class="ai-panel-footer">
+            <div class="ai-chat-input-wrapper">
+                <input type="text" class="ai-chat-input" placeholder="Ask AI anything about your donors...">
+                <button class="ai-chat-send">
+                    <i class="ti ti-send"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            const btn = dropdown.previousElementSibling;
+            dropdown.classList.toggle('open');
+            btn.classList.toggle('open');
+        }
+        
+        function openAIAdvisor() {
+            document.getElementById('ai-panel').classList.add('open');
+            document.getElementById('ai-panel-overlay').classList.add('open');
+        }
+        
+        function closeAIAdvisor() {
+            document.getElementById('ai-panel').classList.remove('open');
+            document.getElementById('ai-panel-overlay').classList.remove('open');
+        }
+        
+        // Contextual AI Help Functions
+        function aiHelpGrade() {
+            openAIAdvisor();
+            // Could pre-populate chat or show grade-specific suggestions
+            document.querySelector('.ai-chat-input').value = 'Help me understand donor grades';
+            document.querySelector('.ai-chat-input').focus();
+        }
+        
+        function aiHelpCounty() {
+            openAIAdvisor();
+            document.querySelector('.ai-chat-input').value = 'Which counties should I focus on?';
+            document.querySelector('.ai-chat-input').focus();
+        }
+        
+        function aiHelpDate() {
+            openAIAdvisor();
+            document.querySelector('.ai-chat-input').value = 'What date range is best for my campaign?';
+            document.querySelector('.ai-chat-input').focus();
+        }
+        
+        function applyAISuggestion(suggestionId) {
+            console.log('Applying AI suggestion:', suggestionId);
+            
+            // Example: Apply different filter presets based on suggestion
+            switch(suggestionId) {
+                case 'top-donors':
+                    // Set Grade to A+, A only, sort by total given
+                    clearAllGrades();
+                    document.querySelector('.grade-option input[value="a+"]').checked = true;
+                    document.querySelector('.grade-option input[value="a"]').checked = true;
+                    document.querySelector('.filter-select').value = 'amount-desc';
+                    break;
+                case 'lapsed':
+                    // Set date to 2022-2023, exclude 2024
+                    clearAllDates();
+                    document.querySelector('.date-option input[value="2022"]').checked = true;
+                    document.querySelector('.date-option input[value="2023"]').checked = true;
+                    break;
+                case 'local-high':
+                    // Set counties and high grades
+                    clearAllGrades();
+                    document.querySelector('.grade-option input[value="a"]').checked = true;
+                    document.querySelector('.grade-option input[value="a-"]').checked = true;
+                    selectAllCounties();
+                    break;
+            }
+            
+            closeAIAdvisor();
+            // Would trigger a re-filter of results
+        }
+        
+        function goToExtendedSearch() {
+            // Gather current filter state
+            const currentFilters = {
+                grades: Array.from(document.querySelectorAll('.grade-option input:checked')).map(cb => cb.value),
+                counties: Array.from(document.querySelectorAll('.county-option input:checked')).map(cb => cb.value),
+                dates: Array.from(document.querySelectorAll('.date-option input:checked')).map(cb => cb.value),
+                sort: document.querySelector('.filter-select').value,
+                search: document.querySelector('.search-box input').value
+            };
+            
+            // Store in sessionStorage to pass to extended page
+            sessionStorage.setItem('donorFilters', JSON.stringify(currentFilters));
+            
+            // Navigate to extended search page
+            window.location.href = 'donors-extended-search.html';
+        }
+        
+        // Saved Views Functions
+        function toggleSavedViewsDropdown() {
+            const dropdown = document.getElementById('saved-views-dropdown');
+            const btn = document.querySelector('.saved-views-btn');
+            dropdown.classList.toggle('open');
+            btn.classList.toggle('open');
+        }
+        
+        function loadSavedView(viewId) {
+            console.log('Loading saved view:', viewId);
+            // Would load the filter settings from database
+            document.querySelectorAll('.saved-view-item').forEach(item => item.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            toggleSavedViewsDropdown();
+        }
+        
+        function openSaveViewModal() {
+            document.getElementById('save-view-modal').classList.add('open');
+            // Close any open dropdowns
+            document.getElementById('saved-views-dropdown').classList.remove('open');
+            document.querySelector('.saved-views-btn').classList.remove('open');
+        }
+        
+        function closeSaveViewModal() {
+            document.getElementById('save-view-modal').classList.remove('open');
+        }
+        
+        function saveAndCreateCampaign() {
+            const name = document.getElementById('view-name').value;
+            
+            if (!name.trim()) {
+                alert('Please enter a view name first');
+                return;
+            }
+            
+            // Save the view first
+            const currentFilters = {
+                grades: Array.from(document.querySelectorAll('.grade-option input:checked')).map(cb => cb.value),
+                counties: Array.from(document.querySelectorAll('.county-option input:checked')).map(cb => cb.value),
+                dates: Array.from(document.querySelectorAll('.date-option input:checked')).map(cb => cb.value),
+                sort: document.querySelector('.filter-select').value,
+                search: document.querySelector('.search-box input').value
+            };
+            
+            // Store view and navigate to campaign wizard
+            sessionStorage.setItem('savedViewName', name);
+            sessionStorage.setItem('savedViewFilters', JSON.stringify(currentFilters));
+            
+            closeSaveViewModal();
+            window.location.href = 'campaign-wizard.html';
+        }
+        
+        function saveView() {
+            const name = document.getElementById('view-name').value;
+            const description = document.getElementById('view-description').value;
+            
+            if (!name.trim()) {
+                alert('Please enter a view name');
+                return;
+            }
+            
+            // Would save to database with current filter state
+            console.log('Saving view:', { name, description });
+            
+            closeSaveViewModal();
+            alert('View saved: ' + name);
+        }
+        
+        function manageSavedViews() {
+            console.log('Opening saved views management');
+            // Would navigate to management page
+        }
+        
+        function toggleDateDropdown() {
+            const dropdown = document.getElementById('date-dropdown');
+            const btn = dropdown.previousElementSibling;
+            dropdown.classList.toggle('open');
+            btn.classList.toggle('open');
+        }
+        
+        function selectAllDates() {
+            const checkboxes = document.querySelectorAll('.date-option input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = true);
+        }
+        
+        function clearAllDates() {
+            const checkboxes = document.querySelectorAll('.date-option input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+        }
+        
+        function applyDateRange() {
+            const from = document.getElementById('date-from').value;
+            const to = document.getElementById('date-to').value;
+            console.log('Custom date range:', from, 'to', to);
+            // Close dropdown after applying
+            document.getElementById('date-dropdown').classList.remove('open');
+            document.querySelector('.date-select-btn').classList.remove('open');
+        }
+        
+        function toggleGradeDropdown() {
+            const dropdown = document.getElementById('grade-dropdown');
+            const btn = dropdown.previousElementSibling;
+            dropdown.classList.toggle('open');
+            btn.classList.toggle('open');
+        }
+        
+        function selectAllGrades() {
+            const checkboxes = document.querySelectorAll('.grade-option input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = true);
+        }
+        
+        function clearAllGrades() {
+            const checkboxes = document.querySelectorAll('.grade-option input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+        }
+        
+        function toggleCountyDropdown() {
+            const dropdown = document.getElementById('county-dropdown');
+            const btn = dropdown.previousElementSibling;
+            dropdown.classList.toggle('open');
+            btn.classList.toggle('open');
+        }
+        
+        function selectAllCounties() {
+            const checkboxes = document.querySelectorAll('.county-option input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = true);
+        }
+        
+        function clearAllCounties() {
+            const checkboxes = document.querySelectorAll('.county-option input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const savedViewsWrapper = document.querySelector('.saved-views-wrapper');
+            if (savedViewsWrapper && !savedViewsWrapper.contains(e.target)) {
+                document.getElementById('saved-views-dropdown').classList.remove('open');
+                document.querySelector('.saved-views-btn').classList.remove('open');
+            }
+            
+            const gradeWrapper = document.querySelector('.grade-select-wrapper');
+            if (gradeWrapper && !gradeWrapper.contains(e.target)) {
+                document.getElementById('grade-dropdown').classList.remove('open');
+                document.querySelector('.grade-select-btn').classList.remove('open');
+            }
+            
+            const countyWrapper = document.querySelector('.county-select-wrapper');
+            if (countyWrapper && !countyWrapper.contains(e.target)) {
+                document.getElementById('county-dropdown').classList.remove('open');
+                document.querySelector('.county-select-btn').classList.remove('open');
+            }
+            
+            const dateWrapper = document.querySelector('.date-select-wrapper');
+            if (dateWrapper && !dateWrapper.contains(e.target)) {
+                document.getElementById('date-dropdown').classList.remove('open');
+                document.querySelector('.date-select-btn').classList.remove('open');
+            }
+        });
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Your Top AI Donors | BroyhillGOP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Apple-style fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- SF Symbols style icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --text-tertiary: #aeaeb2;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f7;
+            --bg-hover: #f0f0f2;
+            --border-color: #e5e5e7;
+            --accent-blue: #007aff;
+            --accent-green: #34c759;
+            --accent-orange: #ff9500;
+            --accent-red: #ff3b30;
+            --accent-purple: #af52de;
+            --ai-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --sidebar-width: 260px;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Fixed AI Advisor - Top Right */
+        .ai-advisor-fixed {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: var(--ai-gradient);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            z-index: 400;
+        }
+        
+        .ai-advisor-fixed:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .ai-advisor-fixed i {
+            font-size: 20px;
+        }
+        
+        /* ========== SIDEBAR ========== */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+        
+        .sidebar-logo {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .sidebar-logo h1 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+        
+        .candidate-profile {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .candidate-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 12px;
+            border: 2px solid var(--border-color);
+        }
+        
+        .candidate-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        
+        .candidate-office {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        
+        .settings-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .settings-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .nav-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            margin: 2px 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.15s ease;
+        }
+        
+        .nav-item:hover {
+            background: var(--bg-hover);
+        }
+        
+        .nav-item.active {
+            background: var(--bg-secondary);
+        }
+        
+        .nav-item i {
+            width: 20px;
+            font-size: 18px;
+            margin-right: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .nav-item.active i {
+            color: var(--accent-blue);
+        }
+        
+        .nav-item .badge {
+            margin-left: auto;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+        
+        .nav-item .badge.blue { background: var(--accent-blue); color: white; }
+        .nav-item .badge.red { background: var(--accent-red); color: white; }
+        
+        .nav-primary {
+            padding: 0 12px;
+            margin: 8px 0;
+        }
+        
+        .nav-primary-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        
+        .nav-primary-btn:hover {
+            filter: brightness(1.1);
+        }
+        
+        .nav-primary-btn i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .nav-primary-btn.secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        .nav-primary-btn.secondary:hover {
+            background: var(--bg-hover);
+        }
+        
+        .nav-primary-btn .dropdown-arrow {
+            margin-left: auto;
+            margin-right: 0;
+            font-size: 16px;
+            transition: transform 0.2s ease;
+        }
+        
+        .nav-primary-btn.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .nav-dropdown {
+            display: none;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+        
+        .nav-dropdown.open {
+            display: block;
+        }
+        
+        .nav-dropdown-item {
+            display: block;
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.15s ease;
+        }
+        
+        .nav-dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .nav-dropdown-item:hover {
+            background: var(--bg-hover);
+        }
+        
+        .nav-dropdown-item.active {
+            background: var(--ai-gradient);
+            color: white;
+        }
+        
+        .nav-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 12px 20px;
+        }
+        
+        .nav-section-label {
+            padding: 16px 20px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* ========== MAIN CONTENT ========== */
+        .main {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+        
+        /* AI Hero Header */
+        .ai-hero {
+            background: var(--ai-gradient);
+            padding: 32px;
+            color: white;
+        }
+        
+        .ai-hero-content {
+            max-width: 800px;
+        }
+        
+        .ai-hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .ai-hero h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .ai-hero p {
+            font-size: 15px;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+        
+        /* AI Stats Cards */
+        .ai-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 24px 32px;
+            margin-top: -40px;
+        }
+        
+        .ai-stat-card {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+        }
+        
+        .ai-stat-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .ai-stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .ai-stat-value.green { color: var(--accent-green); }
+        .ai-stat-value.blue { color: var(--accent-blue); }
+        .ai-stat-value.purple { color: #764ba2; }
+        
+        .ai-stat-change {
+            font-size: 12px;
+            color: var(--accent-green);
+            font-weight: 500;
+        }
+        
+        /* Action Bar */
+        .action-bar {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .action-bar-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-right: 8px;
+        }
+        
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+        
+        .action-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--text-tertiary);
+        }
+        
+        .action-btn.primary {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+        
+        .action-btn.primary:hover {
+            filter: brightness(1.1);
+        }
+        
+        .action-btn i {
+            font-size: 16px;
+        }
+        
+        .action-spacer {
+            flex: 1;
+        }
+        
+        .results-count {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        /* Data Table */
+        .table-container {
+            padding: 24px 32px;
+        }
+        
+        .data-table {
+            width: 100%;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            border-collapse: separate;
+            border-spacing: 0;
+            overflow: hidden;
+        }
+        
+        .data-table th {
+            text-align: left;
+            padding: 14px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+        
+        .data-table th:hover {
+            color: var(--text-primary);
+        }
+        
+        .data-table th .sort-icon {
+            margin-left: 4px;
+            opacity: 0.4;
+        }
+        
+        .data-table th.sorted .sort-icon {
+            opacity: 1;
+            color: var(--accent-blue);
+        }
+        
+        .data-table td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tbody tr:hover {
+            background: var(--bg-hover);
+        }
+        
+        .data-table tbody tr {
+            cursor: pointer;
+        }
+        
+        /* Cell Styles */
+        .rank-number {
+            display: flex;
+            align-items: baseline;
+            gap: 2px;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .rank-number .rank-position {
+            font-size: 18px;
+            font-weight: 700;
+            color: #764ba2;
+        }
+        
+        .rank-number .rank-total {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .donor-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .donor-name span {
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        /* AI Score Badge */
+        .ai-score {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            background: var(--ai-gradient);
+            border-radius: 6px;
+        }
+        
+        .ai-score i {
+            font-size: 12px;
+        }
+        
+        /* AI Reason Tag */
+        .ai-reason {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+        }
+        
+        .ai-reason.wealth { background: #fff3cd; color: #856404; border-color: #ffeeba; }
+        .ai-reason.history { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .ai-reason.local { background: #d1ecf1; color: #0c5460; border-color: #bee5eb; }
+        .ai-reason.engaged { background: #e2d5f1; color: #5a3d7a; border-color: #d4c4e8; }
+        
+        .amount {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .amount.high { color: var(--accent-green); }
+        .amount.medium { color: var(--accent-blue); }
+        .amount.low { color: var(--text-secondary); }
+        
+        .capacity {
+            font-weight: 600;
+            color: var(--accent-orange);
+        }
+        
+        .county-cell {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        
+        /* Quick Action Buttons */
+        .quick-actions {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .quick-action-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 16px;
+            transition: all 0.15s ease;
+        }
+        
+        .quick-action-btn:hover {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+        
+        .quick-action-btn.email:hover { background: var(--accent-blue); border-color: var(--accent-blue); }
+        .quick-action-btn.sms:hover { background: var(--accent-green); border-color: var(--accent-green); }
+        .quick-action-btn.call:hover { background: var(--accent-orange); border-color: var(--accent-orange); }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+        }
+        
+        .pagination-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pagination-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+        
+        .pagination-btn:hover {
+            background: var(--bg-hover);
+        }
+        
+        .pagination-btn.active {
+            background: var(--ai-gradient);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        /* AI Panel */
+        .ai-panel-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 500;
+        }
+        
+        .ai-panel-overlay.open {
+            display: block;
+        }
+        
+        .ai-panel {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: 420px;
+            height: 100vh;
+            background: var(--bg-primary);
+            box-shadow: -4px 0 30px rgba(0,0,0,0.15);
+            z-index: 600;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.3s ease;
+        }
+        
+        .ai-panel.open {
+            right: 0;
+        }
+        
+        .ai-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: var(--ai-gradient);
+            color: white;
+        }
+        
+        .ai-panel-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .ai-panel-header h3 i {
+            font-size: 22px;
+        }
+        
+        .ai-panel-close {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .ai-panel-close:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .ai-panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .ai-suggestions-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .ai-suggestion-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .ai-suggestion-card:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .ai-suggestion-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .ai-suggestion-card p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        
+        .ai-panel-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+        }
+        
+        .ai-chat-input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .ai-chat-input {
+            flex: 1;
+            padding: 12px 14px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .ai-chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .ai-chat-send {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--ai-gradient);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .ai-chat-send:hover {
+            filter: brightness(1.1);
+        }
+    </style>
+</head>
+
+<body>
+    
+    <!-- Fixed AI Advisor Button - Top Right -->
+    <button class="ai-advisor-fixed" onclick="openAIAdvisor()">
+        <i class="ti ti-sparkles"></i>
+        <span>AI Advisor</span>
+    </button>
+    
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="sidebar">
+        
+        <div class="sidebar-logo">
+            <h1>BroyhillGOP</h1>
+        </div>
+        
+        <div class="candidate-profile">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&h=160&fit=crop&crop=face" 
+                 alt="Candidate" 
+                 class="candidate-photo">
+            <div class="candidate-name">Ed Broyhill</div>
+            <div class="candidate-office">State Auditor</div>
+            <button class="settings-btn">
+                <i class="ti ti-settings"></i>
+                Settings
+            </button>
+        </div>
+        
+        <nav class="nav-scroll">
+            
+            <a href="homepage.html" class="nav-item">
+                <i class="ti ti-home"></i>
+                Home
+            </a>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-chart-dots-2"></i>
+                Overview
+            </a>
+            
+            <div class="nav-divider"></div>
+            
+            <div class="nav-primary">
+                <button class="nav-primary-btn open" onclick="toggleDropdown('donors-dropdown')">
+                    <i class="ti ti-coin"></i>
+                    Donors
+                    <i class="ti ti-chevron-down dropdown-arrow"></i>
+                </button>
+                <div class="nav-dropdown open" id="donors-dropdown">
+                    <a href="donors-all.html" class="nav-dropdown-item">All Donors</a>
+                    <a href="donors-district.html" class="nav-dropdown-item">District Donors</a>
+                    <a href="donors-county.html" class="nav-dropdown-item">County Donors</a>
+                    <a href="donors-mine.html" class="nav-dropdown-item">My Donors (Contributors)</a>
+                    <a href="donors-top-ai.html" class="nav-dropdown-item active">Your Top AI Donors</a>
+                </div>
+            </div>
+            
+            <div class="nav-primary">
+                <a href="#" class="nav-primary-btn secondary">
+                    <i class="ti ti-users"></i>
+                    Volunteers
+                </a>
+            </div>
+            
+            <div class="nav-divider"></div>
+            
+            <div class="nav-section-label">Outreach</div>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-mail"></i>
+                Email
+                <span class="badge blue">16</span>
+            </a>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-message"></i>
+                SMS
+            </a>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-phone"></i>
+                Calls
+            </a>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-brand-facebook"></i>
+                Social
+            </a>
+            
+            <div class="nav-section-label">Campaign</div>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-calendar"></i>
+                Calendar
+            </a>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-ticket"></i>
+                Events
+                <span class="badge red">2</span>
+            </a>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-video"></i>
+                Videos
+            </a>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-rocket"></i>
+                Campaigns
+            </a>
+            
+            <div class="nav-divider"></div>
+            
+            <a href="#" class="nav-item">
+                <i class="ti ti-layout-dashboard"></i>
+                Admin Panel
+            </a>
+            
+        </nav>
+        
+    </aside>
+    
+    <!-- ========== MAIN ========== -->
+    <main class="main">
+        
+        <!-- AI Hero Header -->
+        <div class="ai-hero">
+            <div class="ai-hero-content">
+                <div class="ai-hero-badge">
+                    <i class="ti ti-sparkles"></i>
+                    AI-Powered Intelligence
+                </div>
+                <h1>Your Top AI Donors</h1>
+                <p>These donors are AI-selected based on wealth indicators, giving history, geographic proximity, and engagement potential. This is your starting point for all campaign fundraising activities.</p>
+            </div>
+        </div>
+        
+        <!-- AI Stats Cards -->
+        <div class="ai-stats">
+            <div class="ai-stat-card">
+                <div class="ai-stat-label">Total Prospects</div>
+                <div class="ai-stat-value purple">847</div>
+                <div class="ai-stat-change">↑ 23 added this week</div>
+            </div>
+            <div class="ai-stat-card">
+                <div class="ai-stat-label">Estimated Capacity</div>
+                <div class="ai-stat-value green">$4.2M</div>
+                <div class="ai-stat-change">Combined giving potential</div>
+            </div>
+            <div class="ai-stat-card">
+                <div class="ai-stat-label">Avg AI Score</div>
+                <div class="ai-stat-value blue">87</div>
+                <div class="ai-stat-change">High-quality prospects</div>
+            </div>
+            <div class="ai-stat-card">
+                <div class="ai-stat-label">In Your District</div>
+                <div class="ai-stat-value">312</div>
+                <div class="ai-stat-change">37% of list</div>
+            </div>
+        </div>
+        
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <span class="action-bar-label">Launch Campaign:</span>
+            <button class="action-btn">
+                <i class="ti ti-mail"></i>
+                Email All
+            </button>
+            <button class="action-btn">
+                <i class="ti ti-message"></i>
+                SMS Blast
+            </button>
+            <button class="action-btn">
+                <i class="ti ti-phone"></i>
+                Call List
+            </button>
+            <button class="action-btn">
+                <i class="ti ti-calendar-event"></i>
+                Event Invite
+            </button>
+            
+            <span class="action-spacer"></span>
+            
+            <span class="results-count">847 AI-selected donors</span>
+            
+            <button class="action-btn primary">
+                <i class="ti ti-download"></i>
+                Export
+            </button>
+        </div>
+        
+        <!-- Data Table -->
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">
+                            AI Rank
+                            <i class="ti ti-chevron-down sort-icon"></i>
+                        </th>
+                        <th class="sorted">
+                            Name
+                            <i class="ti ti-chevron-down sort-icon"></i>
+                        </th>
+                        <th>
+                            AI Score
+                            <i class="ti ti-chevron-down sort-icon"></i>
+                        </th>
+                        <th>
+                            Why Selected
+                        </th>
+                        <th>
+                            Est. Capacity
+                            <i class="ti ti-chevron-down sort-icon"></i>
+                        </th>
+                        <th>
+                            Past Giving
+                        </th>
+                        <th>
+                            County
+                        </th>
+                        <th style="width: 120px;">
+                            Quick Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">1</span><span class="rank-total">/847</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Louis DeJoy
+                                <span>louis@dejoy.com</span>
+                            </div>
+                        </td>
+                        <td><span class="ai-score"><i class="ti ti-sparkles"></i> 98</span></td>
+                        <td><span class="ai-reason wealth">High Net Worth</span></td>
+                        <td><span class="capacity">$500K+</span></td>
+                        <td><span class="amount high">$2,450,000</span></td>
+                        <td class="county-cell">Guilford</td>
+                        <td>
+                            <div class="quick-actions">
+                                <button class="quick-action-btn email" title="Send Email"><i class="ti ti-mail"></i></button>
+                                <button class="quick-action-btn sms" title="Send SMS"><i class="ti ti-message"></i></button>
+                                <button class="quick-action-btn call" title="Add to Call List"><i class="ti ti-phone"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">2</span><span class="rank-total">/847</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Art Pope
+                                <span>apope@varietywholesalers.com</span>
+                            </div>
+                        </td>
+                        <td><span class="ai-score"><i class="ti ti-sparkles"></i> 96</span></td>
+                        <td><span class="ai-reason history">Major Donor</span></td>
+                        <td><span class="capacity">$250K+</span></td>
+                        <td><span class="amount high">$1,875,000</span></td>
+                        <td class="county-cell">Wake</td>
+                        <td>
+                            <div class="quick-actions">
+                                <button class="quick-action-btn email" title="Send Email"><i class="ti ti-mail"></i></button>
+                                <button class="quick-action-btn sms" title="Send SMS"><i class="ti ti-message"></i></button>
+                                <button class="quick-action-btn call" title="Add to Call List"><i class="ti ti-phone"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">3</span><span class="rank-total">/847</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                James E. Broyhill
+                                <span>ed@broyhill.net</span>
+                            </div>
+                        </td>
+                        <td><span class="ai-score"><i class="ti ti-sparkles"></i> 95</span></td>
+                        <td><span class="ai-reason local">In District</span></td>
+                        <td><span class="capacity">$100K+</span></td>
+                        <td><span class="amount high">$477,618</span></td>
+                        <td class="county-cell">Forsyth</td>
+                        <td>
+                            <div class="quick-actions">
+                                <button class="quick-action-btn email" title="Send Email"><i class="ti ti-mail"></i></button>
+                                <button class="quick-action-btn sms" title="Send SMS"><i class="ti ti-message"></i></button>
+                                <button class="quick-action-btn call" title="Add to Call List"><i class="ti ti-phone"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">4</span><span class="rank-total">/847</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Robert Luddy
+                                <span>rluddy@captiveaire.com</span>
+                            </div>
+                        </td>
+                        <td><span class="ai-score"><i class="ti ti-sparkles"></i> 94</span></td>
+                        <td><span class="ai-reason wealth">High Net Worth</span></td>
+                        <td><span class="capacity">$200K+</span></td>
+                        <td><span class="amount high">$890,000</span></td>
+                        <td class="county-cell">Wake</td>
+                        <td>
+                            <div class="quick-actions">
+                                <button class="quick-action-btn email" title="Send Email"><i class="ti ti-mail"></i></button>
+                                <button class="quick-action-btn sms" title="Send SMS"><i class="ti ti-message"></i></button>
+                                <button class="quick-action-btn call" title="Add to Call List"><i class="ti ti-phone"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">5</span><span class="rank-total">/847</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Sarah Mitchell
+                                <span>smitchell@gmail.com</span>
+                            </div>
+                        </td>
+                        <td><span class="ai-score"><i class="ti ti-sparkles"></i> 92</span></td>
+                        <td><span class="ai-reason engaged">Highly Engaged</span></td>
+                        <td><span class="capacity">$50K+</span></td>
+                        <td><span class="amount high">$125,400</span></td>
+                        <td class="county-cell">Mecklenburg</td>
+                        <td>
+                            <div class="quick-actions">
+                                <button class="quick-action-btn email" title="Send Email"><i class="ti ti-mail"></i></button>
+                                <button class="quick-action-btn sms" title="Send SMS"><i class="ti ti-message"></i></button>
+                                <button class="quick-action-btn call" title="Add to Call List"><i class="ti ti-phone"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">6</span><span class="rank-total">/847</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                William Graham
+                                <span>wgraham@grahamholdings.com</span>
+                            </div>
+                        </td>
+                        <td><span class="ai-score"><i class="ti ti-sparkles"></i> 91</span></td>
+                        <td><span class="ai-reason local">In District</span></td>
+                        <td><span class="capacity">$75K+</span></td>
+                        <td><span class="amount medium">$67,500</span></td>
+                        <td class="county-cell">Forsyth</td>
+                        <td>
+                            <div class="quick-actions">
+                                <button class="quick-action-btn email" title="Send Email"><i class="ti ti-mail"></i></button>
+                                <button class="quick-action-btn sms" title="Send SMS"><i class="ti ti-message"></i></button>
+                                <button class="quick-action-btn call" title="Add to Call List"><i class="ti ti-phone"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">7</span><span class="rank-total">/847</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Patricia Reynolds
+                                <span>preynolds@reynoldsamerican.com</span>
+                            </div>
+                        </td>
+                        <td><span class="ai-score"><i class="ti ti-sparkles"></i> 90</span></td>
+                        <td><span class="ai-reason wealth">High Net Worth</span></td>
+                        <td><span class="capacity">$100K+</span></td>
+                        <td><span class="amount medium">$45,000</span></td>
+                        <td class="county-cell">Forsyth</td>
+                        <td>
+                            <div class="quick-actions">
+                                <button class="quick-action-btn email" title="Send Email"><i class="ti ti-mail"></i></button>
+                                <button class="quick-action-btn sms" title="Send SMS"><i class="ti ti-message"></i></button>
+                                <button class="quick-action-btn call" title="Add to Call List"><i class="ti ti-phone"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">8</span><span class="rank-total">/847</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Thomas Bennett
+                                <span>tbennett@bankofamerica.com</span>
+                            </div>
+                        </td>
+                        <td><span class="ai-score"><i class="ti ti-sparkles"></i> 89</span></td>
+                        <td><span class="ai-reason history">Major Donor</span></td>
+                        <td><span class="capacity">$50K+</span></td>
+                        <td><span class="amount medium">$38,500</span></td>
+                        <td class="county-cell">Mecklenburg</td>
+                        <td>
+                            <div class="quick-actions">
+                                <button class="quick-action-btn email" title="Send Email"><i class="ti ti-mail"></i></button>
+                                <button class="quick-action-btn sms" title="Send SMS"><i class="ti ti-message"></i></button>
+                                <button class="quick-action-btn call" title="Add to Call List"><i class="ti ti-phone"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">9</span><span class="rank-total">/847</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Jennifer Adams
+                                <span>jadams@realestate.com</span>
+                            </div>
+                        </td>
+                        <td><span class="ai-score"><i class="ti ti-sparkles"></i> 88</span></td>
+                        <td><span class="ai-reason engaged">Highly Engaged</span></td>
+                        <td><span class="capacity">$25K+</span></td>
+                        <td><span class="amount medium">$18,500</span></td>
+                        <td class="county-cell">Forsyth</td>
+                        <td>
+                            <div class="quick-actions">
+                                <button class="quick-action-btn email" title="Send Email"><i class="ti ti-mail"></i></button>
+                                <button class="quick-action-btn sms" title="Send SMS"><i class="ti ti-message"></i></button>
+                                <button class="quick-action-btn call" title="Add to Call List"><i class="ti ti-phone"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-number"><span class="rank-position">10</span><span class="rank-total">/847</span></span></td>
+                        <td>
+                            <div class="donor-name">
+                                Michael Chen
+                                <span>mchen@techcorp.com</span>
+                            </div>
+                        </td>
+                        <td><span class="ai-score"><i class="ti ti-sparkles"></i> 87</span></td>
+                        <td><span class="ai-reason local">In District</span></td>
+                        <td><span class="capacity">$15K+</span></td>
+                        <td><span class="amount medium">$8,750</span></td>
+                        <td class="county-cell">Stokes</td>
+                        <td>
+                            <div class="quick-actions">
+                                <button class="quick-action-btn email" title="Send Email"><i class="ti ti-mail"></i></button>
+                                <button class="quick-action-btn sms" title="Send SMS"><i class="ti ti-message"></i></button>
+                                <button class="quick-action-btn call" title="Add to Call List"><i class="ti ti-phone"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- Pagination -->
+            <div class="pagination">
+                <div class="pagination-info">Showing 1–10 of 847 AI-selected donors</div>
+                <div class="pagination-controls">
+                    <button class="pagination-btn" disabled><i class="ti ti-chevron-left"></i></button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">4</button>
+                    <button class="pagination-btn">5</button>
+                    <button class="pagination-btn">...</button>
+                    <button class="pagination-btn">85</button>
+                    <button class="pagination-btn"><i class="ti ti-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+    
+    <!-- AI Advisor Panel -->
+    <div class="ai-panel-overlay" id="ai-panel-overlay" onclick="closeAIAdvisor()"></div>
+    <div class="ai-panel" id="ai-panel">
+        <div class="ai-panel-header">
+            <h3><i class="ti ti-sparkles"></i> BroyhillGOP AI Advisor</h3>
+            <button class="ai-panel-close" onclick="closeAIAdvisor()">
+                <i class="ti ti-x"></i>
+            </button>
+        </div>
+        <div class="ai-panel-body">
+            <div class="ai-suggestions">
+                <div class="ai-suggestions-title">Optimize Your Top Donors</div>
+                <div class="ai-suggestion-card" onclick="applyAISuggestion('high-capacity')">
+                    <h4>💎 Focus on High Capacity</h4>
+                    <p>Filter to donors with $100K+ estimated capacity for major gift cultivation.</p>
+                </div>
+                <div class="ai-suggestion-card" onclick="applyAISuggestion('district-first')">
+                    <h4>📍 District First Strategy</h4>
+                    <p>Prioritize the 312 donors in your district for grassroots support.</p>
+                </div>
+                <div class="ai-suggestion-card" onclick="applyAISuggestion('untapped')">
+                    <h4>🎯 Untapped Potential</h4>
+                    <p>High net worth individuals who haven't given to you yet.</p>
+                </div>
+                <div class="ai-suggestion-card" onclick="applyAISuggestion('ready-now')">
+                    <h4>⚡ Ready to Give Now</h4>
+                    <p>Highly engaged donors showing recent activity signals.</p>
+                </div>
+            </div>
+        </div>
+        <div class="ai-panel-footer">
+            <div class="ai-chat-input-wrapper">
+                <input type="text" class="ai-chat-input" placeholder="Ask AI about your top donors...">
+                <button class="ai-chat-send">
+                    <i class="ti ti-send"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            const btn = dropdown.previousElementSibling;
+            dropdown.classList.toggle('open');
+            btn.classList.toggle('open');
+        }
+        
+        function openAIAdvisor() {
+            document.getElementById('ai-panel').classList.add('open');
+            document.getElementById('ai-panel-overlay').classList.add('open');
+        }
+        
+        function closeAIAdvisor() {
+            document.getElementById('ai-panel').classList.remove('open');
+            document.getElementById('ai-panel-overlay').classList.remove('open');
+        }
+        
+        function applyAISuggestion(suggestionId) {
+            console.log('Applying AI suggestion:', suggestionId);
+            closeAIAdvisor();
+        }
+    </script>
+    
+</body>
+</html>

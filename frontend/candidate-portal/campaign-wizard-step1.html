@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Create Campaign | BroyhillGOP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --text-tertiary: #aeaeb2;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f7;
+            --bg-hover: #f0f0f2;
+            --border-color: #e5e5e7;
+            --accent-blue: #007aff;
+            --accent-green: #34c759;
+            --accent-orange: #ff9500;
+            --accent-red: #ff3b30;
+            --accent-purple: #af52de;
+            --ai-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --sidebar-width: 260px;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .ai-advisor-fixed {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: var(--ai-gradient);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            z-index: 400;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border-color);
+            z-index: 100;
+        }
+        
+        .sidebar-logo { padding: 20px; border-bottom: 1px solid var(--border-color); }
+        .sidebar-logo h1 { font-size: 17px; font-weight: 600; }
+        
+        .main {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            padding: 32px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .wizard-container { width: 100%; max-width: 700px; }
+        
+        .wizard-header { text-align: center; margin-bottom: 32px; }
+        .wizard-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        .wizard-header p { font-size: 15px; color: var(--text-secondary); }
+        
+        .progress-steps { display: flex; justify-content: center; gap: 8px; margin-bottom: 32px; }
+        .progress-step { display: flex; align-items: center; gap: 8px; }
+        .progress-step-number {
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 600;
+            background: var(--bg-secondary); color: var(--text-secondary);
+            border: 2px solid var(--border-color);
+        }
+        .progress-step.active .progress-step-number { background: var(--ai-gradient); color: white; border-color: transparent; }
+        .progress-step-label { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+        .progress-step.active .progress-step-label { color: var(--text-primary); }
+        .progress-step-line { width: 40px; height: 2px; background: var(--border-color); }
+        
+        .form-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+        
+        .form-card-title {
+            font-size: 18px; font-weight: 600; margin-bottom: 24px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .form-card-title i { font-size: 22px; color: #667eea; }
+        
+        .form-group { margin-bottom: 24px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+        .form-group label .required { color: var(--accent-red); }
+        
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 12px 16px; font-size: 15px; font-family: inherit;
+            border: 1px solid var(--border-color); border-radius: 10px;
+            background: var(--bg-primary); transition: all 0.15s ease;
+        }
+        .form-group input:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1); }
+        .form-hint { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+        
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        
+        .input-with-prefix {
+            display: flex; align-items: center;
+            border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden;
+        }
+        .input-with-prefix:focus-within { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1); }
+        .input-prefix {
+            padding: 12px 14px; background: var(--bg-secondary);
+            color: var(--text-secondary); font-weight: 600; font-size: 15px;
+            border-right: 1px solid var(--border-color);
+        }
+        .input-with-prefix input { border: none !important; border-radius: 0 !important; }
+        .input-with-prefix input:focus { box-shadow: none !important; }
+        
+        .roi-preview { background: var(--bg-secondary); border-radius: 12px; padding: 16px; margin-top: 8px; }
+        .roi-preview-header {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 12px; font-weight: 600; color: var(--text-secondary);
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;
+        }
+        .roi-preview-header i { font-size: 16px; color: var(--accent-green); }
+        .roi-preview-content { display: flex; gap: 24px; }
+        .roi-stat { flex: 1; }
+        .roi-label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+        .roi-value { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+        .roi-stat.highlight .roi-value { color: var(--accent-green); }
+        
+        .category-select-wrapper { position: relative; }
+        .category-select-btn {
+            width: 100%; padding: 12px 16px; font-size: 15px; font-family: inherit;
+            border: 1px solid var(--border-color); border-radius: 10px;
+            background: var(--bg-primary); text-align: left; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .category-select-btn .placeholder { color: var(--text-tertiary); }
+        .category-select-btn.open { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1); }
+        .category-select-btn.open i { transform: rotate(180deg); }
+        
+        .category-dropdown {
+            display: none; position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+            background: var(--bg-primary); border: 1px solid var(--border-color);
+            border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            z-index: 200; max-height: 400px; overflow-y: auto;
+        }
+        .category-dropdown.open { display: block; }
+        
+        .category-group { border-bottom: 1px solid var(--border-color); }
+        .category-group:last-child { border-bottom: none; }
+        .category-group-header {
+            padding: 14px 16px; font-size: 12px; font-weight: 700; color: white;
+            text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .category-group-header.fundraising { background: var(--accent-green); }
+        .category-group-header.nurturing { background: var(--accent-blue); }
+        .category-group-header.invitation { background: var(--accent-purple); }
+        .category-group-header.virtual { background: #5856d6; }
+        .category-group-header.kickoff { background: var(--accent-orange); }
+        .category-group-header.misc { background: var(--text-secondary); }
+        
+        .category-group-items { padding: 8px 0; }
+        .category-group.collapsed .category-group-items { display: none; }
+        .category-item {
+            padding: 10px 16px 10px 32px; font-size: 14px; cursor: pointer;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .category-item:hover { background: var(--bg-hover); }
+        .category-item.selected { background: rgba(0, 122, 255, 0.08); color: var(--accent-blue); font-weight: 500; }
+        .category-item i { font-size: 16px; color: var(--text-secondary); }
+        .category-item.selected i { color: var(--accent-blue); }
+        
+        .selected-category { display: flex; align-items: center; gap: 8px; }
+        .selected-category-badge {
+            padding: 4px 8px; font-size: 10px; font-weight: 700; color: white;
+            border-radius: 4px; text-transform: uppercase;
+        }
+        .selected-category-badge.fundraising { background: var(--accent-green); }
+        .selected-category-badge.nurturing { background: var(--accent-blue); }
+        .selected-category-badge.invitation { background: var(--accent-purple); }
+        .selected-category-badge.virtual { background: #5856d6; }
+        .selected-category-badge.kickoff { background: var(--accent-orange); }
+        .selected-category-badge.misc { background: var(--text-secondary); }
+        
+        .mode-selection { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; }
+        .mode-card {
+            background: var(--bg-secondary); border: 2px solid transparent;
+            border-radius: 12px; padding: 20px; cursor: pointer; text-align: center;
+        }
+        .mode-card.selected { border-color: #667eea; background: rgba(102, 126, 234, 0.05); }
+        .mode-card-icon {
+            width: 48px; height: 48px; margin: 0 auto 12px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 24px;
+        }
+        .mode-card.ai .mode-card-icon { background: var(--ai-gradient); color: white; }
+        .mode-card.manual .mode-card-icon { background: var(--bg-hover); color: var(--text-secondary); }
+        .mode-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+        .mode-card p { font-size: 12px; color: var(--text-secondary); }
+        .mode-badge {
+            display: inline-block; padding: 3px 8px; font-size: 10px; font-weight: 700;
+            border-radius: 10px; margin-top: 8px; background: var(--ai-gradient); color: white;
+        }
+        
+        .wizard-actions { display: flex; justify-content: space-between; margin-top: 24px; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 28px; font-size: 15px; font-weight: 600;
+            border-radius: 12px; cursor: pointer; font-family: inherit;
+        }
+        .btn-secondary { background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-primary); }
+        .btn-secondary:hover { background: var(--bg-hover); }
+        .btn-ai { background: var(--ai-gradient); border: none; color: white; }
+        .btn-ai:hover { filter: brightness(1.1); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* Host Entry Styles */
+        .host-entry {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .host-entry-header {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .select-donor-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            background: var(--bg-primary);
+            border: 1px solid var(--accent-blue);
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+        
+        .select-donor-btn:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+        
+        .select-donor-btn i {
+            font-size: 14px;
+        }
+        
+        .host-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .host-field {
+            padding: 10px 12px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-primary);
+        }
+        
+        .host-field:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .host-field.salutation { width: 80px; flex-shrink: 0; }
+        .host-field.first { flex: 1; }
+        .host-field.last { flex: 1; }
+        .host-field.suffix { width: 70px; flex-shrink: 0; }
+        
+        .spouse-row {
+            padding-left: 0;
+        }
+        
+        .spouse-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            width: 70px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .host-preview {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: var(--bg-primary);
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            margin-top: 4px;
+        }
+        
+        .preview-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+        }
+        
+        .preview-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-style: italic;
+        }
+        
+        .add-host-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            background: transparent;
+            border: 1px dashed var(--accent-blue);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+        
+        .add-host-btn:hover {
+            background: rgba(0, 122, 255, 0.05);
+        }
+        
+        /* Host Status Options */
+        .host-status-options {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .host-status-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .host-status-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-blue);
+        }
+        
+        .host-status-option .radio-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        /* Host TBD Message */
+        .host-tbd-message {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px;
+            background: rgba(255, 149, 0, 0.08);
+            border: 1px solid rgba(255, 149, 0, 0.3);
+            border-radius: 12px;
+        }
+        
+        .tbd-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-orange);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .tbd-text strong {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .tbd-text p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <button class="ai-advisor-fixed"><i class="ti ti-sparkles"></i><span>AI Advisor</span></button>
+    
+    <aside class="sidebar">
+        <div class="sidebar-logo"><h1>BroyhillGOP</h1></div>
+    </aside>
+    
+    <main class="main">
+        <div class="wizard-container">
+            
+            <div class="wizard-header">
+                <h1>Create Campaign</h1>
+                <p>Let's set up your multi-channel campaign</p>
+            </div>
+            
+            <div class="progress-steps">
+                <div class="progress-step active">
+                    <div class="progress-step-number">1</div>
+                    <span class="progress-step-label">Setup</span>
+                </div>
+                <div class="progress-step-line"></div>
+                <div class="progress-step">
+                    <div class="progress-step-number">2</div>
+                    <span class="progress-step-label">Audience</span>
+                </div>
+                <div class="progress-step-line"></div>
+                <div class="progress-step">
+                    <div class="progress-step-number">3</div>
+                    <span class="progress-step-label">Channels</span>
+                </div>
+                <div class="progress-step-line"></div>
+                <div class="progress-step">
+                    <div class="progress-step-number">4</div>
+                    <span class="progress-step-label">Review</span>
+                </div>
+            </div>
+            
+            <div class="form-card">
+                <h3 class="form-card-title"><i class="ti ti-clipboard-list"></i>Campaign Details</h3>
+                
+                <div class="form-group">
+                    <label>Campaign Name <span class="required">*</span></label>
+                    <input type="text" id="campaign-name" placeholder="e.g., Reynolds House Reception Q1 2025">
+                    <div class="form-hint">A descriptive name to identify this campaign</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Campaign Type <span class="required">*</span></label>
+                    <div class="category-select-wrapper">
+                        <button class="category-select-btn" id="category-btn" onclick="toggleCategoryDropdown()">
+                            <span class="placeholder" id="category-display">Select a campaign type...</span>
+                            <i class="ti ti-chevron-down"></i>
+                        </button>
+                        <div class="category-dropdown" id="category-dropdown">
+                            
+                            <div class="category-group" id="group-kickoff">
+                                <div class="category-group-header kickoff" onclick="toggleGroup('kickoff')">
+                                    <span>1. Campaign Kickoff</span><i class="ti ti-chevron-down"></i>
+                                </div>
+                                <div class="category-group-items">
+                                    <div class="category-item" onclick="selectCategory('kickoff', 'Press Release', 'press-release')"><i class="ti ti-news"></i> Press Release</div>
+                                    <div class="category-item" onclick="selectCategory('kickoff', 'Candidate Introduction', 'candidate-intro')"><i class="ti ti-user"></i> Candidate Introduction</div>
+                                    <div class="category-item" onclick="selectCategory('kickoff', 'Kickoff Event', 'kickoff-event')"><i class="ti ti-rocket"></i> Kickoff Event</div>
+                                    <div class="category-item" onclick="selectCategory('kickoff', 'Followup', 'followup')"><i class="ti ti-arrow-forward"></i> Followup</div>
+                                </div>
+                            </div>
+                            
+                            <div class="category-group" id="group-fundraising">
+                                <div class="category-group-header fundraising" onclick="toggleGroup('fundraising')">
+                                    <span>2. Fundraising Event</span><i class="ti ti-chevron-down"></i>
+                                </div>
+                                <div class="category-group-items">
+                                    <div class="category-item" onclick="selectCategory('fundraising', 'Home Reception', 'home-reception')"><i class="ti ti-home"></i> Home Reception</div>
+                                    <div class="category-item" onclick="selectCategory('fundraising', 'Restaurant / Club', 'restaurant-club')"><i class="ti ti-glass"></i> Restaurant / Club Reception</div>
+                                    <div class="category-item" onclick="selectCategory('fundraising', 'VIP Meet & Greet', 'vip-meet-greet')"><i class="ti ti-users"></i> VIP Small Group Meet & Greet</div>
+                                    <div class="category-item" onclick="selectCategory('fundraising', 'Golf Event', 'golf')"><i class="ti ti-golf"></i> Golf Event</div>
+                                    <div class="category-item" onclick="selectCategory('fundraising', 'Vineyard Event', 'vineyard')"><i class="ti ti-bottle"></i> Vineyard Event</div>
+                                    <div class="category-item" onclick="selectCategory('fundraising', 'Barbecue', 'barbecue')"><i class="ti ti-grill"></i> Barbecue</div>
+                                    <div class="category-item" onclick="selectCategory('fundraising', 'Famous Guest Event', 'famous-guest')"><i class="ti ti-star"></i> Famous Guest Event</div>
+                                    <div class="category-item" onclick="selectCategory('fundraising', 'Holiday Event', 'holiday')"><i class="ti ti-christmas-tree"></i> Holiday Event</div>
+                                    <div class="category-item" onclick="selectCategory('fundraising', 'Town Hall Live', 'townhall-live')"><i class="ti ti-building-community"></i> Town Hall Live</div>
+                                    <div class="category-item" onclick="selectCategory('fundraising', 'Town Hall Virtual', 'townhall-zoom')"><i class="ti ti-video"></i> Town Hall Virtual Zoom</div>
+                                    <div class="category-item" onclick="selectCategory('fundraising', 'Roundtable High Dollar', 'roundtable')"><i class="ti ti-diamond"></i> Roundtable High Dollar</div>
+                                    <div class="category-item" onclick="selectCategory('fundraising', 'Misc / Custom', 'fundraising-misc')"><i class="ti ti-dots"></i> Misc / Custom</div>
+                                </div>
+                            </div>
+                            
+                            <div class="category-group" id="group-nurturing">
+                                <div class="category-group-header nurturing" onclick="toggleGroup('nurturing')">
+                                    <span>3. Long Term Nurturing</span><i class="ti ti-chevron-down"></i>
+                                </div>
+                                <div class="category-group-items">
+                                    <div class="category-item" onclick="selectCategory('nurturing', 'Personal Introduction', 'personal-intro')"><i class="ti ti-user-plus"></i> Personal Introduction</div>
+                                    <div class="category-item" onclick="selectCategory('nurturing', 'Newsletter', 'newsletter')"><i class="ti ti-news"></i> Newsletter</div>
+                                    <div class="category-item" onclick="selectCategory('nurturing', 'Issue-Based Notifications', 'issue-notifications')"><i class="ti ti-bell"></i> Issue-Based Notifications</div>
+                                    <div class="category-item" onclick="selectCategory('nurturing', 'Happy Birthday', 'birthday')"><i class="ti ti-cake"></i> Happy Birthday</div>
+                                    <div class="category-item" onclick="selectCategory('nurturing', 'Thank You', 'thank-you')"><i class="ti ti-heart"></i> Thank You</div>
+                                    <div class="category-item" onclick="selectCategory('nurturing', 'Read About You', 'read-about-you')"><i class="ti ti-newspaper"></i> Read About You</div>
+                                    <div class="category-item" onclick="selectCategory('nurturing', 'I Agree With You', 'agree-social')"><i class="ti ti-thumb-up"></i> I Agree With You (Social)</div>
+                                    <div class="category-item" onclick="selectCategory('nurturing', 'Happy Anniversary', 'anniversary')"><i class="ti ti-hearts"></i> Happy Anniversary</div>
+                                    <div class="category-item" onclick="selectCategory('nurturing', 'Congratulations', 'congratulations')"><i class="ti ti-confetti"></i> Congratulations</div>
+                                    <div class="category-item" onclick="selectCategory('nurturing', 'Happy Holiday', 'happy-holiday')"><i class="ti ti-gift"></i> Happy Holiday</div>
+                                </div>
+                            </div>
+                            
+                            <div class="category-group" id="group-invitation">
+                                <div class="category-group-header invitation" onclick="toggleGroup('invitation')">
+                                    <span>4. Special Invitation</span><i class="ti ti-chevron-down"></i>
+                                </div>
+                                <div class="category-group-items">
+                                    <div class="category-item" onclick="selectCategory('invitation', 'MAGA Event', 'maga-event')"><i class="ti ti-flag"></i> MAGA Event</div>
+                                    <div class="category-item" onclick="selectCategory('invitation', 'Family Fair Event', 'family-fair')"><i class="ti ti-mood-kid"></i> Family Fair Event</div>
+                                    <div class="category-item" onclick="selectCategory('invitation', 'Community Event', 'community-event')"><i class="ti ti-building-community"></i> Community Event</div>
+                                    <div class="category-item" onclick="selectCategory('invitation', 'High School Football', 'hs-football')"><i class="ti ti-ball-american-football"></i> High School Football</div>
+                                    <div class="category-item" onclick="selectCategory('invitation', 'High School Basketball', 'hs-basketball')"><i class="ti ti-ball-basketball"></i> High School Basketball</div>
+                                    <div class="category-item" onclick="selectCategory('invitation', 'High School Baseball', 'hs-baseball')"><i class="ti ti-ball-baseball"></i> High School Baseball</div>
+                                    <div class="category-item" onclick="selectCategory('invitation', 'High School Misc', 'hs-misc')"><i class="ti ti-trophy"></i> High School Misc</div>
+                                    <div class="category-item" onclick="selectCategory('invitation', 'Community Parade', 'parade')"><i class="ti ti-confetti"></i> Community Parade</div>
+                                    <div class="category-item" onclick="selectCategory('invitation', 'Candidate Debate', 'debate')"><i class="ti ti-microphone"></i> Candidate Debate Event</div>
+                                </div>
+                            </div>
+                            
+                            <div class="category-group" id="group-virtual">
+                                <div class="category-group-header virtual" onclick="toggleGroup('virtual')">
+                                    <span>5. Virtual Fundraising</span><i class="ti ti-chevron-down"></i>
+                                </div>
+                                <div class="category-group-items">
+                                    <div class="category-item" onclick="selectCategory('virtual', 'Town Hall Virtual Zoom', 'virtual-townhall')"><i class="ti ti-video"></i> Town Hall Virtual Zoom</div>
+                                    <div class="category-item" onclick="selectCategory('virtual', 'VIP Zoom Roundtable', 'vip-roundtable')"><i class="ti ti-users"></i> VIP Zoom Issue Roundtable</div>
+                                    <div class="category-item" onclick="selectCategory('virtual', 'Special Guest Zoom', 'special-guest-zoom')"><i class="ti ti-star"></i> Special Guest w/ Candidate Zoom</div>
+                                    <div class="category-item" onclick="selectCategory('virtual', 'Zoom Misc / Custom', 'zoom-misc')"><i class="ti ti-dots"></i> Zoom Misc / Custom</div>
+                                </div>
+                            </div>
+                            
+                            <div class="category-group" id="group-misc">
+                                <div class="category-group-header misc" onclick="toggleGroup('misc')">
+                                    <span>6. Misc / Custom</span><i class="ti ti-chevron-down"></i>
+                                </div>
+                                <div class="category-group-items">
+                                    <div class="category-item" onclick="selectCategory('misc', 'Custom Campaign', 'custom')"><i class="ti ti-settings"></i> Custom Campaign</div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>How do you want to build this campaign?</label>
+                    <div class="mode-selection">
+                        <div class="mode-card ai selected" onclick="selectMode('ai')">
+                            <div class="mode-card-icon"><i class="ti ti-sparkles"></i></div>
+                            <h4>AI-Powered</h4>
+                            <p>AI builds your multi-channel campaign</p>
+                            <span class="mode-badge">RECOMMENDED</span>
+                        </div>
+                        <div class="mode-card manual" onclick="selectMode('manual')">
+                            <div class="mode-card-icon"><i class="ti ti-settings"></i></div>
+                            <h4>Manual Setup</h4>
+                            <p>Full control over every detail</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Goals & Budget Card -->
+            <div class="form-card" id="goals-card" style="display: none;">
+                <h3 class="form-card-title"><i class="ti ti-target"></i>Goals & Budget</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fundraising Goal <span class="required">*</span></label>
+                        <div class="input-with-prefix">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="fundraising-goal" placeholder="100,000" oninput="formatCurrency(this)">
+                        </div>
+                        <div class="form-hint">How much do you want to raise?</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Campaign Budget <span class="required">*</span></label>
+                        <div class="input-with-prefix">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="campaign-budget" placeholder="5,000" oninput="formatCurrency(this)">
+                        </div>
+                        <div class="form-hint">Total budget for all activities</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Event Date <span class="required">*</span></label>
+                    <input type="date" id="event-date" onchange="validateForm()">
+                    <div class="form-hint">AI plans all timing from this date</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Host Information</label>
+                    <div class="host-status-options">
+                        <label class="host-status-option">
+                            <input type="radio" name="host-status" value="known" checked onchange="toggleHostStatus()">
+                            <span class="radio-label">Host Confirmed</span>
+                        </label>
+                        <label class="host-status-option">
+                            <input type="radio" name="host-status" value="tbd" onchange="toggleHostStatus()">
+                            <span class="radio-label">Host TBD - Need to Recruit</span>
+                        </label>
+                    </div>
+                    
+                    <div class="host-entry" id="host-entry-form">
+                        <div class="host-entry-header">
+                            <span>Primary Host</span>
+                            <button type="button" class="select-donor-btn" onclick="openDonorSearch('host1')">
+                                <i class="ti ti-database"></i> Select from Database
+                            </button>
+                        </div>
+                        <div class="host-row">
+                            <select id="host1-salutation" class="host-field salutation">
+                                <option value="">Title</option>
+                                <option value="Mr.">Mr.</option>
+                                <option value="Mrs.">Mrs.</option>
+                                <option value="Ms.">Ms.</option>
+                                <option value="Dr.">Dr.</option>
+                                <option value="Hon.">Hon.</option>
+                                <option value="Rev.">Rev.</option>
+                            </select>
+                            <input type="text" id="host1-first" class="host-field first" placeholder="First Name">
+                            <input type="text" id="host1-last" class="host-field last" placeholder="Last Name">
+                            <input type="text" id="host1-suffix" class="host-field suffix" placeholder="Suffix">
+                        </div>
+                        <div class="host-row spouse-row">
+                            <span class="spouse-label">& Spouse:</span>
+                            <select id="host1-spouse-salutation" class="host-field salutation">
+                                <option value="">Title</option>
+                                <option value="Mr.">Mr.</option>
+                                <option value="Mrs.">Mrs.</option>
+                                <option value="Ms.">Ms.</option>
+                                <option value="Dr.">Dr.</option>
+                            </select>
+                            <input type="text" id="host1-spouse-first" class="host-field first" placeholder="First Name">
+                            <input type="text" id="host1-spouse-last" class="host-field last" placeholder="Last Name">
+                            <input type="text" id="host1-spouse-suffix" class="host-field suffix" placeholder="Suffix">
+                        </div>
+                        <div class="host-preview">
+                            <span class="preview-label">Preview:</span>
+                            <span class="preview-text" id="host1-preview">Mr. & Mrs. John Reynolds</span>
+                        </div>
+                    </div>
+                    <button type="button" class="add-host-btn" onclick="addHost()">
+                        <i class="ti ti-plus"></i> Add Another Host
+                    </button>
+                    </div>
+                    
+                    <div class="host-tbd-message" id="host-tbd-message" style="display: none;">
+                        <div class="tbd-icon"><i class="ti ti-user-search"></i></div>
+                        <div class="tbd-text">
+                            <strong>Host Recruitment Required</strong>
+                            <p>AI will add a "Recruit Host" task to your campaign. You can add host details later once confirmed.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-hint">Select from donor database or enter manually</div>
+                </div>
+                
+                <div class="roi-preview">
+                    <div class="roi-preview-header"><i class="ti ti-chart-line"></i><span>Projected ROI</span></div>
+                    <div class="roi-preview-content">
+                        <div class="roi-stat"><span class="roi-label">Goal</span><span class="roi-value" id="roi-goal">$0</span></div>
+                        <div class="roi-stat"><span class="roi-label">Budget</span><span class="roi-value" id="roi-budget">$0</span></div>
+                        <div class="roi-stat highlight"><span class="roi-label">Target ROI</span><span class="roi-value" id="roi-ratio">--</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="wizard-actions">
+                <button class="btn btn-secondary" onclick="goBack()"><i class="ti ti-arrow-left"></i>Cancel</button>
+                <button class="btn btn-ai" id="next-btn" onclick="nextStep()" disabled><i class="ti ti-sparkles"></i>Generate AI Campaign</button>
+            </div>
+            
+        </div>
+    </main>
+    
+    <script>
+        let selectedCategory = null;
+        let selectedSubCategory = null;
+        let selectedMode = 'ai';
+        
+        function toggleCategoryDropdown() {
+            document.getElementById('category-btn').classList.toggle('open');
+            document.getElementById('category-dropdown').classList.toggle('open');
+        }
+        
+        function toggleGroup(groupId) {
+            document.getElementById('group-' + groupId).classList.toggle('collapsed');
+            event.stopPropagation();
+        }
+        
+        function selectCategory(category, label, value) {
+            selectedCategory = category;
+            selectedSubCategory = value;
+            
+            const display = document.getElementById('category-display');
+            display.innerHTML = '<span class="selected-category"><span class="selected-category-badge ' + category + '">' + category.toUpperCase() + '</span>' + label + '</span>';
+            display.classList.remove('placeholder');
+            
+            document.querySelectorAll('.category-item').forEach(item => item.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            
+            toggleCategoryDropdown();
+            
+            // Show goals card for fundraising/virtual/kickoff
+            const goalsCard = document.getElementById('goals-card');
+            if (category === 'fundraising' || category === 'virtual' || category === 'kickoff') {
+                goalsCard.style.display = 'block';
+            } else {
+                goalsCard.style.display = 'none';
+            }
+            
+            validateForm();
+        }
+        
+        function selectMode(mode) {
+            selectedMode = mode;
+            document.querySelectorAll('.mode-card').forEach(card => card.classList.remove('selected'));
+            document.querySelector('.mode-card.' + mode).classList.add('selected');
+        }
+        
+        function formatCurrency(input) {
+            let value = input.value.replace(/[^\d]/g, '');
+            if (value) value = parseInt(value).toLocaleString();
+            input.value = value;
+            updateROI();
+            validateForm();
+        }
+        
+        function updateROI() {
+            const goal = parseInt(document.getElementById('fundraising-goal').value.replace(/[^\d]/g, '')) || 0;
+            const budget = parseInt(document.getElementById('campaign-budget').value.replace(/[^\d]/g, '')) || 0;
+            
+            document.getElementById('roi-goal').textContent = '$' + goal.toLocaleString();
+            document.getElementById('roi-budget').textContent = '$' + budget.toLocaleString();
+            
+            if (budget > 0 && goal > 0) {
+                document.getElementById('roi-ratio').textContent = Math.round(goal / budget) + ':1';
+            } else {
+                document.getElementById('roi-ratio').textContent = '--';
+            }
+        }
+        
+        function validateForm() {
+            const name = document.getElementById('campaign-name').value.trim();
+            const goalsCard = document.getElementById('goals-card');
+            let isValid = name && selectedCategory;
+            
+            if (goalsCard.style.display !== 'none') {
+                const goal = document.getElementById('fundraising-goal').value.trim();
+                const budget = document.getElementById('campaign-budget').value.trim();
+                const eventDate = document.getElementById('event-date').value;
+                
+                // Host is valid if TBD selected OR if last name is filled
+                const hostStatus = document.querySelector('input[name="host-status"]:checked')?.value;
+                const hostValid = hostStatus === 'tbd' || document.getElementById('host1-last').value.trim();
+                
+                isValid = isValid && goal && budget && eventDate && hostValid;
+            }
+            
+            document.getElementById('next-btn').disabled = !isValid;
+        }
+        
+        function updateHostPreview() {
+            const sal1 = document.getElementById('host1-salutation').value;
+            const first1 = document.getElementById('host1-first').value.trim();
+            const last1 = document.getElementById('host1-last').value.trim();
+            const suffix1 = document.getElementById('host1-suffix').value.trim();
+            
+            const sal2 = document.getElementById('host1-spouse-salutation').value;
+            const first2 = document.getElementById('host1-spouse-first').value.trim();
+            const last2 = document.getElementById('host1-spouse-last').value.trim();
+            const suffix2 = document.getElementById('host1-spouse-suffix').value.trim();
+            
+            let preview = '';
+            
+            // Format based on what's filled in
+            if (last1) {
+                if (sal2 && first2 && !last2) {
+                    // Same last name: "Mr. & Mrs. John Reynolds"
+                    preview = sal1 + ' & ' + sal2 + ' ' + first1 + ' ' + last1;
+                } else if (first2 && last2) {
+                    // Different last names: "Mr. John Reynolds & Mrs. Jane Smith"
+                    preview = (sal1 ? sal1 + ' ' : '') + first1 + ' ' + last1 + (suffix1 ? ' ' + suffix1 : '');
+                    preview += ' & ' + (sal2 ? sal2 + ' ' : '') + first2 + ' ' + last2 + (suffix2 ? ' ' + suffix2 : '');
+                } else if (first2) {
+                    // Spouse first name only, same last: "Mr. & Mrs. John & Mary Reynolds"
+                    preview = (sal1 ? sal1 + ' ' : '') + first1 + ' & ' + first2 + ' ' + last1;
+                } else {
+                    // Single person
+                    preview = (sal1 ? sal1 + ' ' : '') + first1 + ' ' + last1 + (suffix1 ? ' ' + suffix1 : '');
+                }
+            } else {
+                preview = 'Enter host information above';
+            }
+            
+            document.getElementById('host1-preview').textContent = preview;
+            validateForm();
+        }
+        
+        function getFormattedHostNames() {
+            const hostStatus = document.querySelector('input[name="host-status"]:checked')?.value;
+            if (hostStatus === 'tbd') {
+                return 'TBD - Host Recruitment Required';
+            }
+            const preview = document.getElementById('host1-preview').textContent;
+            return preview !== 'Enter host information above' ? preview : '';
+        }
+        
+        function addHost() {
+            alert('Additional host fields coming soon!');
+        }
+        
+        function openDonorSearch(targetId) {
+            // Would open modal to search donor database
+            // For now, show placeholder
+            alert('Donor search modal will open here.\n\nSelect a donor to auto-fill:\n- Salutation\n- First Name\n- Last Name\n- Suffix\n- Spouse Info');
+        }
+        
+        function toggleHostStatus() {
+            const status = document.querySelector('input[name="host-status"]:checked').value;
+            const hostForm = document.getElementById('host-entry-form');
+            const hostTbd = document.getElementById('host-tbd-message');
+            
+            if (status === 'known') {
+                hostForm.style.display = 'block';
+                hostTbd.style.display = 'none';
+            } else {
+                hostForm.style.display = 'none';
+                hostTbd.style.display = 'flex';
+            }
+            validateForm();
+        }
+        
+        function nextStep() {
+            sessionStorage.setItem('campaignName', document.getElementById('campaign-name').value.trim());
+            sessionStorage.setItem('campaignCategory', selectedCategory);
+            sessionStorage.setItem('campaignSubCategory', selectedSubCategory);
+            sessionStorage.setItem('campaignMode', selectedMode);
+            sessionStorage.setItem('campaignGoal', document.getElementById('fundraising-goal')?.value.replace(/[^\d]/g, '') || '');
+            sessionStorage.setItem('campaignBudget', document.getElementById('campaign-budget')?.value.replace(/[^\d]/g, '') || '');
+            sessionStorage.setItem('campaignCapacity', '');
+            sessionStorage.setItem('eventDate', document.getElementById('event-date')?.value || '');
+            sessionStorage.setItem('hostNames', getFormattedHostNames());
+            window.location.href = 'campaign-wizard-review.html';
+        }
+        
+        function goBack() { history.back(); }
+        
+        document.getElementById('campaign-name').addEventListener('input', validateForm);
+        
+        // Host field listeners
+        document.querySelectorAll('.host-field').forEach(field => {
+            field.addEventListener('input', updateHostPreview);
+            field.addEventListener('change', updateHostPreview);
+        });
+        
+        document.addEventListener('click', function(e) {
+            const wrapper = document.querySelector('.category-select-wrapper');
+            if (!wrapper.contains(e.target)) {
+                document.getElementById('category-btn').classList.remove('open');
+                document.getElementById('category-dropdown').classList.remove('open');
+            }
+        });
+    </script>
+    
+</body>
+</html>
