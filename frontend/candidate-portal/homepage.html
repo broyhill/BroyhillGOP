@@ -4,21 +4,15 @@
     <meta charset="utf-8">
     <title>Campaign Command Center | BroyhillGOP</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <!-- Apple-style fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- SF Symbols style icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css">
     
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --text-primary: #1d1d1f;
             --text-secondary: #86868b;
@@ -30,21 +24,20 @@
             --accent-blue: #007aff;
             --accent-green: #34c759;
             --accent-orange: #ff9500;
-            --accent-red: #ff3b30;
-            --sidebar-width: 260px;
+            --accent-red: #cc0000;
+            --accent-purple: #af52de;
+            --sidebar-width: 280px;
         }
-        
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-secondary);
             color: var(--text-primary);
             font-size: 14px;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
         
-        /* ========== SIDEBAR ========== */
+        /* Sidebar */
         .sidebar {
             position: fixed;
             left: 0;
@@ -56,68 +49,60 @@
             display: flex;
             flex-direction: column;
             z-index: 100;
+            overflow: hidden;
         }
-        
-        /* Logo */
         .sidebar-logo {
-            padding: 20px 20px 16px;
+            padding: 20px;
             border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        
-        .sidebar-logo h1 {
-            font-size: 17px;
-            font-weight: 600;
-            color: var(--text-primary);
-            letter-spacing: -0.3px;
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #cc0000, #990000);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
         }
+        .logo-text { font-size: 18px; font-weight: 700; }
         
-        /* Candidate Profile */
+        /* Candidate */
         .candidate-profile {
             padding: 20px;
             text-align: center;
             border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
         }
-        
         .candidate-photo {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             object-fit: cover;
-            margin-bottom: 12px;
-            border: 2px solid var(--border-color);
+            margin-bottom: 10px;
+            border: 3px solid white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        
-        .candidate-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 2px;
-        }
-        
-        .candidate-office {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-        }
-        
-        .settings-btn {
+        .candidate-name { font-size: 16px; font-weight: 600; }
+        .candidate-office { font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; }
+        .settings-link {
             display: inline-flex;
             align-items: center;
             gap: 4px;
             padding: 6px 12px;
             font-size: 12px;
             color: var(--text-secondary);
-            background: var(--bg-secondary);
-            border: none;
+            background: white;
             border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.15s ease;
+            text-decoration: none;
+            transition: all 0.15s;
         }
-        
-        .settings-btn:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-        }
+        .settings-link:hover { background: var(--bg-hover); color: var(--text-primary); }
         
         /* Navigation */
         .nav-scroll {
@@ -125,321 +110,387 @@
             overflow-y: auto;
             padding: 12px 0;
         }
-        
+        .nav-section {
+            padding: 16px 20px 8px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
         .nav-item {
             display: flex;
             align-items: center;
             padding: 10px 20px;
-            margin: 2px 8px;
+            margin: 2px 10px;
             color: var(--text-primary);
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.15s ease;
-        }
-        
-        .nav-item:hover {
-            background: var(--bg-hover);
-        }
-        
-        .nav-item.active {
-            background: var(--bg-secondary);
-        }
-        
-        .nav-item i {
-            width: 20px;
-            font-size: 18px;
-            margin-right: 12px;
-            color: var(--text-secondary);
-        }
-        
-        .nav-item.active i {
-            color: var(--accent-blue);
-        }
-        
-        .nav-item .badge {
-            margin-left: auto;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 2px 7px;
-            border-radius: 10px;
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-        }
-        
-        .nav-item .badge.blue {
-            background: var(--accent-blue);
-            color: white;
-        }
-        
-        .nav-item .badge.red {
-            background: var(--accent-red);
-            color: white;
-        }
-        
-        /* Primary Action Buttons */
-        .nav-primary {
-            padding: 0 12px;
-            margin: 8px 0;
-        }
-        
-        .nav-primary-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 14px 20px;
-            font-size: 15px;
-            font-weight: 600;
-            color: white;
-            background: var(--accent-blue);
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.15s ease;
-        }
-        
-        .nav-primary-btn:hover {
-            filter: brightness(1.1);
-        }
-        
-        .nav-primary-btn i {
-            margin-right: 8px;
-            font-size: 18px;
-        }
-        
-        .nav-primary-btn.secondary {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-        }
-        
-        .nav-primary-btn.secondary:hover {
-            background: var(--bg-hover);
-        }
-        
-        .nav-primary-btn .dropdown-arrow {
-            margin-left: auto;
-            margin-right: 0;
-            font-size: 16px;
-            transition: transform 0.2s ease;
-        }
-        
-        .nav-primary-btn.open .dropdown-arrow {
-            transform: rotate(180deg);
-        }
-        
-        /* Dropdown */
-        .nav-dropdown {
-            display: none;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            margin-top: 6px;
-            overflow: hidden;
-        }
-        
-        .nav-dropdown.open {
-            display: block;
-        }
-        
-        .nav-dropdown-item {
-            display: block;
-            padding: 12px 16px;
             font-size: 13px;
             font-weight: 500;
-            color: var(--text-primary);
-            text-decoration: none;
-            border-bottom: 1px solid var(--border-color);
-            transition: background 0.15s ease;
+            border-radius: 8px;
+            transition: all 0.15s;
         }
-        
-        .nav-dropdown-item:last-child {
-            border-bottom: none;
-        }
-        
-        .nav-dropdown-item:hover {
-            background: var(--bg-hover);
-        }
-        
-        /* Section Divider */
-        .nav-divider {
-            height: 1px;
-            background: var(--border-color);
-            margin: 12px 20px;
-        }
-        
-        .nav-section-label {
-            padding: 16px 20px 8px;
-            font-size: 11px;
+        .nav-item:hover { background: var(--bg-hover); }
+        .nav-item.active { background: rgba(204, 0, 0, 0.1); color: var(--accent-red); }
+        .nav-item i { width: 22px; font-size: 17px; margin-right: 10px; opacity: 0.7; }
+        .nav-item.active i { opacity: 1; color: var(--accent-red); }
+        .nav-item .badge {
+            margin-left: auto;
+            font-size: 10px;
             font-weight: 600;
-            color: var(--text-tertiary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: var(--accent-blue);
+            color: white;
         }
+        .nav-item .badge.green { background: var(--accent-green); }
+        .nav-item .badge.red { background: var(--accent-red); }
+        .nav-item .badge.orange { background: var(--accent-orange); }
         
-        /* ========== MAIN CONTENT ========== */
+        .nav-divider { height: 1px; background: var(--border-color); margin: 10px 20px; }
+        
+        /* Main Content */
         .main {
             margin-left: var(--sidebar-width);
             min-height: 100vh;
-            padding: 24px;
         }
-        
-        .placeholder {
+        .topbar {
             background: var(--bg-primary);
-            border-radius: 12px;
-            padding: 60px;
-            text-align: center;
-            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .topbar-title { font-size: 22px; font-weight: 700; }
+        .topbar-actions { display: flex; gap: 12px; }
+        .topbar-btn {
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+        .topbar-btn.primary { background: var(--accent-red); color: white; }
+        .topbar-btn.primary:hover { filter: brightness(1.1); }
+        .topbar-btn.secondary { background: var(--bg-secondary); color: var(--text-primary); }
+        .topbar-btn.secondary:hover { background: var(--bg-hover); }
+        
+        .page-content { padding: 32px; }
+        
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
         }
         
-        .placeholder h2 {
-            color: var(--text-primary);
-            margin-bottom: 8px;
+        /* Stats Cards */
+        .stat-card {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
         }
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .stat-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        .stat-card-icon.blue { background: rgba(0,122,255,0.1); color: var(--accent-blue); }
+        .stat-card-icon.green { background: rgba(52,199,89,0.1); color: var(--accent-green); }
+        .stat-card-icon.red { background: rgba(204,0,0,0.1); color: var(--accent-red); }
+        .stat-card-icon.orange { background: rgba(255,149,0,0.1); color: var(--accent-orange); }
+        .stat-card-icon.purple { background: rgba(175,82,222,0.1); color: var(--accent-purple); }
+        .stat-value { font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+        .stat-label { font-size: 13px; color: var(--text-secondary); }
+        .stat-change { font-size: 12px; margin-top: 8px; }
+        .stat-change.up { color: var(--accent-green); }
+        .stat-change.down { color: var(--accent-red); }
+        
+        /* Quick Actions */
+        .quick-actions {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 32px;
+        }
+        .quick-actions h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: all 0.15s;
+        }
+        .action-btn:hover { background: var(--bg-hover); transform: translateY(-2px); }
+        .action-btn i { font-size: 20px; color: var(--accent-blue); }
+        
+        /* Ecosystem Grid */
+        .ecosystem-section {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 32px;
+        }
+        .ecosystem-section h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+        .ecosystem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+        }
+        .ecosystem-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 16px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .ecosystem-card:hover { background: var(--bg-hover); transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .ecosystem-card i { font-size: 28px; margin-bottom: 10px; }
+        .ecosystem-card span { font-size: 12px; font-weight: 600; }
+        .ecosystem-card.blue i { color: var(--accent-blue); }
+        .ecosystem-card.green i { color: var(--accent-green); }
+        .ecosystem-card.red i { color: var(--accent-red); }
+        .ecosystem-card.orange i { color: var(--accent-orange); }
+        .ecosystem-card.purple i { color: var(--accent-purple); }
+        
+        /* Loading */
+        .loading { text-align: center; padding: 40px; color: var(--text-secondary); }
+        .loading i { font-size: 32px; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
-
 <body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">B</div>
+        <span class="logo-text">BroyhillGOP</span>
+    </div>
     
-    <!-- ========== SIDEBAR ========== -->
-    <aside class="sidebar">
+    <div class="candidate-profile">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&h=160&fit=crop&crop=face" class="candidate-photo" id="candidate-photo">
+        <div class="candidate-name" id="candidate-name">Loading...</div>
+        <div class="candidate-office" id="candidate-office"></div>
+        <a href="settings.html" class="settings-link"><i class="ti ti-settings"></i> Settings</a>
+    </div>
+    
+    <nav class="nav-scroll">
+        <a href="homepage.html" class="nav-item active"><i class="ti ti-home"></i> Home</a>
+        <a href="campaign-wizard.html" class="nav-item"><i class="ti ti-wand"></i> Campaign Wizard</a>
         
-        <!-- Logo -->
-        <div class="sidebar-logo">
-            <h1>BroyhillGOP</h1>
+        <div class="nav-section">Donors & Volunteers</div>
+        <a href="ecosystem-donor-intelligence-triple.html" class="nav-item"><i class="ti ti-chart-dots-3"></i> Donor Intelligence</a>
+        <a href="donors-all.html" class="nav-item"><i class="ti ti-users"></i> All Donors <span class="badge" id="donor-count">-</span></a>
+        <a href="donors-top-ai.html" class="nav-item"><i class="ti ti-crown"></i> Top Donors</a>
+        <a href="ecosystem-volunteers.html" class="nav-item"><i class="ti ti-heart-handshake"></i> Volunteers</a>
+        
+        <div class="nav-section">Outreach</div>
+        <a href="ecosystem-email.html" class="nav-item"><i class="ti ti-mail"></i> Email</a>
+        <a href="ecosystem-sms.html" class="nav-item"><i class="ti ti-message-circle"></i> SMS</a>
+        <a href="ecosystem-phone-banking.html" class="nav-item"><i class="ti ti-phone-call"></i> Phone Banking</a>
+        <a href="ecosystem-direct-mail.html" class="nav-item"><i class="ti ti-mailbox"></i> Direct Mail</a>
+        <a href="ecosystem-social.html" class="nav-item"><i class="ti ti-brand-facebook"></i> Social Media</a>
+        
+        <div class="nav-section">Campaign</div>
+        <a href="ecosystem-events.html" class="nav-item"><i class="ti ti-calendar-event"></i> Events</a>
+        <a href="ecosystem-canvassing.html" class="nav-item"><i class="ti ti-map-pin"></i> Canvassing</a>
+        <a href="ecosystem-video.html" class="nav-item"><i class="ti ti-video"></i> Video Studio</a>
+        <a href="ecosystem-voice.html" class="nav-item"><i class="ti ti-microphone"></i> Voice AI</a>
+        
+        <div class="nav-section">Management</div>
+        <a href="ecosystem-donations.html" class="nav-item"><i class="ti ti-cash"></i> Donations</a>
+        <a href="ecosystem-budget.html" class="nav-item"><i class="ti ti-calculator"></i> Budget</a>
+        <a href="ecosystem-compliance.html" class="nav-item"><i class="ti ti-shield-check"></i> Compliance</a>
+        <a href="ecosystem-analytics.html" class="nav-item"><i class="ti ti-chart-bar"></i> Analytics</a>
+        
+        <div class="nav-divider"></div>
+        <a href="ecosystem-ai-hub.html" class="nav-item"><i class="ti ti-brain"></i> AI Hub</a>
+        <a href="settings.html" class="nav-item"><i class="ti ti-settings"></i> Settings</a>
+    </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+    <div class="topbar">
+        <div class="topbar-title">Campaign Command Center</div>
+        <div class="topbar-actions">
+            <a href="campaign-wizard.html" class="topbar-btn primary"><i class="ti ti-plus"></i> New Campaign</a>
+            <button class="topbar-btn secondary"><i class="ti ti-refresh"></i> Refresh</button>
         </div>
-        
-        <!-- Candidate Profile -->
-        <div class="candidate-profile">
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&h=160&fit=crop&crop=face" 
-                 alt="Candidate" 
-                 class="candidate-photo">
-            <div class="candidate-name">Ed Broyhill</div>
-            <div class="candidate-office">State Auditor</div>
-            <button class="settings-btn">
-                <i class="ti ti-settings"></i>
-                Settings
-            </button>
-        </div>
-        
-        <!-- Navigation -->
-        <nav class="nav-scroll">
-            
-            <!-- Home -->
-            <a href="#" class="nav-item active">
-                <i class="ti ti-home"></i>
-                Home
-            </a>
-            
-            <!-- Overview -->
-            <a href="#" class="nav-item">
-                <i class="ti ti-chart-dots-2"></i>
-                Overview
-            </a>
-            
-            <div class="nav-divider"></div>
-            
-            <!-- Primary Actions -->
-            <div class="nav-primary">
-                <button class="nav-primary-btn" onclick="toggleDropdown('donors-dropdown')">
-                    <i class="ti ti-coin"></i>
-                    Donors
-                    <i class="ti ti-chevron-down dropdown-arrow" id="donors-arrow"></i>
-                </button>
-                <div class="nav-dropdown" id="donors-dropdown">
-                    <a href="donors-all.html" class="nav-dropdown-item">All Donors</a>
-                    <a href="donors-district.html" class="nav-dropdown-item">District Donors</a>
-                    <a href="donors-county.html" class="nav-dropdown-item">County Donors</a>
-                    <a href="donors-mine.html" class="nav-dropdown-item">My Donors (Contributors)</a>
-                    <a href="donors-prospects.html" class="nav-dropdown-item">My Prospects</a>
+    </div>
+    
+    <div class="page-content">
+        <!-- Stats -->
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon blue"><i class="ti ti-users"></i></div>
                 </div>
+                <div class="stat-value" id="total-donors">-</div>
+                <div class="stat-label">Total Donors</div>
+                <div class="stat-change up" id="donors-change"></div>
             </div>
-            
-            <div class="nav-primary">
-                <a href="#" class="nav-primary-btn secondary">
-                    <i class="ti ti-users"></i>
-                    Volunteers
-                </a>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon green"><i class="ti ti-cash"></i></div>
+                </div>
+                <div class="stat-value" id="total-raised">-</div>
+                <div class="stat-label">Total Raised</div>
+                <div class="stat-change up" id="raised-change"></div>
             </div>
-            
-            <div class="nav-divider"></div>
-            
-            <!-- Outreach -->
-            <div class="nav-section-label">Outreach</div>
-            
-            <a href="#" class="nav-item">
-                <i class="ti ti-mail"></i>
-                Email
-                <span class="badge blue">16</span>
-            </a>
-            
-            <a href="#" class="nav-item">
-                <i class="ti ti-message"></i>
-                SMS
-            </a>
-            
-            <a href="#" class="nav-item">
-                <i class="ti ti-phone"></i>
-                Calls
-            </a>
-            
-            <a href="#" class="nav-item">
-                <i class="ti ti-brand-facebook"></i>
-                Social
-            </a>
-            
-            <!-- Campaign -->
-            <div class="nav-section-label">Campaign</div>
-            
-            <a href="#" class="nav-item">
-                <i class="ti ti-calendar"></i>
-                Calendar
-            </a>
-            
-            <a href="#" class="nav-item">
-                <i class="ti ti-ticket"></i>
-                Events
-                <span class="badge red">2</span>
-            </a>
-            
-            <a href="#" class="nav-item">
-                <i class="ti ti-video"></i>
-                Videos
-            </a>
-            
-            <a href="#" class="nav-item">
-                <i class="ti ti-rocket"></i>
-                Campaigns
-            </a>
-            
-            <div class="nav-divider"></div>
-            
-            <!-- Admin -->
-            <a href="#" class="nav-item">
-                <i class="ti ti-layout-dashboard"></i>
-                Admin Panel
-            </a>
-            
-        </nav>
-        
-    </aside>
-    
-    <!-- ========== MAIN ========== -->
-    <main class="main">
-        <div class="placeholder">
-            <h2>Homepage Content</h2>
-            <p>Action-based dashboard will go here</p>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon purple"><i class="ti ti-building-community"></i></div>
+                </div>
+                <div class="stat-value" id="total-districts">184</div>
+                <div class="stat-label">NC Districts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon orange"><i class="ti ti-calendar-event"></i></div>
+                </div>
+                <div class="stat-value" id="upcoming-events">-</div>
+                <div class="stat-label">Upcoming Events</div>
+            </div>
         </div>
-    </main>
-    
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3>Quick Actions</h3>
+            <div class="action-grid">
+                <a href="campaign-wizard.html" class="action-btn"><i class="ti ti-wand"></i> Launch Campaign</a>
+                <a href="ecosystem-email.html" class="action-btn"><i class="ti ti-mail"></i> Send Email Blast</a>
+                <a href="ecosystem-events.html" class="action-btn"><i class="ti ti-calendar-plus"></i> Create Event</a>
+                <a href="ecosystem-donor-intelligence-triple.html" class="action-btn"><i class="ti ti-chart-dots-3"></i> View Triple Grades</a>
+                <a href="donors-top-ai.html" class="action-btn"><i class="ti ti-crown"></i> Top Donor Report</a>
+                <a href="ecosystem-analytics.html" class="action-btn"><i class="ti ti-chart-bar"></i> Analytics Dashboard</a>
+            </div>
+        </div>
+        
+        <!-- Ecosystems -->
+        <div class="ecosystem-section">
+            <h3>All Ecosystems</h3>
+            <div class="ecosystem-grid">
+                <a href="ecosystem-donor-intelligence-triple.html" class="ecosystem-card blue"><i class="ti ti-chart-dots-3"></i><span>Donor Intelligence</span></a>
+                <a href="ecosystem-donations.html" class="ecosystem-card green"><i class="ti ti-cash"></i><span>Donations</span></a>
+                <a href="ecosystem-volunteers.html" class="ecosystem-card purple"><i class="ti ti-heart-handshake"></i><span>Volunteers</span></a>
+                <a href="ecosystem-email.html" class="ecosystem-card blue"><i class="ti ti-mail"></i><span>Email</span></a>
+                <a href="ecosystem-sms.html" class="ecosystem-card green"><i class="ti ti-message-circle"></i><span>SMS</span></a>
+                <a href="ecosystem-phone-banking.html" class="ecosystem-card orange"><i class="ti ti-phone-call"></i><span>Phone Banking</span></a>
+                <a href="ecosystem-direct-mail.html" class="ecosystem-card purple"><i class="ti ti-mailbox"></i><span>Direct Mail</span></a>
+                <a href="ecosystem-social.html" class="ecosystem-card blue"><i class="ti ti-brand-facebook"></i><span>Social Media</span></a>
+                <a href="ecosystem-events.html" class="ecosystem-card red"><i class="ti ti-calendar-event"></i><span>Events</span></a>
+                <a href="ecosystem-canvassing.html" class="ecosystem-card green"><i class="ti ti-map-pin"></i><span>Canvassing</span></a>
+                <a href="ecosystem-video.html" class="ecosystem-card purple"><i class="ti ti-video"></i><span>Video Studio</span></a>
+                <a href="ecosystem-voice.html" class="ecosystem-card orange"><i class="ti ti-microphone"></i><span>Voice AI</span></a>
+                <a href="ecosystem-budget.html" class="ecosystem-card green"><i class="ti ti-calculator"></i><span>Budget</span></a>
+                <a href="ecosystem-compliance.html" class="ecosystem-card blue"><i class="ti ti-shield-check"></i><span>Compliance</span></a>
+                <a href="ecosystem-analytics.html" class="ecosystem-card purple"><i class="ti ti-chart-bar"></i><span>Analytics</span></a>
+                <a href="ecosystem-ai-hub.html" class="ecosystem-card red"><i class="ti ti-brain"></i><span>AI Hub</span></a>
+            </div>
+        </div>
+    </div>
+</main>
+
 <script>
-    function toggleDropdown(id) {
-        const dropdown = document.getElementById(id);
-        const btn = dropdown.previousElementSibling;
-        dropdown.classList.toggle('open');
-        btn.classList.toggle('open');
+// ============================================================================
+// SUPABASE CONNECTION
+// ============================================================================
+const SUPABASE_URL = 'https://isbgjpnbocdkeslofota.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzYmdqcG5ib2Nka2VzbG9mb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3MDc3MDcsImV4cCI6MjA4MDI4MzcwN30.pSF0-C-QOklmDWtbexUvnFphuz_bFTdF4INaBMSW1SM';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ============================================================================
+// LOAD DASHBOARD DATA
+// ============================================================================
+async function loadDashboard() {
+    try {
+        // Load donor stats
+        const { count: donorCount } = await supabase
+            .from('persons')
+            .select('*', { count: 'exact', head: true })
+            .eq('is_donor', true);
+        
+        if (donorCount) {
+            document.getElementById('total-donors').textContent = donorCount.toLocaleString();
+            document.getElementById('donor-count').textContent = donorCount.toLocaleString();
+        }
+        
+        // Load total raised
+        const { data: donations } = await supabase
+            .from('persons')
+            .select('donation_total')
+            .eq('is_donor', true);
+        
+        if (donations) {
+            const total = donations.reduce((sum, d) => sum + (d.donation_total || 0), 0);
+            document.getElementById('total-raised').textContent = '$' + total.toLocaleString();
+        }
+        
+        // Load district count
+        const { count: districtCount } = await supabase
+            .from('nc_districts')
+            .select('*', { count: 'exact', head: true });
+        
+        if (districtCount) {
+            document.getElementById('total-districts').textContent = districtCount.toLocaleString();
+        }
+        
+        // Load events count
+        const { count: eventCount } = await supabase
+            .from('events')
+            .select('*', { count: 'exact', head: true })
+            .gte('event_date', new Date().toISOString());
+        
+        document.getElementById('upcoming-events').textContent = eventCount || 0;
+        
+    } catch (error) {
+        console.log('Dashboard load:', error.message);
     }
+}
+
+// Load on page ready
+document.addEventListener('DOMContentLoaded', loadDashboard);
 </script>
 
 </body>
