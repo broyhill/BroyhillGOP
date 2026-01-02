@@ -1603,121 +1603,215 @@ class VideoStudio:
         import os
         
         output_path = output_dir / f"final_ad.{output_format}"
-        temp_dir = output_dir / "temp"
-        temp_dir.mkdir(exist_ok=True)
         
         # Get candidate info for overlays
         candidate_name = candidate.get('name', 'Candidate')
-        candidate_office = candidate.get('office', '')
-        campaign_color = candidate.get('campaign_color_primary', '#CC0000')
+        district = candidate.get('district', '')
         
-        # Build complex filter graph
-        filter_parts = []
+        # Escape special characters for FFmpeg drawtext
+        candidate_name_escaped = candidate_name.replace("'", "'\\''").replace(":", "\\:")
+        cta_text_escaped = cta_text.replace("'", "'\\''").replace(":", "\\:") if cta_text else ""
+        
+        # Build inputs list
         inputs = []
+        input_index = 0
         
-        # Input 0: Background color
-        inputs.extend(["-f", "lavfi", "-i", f"color=c=black:s=1920x1080:d={duration}"])
+        # Input 0: Headshot or black background
+        has_headshot = headshot_path and headshot_path.exists()
+        if has_headshot:
+            inputs.extend(["-loop", "1", "-i", str(headshot_path)])
+            video_input = 0
+        else:
+            inputs.extend(["-f", "lavfi", "-i", f"color=c=black:s=1920x1080:d={duration}"])
+            video_input = 0
+        input_index += 1
         
         # Input 1: Voice
         inputs.extend(["-i", str(voice_path)])
+        voice_input = input_index
+        input_index += 1
         
         # Input 2: Music (if exists)
-        if music_path.exists():
+        has_music = music_path and music_path.exists()
+        if has_music:
             inputs.extend(["-i", str(music_path)])
+            music_input = input_index
+            input_index += 1
         
-        # Input 3: Headshot with Ken Burns
-        if headshot_path.exists():
-            inputs.extend(["-loop", "1", "-i", str(headshot_path)])
+        # Build filter complex
+        filters = []
         
-        # Add any stock footage clips
-        for i, clip in enumerate(footage_clips[:5]):  # Max 5 clips
-            if clip.exists():
-                inputs.extend(["-i", str(clip)])
-        
-        # Build filter complex for composition
-        filter_complex = []
-        
-        # Scale headshot with Ken Burns zoom effect
-        if headshot_path.exists():
-            filter_complex.append(
-                f"[3:v]scale=1920:1080:force_original_aspect_ratio=increase,"
-                f"crop=1920:1080,zoompan=z='min(zoom+0.0015,1.5)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d={duration*25}:s=1920x1080:fps=25[headshot]"
+        # Video processing chain
+        if has_headshot:
+            # Scale and Ken Burns zoom on headshot
+            filters.append(
+                f"[{video_input}:v]scale=1920:1080:force_original_aspect_ratio=increase,"
+                f"crop=1920:1080,"
+                f"zoompan=z='min(zoom+0.001,1.3)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':"
+                f"d={duration*25}:s=1920x1080:fps=25[zoomed]"
             )
+            current_video = "zoomed"
+        else:
+            current_video = f"{video_input}:v"
         
-        # Add text overlay with candidate name
-        filter_complex.append(
-            f"[0:v]drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:"
-            f"text='{candidate_name}':"
-            f"fontcolor=white:fontsize=72:x=(w-text_w)/2:y=h-150:"
-            f"box=1:boxcolor=black@0.5:boxborderw=10[with_name]"
+        # Add candidate name text overlay
+        filters.append(
+            f"[{current_video}]drawtext="
+            f"fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:"
+            f"text='{candidate_name_escaped}':"
+            f"fontcolor=white:fontsize=64:x=(w-text_w)/2:y=h-180:"
+            f"box=1:boxcolor=black@0.6:boxborderw=15[with_name]"
         )
+        current_video = "with_name"
+        
+        # Add district below name
+        if district:
+            district_escaped = district.replace("'", "'\\''").replace(":", "\\:")
+            filters.append(
+                f"[{current_video}]drawtext="
+                f"fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf:"
+                f"text='{district_escaped}':"
+                f"fontcolor=white:fontsize=36:x=(w-text_w)/2:y=h-120:"
+                f"box=1:boxcolor=black@0.6:boxborderw=8[with_district]"
+            )
+            current_video = "with_district"
         
         # Add CTA if requested
-        if include_cta:
-            filter_complex.append(
-                f"[with_name]drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:"
-                f"text='{cta_text}':"
-                f"fontcolor=white:fontsize=48:x=(w-text_w)/2:y=h-80:"
-                f"box=1:boxcolor=red@0.8:boxborderw=15[with_cta]"
+        if include_cta and cta_text_escaped:
+            filters.append(
+                f"[{current_video}]drawtext="
+                f"fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:"
+                f"text='{cta_text_escaped}':"
+                f"fontcolor=white:fontsize=48:x=(w-text_w)/2:y=h-60:"
+                f"box=1:boxcolor=#CC0000@0.9:boxborderw=20[with_cta]"
             )
-            final_video = "with_cta"
-        else:
-            final_video = "with_name"
+            current_video = "with_cta"
         
-        # Mix audio (voice + background music)
-        if music_path.exists():
-            filter_complex.append(f"[1:a][2:a]amix=inputs=2:duration=first:dropout_transition=2[audio_mix]")
-            audio_output = "[audio_mix]"
-        else:
-            audio_output = "[1:a]"
+        final_video = current_video
         
-        # Build command
+        # Audio processing
+        if has_music:
+            # Mix voice (louder) with music (softer background)
+            filters.append(
+                f"[{voice_input}:a]volume=1.0[voice];"
+                f"[{music_input}:a]volume=0.15[music];"
+                f"[voice][music]amix=inputs=2:duration=first:dropout_transition=2[final_audio]"
+            )
+            final_audio = "final_audio"
+        else:
+            final_audio = f"{voice_input}:a"
+        
+        # Build FFmpeg command
         cmd = ["ffmpeg", "-y"]
         cmd.extend(inputs)
         
-        if filter_complex:
-            cmd.extend(["-filter_complex", ";".join(filter_complex)])
-            cmd.extend(["-map", f"[{final_video}]"])
-            cmd.extend(["-map", audio_output.strip("[]")])
+        # Add filter complex
+        filter_string = ";".join(filters)
+        cmd.extend(["-filter_complex", filter_string])
         
+        # Map outputs
+        cmd.extend(["-map", f"[{final_video}]"])
+        if has_music:
+            cmd.extend(["-map", f"[{final_audio}]"])
+        else:
+            cmd.extend(["-map", f"{voice_input}:a"])
+        
+        # Output settings
         cmd.extend([
             "-c:v", "libx264",
             "-preset", "medium",
-            "-crf", "23",
+            "-crf", "20",
+            "-pix_fmt", "yuv420p",
             "-c:a", "aac",
             "-b:a", "192k",
+            "-ar", "44100",
             "-t", str(duration),
             "-movflags", "+faststart",
             str(output_path)
         ])
         
+        logger.info(f"Running FFmpeg with {len(filters)} filters...")
+        
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
             if result.returncode != 0:
-                logger.error(f"FFmpeg error: {result.stderr}")
+                logger.error(f"FFmpeg complex filter failed: {result.stderr[:500]}")
                 # Fallback to simple composition
-                self._simple_compose(voice_path, headshot_path, duration, output_path)
+                self._simple_compose(voice_path, headshot_path, music_path, duration, candidate_name, cta_text, output_path)
         except subprocess.TimeoutExpired:
             logger.error("FFmpeg timeout - using simple composition")
-            self._simple_compose(voice_path, headshot_path, duration, output_path)
+            self._simple_compose(voice_path, headshot_path, music_path, duration, candidate_name, cta_text, output_path)
+        except Exception as e:
+            logger.error(f"FFmpeg error: {e}")
+            self._simple_compose(voice_path, headshot_path, music_path, duration, candidate_name, cta_text, output_path)
         
         logger.info(f"Video composed: {output_path}")
         return output_path
     
-    def _simple_compose(self, voice_path: Path, headshot_path: Path, duration: int, output_path: Path):
-        """Fallback simple video composition"""
+    def _simple_compose(self, voice_path: Path, headshot_path: Path, music_path: Path, 
+                       duration: int, candidate_name: str, cta_text: str, output_path: Path):
+        """Fallback simple video composition with basic overlays"""
         import subprocess
         
-        cmd = [
-            "ffmpeg", "-y",
-            "-f", "lavfi", "-i", f"color=c=black:s=1920x1080:d={duration}",
-            "-i", str(voice_path),
-            "-c:v", "libx264", "-c:a", "aac",
+        # Escape text
+        name_escaped = candidate_name.replace("'", "'\\''").replace(":", "\\:")
+        cta_escaped = (cta_text or "").replace("'", "'\\''").replace(":", "\\:")
+        
+        has_headshot = headshot_path and headshot_path.exists()
+        has_music = music_path and music_path.exists()
+        
+        if has_headshot:
+            # Use headshot as background with text
+            filter_str = (
+                f"[0:v]scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,"
+                f"drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:"
+                f"text='{name_escaped}':fontcolor=white:fontsize=64:x=(w-text_w)/2:y=h-150:"
+                f"box=1:boxcolor=black@0.6:boxborderw=15"
+            )
+            if cta_escaped:
+                filter_str += (
+                    f",drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:"
+                    f"text='{cta_escaped}':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=h-70:"
+                    f"box=1:boxcolor=#CC0000@0.9:boxborderw=20"
+                )
+            filter_str += "[v]"
+            
+            cmd = [
+                "ffmpeg", "-y",
+                "-loop", "1", "-i", str(headshot_path),
+                "-i", str(voice_path)
+            ]
+            
+            if has_music:
+                cmd.extend(["-i", str(music_path)])
+                filter_str += ";[1:a]volume=1.0[voice];[2:a]volume=0.15[music];[voice][music]amix=inputs=2:duration=first[a]"
+                cmd.extend(["-filter_complex", filter_str, "-map", "[v]", "-map", "[a]"])
+            else:
+                cmd.extend(["-filter_complex", filter_str, "-map", "[v]", "-map", "1:a"])
+            
+        else:
+            # Black background with text
+            cmd = [
+                "ffmpeg", "-y",
+                "-f", "lavfi", "-i", f"color=c=black:s=1920x1080:d={duration}",
+                "-i", str(voice_path),
+                "-c:v", "libx264", "-c:a", "aac",
+                "-shortest"
+            ]
+        
+        cmd.extend([
+            "-c:v", "libx264",
+            "-preset", "fast",
+            "-crf", "23",
+            "-c:a", "aac",
+            "-b:a", "192k",
+            "-t", str(duration),
             "-shortest",
             str(output_path)
-        ]
+        ])
+        
         subprocess.run(cmd, capture_output=True)
-    
+        logger.info(f"Simple composition complete: {output_path}")
     def _export_to_library(
         self,
         production_id: str,
