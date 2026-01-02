@@ -23,6 +23,7 @@ Monthly Savings: $3,500+ vs professional video production
 """
 
 import os
+from pathlib import Path
 import json
 import logging
 from datetime import datetime, timedelta
