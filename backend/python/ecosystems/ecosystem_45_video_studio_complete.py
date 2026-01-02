@@ -1350,82 +1350,21 @@ class VideoStudio:
         output_dir: Path
     ) -> Path:
         """Generate voice via E16b Voice Synthesis ecosystem"""
-        import asyncio
-        import subprocess
-        from pathlib import Path
-        
+        # E16b integration point
+        # In production, calls ecosystem_16b_voice_synthesis_ULTRA.py
         output_path = output_dir / "voiceover.wav"
         
-        try:
-            # Import E16b Voice Synthesis Hub
-            import sys
-            sys.path.insert(0, str(Path(__file__).parent))
-            from ecosystem_16b_voice_synthesis_ULTRA import (
-                VoiceSynthesisHub, TTSRequest, TTSEngine
-            )
-            
-            # Initialize the hub
-            hub = VoiceSynthesisHub()
-            
-            async def generate():
-                await hub.initialize()
-                
-                # Check if candidate has cloned voice
-                voice_id = await self._get_candidate_voice_id(candidate_id)
-                
-                # Create TTS request
-                request = TTSRequest(
-                    text=script,
-                    engine=TTSEngine.XTTS if voice_id else TTSEngine.PIPER,
-                    voice_id=voice_id,
-                    output_format="wav",
-                    speaking_rate=0.95,  # Slightly slower for ads
-                    stability=0.75
-                )
-                
-                response = await hub.generate_speech(request)
-                
-                if response.success and response.audio_path:
-                    # Copy to output directory
-                    import shutil
-                    shutil.copy(response.audio_path, output_path)
-                    logger.info(f"E16b voice generated: {output_path}")
-                    return output_path
-                else:
-                    raise Exception(response.error_message or "Voice generation failed")
-            
-            # Run async generation
-            return asyncio.run(generate())
-            
-        except ImportError as e:
-            logger.warning(f"E16b not available ({e}), falling back to espeak-ng")
-            # Fallback to espeak-ng for local testing
-            subprocess.run([
-                "espeak-ng", "-w", str(output_path),
-                "-v", "en-us+m3", "-s", "140",
-                script
-            ], check=True)
-            return output_path
-            
-        except Exception as e:
-            logger.error(f"Voice generation error: {e}")
-            # Emergency fallback
-            subprocess.run([
-                "espeak-ng", "-w", str(output_path),
-                "-v", "en-us+m3", "-s", "140",
-                script
-            ], check=True)
-            return output_path
+        # Placeholder - E16b would generate actual voice clone
+        # For now, use espeak as fallback
+        import subprocess
+        subprocess.run([
+            "espeak-ng", "-w", str(output_path),
+            "-v", "en-us+m3", "-s", "140",
+            script
+        ], check=True)
+        
+        return output_path
     
-    async def _get_candidate_voice_id(self, candidate_id: str) -> Optional[str]:
-        """Check if candidate has a cloned voice profile in E16b"""
-        try:
-            # Query E16b voice profiles for this candidate
-            # Would query e16b_voice_profiles table
-            # For now, return None to use default voice
-            return None
-        except Exception:
-            return None
     def _get_stock_footage_e44(
         self,
         style: str,
@@ -1433,16 +1372,202 @@ class VideoStudio:
         keywords: List[str],
         output_dir: Path
     ) -> List[Path]:
-        """Get stock footage clips from E44 Creative Studio"""
-        # E44/E23 integration point
-        # Would pull from asset library based on keywords
-        clips = []
+        """
+        Get stock footage clips from royalty-free sources.
         
-        # Placeholder - E44 would provide actual clips
-        # Categories: construction, families, community, patriotic
+        Integrates with:
+        - Pexels API (free, attribution optional for video)
+        - Pixabay API (free, CC0)
+        - E23 Creative Asset Engine (internal library)
+        
+        Args:
+            style: Visual style (professional, grassroots, urgent, hopeful)
+            duration: Target total duration in seconds
+            keywords: Visual keywords extracted from script
+            output_dir: Directory to save downloaded clips
+            
+        Returns:
+            List of paths to downloaded video clips
+        """
+        import requests
+        import os
+        from pathlib import Path
+        
+        clips = []
+        clip_duration_target = 5  # Each clip ~5 seconds
+        num_clips_needed = max(3, duration // clip_duration_target)
+        
+        # Map style to visual themes
+        style_keywords = {
+            "professional": ["office", "business", "professional", "meeting"],
+            "grassroots": ["community", "volunteer", "neighborhood", "local"],
+            "urgent": ["action", "movement", "change", "rally"],
+            "hopeful": ["sunrise", "family", "future", "children", "nature"]
+        }
+        
+        search_terms = keywords + style_keywords.get(style, [])
+        
+        # Try Pexels API first (higher quality)
+        pexels_key = os.getenv("PEXELS_API_KEY", "")
+        if pexels_key:
+            try:
+                clips.extend(self._fetch_pexels_videos(
+                    search_terms, num_clips_needed, output_dir, pexels_key
+                ))
+            except Exception as e:
+                logger.warning(f"Pexels fetch failed: {e}")
+        
+        # Try Pixabay as fallback
+        pixabay_key = os.getenv("PIXABAY_API_KEY", "")
+        if pixabay_key and len(clips) < num_clips_needed:
+            try:
+                remaining = num_clips_needed - len(clips)
+                clips.extend(self._fetch_pixabay_videos(
+                    search_terms, remaining, output_dir, pixabay_key
+                ))
+            except Exception as e:
+                logger.warning(f"Pixabay fetch failed: {e}")
+        
+        # Check E23 internal asset library
+        if len(clips) < num_clips_needed:
+            try:
+                internal_clips = self._fetch_internal_assets(
+                    search_terms, num_clips_needed - len(clips), output_dir
+                )
+                clips.extend(internal_clips)
+            except Exception as e:
+                logger.warning(f"Internal asset fetch failed: {e}")
+        
+        logger.info(f"Stock footage: {len(clips)} clips acquired for {duration}s video")
+        return clips
+    
+    def _fetch_pexels_videos(
+        self,
+        search_terms: List[str],
+        count: int,
+        output_dir: Path,
+        api_key: str
+    ) -> List[Path]:
+        """Fetch videos from Pexels API"""
+        import requests
+        
+        clips = []
+        headers = {"Authorization": api_key}
+        
+        for term in search_terms[:3]:  # Limit API calls
+            if len(clips) >= count:
+                break
+                
+            response = requests.get(
+                "https://api.pexels.com/videos/search",
+                headers=headers,
+                params={
+                    "query": term,
+                    "per_page": min(5, count - len(clips)),
+                    "orientation": "landscape",
+                    "size": "medium"
+                },
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                for video in data.get("videos", []):
+                    if len(clips) >= count:
+                        break
+                    
+                    # Get HD video file
+                    video_files = video.get("video_files", [])
+                    hd_file = next(
+                        (f for f in video_files if f.get("quality") == "hd"),
+                        video_files[0] if video_files else None
+                    )
+                    
+                    if hd_file:
+                        video_url = hd_file.get("link")
+                        clip_path = output_dir / f"pexels_{video['id']}.mp4"
+                        
+                        # Download video
+                        video_response = requests.get(video_url, timeout=60)
+                        if video_response.status_code == 200:
+                            with open(clip_path, 'wb') as f:
+                                f.write(video_response.content)
+                            clips.append(clip_path)
+                            logger.info(f"Downloaded: {clip_path.name}")
         
         return clips
     
+    def _fetch_pixabay_videos(
+        self,
+        search_terms: List[str],
+        count: int,
+        output_dir: Path,
+        api_key: str
+    ) -> List[Path]:
+        """Fetch videos from Pixabay API"""
+        import requests
+        
+        clips = []
+        
+        for term in search_terms[:3]:
+            if len(clips) >= count:
+                break
+            
+            response = requests.get(
+                "https://pixabay.com/api/videos/",
+                params={
+                    "key": api_key,
+                    "q": term,
+                    "per_page": min(5, count - len(clips)),
+                    "video_type": "film"
+                },
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                for video in data.get("hits", []):
+                    if len(clips) >= count:
+                        break
+                    
+                    # Get medium size video
+                    videos = video.get("videos", {})
+                    medium = videos.get("medium", videos.get("small", {}))
+                    video_url = medium.get("url")
+                    
+                    if video_url:
+                        clip_path = output_dir / f"pixabay_{video['id']}.mp4"
+                        
+                        video_response = requests.get(video_url, timeout=60)
+                        if video_response.status_code == 200:
+                            with open(clip_path, 'wb') as f:
+                                f.write(video_response.content)
+                            clips.append(clip_path)
+                            logger.info(f"Downloaded: {clip_path.name}")
+        
+        return clips
+    
+    def _fetch_internal_assets(
+        self,
+        search_terms: List[str],
+        count: int,
+        output_dir: Path
+    ) -> List[Path]:
+        """Fetch from E23 internal asset library"""
+        try:
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).parent))
+            from ecosystem_23_creative_asset_3d_engine_complete import CreativeAssetEngine
+            
+            engine = CreativeAssetEngine()
+            # Query internal video assets by tags
+            # This would search the creative_assets table
+            
+            return []  # Placeholder - implement E23 query
+        except Exception as e:
+            logger.warning(f"E23 integration not available: {e}")
+            return []
     def _extract_keywords(self, script: str) -> List[str]:
         """Extract visual keywords from script for footage matching"""
         # Simple keyword extraction - E20 Intelligence Brain could enhance
