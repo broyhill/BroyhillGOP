@@ -1350,21 +1350,82 @@ class VideoStudio:
         output_dir: Path
     ) -> Path:
         """Generate voice via E16b Voice Synthesis ecosystem"""
-        # E16b integration point
-        # In production, calls ecosystem_16b_voice_synthesis_ULTRA.py
+        import asyncio
+        import subprocess
+        from pathlib import Path
+        
         output_path = output_dir / "voiceover.wav"
         
-        # Placeholder - E16b would generate actual voice clone
-        # For now, use espeak as fallback
-        import subprocess
-        subprocess.run([
-            "espeak-ng", "-w", str(output_path),
-            "-v", "en-us+m3", "-s", "140",
-            script
-        ], check=True)
-        
-        return output_path
+        try:
+            # Import E16b Voice Synthesis Hub
+            import sys
+            sys.path.insert(0, str(Path(__file__).parent))
+            from ecosystem_16b_voice_synthesis_ULTRA import (
+                VoiceSynthesisHub, TTSRequest, TTSEngine
+            )
+            
+            # Initialize the hub
+            hub = VoiceSynthesisHub()
+            
+            async def generate():
+                await hub.initialize()
+                
+                # Check if candidate has cloned voice
+                voice_id = await self._get_candidate_voice_id(candidate_id)
+                
+                # Create TTS request
+                request = TTSRequest(
+                    text=script,
+                    engine=TTSEngine.XTTS if voice_id else TTSEngine.PIPER,
+                    voice_id=voice_id,
+                    output_format="wav",
+                    speaking_rate=0.95,  # Slightly slower for ads
+                    stability=0.75
+                )
+                
+                response = await hub.generate_speech(request)
+                
+                if response.success and response.audio_path:
+                    # Copy to output directory
+                    import shutil
+                    shutil.copy(response.audio_path, output_path)
+                    logger.info(f"E16b voice generated: {output_path}")
+                    return output_path
+                else:
+                    raise Exception(response.error_message or "Voice generation failed")
+            
+            # Run async generation
+            return asyncio.run(generate())
+            
+        except ImportError as e:
+            logger.warning(f"E16b not available ({e}), falling back to espeak-ng")
+            # Fallback to espeak-ng for local testing
+            subprocess.run([
+                "espeak-ng", "-w", str(output_path),
+                "-v", "en-us+m3", "-s", "140",
+                script
+            ], check=True)
+            return output_path
+            
+        except Exception as e:
+            logger.error(f"Voice generation error: {e}")
+            # Emergency fallback
+            subprocess.run([
+                "espeak-ng", "-w", str(output_path),
+                "-v", "en-us+m3", "-s", "140",
+                script
+            ], check=True)
+            return output_path
     
+    async def _get_candidate_voice_id(self, candidate_id: str) -> Optional[str]:
+        """Check if candidate has a cloned voice profile in E16b"""
+        try:
+            # Query E16b voice profiles for this candidate
+            # Would query e16b_voice_profiles table
+            # For now, return None to use default voice
+            return None
+        except Exception:
+            return None
     def _get_stock_footage_e44(
         self,
         style: str,
