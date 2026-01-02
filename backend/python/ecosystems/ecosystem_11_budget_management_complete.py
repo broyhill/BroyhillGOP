@@ -1,863 +1,1033 @@
 #!/usr/bin/env python3
 """
-============================================================================
-ECOSYSTEM 11: BUDGET MANAGEMENT - COMPLETE (100%)
-============================================================================
+================================================================================
+ECOSYSTEM 11: BUDGET MANAGEMENT - COMPLETE FINANCIAL CONTROL SYSTEM
+================================================================================
+5-level budget hierarchy with real-time tracking, forecasting, variance analysis,
+and multi-candidate allocation. Integrates with E28 Financial Dashboard.
 
-Comprehensive campaign financial tracking and budget control:
-- Budget allocation by campaign/channel/tier
-- Real-time spend tracking
-- Budget vs actual reporting
-- Overspend alerts
-- Invoice management
-- Vendor payment tracking
-- Financial forecasting
-- Cost per acquisition (CPA)
-- Return on investment (ROI)
-- 5-Level cost hierarchy
-
-Development Value: $100,000+
-Powers: Financial control, spend optimization, ROI tracking
-
-============================================================================
+Development Value: $85,000
+================================================================================
 """
 
 import os
 import json
-import uuid
 import logging
-import psycopg2
-from psycopg2.extras import RealDictCursor
-from datetime import datetime, timedelta, date
-from typing import Dict, List, Optional, Any
+import uuid
+from datetime import datetime, timedelta
+from typing import Optional, List, Dict, Any, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
+import asyncio
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger('ecosystem11.budget')
+logger = logging.getLogger('ecosystem11.budget_management')
 
-
-class BudgetConfig:
-    DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost:5432/postgres")
-    WARNING_THRESHOLD = 0.85  # 85% budget used = warning
-    CRITICAL_THRESHOLD = 0.95  # 95% budget used = critical
-
+# ============================================================================
+# ENUMS
+# ============================================================================
 
 class BudgetLevel(Enum):
-    UNIVERSE = "universe"      # All campaigns combined
-    CANDIDATE = "candidate"    # Per candidate
-    CAMPAIGN = "campaign"      # Per campaign
-    CHANNEL = "channel"        # Per channel (email, sms, etc)
-    TIER = "tier"              # Per donor tier (A+, A, B, etc)
+    PLATFORM = 'platform'      # NC GOP Platform level
+    PARTY = 'party'            # State/County party
+    CANDIDATE = 'candidate'    # Individual candidate
+    CAMPAIGN = 'campaign'      # Specific campaign
+    LINE_ITEM = 'line_item'    # Individual expense category
 
-class ExpenseCategory(Enum):
-    MEDIA = "media"            # TV, radio, digital ads
-    DIRECT_MAIL = "direct_mail"
-    EMAIL = "email"
-    SMS = "sms"
-    PHONE = "phone"
-    EVENTS = "events"
-    STAFF = "staff"
-    CONSULTING = "consulting"
-    TRAVEL = "travel"
-    OFFICE = "office"
-    TECHNOLOGY = "technology"
-    PRINTING = "printing"
-    FUNDRAISING = "fundraising"
-    COMPLIANCE = "compliance"
-    OTHER = "other"
+class BudgetCategory(Enum):
+    ADVERTISING = 'advertising'
+    DIGITAL = 'digital'
+    DIRECT_MAIL = 'direct_mail'
+    EVENTS = 'events'
+    STAFF = 'staff'
+    CONSULTING = 'consulting'
+    TRAVEL = 'travel'
+    OFFICE = 'office'
+    FUNDRAISING = 'fundraising'
+    COMPLIANCE = 'compliance'
+    TECHNOLOGY = 'technology'
+    VOTER_CONTACT = 'voter_contact'
+    POLLING = 'polling'
+    MEDIA_BUY = 'media_buy'
+    PRODUCTION = 'production'
+    OTHER = 'other'
 
-class BudgetStatus(Enum):
-    OK = "ok"
-    WARNING = "warning"
-    CRITICAL = "critical"
-    EXCEEDED = "exceeded"
+class ExpenseStatus(Enum):
+    DRAFT = 'draft'
+    PENDING = 'pending'
+    APPROVED = 'approved'
+    REJECTED = 'rejected'
+    PAID = 'paid'
+    VOIDED = 'voided'
 
+class BudgetPeriod(Enum):
+    DAILY = 'daily'
+    WEEKLY = 'weekly'
+    MONTHLY = 'monthly'
+    QUARTERLY = 'quarterly'
+    ANNUAL = 'annual'
+    CAMPAIGN_CYCLE = 'campaign_cycle'
 
-BUDGET_SCHEMA = """
--- ============================================================================
--- ECOSYSTEM 11: BUDGET MANAGEMENT
--- ============================================================================
+class AlertSeverity(Enum):
+    INFO = 'info'
+    WARNING = 'warning'
+    CRITICAL = 'critical'
 
--- Budgets (hierarchical)
-CREATE TABLE IF NOT EXISTS budgets (
-    budget_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    candidate_id UUID,
-    campaign_id UUID,
-    name VARCHAR(255) NOT NULL,
-    level VARCHAR(50) NOT NULL,
-    parent_budget_id UUID REFERENCES budgets(budget_id),
-    category VARCHAR(50),
-    channel VARCHAR(50),
-    tier VARCHAR(20),
-    fiscal_year INTEGER,
-    fiscal_quarter INTEGER,
-    fiscal_month INTEGER,
-    budget_amount DECIMAL(14,2) NOT NULL DEFAULT 0,
-    allocated_amount DECIMAL(14,2) DEFAULT 0,
-    spent_amount DECIMAL(14,2) DEFAULT 0,
-    committed_amount DECIMAL(14,2) DEFAULT 0,
-    remaining_amount DECIMAL(14,2) GENERATED ALWAYS AS (budget_amount - spent_amount - committed_amount) STORED,
-    status VARCHAR(20) DEFAULT 'ok',
-    start_date DATE,
-    end_date DATE,
-    is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
+# ============================================================================
+# DATA CLASSES
+# ============================================================================
 
-CREATE INDEX IF NOT EXISTS idx_budgets_candidate ON budgets(candidate_id);
-CREATE INDEX IF NOT EXISTS idx_budgets_campaign ON budgets(campaign_id);
-CREATE INDEX IF NOT EXISTS idx_budgets_level ON budgets(level);
-CREATE INDEX IF NOT EXISTS idx_budgets_category ON budgets(category);
-CREATE INDEX IF NOT EXISTS idx_budgets_status ON budgets(status);
-
--- Expenses (actual spending)
-CREATE TABLE IF NOT EXISTS expenses (
-    expense_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    budget_id UUID REFERENCES budgets(budget_id),
-    candidate_id UUID,
-    campaign_id UUID,
-    category VARCHAR(50) NOT NULL,
-    channel VARCHAR(50),
-    tier VARCHAR(20),
-    vendor_id UUID,
-    vendor_name VARCHAR(255),
-    description TEXT,
-    amount DECIMAL(12,2) NOT NULL,
-    quantity INTEGER DEFAULT 1,
-    unit_cost DECIMAL(10,2),
-    expense_date DATE NOT NULL,
-    payment_date DATE,
-    payment_method VARCHAR(50),
-    payment_reference VARCHAR(100),
-    invoice_number VARCHAR(100),
-    receipt_url TEXT,
-    is_recurring BOOLEAN DEFAULT false,
-    recurrence_rule VARCHAR(100),
-    approved_by VARCHAR(255),
-    approved_at TIMESTAMP,
-    status VARCHAR(50) DEFAULT 'pending',
-    tags JSONB DEFAULT '[]',
-    metadata JSONB DEFAULT '{}',
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_expenses_budget ON expenses(budget_id);
-CREATE INDEX IF NOT EXISTS idx_expenses_candidate ON expenses(candidate_id);
-CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category);
-CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(expense_date);
-CREATE INDEX IF NOT EXISTS idx_expenses_vendor ON expenses(vendor_id);
-CREATE INDEX IF NOT EXISTS idx_expenses_status ON expenses(status);
-
--- Vendors
-CREATE TABLE IF NOT EXISTS vendors (
-    vendor_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
-    category VARCHAR(50),
-    contact_name VARCHAR(255),
-    contact_email VARCHAR(255),
-    contact_phone VARCHAR(20),
-    address TEXT,
-    tax_id VARCHAR(50),
-    payment_terms VARCHAR(100),
-    preferred_payment VARCHAR(50),
-    total_spent DECIMAL(14,2) DEFAULT 0,
-    total_invoices INTEGER DEFAULT 0,
-    rating INTEGER,
-    notes TEXT,
-    is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_vendors_category ON vendors(category);
-
--- Invoices
-CREATE TABLE IF NOT EXISTS invoices (
-    invoice_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    vendor_id UUID REFERENCES vendors(vendor_id),
-    budget_id UUID REFERENCES budgets(budget_id),
-    candidate_id UUID,
-    invoice_number VARCHAR(100),
-    invoice_date DATE NOT NULL,
-    due_date DATE,
-    amount DECIMAL(12,2) NOT NULL,
-    tax_amount DECIMAL(10,2) DEFAULT 0,
-    total_amount DECIMAL(12,2) NOT NULL,
-    paid_amount DECIMAL(12,2) DEFAULT 0,
-    status VARCHAR(50) DEFAULT 'pending',
-    payment_date DATE,
-    payment_reference VARCHAR(100),
-    line_items JSONB DEFAULT '[]',
-    notes TEXT,
-    document_url TEXT,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_invoices_vendor ON invoices(vendor_id);
-CREATE INDEX IF NOT EXISTS idx_invoices_status ON invoices(status);
-CREATE INDEX IF NOT EXISTS idx_invoices_due ON invoices(due_date);
-
--- Budget Alerts
-CREATE TABLE IF NOT EXISTS budget_alerts (
-    alert_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    budget_id UUID REFERENCES budgets(budget_id),
-    candidate_id UUID,
-    alert_type VARCHAR(50) NOT NULL,
-    severity VARCHAR(20) NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    message TEXT,
-    threshold_pct DECIMAL(5,2),
-    current_pct DECIMAL(5,2),
-    amount_over DECIMAL(12,2),
-    status VARCHAR(50) DEFAULT 'active',
-    acknowledged_at TIMESTAMP,
-    acknowledged_by VARCHAR(255),
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_alerts_budget ON budget_alerts(budget_id);
-CREATE INDEX IF NOT EXISTS idx_alerts_status ON budget_alerts(status);
-
--- Cost per Acquisition Tracking
-CREATE TABLE IF NOT EXISTS cpa_tracking (
-    tracking_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    candidate_id UUID,
-    campaign_id UUID,
-    channel VARCHAR(50) NOT NULL,
-    period_start DATE NOT NULL,
-    period_end DATE NOT NULL,
-    total_spend DECIMAL(12,2) DEFAULT 0,
-    donations_count INTEGER DEFAULT 0,
-    donations_amount DECIMAL(14,2) DEFAULT 0,
-    new_donors INTEGER DEFAULT 0,
-    cpa_donation DECIMAL(10,2),
-    cpa_new_donor DECIMAL(10,2),
-    roi DECIMAL(10,4),
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_cpa_channel ON cpa_tracking(channel);
-CREATE INDEX IF NOT EXISTS idx_cpa_period ON cpa_tracking(period_start, period_end);
-
--- Budget Forecasts
-CREATE TABLE IF NOT EXISTS budget_forecasts (
-    forecast_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    budget_id UUID REFERENCES budgets(budget_id),
-    forecast_date DATE NOT NULL,
-    forecast_type VARCHAR(50),
-    projected_spend DECIMAL(14,2),
-    projected_remaining DECIMAL(14,2),
-    days_until_depleted INTEGER,
-    confidence_score DECIMAL(5,2),
-    assumptions JSONB DEFAULT '{}',
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_forecasts_budget ON budget_forecasts(budget_id);
-
--- Views
-CREATE OR REPLACE VIEW v_budget_summary AS
-SELECT 
-    b.budget_id,
-    b.name,
-    b.level,
-    b.category,
-    b.budget_amount,
-    b.spent_amount,
-    b.committed_amount,
-    b.remaining_amount,
-    CASE WHEN b.budget_amount > 0 
-         THEN (b.spent_amount / b.budget_amount * 100)::DECIMAL(5,2)
-         ELSE 0 END as pct_used,
-    b.status,
-    b.start_date,
-    b.end_date
-FROM budgets b
-WHERE b.is_active = true;
-
-CREATE OR REPLACE VIEW v_spend_by_channel AS
-SELECT 
-    channel,
-    SUM(amount) as total_spend,
-    COUNT(*) as transaction_count,
-    AVG(amount) as avg_transaction,
-    MIN(expense_date) as first_expense,
-    MAX(expense_date) as last_expense
-FROM expenses
-WHERE status = 'approved'
-GROUP BY channel;
-
-CREATE OR REPLACE VIEW v_vendor_summary AS
-SELECT 
-    v.vendor_id,
-    v.name,
-    v.category,
-    v.total_spent,
-    v.total_invoices,
-    COUNT(i.invoice_id) FILTER (WHERE i.status = 'pending') as pending_invoices,
-    SUM(i.total_amount) FILTER (WHERE i.status = 'pending') as pending_amount
-FROM vendors v
-LEFT JOIN invoices i ON v.vendor_id = i.vendor_id
-GROUP BY v.vendor_id, v.name, v.category, v.total_spent, v.total_invoices;
-
-CREATE OR REPLACE VIEW v_upcoming_payments AS
-SELECT 
-    i.invoice_id,
-    v.name as vendor_name,
-    i.invoice_number,
-    i.total_amount,
-    i.due_date,
-    i.due_date - CURRENT_DATE as days_until_due,
-    CASE WHEN i.due_date < CURRENT_DATE THEN true ELSE false END as is_overdue
-FROM invoices i
-JOIN vendors v ON i.vendor_id = v.vendor_id
-WHERE i.status = 'pending'
-ORDER BY i.due_date;
-
-SELECT 'Budget Management schema deployed!' as status;
-"""
-
-
-class BudgetManagementEngine:
-    """Main budget management engine"""
+@dataclass
+class BudgetAllocation:
+    allocation_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    budget_id: str = ''
+    category: BudgetCategory = BudgetCategory.OTHER
+    allocated_amount: Decimal = Decimal('0.00')
+    spent_amount: Decimal = Decimal('0.00')
+    committed_amount: Decimal = Decimal('0.00')
+    period: BudgetPeriod = BudgetPeriod.MONTHLY
+    start_date: datetime = field(default_factory=datetime.now)
+    end_date: Optional[datetime] = None
+    notes: str = ''
+    created_at: datetime = field(default_factory=datetime.now)
     
-    _instance = None
+    @property
+    def available(self) -> Decimal:
+        return self.allocated_amount - self.spent_amount - self.committed_amount
     
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._initialized = False
-        return cls._instance
+    @property
+    def utilization_pct(self) -> float:
+        if self.allocated_amount == 0:
+            return 0.0
+        return float((self.spent_amount / self.allocated_amount) * 100)
+
+@dataclass
+class Budget:
+    budget_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    name: str = ''
+    level: BudgetLevel = BudgetLevel.CANDIDATE
+    parent_budget_id: Optional[str] = None
+    candidate_id: Optional[str] = None
+    total_budget: Decimal = Decimal('0.00')
+    allocations: List[BudgetAllocation] = field(default_factory=list)
+    fiscal_year: int = field(default_factory=lambda: datetime.now().year)
+    is_active: bool = True
+    created_at: datetime = field(default_factory=datetime.now)
+    updated_at: datetime = field(default_factory=datetime.now)
     
-    def __init__(self):
-        if self._initialized:
-            return
-        self.db_url = BudgetConfig.DATABASE_URL
-        self._initialized = True
-        logger.info("💰 Budget Management Engine initialized")
+    @property
+    def total_allocated(self) -> Decimal:
+        return sum(a.allocated_amount for a in self.allocations)
     
-    def _get_db(self):
-        return psycopg2.connect(self.db_url)
+    @property
+    def total_spent(self) -> Decimal:
+        return sum(a.spent_amount for a in self.allocations)
     
-    # ========================================================================
-    # BUDGET MANAGEMENT
-    # ========================================================================
+    @property
+    def total_committed(self) -> Decimal:
+        return sum(a.committed_amount for a in self.allocations)
     
-    def create_budget(self, name: str, amount: float, level: str,
-                     category: str = None, channel: str = None,
-                     candidate_id: str = None, campaign_id: str = None,
-                     start_date: date = None, end_date: date = None,
-                     parent_budget_id: str = None) -> str:
-        """Create a budget"""
-        conn = self._get_db()
-        cur = conn.cursor()
-        
-        cur.execute("""
-            INSERT INTO budgets (
-                name, budget_amount, level, category, channel,
-                candidate_id, campaign_id, start_date, end_date,
-                parent_budget_id
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            RETURNING budget_id
-        """, (
-            name, amount, level, category, channel,
-            candidate_id, campaign_id, start_date, end_date,
-            parent_budget_id
-        ))
-        
-        budget_id = str(cur.fetchone()[0])
-        conn.commit()
-        conn.close()
-        
-        logger.info(f"Created budget: {budget_id} - {name} (${amount:,.2f})")
-        return budget_id
+    @property
+    def total_available(self) -> Decimal:
+        return self.total_budget - self.total_spent - self.total_committed
+
+@dataclass
+class Expense:
+    expense_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    budget_id: str = ''
+    allocation_id: str = ''
+    category: BudgetCategory = BudgetCategory.OTHER
+    amount: Decimal = Decimal('0.00')
+    vendor_name: str = ''
+    description: str = ''
+    status: ExpenseStatus = ExpenseStatus.DRAFT
+    invoice_number: Optional[str] = None
+    receipt_url: Optional[str] = None
+    fec_category: Optional[str] = None
+    submitted_by: str = ''
+    approved_by: Optional[str] = None
+    paid_date: Optional[datetime] = None
+    created_at: datetime = field(default_factory=datetime.now)
+    updated_at: datetime = field(default_factory=datetime.now)
+
+@dataclass
+class BudgetForecast:
+    forecast_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    budget_id: str = ''
+    period: BudgetPeriod = BudgetPeriod.MONTHLY
+    forecast_date: datetime = field(default_factory=datetime.now)
+    projected_spend: Decimal = Decimal('0.00')
+    projected_revenue: Decimal = Decimal('0.00')
+    confidence_score: float = 0.0
+    assumptions: Dict[str, Any] = field(default_factory=dict)
+    created_at: datetime = field(default_factory=datetime.now)
+
+@dataclass
+class BudgetAlert:
+    alert_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    budget_id: str = ''
+    allocation_id: Optional[str] = None
+    severity: AlertSeverity = AlertSeverity.INFO
+    alert_type: str = ''
+    message: str = ''
+    threshold_pct: float = 0.0
+    current_pct: float = 0.0
+    is_acknowledged: bool = False
+    created_at: datetime = field(default_factory=datetime.now)
+
+# ============================================================================
+# BUDGET MANAGER
+# ============================================================================
+
+class BudgetManager:
+    """Core budget management with 5-level hierarchy."""
     
-    def get_budget(self, budget_id: str) -> Optional[Dict]:
-        """Get budget details"""
-        conn = self._get_db()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
+    def __init__(self, supabase_client=None):
+        self.supabase = supabase_client
+        self.budgets: Dict[str, Budget] = {}
+        self.expenses: Dict[str, Expense] = {}
+        self.alerts: List[BudgetAlert] = []
         
-        cur.execute("SELECT * FROM v_budget_summary WHERE budget_id = %s", (budget_id,))
-        budget = cur.fetchone()
-        conn.close()
-        
-        return dict(budget) if budget else None
-    
-    def get_budgets(self, candidate_id: str = None, level: str = None,
-                   status: str = None) -> List[Dict]:
-        """Get budgets with filters"""
-        conn = self._get_db()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        
-        sql = "SELECT * FROM v_budget_summary WHERE 1=1"
-        params = []
-        
-        if candidate_id:
-            sql += " AND budget_id IN (SELECT budget_id FROM budgets WHERE candidate_id = %s)"
-            params.append(candidate_id)
-        if level:
-            sql += " AND level = %s"
-            params.append(level)
-        if status:
-            sql += " AND status = %s"
-            params.append(status)
-        
-        cur.execute(sql, params)
-        budgets = [dict(r) for r in cur.fetchall()]
-        conn.close()
-        
-        return budgets
-    
-    def update_budget_amount(self, budget_id: str, new_amount: float) -> None:
-        """Update budget amount"""
-        conn = self._get_db()
-        cur = conn.cursor()
-        
-        cur.execute("""
-            UPDATE budgets SET budget_amount = %s, updated_at = NOW()
-            WHERE budget_id = %s
-        """, (new_amount, budget_id))
-        
-        conn.commit()
-        conn.close()
-        
-        self._check_budget_status(budget_id)
-    
-    # ========================================================================
-    # EXPENSE TRACKING
-    # ========================================================================
-    
-    def record_expense(self, budget_id: str, amount: float, category: str,
-                      description: str = None, vendor_name: str = None,
-                      expense_date: date = None, channel: str = None,
-                      invoice_number: str = None,
-                      candidate_id: str = None) -> str:
-        """Record an expense"""
-        conn = self._get_db()
-        cur = conn.cursor()
-        
-        expense_date = expense_date or date.today()
-        
-        cur.execute("""
-            INSERT INTO expenses (
-                budget_id, amount, category, description,
-                vendor_name, expense_date, channel, invoice_number,
-                candidate_id, status
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'approved')
-            RETURNING expense_id
-        """, (
-            budget_id, amount, category, description,
-            vendor_name, expense_date, channel, invoice_number,
-            candidate_id
-        ))
-        
-        expense_id = str(cur.fetchone()[0])
-        
-        # Update budget spent amount
-        cur.execute("""
-            UPDATE budgets SET 
-                spent_amount = spent_amount + %s,
-                updated_at = NOW()
-            WHERE budget_id = %s
-        """, (amount, budget_id))
-        
-        conn.commit()
-        conn.close()
-        
-        # Check budget status
-        self._check_budget_status(budget_id)
-        
-        logger.info(f"Recorded expense: ${amount:,.2f} - {category}")
-        return expense_id
-    
-    def get_expenses(self, budget_id: str = None, category: str = None,
-                    start_date: date = None, end_date: date = None) -> List[Dict]:
-        """Get expenses with filters"""
-        conn = self._get_db()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        
-        sql = "SELECT * FROM expenses WHERE status = 'approved'"
-        params = []
-        
-        if budget_id:
-            sql += " AND budget_id = %s"
-            params.append(budget_id)
-        if category:
-            sql += " AND category = %s"
-            params.append(category)
-        if start_date:
-            sql += " AND expense_date >= %s"
-            params.append(start_date)
-        if end_date:
-            sql += " AND expense_date <= %s"
-            params.append(end_date)
-        
-        sql += " ORDER BY expense_date DESC"
-        
-        cur.execute(sql, params)
-        expenses = [dict(r) for r in cur.fetchall()]
-        conn.close()
-        
-        return expenses
-    
-    def _check_budget_status(self, budget_id: str) -> None:
-        """Check and update budget status, create alerts if needed"""
-        conn = self._get_db()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        
-        cur.execute("""
-            SELECT budget_id, name, budget_amount, spent_amount, committed_amount,
-                   candidate_id
-            FROM budgets WHERE budget_id = %s
-        """, (budget_id,))
-        
-        budget = cur.fetchone()
-        if not budget or budget['budget_amount'] == 0:
-            conn.close()
-            return
-        
-        total_used = float(budget['spent_amount'] or 0) + float(budget['committed_amount'] or 0)
-        pct_used = total_used / float(budget['budget_amount'])
-        
-        # Determine status
-        if pct_used >= 1.0:
-            status = 'exceeded'
-            severity = 'critical'
-        elif pct_used >= BudgetConfig.CRITICAL_THRESHOLD:
-            status = 'critical'
-            severity = 'critical'
-        elif pct_used >= BudgetConfig.WARNING_THRESHOLD:
-            status = 'warning'
-            severity = 'warning'
-        else:
-            status = 'ok'
-            severity = None
-        
-        # Update status
-        cur.execute("UPDATE budgets SET status = %s WHERE budget_id = %s", (status, budget_id))
-        
-        # Create alert if needed
-        if severity:
-            cur.execute("""
-                INSERT INTO budget_alerts (
-                    budget_id, candidate_id, alert_type, severity,
-                    title, message, threshold_pct, current_pct
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, (
-                budget_id, budget['candidate_id'], 'budget_threshold', severity,
-                f"Budget Alert: {budget['name']}",
-                f"Budget is at {pct_used*100:.1f}% utilization",
-                BudgetConfig.WARNING_THRESHOLD * 100,
-                pct_used * 100
-            ))
-        
-        conn.commit()
-        conn.close()
-    
-    # ========================================================================
-    # VENDOR MANAGEMENT
-    # ========================================================================
-    
-    def add_vendor(self, name: str, category: str = None,
-                  contact_email: str = None, payment_terms: str = None) -> str:
-        """Add a vendor"""
-        conn = self._get_db()
-        cur = conn.cursor()
-        
-        cur.execute("""
-            INSERT INTO vendors (name, category, contact_email, payment_terms)
-            VALUES (%s, %s, %s, %s)
-            RETURNING vendor_id
-        """, (name, category, contact_email, payment_terms))
-        
-        vendor_id = str(cur.fetchone()[0])
-        conn.commit()
-        conn.close()
-        
-        return vendor_id
-    
-    def get_vendors(self, category: str = None) -> List[Dict]:
-        """Get vendors"""
-        conn = self._get_db()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        
-        cur.execute("SELECT * FROM v_vendor_summary")
-        vendors = [dict(r) for r in cur.fetchall()]
-        conn.close()
-        
-        return vendors
-    
-    # ========================================================================
-    # INVOICE MANAGEMENT
-    # ========================================================================
-    
-    def create_invoice(self, vendor_id: str, amount: float,
-                      invoice_number: str = None, invoice_date: date = None,
-                      due_date: date = None, budget_id: str = None,
-                      line_items: List[Dict] = None) -> str:
-        """Create an invoice"""
-        conn = self._get_db()
-        cur = conn.cursor()
-        
-        invoice_date = invoice_date or date.today()
-        due_date = due_date or (invoice_date + timedelta(days=30))
-        
-        cur.execute("""
-            INSERT INTO invoices (
-                vendor_id, amount, total_amount, invoice_number,
-                invoice_date, due_date, budget_id, line_items
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            RETURNING invoice_id
-        """, (
-            vendor_id, amount, amount, invoice_number,
-            invoice_date, due_date, budget_id,
-            json.dumps(line_items or [])
-        ))
-        
-        invoice_id = str(cur.fetchone()[0])
-        
-        # Update vendor totals
-        cur.execute("""
-            UPDATE vendors SET total_invoices = total_invoices + 1
-            WHERE vendor_id = %s
-        """, (vendor_id,))
-        
-        conn.commit()
-        conn.close()
-        
-        return invoice_id
-    
-    def pay_invoice(self, invoice_id: str, payment_reference: str = None) -> None:
-        """Mark invoice as paid"""
-        conn = self._get_db()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        
-        # Get invoice details
-        cur.execute("SELECT vendor_id, total_amount, budget_id FROM invoices WHERE invoice_id = %s", (invoice_id,))
-        invoice = cur.fetchone()
-        
-        if not invoice:
-            conn.close()
-            return
-        
-        # Update invoice
-        cur.execute("""
-            UPDATE invoices SET
-                status = 'paid',
-                paid_amount = total_amount,
-                payment_date = CURRENT_DATE,
-                payment_reference = %s
-            WHERE invoice_id = %s
-        """, (payment_reference, invoice_id))
-        
-        # Update vendor total spent
-        cur.execute("""
-            UPDATE vendors SET total_spent = total_spent + %s
-            WHERE vendor_id = %s
-        """, (invoice['total_amount'], invoice['vendor_id']))
-        
-        conn.commit()
-        conn.close()
-    
-    def get_upcoming_payments(self, days: int = 30) -> List[Dict]:
-        """Get upcoming payments"""
-        conn = self._get_db()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        
-        cur.execute("""
-            SELECT * FROM v_upcoming_payments
-            WHERE days_until_due <= %s
-            ORDER BY due_date
-        """, (days,))
-        
-        payments = [dict(r) for r in cur.fetchall()]
-        conn.close()
-        
-        return payments
-    
-    # ========================================================================
-    # ROI & CPA TRACKING
-    # ========================================================================
-    
-    def calculate_channel_roi(self, channel: str, start_date: date,
-                             end_date: date, donations_amount: float,
-                             donations_count: int, new_donors: int) -> Dict:
-        """Calculate ROI for a channel"""
-        conn = self._get_db()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        
-        # Get total spend for channel
-        cur.execute("""
-            SELECT COALESCE(SUM(amount), 0) as total_spend
-            FROM expenses
-            WHERE channel = %s AND expense_date BETWEEN %s AND %s
-        """, (channel, start_date, end_date))
-        
-        result = cur.fetchone()
-        total_spend = float(result['total_spend'] or 0)
-        
-        # Calculate metrics
-        cpa_donation = total_spend / donations_count if donations_count > 0 else 0
-        cpa_new_donor = total_spend / new_donors if new_donors > 0 else 0
-        roi = (donations_amount - total_spend) / total_spend if total_spend > 0 else 0
-        
-        # Store tracking record
-        cur.execute("""
-            INSERT INTO cpa_tracking (
-                channel, period_start, period_end, total_spend,
-                donations_count, donations_amount, new_donors,
-                cpa_donation, cpa_new_donor, roi
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (
-            channel, start_date, end_date, total_spend,
-            donations_count, donations_amount, new_donors,
-            cpa_donation, cpa_new_donor, roi
-        ))
-        
-        conn.commit()
-        conn.close()
-        
-        return {
-            'channel': channel,
-            'total_spend': total_spend,
-            'donations_amount': donations_amount,
-            'donations_count': donations_count,
-            'new_donors': new_donors,
-            'cpa_donation': cpa_donation,
-            'cpa_new_donor': cpa_new_donor,
-            'roi': roi,
-            'roi_pct': roi * 100
+        # Alert thresholds
+        self.alert_thresholds = {
+            'warning': 75.0,   # 75% utilized
+            'critical': 90.0,  # 90% utilized
+            'overspend': 100.0 # Over budget
         }
     
-    # ========================================================================
-    # ANALYTICS
-    # ========================================================================
+    async def create_budget(
+        self,
+        name: str,
+        level: BudgetLevel,
+        total_budget: Decimal,
+        candidate_id: Optional[str] = None,
+        parent_budget_id: Optional[str] = None
+    ) -> Budget:
+        """Create a new budget at any level."""
+        budget = Budget(
+            name=name,
+            level=level,
+            total_budget=total_budget,
+            candidate_id=candidate_id,
+            parent_budget_id=parent_budget_id
+        )
+        
+        self.budgets[budget.budget_id] = budget
+        
+        if self.supabase:
+            await self._save_budget_to_db(budget)
+        
+        logger.info(f"Created budget: {name} (${total_budget:,.2f}) at {level.value} level")
+        return budget
     
-    def get_spend_by_channel(self) -> List[Dict]:
-        """Get spending breakdown by channel"""
-        conn = self._get_db()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
+    async def allocate_funds(
+        self,
+        budget_id: str,
+        category: BudgetCategory,
+        amount: Decimal,
+        period: BudgetPeriod = BudgetPeriod.MONTHLY,
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None
+    ) -> BudgetAllocation:
+        """Allocate funds to a specific category."""
+        budget = self.budgets.get(budget_id)
+        if not budget:
+            raise ValueError(f"Budget {budget_id} not found")
         
-        cur.execute("SELECT * FROM v_spend_by_channel ORDER BY total_spend DESC")
-        spend = [dict(r) for r in cur.fetchall()]
-        conn.close()
+        # Check if allocation would exceed total budget
+        current_allocated = budget.total_allocated
+        if current_allocated + amount > budget.total_budget:
+            raise ValueError(
+                f"Allocation of ${amount:,.2f} would exceed budget. "
+                f"Available: ${budget.total_budget - current_allocated:,.2f}"
+            )
         
-        return spend
+        allocation = BudgetAllocation(
+            budget_id=budget_id,
+            category=category,
+            allocated_amount=amount,
+            period=period,
+            start_date=start_date or datetime.now(),
+            end_date=end_date
+        )
+        
+        budget.allocations.append(allocation)
+        
+        if self.supabase:
+            await self._save_allocation_to_db(allocation)
+        
+        logger.info(f"Allocated ${amount:,.2f} to {category.value} in budget {budget.name}")
+        return allocation
     
-    def get_active_alerts(self) -> List[Dict]:
-        """Get active budget alerts"""
-        conn = self._get_db()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
+    async def submit_expense(
+        self,
+        budget_id: str,
+        category: BudgetCategory,
+        amount: Decimal,
+        vendor_name: str,
+        description: str,
+        submitted_by: str,
+        invoice_number: Optional[str] = None,
+        receipt_url: Optional[str] = None
+    ) -> Expense:
+        """Submit an expense for approval."""
+        budget = self.budgets.get(budget_id)
+        if not budget:
+            raise ValueError(f"Budget {budget_id} not found")
         
-        cur.execute("""
-            SELECT * FROM budget_alerts
-            WHERE status = 'active'
-            ORDER BY severity DESC, created_at DESC
-        """)
+        # Find matching allocation
+        allocation = next(
+            (a for a in budget.allocations if a.category == category),
+            None
+        )
         
-        alerts = [dict(r) for r in cur.fetchall()]
-        conn.close()
+        if not allocation:
+            raise ValueError(f"No allocation found for category {category.value}")
         
-        return alerts
+        # Check available funds
+        if amount > allocation.available:
+            logger.warning(
+                f"Expense ${amount:,.2f} exceeds available ${allocation.available:,.2f} "
+                f"in {category.value}"
+            )
+        
+        expense = Expense(
+            budget_id=budget_id,
+            allocation_id=allocation.allocation_id,
+            category=category,
+            amount=amount,
+            vendor_name=vendor_name,
+            description=description,
+            submitted_by=submitted_by,
+            invoice_number=invoice_number,
+            receipt_url=receipt_url,
+            status=ExpenseStatus.PENDING
+        )
+        
+        # Add to committed (not spent yet)
+        allocation.committed_amount += amount
+        
+        self.expenses[expense.expense_id] = expense
+        
+        if self.supabase:
+            await self._save_expense_to_db(expense)
+        
+        # Check for alerts
+        await self._check_budget_alerts(budget, allocation)
+        
+        logger.info(f"Expense submitted: ${amount:,.2f} to {vendor_name}")
+        return expense
     
-    def get_stats(self) -> Dict:
-        """Get budget statistics"""
-        conn = self._get_db()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
+    async def approve_expense(
+        self,
+        expense_id: str,
+        approved_by: str
+    ) -> Expense:
+        """Approve a pending expense."""
+        expense = self.expenses.get(expense_id)
+        if not expense:
+            raise ValueError(f"Expense {expense_id} not found")
         
-        cur.execute("""
-            SELECT 
-                SUM(budget_amount) as total_budgeted,
-                SUM(spent_amount) as total_spent,
-                SUM(budget_amount - spent_amount) as total_remaining,
-                COUNT(*) as budget_count,
-                COUNT(*) FILTER (WHERE status IN ('warning', 'critical', 'exceeded')) as budgets_at_risk
-            FROM budgets WHERE is_active = true
-        """)
+        if expense.status != ExpenseStatus.PENDING:
+            raise ValueError(f"Expense is not pending (status: {expense.status.value})")
         
-        stats = dict(cur.fetchone())
+        expense.status = ExpenseStatus.APPROVED
+        expense.approved_by = approved_by
+        expense.updated_at = datetime.now()
         
-        cur.execute("SELECT COUNT(*) as pending_invoices FROM invoices WHERE status = 'pending'")
-        stats['pending_invoices'] = cur.fetchone()['pending_invoices']
+        if self.supabase:
+            await self._update_expense_in_db(expense)
         
-        conn.close()
+        logger.info(f"Expense {expense_id} approved by {approved_by}")
+        return expense
+    
+    async def pay_expense(
+        self,
+        expense_id: str
+    ) -> Expense:
+        """Mark expense as paid - moves from committed to spent."""
+        expense = self.expenses.get(expense_id)
+        if not expense:
+            raise ValueError(f"Expense {expense_id} not found")
         
-        return stats
+        if expense.status != ExpenseStatus.APPROVED:
+            raise ValueError(f"Expense must be approved before payment")
+        
+        # Get allocation and move from committed to spent
+        budget = self.budgets.get(expense.budget_id)
+        allocation = next(
+            (a for a in budget.allocations if a.allocation_id == expense.allocation_id),
+            None
+        )
+        
+        if allocation:
+            allocation.committed_amount -= expense.amount
+            allocation.spent_amount += expense.amount
+        
+        expense.status = ExpenseStatus.PAID
+        expense.paid_date = datetime.now()
+        expense.updated_at = datetime.now()
+        
+        if self.supabase:
+            await self._update_expense_in_db(expense)
+            await self._save_allocation_to_db(allocation)
+        
+        logger.info(f"Expense {expense_id} paid: ${expense.amount:,.2f}")
+        return expense
+    
+    async def reject_expense(
+        self,
+        expense_id: str,
+        rejected_by: str,
+        reason: str
+    ) -> Expense:
+        """Reject a pending expense."""
+        expense = self.expenses.get(expense_id)
+        if not expense:
+            raise ValueError(f"Expense {expense_id} not found")
+        
+        # Release committed funds
+        budget = self.budgets.get(expense.budget_id)
+        allocation = next(
+            (a for a in budget.allocations if a.allocation_id == expense.allocation_id),
+            None
+        )
+        
+        if allocation:
+            allocation.committed_amount -= expense.amount
+        
+        expense.status = ExpenseStatus.REJECTED
+        expense.updated_at = datetime.now()
+        
+        if self.supabase:
+            await self._update_expense_in_db(expense)
+        
+        logger.info(f"Expense {expense_id} rejected by {rejected_by}: {reason}")
+        return expense
+
+    # =========================================================================
+    # REPORTING & ANALYTICS
+    # =========================================================================
+    
+    def get_budget_summary(self, budget_id: str) -> Dict[str, Any]:
+        """Get comprehensive budget summary."""
+        budget = self.budgets.get(budget_id)
+        if not budget:
+            return {}
+        
+        return {
+            'budget_id': budget.budget_id,
+            'name': budget.name,
+            'level': budget.level.value,
+            'total_budget': float(budget.total_budget),
+            'total_allocated': float(budget.total_allocated),
+            'total_spent': float(budget.total_spent),
+            'total_committed': float(budget.total_committed),
+            'total_available': float(budget.total_available),
+            'utilization_pct': (
+                float(budget.total_spent / budget.total_budget * 100)
+                if budget.total_budget > 0 else 0
+            ),
+            'allocations': [
+                {
+                    'category': a.category.value,
+                    'allocated': float(a.allocated_amount),
+                    'spent': float(a.spent_amount),
+                    'committed': float(a.committed_amount),
+                    'available': float(a.available),
+                    'utilization_pct': a.utilization_pct
+                }
+                for a in budget.allocations
+            ],
+            'fiscal_year': budget.fiscal_year,
+            'is_active': budget.is_active
+        }
+    
+    def get_category_breakdown(self, budget_id: str) -> Dict[str, Dict[str, float]]:
+        """Get spending breakdown by category."""
+        budget = self.budgets.get(budget_id)
+        if not budget:
+            return {}
+        
+        breakdown = {}
+        for allocation in budget.allocations:
+            breakdown[allocation.category.value] = {
+                'allocated': float(allocation.allocated_amount),
+                'spent': float(allocation.spent_amount),
+                'committed': float(allocation.committed_amount),
+                'available': float(allocation.available),
+                'pct_of_total': (
+                    float(allocation.allocated_amount / budget.total_budget * 100)
+                    if budget.total_budget > 0 else 0
+                )
+            }
+        
+        return breakdown
+    
+    def get_variance_report(self, budget_id: str) -> Dict[str, Any]:
+        """Calculate budget variance (planned vs actual)."""
+        budget = self.budgets.get(budget_id)
+        if not budget:
+            return {}
+        
+        variances = []
+        for allocation in budget.allocations:
+            # Calculate expected spend based on time elapsed
+            if allocation.end_date and allocation.start_date:
+                total_days = (allocation.end_date - allocation.start_date).days
+                elapsed_days = (datetime.now() - allocation.start_date).days
+                expected_pct = min(elapsed_days / total_days, 1.0) if total_days > 0 else 1.0
+            else:
+                expected_pct = 1.0
+            
+            expected_spend = allocation.allocated_amount * Decimal(str(expected_pct))
+            variance = allocation.spent_amount - expected_spend
+            variance_pct = (
+                float(variance / expected_spend * 100)
+                if expected_spend > 0 else 0
+            )
+            
+            variances.append({
+                'category': allocation.category.value,
+                'allocated': float(allocation.allocated_amount),
+                'expected_spend': float(expected_spend),
+                'actual_spend': float(allocation.spent_amount),
+                'variance': float(variance),
+                'variance_pct': variance_pct,
+                'status': 'over' if variance > 0 else 'under' if variance < 0 else 'on_track'
+            })
+        
+        total_expected = sum(v['expected_spend'] for v in variances)
+        total_actual = float(budget.total_spent)
+        
+        return {
+            'budget_id': budget_id,
+            'name': budget.name,
+            'total_variance': total_actual - total_expected,
+            'total_variance_pct': (
+                (total_actual - total_expected) / total_expected * 100
+                if total_expected > 0 else 0
+            ),
+            'category_variances': variances,
+            'generated_at': datetime.now().isoformat()
+        }
+
+    # =========================================================================
+    # FORECASTING
+    # =========================================================================
+    
+    async def generate_forecast(
+        self,
+        budget_id: str,
+        periods_ahead: int = 3,
+        period: BudgetPeriod = BudgetPeriod.MONTHLY
+    ) -> List[BudgetForecast]:
+        """Generate spend forecast based on historical patterns."""
+        budget = self.budgets.get(budget_id)
+        if not budget:
+            return []
+        
+        # Get historical expenses
+        budget_expenses = [
+            e for e in self.expenses.values()
+            if e.budget_id == budget_id and e.status == ExpenseStatus.PAID
+        ]
+        
+        if not budget_expenses:
+            logger.warning(f"No historical data for forecast in budget {budget_id}")
+            return []
+        
+        # Calculate average monthly spend
+        total_spent = sum(e.amount for e in budget_expenses)
+        date_range = max(
+            (datetime.now() - min(e.created_at for e in budget_expenses)).days,
+            30
+        )
+        avg_daily_spend = total_spent / Decimal(str(date_range))
+        
+        forecasts = []
+        for i in range(1, periods_ahead + 1):
+            if period == BudgetPeriod.MONTHLY:
+                days_in_period = 30
+                forecast_date = datetime.now() + timedelta(days=30 * i)
+            elif period == BudgetPeriod.WEEKLY:
+                days_in_period = 7
+                forecast_date = datetime.now() + timedelta(days=7 * i)
+            else:
+                days_in_period = 30
+                forecast_date = datetime.now() + timedelta(days=30 * i)
+            
+            projected_spend = avg_daily_spend * Decimal(str(days_in_period))
+            
+            # Confidence decreases with distance
+            confidence = max(0.5, 1.0 - (i * 0.1))
+            
+            forecast = BudgetForecast(
+                budget_id=budget_id,
+                period=period,
+                forecast_date=forecast_date,
+                projected_spend=projected_spend.quantize(Decimal('0.01')),
+                confidence_score=confidence,
+                assumptions={
+                    'method': 'historical_average',
+                    'data_points': len(budget_expenses),
+                    'avg_daily_spend': float(avg_daily_spend)
+                }
+            )
+            forecasts.append(forecast)
+        
+        logger.info(f"Generated {len(forecasts)} forecasts for budget {budget.name}")
+        return forecasts
+
+    # =========================================================================
+    # ALERTS
+    # =========================================================================
+    
+    async def _check_budget_alerts(
+        self,
+        budget: Budget,
+        allocation: Optional[BudgetAllocation] = None
+    ):
+        """Check and generate budget alerts."""
+        # Check overall budget
+        overall_pct = (
+            float((budget.total_spent + budget.total_committed) / budget.total_budget * 100)
+            if budget.total_budget > 0 else 0
+        )
+        
+        if overall_pct >= self.alert_thresholds['overspend']:
+            await self._create_alert(
+                budget.budget_id,
+                None,
+                AlertSeverity.CRITICAL,
+                'budget_overspend',
+                f"Budget {budget.name} has exceeded 100% utilization",
+                100.0,
+                overall_pct
+            )
+        elif overall_pct >= self.alert_thresholds['critical']:
+            await self._create_alert(
+                budget.budget_id,
+                None,
+                AlertSeverity.CRITICAL,
+                'budget_critical',
+                f"Budget {budget.name} is at {overall_pct:.1f}% utilization",
+                self.alert_thresholds['critical'],
+                overall_pct
+            )
+        elif overall_pct >= self.alert_thresholds['warning']:
+            await self._create_alert(
+                budget.budget_id,
+                None,
+                AlertSeverity.WARNING,
+                'budget_warning',
+                f"Budget {budget.name} is at {overall_pct:.1f}% utilization",
+                self.alert_thresholds['warning'],
+                overall_pct
+            )
+        
+        # Check specific allocation if provided
+        if allocation:
+            alloc_pct = (
+                float((allocation.spent_amount + allocation.committed_amount) / 
+                      allocation.allocated_amount * 100)
+                if allocation.allocated_amount > 0 else 0
+            )
+            
+            if alloc_pct >= self.alert_thresholds['critical']:
+                await self._create_alert(
+                    budget.budget_id,
+                    allocation.allocation_id,
+                    AlertSeverity.WARNING,
+                    'allocation_critical',
+                    f"{allocation.category.value} allocation at {alloc_pct:.1f}%",
+                    self.alert_thresholds['critical'],
+                    alloc_pct
+                )
+    
+    async def _create_alert(
+        self,
+        budget_id: str,
+        allocation_id: Optional[str],
+        severity: AlertSeverity,
+        alert_type: str,
+        message: str,
+        threshold_pct: float,
+        current_pct: float
+    ):
+        """Create a budget alert."""
+        # Check for duplicate recent alert
+        recent_alerts = [
+            a for a in self.alerts
+            if a.budget_id == budget_id
+            and a.alert_type == alert_type
+            and (datetime.now() - a.created_at).seconds < 3600
+        ]
+        
+        if recent_alerts:
+            return  # Don't duplicate
+        
+        alert = BudgetAlert(
+            budget_id=budget_id,
+            allocation_id=allocation_id,
+            severity=severity,
+            alert_type=alert_type,
+            message=message,
+            threshold_pct=threshold_pct,
+            current_pct=current_pct
+        )
+        
+        self.alerts.append(alert)
+        
+        if self.supabase:
+            await self._save_alert_to_db(alert)
+        
+        logger.warning(f"Budget Alert [{severity.value}]: {message}")
+    
+    def get_active_alerts(self, budget_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Get unacknowledged alerts."""
+        alerts = [a for a in self.alerts if not a.is_acknowledged]
+        
+        if budget_id:
+            alerts = [a for a in alerts if a.budget_id == budget_id]
+        
+        return [
+            {
+                'alert_id': a.alert_id,
+                'budget_id': a.budget_id,
+                'severity': a.severity.value,
+                'alert_type': a.alert_type,
+                'message': a.message,
+                'threshold_pct': a.threshold_pct,
+                'current_pct': a.current_pct,
+                'created_at': a.created_at.isoformat()
+            }
+            for a in sorted(alerts, key=lambda x: x.created_at, reverse=True)
+        ]
+
+    # =========================================================================
+    # DATABASE OPERATIONS
+    # =========================================================================
+    
+    async def _save_budget_to_db(self, budget: Budget):
+        if not self.supabase:
+            return
+        try:
+            await self.supabase.table('e11_budgets').upsert({
+                'budget_id': budget.budget_id,
+                'name': budget.name,
+                'level': budget.level.value,
+                'parent_budget_id': budget.parent_budget_id,
+                'candidate_id': budget.candidate_id,
+                'total_budget': float(budget.total_budget),
+                'fiscal_year': budget.fiscal_year,
+                'is_active': budget.is_active,
+                'created_at': budget.created_at.isoformat(),
+                'updated_at': budget.updated_at.isoformat()
+            }).execute()
+        except Exception as e:
+            logger.error(f"Failed to save budget: {e}")
+    
+    async def _save_allocation_to_db(self, allocation: BudgetAllocation):
+        if not self.supabase:
+            return
+        try:
+            await self.supabase.table('e11_budget_allocations').upsert({
+                'allocation_id': allocation.allocation_id,
+                'budget_id': allocation.budget_id,
+                'category': allocation.category.value,
+                'allocated_amount': float(allocation.allocated_amount),
+                'spent_amount': float(allocation.spent_amount),
+                'committed_amount': float(allocation.committed_amount),
+                'period': allocation.period.value,
+                'start_date': allocation.start_date.isoformat(),
+                'end_date': allocation.end_date.isoformat() if allocation.end_date else None,
+                'created_at': allocation.created_at.isoformat()
+            }).execute()
+        except Exception as e:
+            logger.error(f"Failed to save allocation: {e}")
+    
+    async def _save_expense_to_db(self, expense: Expense):
+        if not self.supabase:
+            return
+        try:
+            await self.supabase.table('e11_expenses').upsert({
+                'expense_id': expense.expense_id,
+                'budget_id': expense.budget_id,
+                'allocation_id': expense.allocation_id,
+                'category': expense.category.value,
+                'amount': float(expense.amount),
+                'vendor_name': expense.vendor_name,
+                'description': expense.description,
+                'status': expense.status.value,
+                'invoice_number': expense.invoice_number,
+                'receipt_url': expense.receipt_url,
+                'submitted_by': expense.submitted_by,
+                'approved_by': expense.approved_by,
+                'paid_date': expense.paid_date.isoformat() if expense.paid_date else None,
+                'created_at': expense.created_at.isoformat(),
+                'updated_at': expense.updated_at.isoformat()
+            }).execute()
+        except Exception as e:
+            logger.error(f"Failed to save expense: {e}")
+    
+    async def _update_expense_in_db(self, expense: Expense):
+        await self._save_expense_to_db(expense)
+    
+    async def _save_alert_to_db(self, alert: BudgetAlert):
+        if not self.supabase:
+            return
+        try:
+            await self.supabase.table('e11_budget_alerts').insert({
+                'alert_id': alert.alert_id,
+                'budget_id': alert.budget_id,
+                'allocation_id': alert.allocation_id,
+                'severity': alert.severity.value,
+                'alert_type': alert.alert_type,
+                'message': alert.message,
+                'threshold_pct': alert.threshold_pct,
+                'current_pct': alert.current_pct,
+                'is_acknowledged': alert.is_acknowledged,
+                'created_at': alert.created_at.isoformat()
+            }).execute()
+        except Exception as e:
+            logger.error(f"Failed to save alert: {e}")
 
 
-def deploy_budget_management():
-    """Deploy budget management system"""
-    print("=" * 60)
-    print("💰 ECOSYSTEM 11: BUDGET MANAGEMENT - DEPLOYMENT")
-    print("=" * 60)
+# ============================================================================
+# FEC COMPLIANCE INTEGRATION
+# ============================================================================
+
+class FECBudgetCompliance:
+    """FEC compliance checking for campaign budgets."""
     
-    try:
-        conn = psycopg2.connect(BudgetConfig.DATABASE_URL)
-        cur = conn.cursor()
-        
-        print("\nDeploying schema...")
-        cur.execute(BUDGET_SCHEMA)
-        conn.commit()
-        conn.close()
-        
-        print("\n   ✅ budgets table")
-        print("   ✅ expenses table")
-        print("   ✅ vendors table")
-        print("   ✅ invoices table")
-        print("   ✅ budget_alerts table")
-        print("   ✅ cpa_tracking table")
-        print("   ✅ budget_forecasts table")
-        print("   ✅ v_budget_summary view")
-        print("   ✅ v_spend_by_channel view")
-        print("   ✅ v_vendor_summary view")
-        print("   ✅ v_upcoming_payments view")
-        
-        print("\n" + "=" * 60)
-        print("✅ BUDGET MANAGEMENT DEPLOYED!")
-        print("=" * 60)
-        
-        print("\nExpense Categories:")
-        for cat in list(ExpenseCategory)[:6]:
-            print(f"   • {cat.value}")
-        print("   • ... and more")
-        
-        print("\nBudget Levels (5-tier hierarchy):")
-        for level in BudgetLevel:
-            print(f"   • {level.value}")
-        
-        print("\nFeatures:")
-        print("   • Hierarchical budget tracking")
-        print("   • Real-time spend monitoring")
-        print("   • Automatic alert thresholds")
-        print("   • Vendor management")
-        print("   • Invoice tracking")
-        print("   • ROI/CPA calculations")
-        
-        print(f"\nThresholds: Warning={BudgetConfig.WARNING_THRESHOLD*100:.0f}%, Critical={BudgetConfig.CRITICAL_THRESHOLD*100:.0f}%")
-        print("\n💰 Powers: Financial control, spend optimization")
-        
-        return True
-    except Exception as e:
-        print(f"❌ Failed: {e}")
-        return False
+    # FEC contribution limits (2024 cycle)
+    CONTRIBUTION_LIMITS = {
+        'individual_to_candidate': 3300,
+        'individual_to_pac': 5000,
+        'individual_to_party': 41300,
+        'pac_to_candidate': 5000
+    }
+    
+    # Reportable expense thresholds
+    ITEMIZATION_THRESHOLD = 200
+    
+    @staticmethod
+    def categorize_expense_for_fec(expense: Expense) -> str:
+        """Map expense category to FEC category."""
+        fec_mapping = {
+            BudgetCategory.ADVERTISING: 'Advertising',
+            BudgetCategory.DIGITAL: 'Digital Advertising',
+            BudgetCategory.DIRECT_MAIL: 'Direct Mail',
+            BudgetCategory.EVENTS: 'Event Expenses',
+            BudgetCategory.STAFF: 'Payroll',
+            BudgetCategory.CONSULTING: 'Consulting',
+            BudgetCategory.TRAVEL: 'Travel',
+            BudgetCategory.OFFICE: 'Office Expenses',
+            BudgetCategory.FUNDRAISING: 'Fundraising',
+            BudgetCategory.COMPLIANCE: 'Legal/Compliance',
+            BudgetCategory.TECHNOLOGY: 'Technology',
+            BudgetCategory.VOTER_CONTACT: 'Voter Contact',
+            BudgetCategory.POLLING: 'Polling',
+            BudgetCategory.MEDIA_BUY: 'Media Buy',
+            BudgetCategory.PRODUCTION: 'Production',
+            BudgetCategory.OTHER: 'Other'
+        }
+        return fec_mapping.get(expense.category, 'Other')
+    
+    @staticmethod
+    def requires_itemization(expense: Expense) -> bool:
+        """Check if expense requires itemized reporting."""
+        return float(expense.amount) >= FECBudgetCompliance.ITEMIZATION_THRESHOLD
+    
+    @staticmethod
+    def generate_disbursement_record(expense: Expense) -> Dict[str, Any]:
+        """Generate FEC disbursement record format."""
+        return {
+            'disbursement_date': expense.paid_date.strftime('%Y%m%d') if expense.paid_date else '',
+            'recipient_name': expense.vendor_name,
+            'recipient_city': '',  # Would need vendor address
+            'recipient_state': '',
+            'recipient_zip': '',
+            'disbursement_purpose': expense.description[:100],
+            'disbursement_category': FECBudgetCompliance.categorize_expense_for_fec(expense),
+            'amount': float(expense.amount),
+            'memo_code': '',
+            'memo_text': expense.description
+        }
 
 
-if __name__ == "__main__":
-    import sys
-    if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
-        deploy_budget_management()
-    elif len(sys.argv) > 1 and sys.argv[1] == "--stats":
-        engine = BudgetManagementEngine()
-        print(json.dumps(engine.get_stats(), indent=2, default=str))
-    elif len(sys.argv) > 1 and sys.argv[1] == "--alerts":
-        engine = BudgetManagementEngine()
-        for alert in engine.get_active_alerts():
-            print(f"[{alert['severity'].upper()}] {alert['title']}")
-    else:
-        print("💰 Budget Management System")
-        print("\nUsage:")
-        print("  python ecosystem_11_budget_management_complete.py --deploy")
-        print("  python ecosystem_11_budget_management_complete.py --stats")
-        print("  python ecosystem_11_budget_management_complete.py --alerts")
+# ============================================================================
+# MULTI-CANDIDATE ALLOCATION
+# ============================================================================
+
+class MultiCandidateAllocator:
+    """Allocate shared expenses across multiple candidates."""
+    
+    def __init__(self, budget_manager: BudgetManager):
+        self.budget_manager = budget_manager
+    
+    async def allocate_shared_expense(
+        self,
+        total_amount: Decimal,
+        candidate_budgets: List[str],
+        allocation_method: str = 'equal',
+        weights: Optional[Dict[str, float]] = None,
+        vendor_name: str = '',
+        description: str = '',
+        category: BudgetCategory = BudgetCategory.OTHER
+    ) -> List[Expense]:
+        """
+        Allocate a shared expense across multiple candidates.
+        
+        Methods:
+        - 'equal': Split equally
+        - 'weighted': Use provided weights
+        - 'budget_proportional': Based on total budget size
+        """
+        if not candidate_budgets:
+            raise ValueError("No candidate budgets provided")
+        
+        # Calculate allocation amounts
+        allocations = {}
+        
+        if allocation_method == 'equal':
+            per_candidate = total_amount / Decimal(str(len(candidate_budgets)))
+            for budget_id in candidate_budgets:
+                allocations[budget_id] = per_candidate
+        
+        elif allocation_method == 'weighted':
+            if not weights:
+                raise ValueError("Weights required for weighted allocation")
+            total_weight = sum(weights.values())
+            for budget_id in candidate_budgets:
+                weight = weights.get(budget_id, 0)
+                allocations[budget_id] = total_amount * Decimal(str(weight / total_weight))
+        
+        elif allocation_method == 'budget_proportional':
+            total_budget = sum(
+                self.budget_manager.budgets[b].total_budget
+                for b in candidate_budgets
+                if b in self.budget_manager.budgets
+            )
+            for budget_id in candidate_budgets:
+                if budget_id in self.budget_manager.budgets:
+                    budget = self.budget_manager.budgets[budget_id]
+                    proportion = budget.total_budget / total_budget
+                    allocations[budget_id] = total_amount * proportion
+        
+        # Create expenses for each candidate
+        expenses = []
+        for budget_id, amount in allocations.items():
+            expense = await self.budget_manager.submit_expense(
+                budget_id=budget_id,
+                category=category,
+                amount=amount.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+                vendor_name=vendor_name,
+                description=f"[SHARED] {description}",
+                submitted_by='system'
+            )
+            expenses.append(expense)
+        
+        logger.info(
+            f"Allocated ${total_amount:,.2f} across {len(candidate_budgets)} candidates "
+            f"using {allocation_method} method"
+        )
+        
+        return expenses
+
+
+# ============================================================================
+# MAIN ENTRY POINT
+# ============================================================================
+
+async def main():
+    """Demo the budget management system."""
+    manager = BudgetManager()
+    
+    # Create a candidate budget
+    budget = await manager.create_budget(
+        name="Dave Boliek for NC Supreme Court",
+        level=BudgetLevel.CANDIDATE,
+        total_budget=Decimal('250000.00'),
+        candidate_id='dave-boliek-001'
+    )
+    
+    # Allocate funds by category
+    await manager.allocate_funds(
+        budget.budget_id,
+        BudgetCategory.ADVERTISING,
+        Decimal('75000.00')
+    )
+    await manager.allocate_funds(
+        budget.budget_id,
+        BudgetCategory.DIRECT_MAIL,
+        Decimal('50000.00')
+    )
+    await manager.allocate_funds(
+        budget.budget_id,
+        BudgetCategory.DIGITAL,
+        Decimal('40000.00')
+    )
+    await manager.allocate_funds(
+        budget.budget_id,
+        BudgetCategory.EVENTS,
+        Decimal('25000.00')
+    )
+    await manager.allocate_funds(
+        budget.budget_id,
+        BudgetCategory.STAFF,
+        Decimal('35000.00')
+    )
+    await manager.allocate_funds(
+        budget.budget_id,
+        BudgetCategory.CONSULTING,
+        Decimal('25000.00')
+    )
+    
+    # Submit some expenses
+    expense1 = await manager.submit_expense(
+        budget.budget_id,
+        BudgetCategory.ADVERTISING,
+        Decimal('5000.00'),
+        'WRAL-TV',
+        'TV spot - 30 second ad buy',
+        'campaign_manager'
+    )
+    
+    expense2 = await manager.submit_expense(
+        budget.budget_id,
+        BudgetCategory.DIRECT_MAIL,
+        Decimal('8500.00'),
+        'Heritage Printing',
+        'Voter guide mailer - 50,000 pieces',
+        'campaign_manager'
+    )
+    
+    # Approve and pay expenses
+    await manager.approve_expense(expense1.expense_id, 'eddie_broyhill')
+    await manager.pay_expense(expense1.expense_id)
+    
+    # Get reports
+    summary = manager.get_budget_summary(budget.budget_id)
+    print("\n=== BUDGET SUMMARY ===")
+    print(json.dumps(summary, indent=2))
+    
+    variance = manager.get_variance_report(budget.budget_id)
+    print("\n=== VARIANCE REPORT ===")
+    print(json.dumps(variance, indent=2))
+    
+    alerts = manager.get_active_alerts(budget.budget_id)
+    print("\n=== ACTIVE ALERTS ===")
+    print(json.dumps(alerts, indent=2))
+    
+    # Generate forecast
+    forecasts = await manager.generate_forecast(budget.budget_id, periods_ahead=3)
+    print("\n=== SPENDING FORECAST ===")
+    for f in forecasts:
+        print(f"  {f.forecast_date.strftime('%B %Y')}: ${f.projected_spend:,.2f} (confidence: {f.confidence_score:.0%})")
+
+
+if __name__ == '__main__':
+    asyncio.run(main())
