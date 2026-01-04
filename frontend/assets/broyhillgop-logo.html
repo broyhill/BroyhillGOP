@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BroyhillGOP AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100%;
+            overflow: hidden;
+            padding: 5px 10px 15px 10px;
+        }
+        .button-wrapper {
+            perspective: 800px;
+        }
+        .cta-button {
+            display: block;
+            text-align: center;
+            padding: 10px 22px 8px 22px;
+            background: linear-gradient(160deg, #3d6a9f 0%, #2a4d73 20%, #1a3550 50%, #0d1f33 100%);
+            border-radius: 14px;
+            border: 3px solid #D4AF37;
+            border-bottom: 5px solid #8B7320;
+            box-shadow: 
+                /* Main 3D depth */
+                0 10px 0 #061020,
+                0 12px 0 #0a1828,
+                /* Outer glow */
+                0 15px 25px rgba(0,0,0,0.7),
+                0 5px 10px rgba(0,0,0,0.5),
+                /* Inner highlights */
+                inset 0 2px 3px rgba(255,255,255,0.25),
+                inset 2px 0 3px rgba(255,255,255,0.1),
+                inset -2px 0 3px rgba(0,0,0,0.2),
+                inset 0 -3px 6px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: all 0.1s ease;
+            text-decoration: none;
+            transform: rotateX(10deg);
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        /* Top shine/gloss */
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 12px;
+            right: 12px;
+            height: 35%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+            border-radius: 10px 10px 50% 50%;
+            pointer-events: none;
+        }
+        /* Side bevel effect */
+        .cta-button::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 5px;
+            right: 5px;
+            height: 8px;
+            background: linear-gradient(180deg, #0a1828 0%, #050c14 100%);
+            border-radius: 0 0 10px 10px;
+            transform: rotateX(-60deg);
+            transform-origin: top;
+        }
+        .cta-button:hover {
+            transform: rotateX(10deg) translateY(3px);
+            box-shadow: 
+                0 7px 0 #061020,
+                0 9px 0 #0a1828,
+                0 12px 20px rgba(0,0,0,0.6),
+                0 4px 8px rgba(0,0,0,0.4),
+                inset 0 2px 3px rgba(255,255,255,0.25),
+                inset 2px 0 3px rgba(255,255,255,0.1),
+                inset -2px 0 3px rgba(0,0,0,0.2),
+                inset 0 -3px 6px rgba(0,0,0,0.4);
+        }
+        .cta-button:active {
+            transform: rotateX(10deg) translateY(8px);
+            box-shadow: 
+                0 2px 0 #061020,
+                0 3px 0 #0a1828,
+                0 5px 10px rgba(0,0,0,0.5),
+                0 2px 5px rgba(0,0,0,0.3),
+                inset 0 2px 3px rgba(255,255,255,0.15),
+                inset 2px 0 3px rgba(255,255,255,0.05),
+                inset -2px 0 3px rgba(0,0,0,0.3),
+                inset 0 -3px 6px rgba(0,0,0,0.5);
+        }
+        .main-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 20px;
+            letter-spacing: -1px;
+            margin-bottom: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.7), 0 0 10px rgba(255,255,255,0.1);
+        }
+        .broyhill {
+            color: #FFFFFF;
+        }
+        .gop {
+            color: #FF1A1A;
+            animation: pulseRed 3s ease-in-out infinite;
+        }
+        @keyframes pulseRed {
+            0%, 100% { text-shadow: 0 2px 4px rgba(0,0,0,0.7), 0 0 15px rgba(255, 26, 26, 0.4); }
+            50% { text-shadow: 0 2px 4px rgba(0,0,0,0.7), 0 0 25px rgba(255, 26, 26, 0.7); }
+        }
+        .ai-letters {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 32px;
+            letter-spacing: 5px;
+            margin: 0;
+            text-shadow: 
+                0 3px 6px rgba(0,0,0,0.7),
+                0 0 20px currentColor;
+        }
+        .ai-letter {
+            display: inline-block;
+            animation: rainbow 6s linear infinite, float 3s ease-in-out infinite;
+        }
+        .ai-letter:nth-child(2) { animation-delay: 0.5s, 0.3s; }
+        @keyframes rainbow {
+            0% { color: #FF0000; }
+            14% { color: #FF7F00; }
+            28% { color: #FFFF00; }
+            42% { color: #00FF00; }
+            57% { color: #0000FF; }
+            71% { color: #4B0082; }
+            85% { color: #9400D3; }
+            100% { color: #FF0000; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+        }
+        .compose-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 9px;
+            color: #FFD700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7), 0 0 8px rgba(255,215,0,0.4);
+            animation: goldPulse 2s ease-in-out infinite;
+        }
+        @keyframes goldPulse {
+            0%, 100% { text-shadow: 0 1px 3px rgba(0,0,0,0.7), 0 0 8px rgba(255,215,0,0.4); }
+            50% { text-shadow: 0 1px 3px rgba(0,0,0,0.7), 0 0 15px rgba(255,215,0,0.7); }
+        }
+    </style>
+</head>
+<body>
+    <div class="button-wrapper">
+        <div class="cta-button">
+            <div class="main-logo">
+                <span class="broyhill">Broyhill</span><span class="gop">GOP</span>
+            </div>
+            <div class="ai-letters">
+                <span class="ai-letter">A</span><span class="ai-letter">I</span>
+            </div>
+            <div class="compose-text">✨ Campaign Composer Wizard ✨</div>
+        </div>
+    </div>
+</body>
+</html>
