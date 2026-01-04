@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E05 Volunteer Management | BroyhillGOP</title>
+    
+    <!-- Inspinia CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #1ab394;
+            --primary-dark: #18a689;
+            --secondary: #2f4050;
+            --danger: #ed5565;
+            --warning: #f8ac59;
+            --info: #23c6c8;
+            --success: #1ab394;
+            --navy: #1a3555;
+            --sidebar-bg: #2f4050;
+        }
+        
+        * { font-family: 'Open Sans', sans-serif; }
+        
+        body {
+            background: #f3f3f4;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 220px;
+            background: var(--sidebar-bg);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .sidebar-brand {
+            padding: 20px;
+            background: var(--navy);
+            text-align: center;
+        }
+        
+        .sidebar-brand h2 {
+            color: white;
+            font-size: 18px;
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .sidebar-brand small {
+            color: #8095a8;
+            font-size: 11px;
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar-nav > li > a {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: #a7b1c2;
+            text-decoration: none;
+            font-size: 13px;
+            border-left: 4px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .sidebar-nav > li > a:hover,
+        .sidebar-nav > li.active > a {
+            background: var(--navy);
+            color: white;
+            border-left-color: var(--primary);
+        }
+        
+        .sidebar-nav > li > a i {
+            width: 24px;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 220px;
+            padding: 0;
+        }
+        
+        /* Top Bar */
+        .topbar {
+            background: white;
+            padding: 15px 25px;
+            border-bottom: 1px solid #e7eaec;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .topbar h1 {
+            font-size: 22px;
+            font-weight: 300;
+            color: #676a6c;
+            margin: 0;
+        }
+        
+        .topbar-actions .btn {
+            margin-left: 8px;
+        }
+        
+        /* Content Area */
+        .content {
+            padding: 25px;
+        }
+        
+        /* Stats Cards */
+        .stat-card {
+            background: white;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e7eaec;
+        }
+        
+        .stat-card h2 {
+            font-size: 32px;
+            font-weight: 600;
+            margin: 0;
+            color: #676a6c;
+        }
+        
+        .stat-card .label {
+            color: #9d9d9d;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-card .trend {
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        
+        .stat-card .trend.up { color: var(--success); }
+        .stat-card .trend.down { color: var(--danger); }
+        
+        .stat-card.primary { border-left: 4px solid var(--primary); }
+        .stat-card.info { border-left: 4px solid var(--info); }
+        .stat-card.warning { border-left: 4px solid var(--warning); }
+        .stat-card.danger { border-left: 4px solid var(--danger); }
+        
+        /* iBox (Inspinia Panel) */
+        .ibox {
+            background: white;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            border: 1px solid #e7eaec;
+        }
+        
+        .ibox-title {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e7eaec;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ibox-title h5 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #676a6c;
+        }
+        
+        .ibox-content {
+            padding: 20px;
+        }
+        
+        /* Tables */
+        .table-hover tbody tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .table th {
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #676a6c;
+            border-bottom: 2px solid #e7eaec;
+        }
+        
+        .table td {
+            vertical-align: middle;
+            font-size: 13px;
+        }
+        
+        /* Grade Badge */
+        .grade-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .grade-badge.a-plus { background: #1ab394; color: white; }
+        .grade-badge.a { background: #23c6c8; color: white; }
+        .grade-badge.b { background: #f8ac59; color: white; }
+        .grade-badge.c { background: #f8ac59; color: white; }
+        .grade-badge.d { background: #ed5565; color: white; }
+        .grade-badge.f { background: #c0392b; color: white; }
+        
+        /* Progress Bar */
+        .progress {
+            height: 8px;
+            border-radius: 4px;
+            background: #f3f3f4;
+        }
+        
+        .progress-bar {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        
+        /* Avatar */
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-action-btn {
+            padding: 15px 20px;
+            background: white;
+            border: 1px solid #e7eaec;
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .quick-action-btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .quick-action-btn i {
+            font-size: 24px;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .quick-action-btn span {
+            display: block;
+            font-size: 12px;
+            color: #676a6c;
+        }
+        
+        /* Leaderboard */
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f3f3f4;
+        }
+        
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+        
+        .leaderboard-rank {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f3f3f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            margin-right: 12px;
+        }
+        
+        .leaderboard-rank.gold { background: #f1c40f; color: white; }
+        .leaderboard-rank.silver { background: #95a5a6; color: white; }
+        .leaderboard-rank.bronze { background: #e67e22; color: white; }
+        
+        .leaderboard-info {
+            flex: 1;
+        }
+        
+        .leaderboard-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #676a6c;
+        }
+        
+        .leaderboard-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        /* Shift Card */
+        .shift-card {
+            border: 1px solid #e7eaec;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 12px;
+            background: white;
+        }
+        
+        .shift-card .shift-date {
+            font-size: 12px;
+            color: #9d9d9d;
+            margin-bottom: 5px;
+        }
+        
+        .shift-card .shift-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #676a6c;
+            margin-bottom: 8px;
+        }
+        
+        .shift-card .shift-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #9d9d9d;
+        }
+        
+        .shift-card .shift-meta i {
+            width: 14px;
+            margin-right: 4px;
+        }
+        
+        .shift-spots {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .shift-spots .progress {
+            flex: 1;
+        }
+        
+        .shift-spots span {
+            font-size: 11px;
+            color: #9d9d9d;
+        }
+        
+        /* E20 Brain Status */
+        .brain-status {
+            background: linear-gradient(135deg, var(--navy) 0%, #2c3e50 100%);
+            border-radius: 4px;
+            padding: 15px;
+            color: white;
+        }
+        
+        .brain-status h6 {
+            font-size: 11px;
+            text-transform: uppercase;
+            opacity: 0.7;
+            margin-bottom: 8px;
+        }
+        
+        .brain-status .status-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .brain-status .status-row:last-child {
+            border-bottom: none;
+        }
+        
+        .brain-pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { width: 60px; }
+            .sidebar-brand h2, .sidebar-brand small, .sidebar-nav > li > a span { display: none; }
+            .sidebar-nav > li > a { justify-content: center; padding: 14px 0; }
+            .sidebar-nav > li > a i { margin: 0; }
+            .main-content { margin-left: 60px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+    <div class="sidebar-brand">
+        <h2>BroyhillGOP</h2>
+        <small>Volunteer Management</small>
+    </div>
+    <ul class="sidebar-nav">
+        <li class="active">
+            <a href="#"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+        </li>
+        <li>
+            <a href="#"><i class="fas fa-users"></i> <span>All Volunteers</span></a>
+        </li>
+        <li>
+            <a href="#"><i class="fas fa-calendar-alt"></i> <span>Shifts</span></a>
+        </li>
+        <li>
+            <a href="#"><i class="fas fa-user-friends"></i> <span>Teams</span></a>
+        </li>
+        <li>
+            <a href="#"><i class="fas fa-trophy"></i> <span>Leaderboards</span></a>
+        </li>
+        <li>
+            <a href="#"><i class="fas fa-medal"></i> <span>Badges</span></a>
+        </li>
+        <li>
+            <a href="#"><i class="fas fa-chart-line"></i> <span>Analytics</span></a>
+        </li>
+        <li>
+            <a href="#"><i class="fas fa-brain"></i> <span>E20 Brain</span></a>
+        </li>
+        <li>
+            <a href="#"><i class="fas fa-cog"></i> <span>Settings</span></a>
+        </li>
+    </ul>
+</nav>
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Top Bar -->
+    <div class="topbar">
+        <h1><i class="fas fa-hands-helping me-2"></i> Volunteer Dashboard</h1>
+        <div class="topbar-actions">
+            <button class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-download me-1"></i> Export
+            </button>
+            <button class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-1"></i> Add Volunteer
+            </button>
+        </div>
+    </div>
+    
+    <!-- Content -->
+    <div class="content">
+        <!-- Stats Row -->
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card primary">
+                    <div class="label">Active Volunteers</div>
+                    <h2>1,247</h2>
+                    <div class="trend up">
+                        <i class="fas fa-arrow-up"></i> 12% from last month
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card info">
+                    <div class="label">Total Hours</div>
+                    <h2>8,432</h2>
+                    <div class="trend up">
+                        <i class="fas fa-arrow-up"></i> 18% from last month
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card warning">
+                    <div class="label">Doors Knocked</div>
+                    <h2>24,891</h2>
+                    <div class="trend up">
+                        <i class="fas fa-arrow-up"></i> 24% from last month
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card danger">
+                    <div class="label">Churn Risk (High)</div>
+                    <h2>47</h2>
+                    <div class="trend down">
+                        <i class="fas fa-arrow-down"></i> 8% from last month
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5>Quick Actions</h5>
+            </div>
+            <div class="ibox-content">
+                <div class="quick-actions">
+                    <div class="quick-action-btn">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span>Create Shift</span>
+                    </div>
+                    <div class="quick-action-btn">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Add Volunteer</span>
+                    </div>
+                    <div class="quick-action-btn">
+                        <i class="fas fa-users-cog"></i>
+                        <span>Manage Teams</span>
+                    </div>
+                    <div class="quick-action-btn">
+                        <i class="fas fa-envelope"></i>
+                        <span>Send Message</span>
+                    </div>
+                    <div class="quick-action-btn">
+                        <i class="fas fa-file-export"></i>
+                        <span>Export Data</span>
+                    </div>
+                    <div class="quick-action-btn">
+                        <i class="fas fa-sync"></i>
+                        <span>Recalc Grades</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Volunteers Table -->
+            <div class="col-lg-8">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5>Recent Volunteers</h5>
+                        <div>
+                            <input type="text" class="form-control form-control-sm" placeholder="Search..." style="width: 200px;">
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Volunteer</th>
+                                    <th>3D Grade</th>
+                                    <th>Hours</th>
+                                    <th>Doors</th>
+                                    <th>Points</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar me-2">JD</div>
+                                            <div>
+                                                <div class="fw-bold">John Davis</div>
+                                                <small class="text-muted">Forsyth County</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="grade-badge a-plus">H-A+-5</span></td>
+                                    <td>142.5</td>
+                                    <td>847</td>
+                                    <td>3,240</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar me-2">SM</div>
+                                            <div>
+                                                <div class="fw-bold">Sarah Miller</div>
+                                                <small class="text-muted">Guilford County</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="grade-badge a">M-A-4</span></td>
+                                    <td>89.0</td>
+                                    <td>521</td>
+                                    <td>2,180</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar me-2">RJ</div>
+                                            <div>
+                                                <div class="fw-bold">Robert Johnson</div>
+                                                <small class="text-muted">Wake County</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="grade-badge b">M-B-3</span></td>
+                                    <td>45.5</td>
+                                    <td>234</td>
+                                    <td>1,120</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar me-2">EW</div>
+                                            <div>
+                                                <div class="fw-bold">Emily Wilson</div>
+                                                <small class="text-muted">Mecklenburg County</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="grade-badge c">L-C-2</span></td>
+                                    <td>12.0</td>
+                                    <td>67</td>
+                                    <td>340</td>
+                                    <td><span class="badge bg-warning text-dark">At Risk</span></td>
+                                    <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar me-2">MT</div>
+                                            <div>
+                                                <div class="fw-bold">Mike Thompson</div>
+                                                <small class="text-muted">Durham County</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="grade-badge d">L-D-1</span></td>
+                                    <td>4.0</td>
+                                    <td>18</td>
+                                    <td>80</td>
+                                    <td><span class="badge bg-danger">Churning</span></td>
+                                    <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-outline-primary btn-sm">View All Volunteers</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="col-lg-4">
+                <!-- E20 Brain Status -->
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fas fa-brain me-2"></i> E20 Brain Status</h5>
+                        <span class="brain-pulse"></span>
+                    </div>
+                    <div class="ibox-content p-0">
+                        <div class="brain-status">
+                            <h6>Volunteer Events Today</h6>
+                            <div class="status-row">
+                                <span>Registrations</span>
+                                <strong>12</strong>
+                            </div>
+                            <div class="status-row">
+                                <span>Shifts Completed</span>
+                                <strong>34</strong>
+                            </div>
+                            <div class="status-row">
+                                <span>Badges Awarded</span>
+                                <strong>8</strong>
+                            </div>
+                            <div class="status-row">
+                                <span>Re-engagements Sent</span>
+                                <strong>5</strong>
+                            </div>
+                            <div class="status-row">
+                                <span>GO Decisions</span>
+                                <strong>47</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Points Leaderboard -->
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fas fa-trophy me-2"></i> Points Leaderboard</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="leaderboard-item">
+                            <div class="leaderboard-rank gold">1</div>
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-name">John Davis</div>
+                                <small class="text-muted">142.5 hours</small>
+                            </div>
+                            <div class="leaderboard-value">3,240</div>
+                        </div>
+                        <div class="leaderboard-item">
+                            <div class="leaderboard-rank silver">2</div>
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-name">Sarah Miller</div>
+                                <small class="text-muted">89.0 hours</small>
+                            </div>
+                            <div class="leaderboard-value">2,180</div>
+                        </div>
+                        <div class="leaderboard-item">
+                            <div class="leaderboard-rank bronze">3</div>
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-name">Amy Chen</div>
+                                <small class="text-muted">78.5 hours</small>
+                            </div>
+                            <div class="leaderboard-value">1,890</div>
+                        </div>
+                        <div class="leaderboard-item">
+                            <div class="leaderboard-rank">4</div>
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-name">Tom Brown</div>
+                                <small class="text-muted">67.0 hours</small>
+                            </div>
+                            <div class="leaderboard-value">1,540</div>
+                        </div>
+                        <div class="leaderboard-item">
+                            <div class="leaderboard-rank">5</div>
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-name">Lisa White</div>
+                                <small class="text-muted">52.5 hours</small>
+                            </div>
+                            <div class="leaderboard-value">1,280</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Upcoming Shifts -->
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fas fa-calendar me-2"></i> Upcoming Shifts</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="shift-card">
+                            <div class="shift-date">Saturday, Jan 4 • 9:00 AM</div>
+                            <div class="shift-title">Door Knocking - Forsyth County</div>
+                            <div class="shift-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> Winston-Salem</span>
+                                <span><i class="fas fa-clock"></i> 4 hours</span>
+                            </div>
+                            <div class="shift-spots">
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: 70%"></div>
+                                </div>
+                                <span>7/10 spots</span>
+                            </div>
+                        </div>
+                        <div class="shift-card">
+                            <div class="shift-date">Sunday, Jan 5 • 2:00 PM</div>
+                            <div class="shift-title">Phone Bank - Virtual</div>
+                            <div class="shift-meta">
+                                <span><i class="fas fa-video"></i> Zoom</span>
+                                <span><i class="fas fa-clock"></i> 3 hours</span>
+                            </div>
+                            <div class="shift-spots">
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: 40%"></div>
+                                </div>
+                                <span>8/20 spots</span>
+                            </div>
+                        </div>
+                        <div class="shift-card">
+                            <div class="shift-date">Monday, Jan 6 • 10:00 AM</div>
+                            <div class="shift-title">Voter Registration Drive</div>
+                            <div class="shift-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> Raleigh</span>
+                                <span><i class="fas fa-clock"></i> 5 hours</span>
+                            </div>
+                            <div class="shift-spots">
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: 25%"></div>
+                                </div>
+                                <span>5/20 spots</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Grade Distribution -->
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fas fa-chart-pie me-2"></i> Reliability Grade Distribution</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row text-center">
+                            <div class="col">
+                                <h3 class="mb-0" style="color: var(--success)">187</h3>
+                                <span class="text-muted">A+ Grade</span>
+                            </div>
+                            <div class="col">
+                                <h3 class="mb-0" style="color: var(--info)">342</h3>
+                                <span class="text-muted">A Grade</span>
+                            </div>
+                            <div class="col">
+                                <h3 class="mb-0" style="color: var(--warning)">428</h3>
+                                <span class="text-muted">B Grade</span>
+                            </div>
+                            <div class="col">
+                                <h3 class="mb-0" style="color: #e67e22">198</h3>
+                                <span class="text-muted">C Grade</span>
+                            </div>
+                            <div class="col">
+                                <h3 class="mb-0" style="color: var(--danger)">67</h3>
+                                <span class="text-muted">D Grade</span>
+                            </div>
+                            <div class="col">
+                                <h3 class="mb-0" style="color: #c0392b">25</h3>
+                                <span class="text-muted">F Grade</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fas fa-medal me-2"></i> Recent Badge Awards</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <td><i class="fas fa-medal" style="color: #f1c40f"></i> Century Volunteer</td>
+                                    <td>John Davis</td>
+                                    <td class="text-muted">2 hours ago</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-medal" style="color: #e67e22"></i> Door Dasher</td>
+                                    <td>Sarah Miller</td>
+                                    <td class="text-muted">5 hours ago</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-medal" style="color: #9b59b6"></i> Weekly Warrior</td>
+                                    <td>Tom Brown</td>
+                                    <td class="text-muted">Yesterday</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-medal" style="color: #3498db"></i> 10 Hour Club</td>
+                                    <td>Emily Wilson</td>
+                                    <td class="text-muted">Yesterday</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-medal" style="color: #1abc9c"></i> First Shift</td>
+                                    <td>New Volunteer</td>
+                                    <td class="text-muted">2 days ago</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Simulated real-time updates
+setInterval(() => {
+    document.querySelector('.brain-pulse').style.opacity = 
+        document.querySelector('.brain-pulse').style.opacity === '1' ? '0.5' : '1';
+}, 1000);
+
+// Quick action handlers
+document.querySelectorAll('.quick-action-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const action = this.querySelector('span').textContent;
+        console.log('Action:', action);
+        // Would open modal or redirect
+    });
+});
+</script>
+
+</body>
+</html>
