@@ -1,0 +1,489 @@
+<!--
+* Author: WebAppLayers
+* Product Name: INSPINIA
+* Version: 4.0.1
+* BroyhillGOP Customizations by Eddie Broyhill
+* Session: December 31, 2025
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Rep. Jeff Zenger | BroyhillGOP - Campaign Platform</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="BroyhillGOP Campaign Platform - Rep. Jeff Zenger Dashboard">
+    <meta name="author" content="BroyhillGOP">
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="assets/images/favicon.ico">
+
+    <!-- Theme Config Js -->
+    <script src="assets/js/config.js"></script>
+
+    <!-- Vendor css -->
+    <link href="assets/css/vendors.min.css" rel="stylesheet" type="text/css">
+
+    <!-- App css -->
+    <link href="assets/css/app.min.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        
+        <!-- Sidenav Menu Start -->
+        <div class="sidenav-menu">
+            <!-- BroyhillGOP AI Logo -->
+            <a href="campaign-composer-wizard.html" class="logo" style="display: block; margin: 10px; text-decoration: none;">
+                <iframe src="assets/broyhillgop-logo.html" style="width: 100%; height: 165px; border: none; pointer-events: none;" scrolling="no"></iframe>
+            </a>
+            <button class="button-on-hover"><i class="ti ti-menu-4 fs-22 align-middle"></i></button>
+            <button class="button-close-offcanvas"><i class="ti ti-x align-middle"></i></button>
+            <div class="scrollbar" data-simplebar>
+            <ul class="side-nav">
+                <li class="side-nav-item"><a href="jeff-zenger.html" class="side-nav-link"><span class="menu-icon"><i class="ti ti-home"></i></span><span class="menu-text">Candidate Home</span></a></li>
+                <li class="side-nav-title">🧠 BRAIN</li>
+                <li class="side-nav-item"><a data-bs-toggle="collapse" href="#navBrain" class="side-nav-link"><span class="menu-icon"><i class="ti ti-brain"></i></span><span class="menu-text">Intelligence</span><span class="badge bg-danger">AI</span></a>
+                    <div class="collapse" id="navBrain"><ul class="sub-menu">
+                        <li class="side-nav-item"><a href="ecosystem-20-intelligence-brain.html" class="side-nav-link"><span class="menu-text">E20 Brain</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-13-ai-hub.html" class="side-nav-link"><span class="menu-text">E13 AI Hub</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-21-ml-clustering.html" class="side-nav-link"><span class="menu-text">E21 ML</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-51-nexus.html" class="side-nav-link"><span class="menu-text">E51 NEXUS</span></a></li>
+                    </ul></div></li>
+                <li class="side-nav-title">💾 DATA</li>
+                <li class="side-nav-item"><a data-bs-toggle="collapse" href="#navData" class="side-nav-link"><span class="menu-icon"><i class="ti ti-database"></i></span><span class="menu-text">Data</span><span class="badge bg-primary">130K+</span></a>
+                    <div class="collapse" id="navData"><ul class="sub-menu">
+                        <li class="side-nav-item"><a href="ecosystem-00-datahub.html" class="side-nav-link"><span class="menu-text">E00 DataHub</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-15-contact-directory.html" class="side-nav-link"><span class="menu-text">E15 Contacts</span></a></li>
+                    </ul></div></li>
+                <li class="side-nav-title">💰 DONORS</li>
+                <li class="side-nav-item"><a data-bs-toggle="collapse" href="#navDonors" class="side-nav-link"><span class="menu-icon"><i class="ti ti-cash"></i></span><span class="menu-text">Fundraising</span></a>
+                    <div class="collapse" id="navDonors"><ul class="sub-menu">
+                        <li class="side-nav-item"><a href="ecosystem-01-donor-intelligence.html" class="side-nav-link"><span class="menu-text">E01 Donor Intel</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-02-donations.html" class="side-nav-link"><span class="menu-text">E02 Donations</span></a></li>
+                        <li class="side-nav-item"><a href="donors.html" class="side-nav-link"><span class="menu-text">All Donors</span></a></li>
+                        <li class="side-nav-item"><a href="jeff-zenger-donors.html" class="side-nav-link"><span class="menu-text">Zenger Donors</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-10-compliance.html" class="side-nav-link"><span class="menu-text">E10 Compliance</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-11-budget.html" class="side-nav-link"><span class="menu-text">E11 Budget</span></a></li>
+                    </ul></div></li>
+                <li class="side-nav-title">🙋 VOLUNTEERS</li>
+                <li class="side-nav-item"><a data-bs-toggle="collapse" href="#navVol" class="side-nav-link"><span class="menu-icon"><i class="ti ti-users-group"></i></span><span class="menu-text">Activists</span></a>
+                    <div class="collapse" id="navVol"><ul class="sub-menu">
+                        <li class="side-nav-item"><a href="ecosystem-04-activist-network.html" class="side-nav-link"><span class="menu-text">E04 Activists</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-05-volunteers.html" class="side-nav-link"><span class="menu-text">E05 Volunteers</span></a></li>
+                        <li class="side-nav-item"><a href="volunteers.html" class="side-nav-link"><span class="menu-text">All Volunteers</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-34-events.html" class="side-nav-link"><span class="menu-text">E34 Events</span></a></li>
+                    </ul></div></li>
+                <li class="side-nav-title">📣 COMMS</li>
+                <li class="side-nav-item"><a data-bs-toggle="collapse" href="#navComms" class="side-nav-link"><span class="menu-icon"><i class="ti ti-message-circle"></i></span><span class="menu-text">Channels</span></a>
+                    <div class="collapse" id="navComms"><ul class="sub-menu">
+                        <li class="side-nav-item"><a href="ecosystem-30-email-studio.html" class="side-nav-link"><span class="menu-text">E30 Email</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-31-sms-studio.html" class="side-nav-link"><span class="menu-text">E31 SMS</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-32-phone-banking.html" class="side-nav-link"><span class="menu-text">E32 Phone</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-17-rvm.html" class="side-nav-link"><span class="menu-text">E17 RVM</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-33-direct-mail.html" class="side-nav-link"><span class="menu-text">E33 Mail</span></a></li>
+                    </ul></div></li>
+                <li class="side-nav-title">🎬 MEDIA</li>
+                <li class="side-nav-item"><a data-bs-toggle="collapse" href="#navMedia" class="side-nav-link"><span class="menu-icon"><i class="ti ti-video"></i></span><span class="menu-text">Production</span></a>
+                    <div class="collapse" id="navMedia"><ul class="sub-menu">
+                        <li class="side-nav-item"><a href="ecosystem-16-tv-radio.html" class="side-nav-link"><span class="menu-text">E16 TV/Radio</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-19-social-media.html" class="side-nav-link"><span class="menu-text">E19 Social</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-45-video-studio.html" class="side-nav-link"><span class="menu-text">E45 Video</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-46-broadcast-hub.html" class="side-nav-link"><span class="menu-text">E46 Broadcast</span></a></li>
+                    </ul></div></li>
+                <li class="side-nav-title">⚙️ OPS</li>
+                <li class="side-nav-item"><a data-bs-toggle="collapse" href="#navOps" class="side-nav-link"><span class="menu-icon"><i class="ti ti-settings"></i></span><span class="menu-text">Management</span></a>
+                    <div class="collapse" id="navOps"><ul class="sub-menu">
+                        <li class="side-nav-item"><a href="ecosystem-03-candidate-profiles.html" class="side-nav-link"><span class="menu-text">E03 Candidates</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-41-campaign-builder.html" class="side-nav-link"><span class="menu-text">E41 Builder</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-06-analytics.html" class="side-nav-link"><span class="menu-text">E06 Analytics</span></a></li>
+                        <li class="side-nav-item"><a href="ecosystem-42-news-intelligence.html" class="side-nav-link"><span class="menu-text">E42 News</span></a></li>
+                    </ul></div></li>
+                <li class="side-nav-title">🎯 WIZARDS</li>
+                <li class="side-nav-item"><a data-bs-toggle="collapse" href="#navWiz" class="side-nav-link"><span class="menu-icon"><i class="ti ti-wand"></i></span><span class="menu-text">Compose</span><span class="badge bg-success">NEW</span></a>
+                    <div class="collapse" id="navWiz"><ul class="sub-menu">
+                        <li class="side-nav-item"><a href="campaign-composer-wizard.html" class="side-nav-link"><span class="menu-text">🎬 Composer</span></a></li>
+                        <li class="side-nav-item"><a href="email-campaign-wizard.html" class="side-nav-link"><span class="menu-text">📧 Email</span></a></li>
+                        <li class="side-nav-item"><a href="sms-campaign-wizard.html" class="side-nav-link"><span class="menu-text">💬 SMS</span></a></li>
+                        <li class="side-nav-item"><a href="rvm-campaign-wizard.html" class="side-nav-link"><span class="menu-text">🎤 RVM</span></a></li>
+                        <li class="side-nav-item"><a href="phone-banking-wizard.html" class="side-nav-link"><span class="menu-text">📞 Phone</span></a></li>
+                    </ul></div></li>
+                <li class="side-nav-title">🔧 CONTROL</li>
+                <li class="side-nav-item"><a href="ecosystem-40-automation-control.html" class="side-nav-link"><span class="menu-icon"><i class="ti ti-adjustments"></i></span><span class="menu-text">Control Panel</span></a></li>
+                <li class="side-nav-item"><a href="settings.html" class="side-nav-link"><span class="menu-icon"><i class="ti ti-settings-2"></i></span><span class="menu-text">Settings</span></a></li>
+            </ul>
+            </div>
+        </div>
+        <!-- Sidenav Menu End -->
+
+        <!-- Topbar Start -->
+        <header class="app-topbar">
+            <div class="container-fluid topbar-menu">
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Topbar Brand Logo -->
+                    <div class="logo-topbar">
+                        <a href="index.html" class="logo-light">
+                            <span class="logo-lg"><img src="assets/images/logo.png" alt="logo"></span>
+                            <span class="logo-sm"><img src="assets/images/logo-sm.png" alt="small logo"></span>
+                        </a>
+                        <a href="index.html" class="logo-dark">
+                            <span class="logo-lg"><img src="assets/images/logo-black.png" alt="dark logo"></span>
+                            <span class="logo-sm"><img src="assets/images/logo-sm.png" alt="small logo"></span>
+                        </a>
+                    </div>
+
+                    <!-- Sidebar Menu Toggle Button -->
+                    <button class="sidenav-toggle-button btn btn-primary btn-icon">
+                        <i class="ti ti-menu-4 fs-22"></i>
+                    </button>
+
+                    <!-- Horizontal Menu Toggle Button -->
+                    <button class="topnav-toggle-button px-2" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
+                        <i class="ti ti-menu-4 fs-22"></i>
+                    </button>
+
+                    <!-- Search -->
+                    <div class="app-search d-none d-xl-flex">
+                        <input type="search" class="form-control topbar-search" name="search" placeholder="Search...">
+                        <i data-lucide="search" class="app-search-icon text-muted"></i>
+                    </div>
+
+                    <!-- 6 Hemisphere Dropdowns -->
+                    <div class="topbar-item d-none d-lg-flex gap-1">
+                        
+                        <!-- 1. DATA -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" type="button">💾 Data</button>
+                            <div class="dropdown-menu">
+                                <a href="ecosystem-00-datahub.html" class="dropdown-item">E00 DataHub</a>
+                                <a href="ecosystem-15-contact-directory.html" class="dropdown-item">E15 Contacts</a>
+                                <a href="donors.html" class="dropdown-item">All Donors</a>
+                                <a href="volunteers.html" class="dropdown-item">All Volunteers</a>
+                            </div>
+                        </div>
+                        
+                        <!-- 2. COMMS -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-success dropdown-toggle" data-bs-toggle="dropdown" type="button">📣 Comms</button>
+                            <div class="dropdown-menu">
+                                <a href="ecosystem-30-email-studio.html" class="dropdown-item">E30 Email</a>
+                                <a href="ecosystem-31-sms-studio.html" class="dropdown-item">E31 SMS</a>
+                                <a href="ecosystem-32-phone-banking.html" class="dropdown-item">E32 Phone</a>
+                                <a href="ecosystem-17-rvm.html" class="dropdown-item">E17 RVM</a>
+                                <a href="ecosystem-33-direct-mail.html" class="dropdown-item">E33 Direct Mail</a>
+                            </div>
+                        </div>
+                        
+                        <!-- 3. MEDIA -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-danger dropdown-toggle" data-bs-toggle="dropdown" type="button">🎬 Media</button>
+                            <div class="dropdown-menu">
+                                <a href="ecosystem-16-tv-radio.html" class="dropdown-item">E16 TV/Radio AI</a>
+                                <a href="ecosystem-19-social-media.html" class="dropdown-item">E19 Social Media</a>
+                                <a href="ecosystem-45-video-studio.html" class="dropdown-item">E45 Video Studio</a>
+                                <a href="ecosystem-46-broadcast-hub.html" class="dropdown-item">E46 Broadcast</a>
+                            </div>
+                        </div>
+                        
+                        <!-- 4. BRAIN -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-warning dropdown-toggle" data-bs-toggle="dropdown" type="button">🧠 Brain</button>
+                            <div class="dropdown-menu">
+                                <a href="ecosystem-20-intelligence-brain.html" class="dropdown-item">E20 Intelligence Brain</a>
+                                <a href="ecosystem-13-ai-hub.html" class="dropdown-item">E13 AI Hub</a>
+                                <a href="ecosystem-21-ml-clustering.html" class="dropdown-item">E21 ML Clustering</a>
+                                <a href="ecosystem-51-nexus.html" class="dropdown-item">E51 NEXUS AI</a>
+                            </div>
+                        </div>
+                        
+                        <!-- 5. OPS -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" type="button">⚙️ Ops</button>
+                            <div class="dropdown-menu">
+                                <a href="ecosystem-03-candidate-profiles.html" class="dropdown-item">E03 Candidates</a>
+                                <a href="ecosystem-06-analytics.html" class="dropdown-item">E06 Analytics</a>
+                                <a href="ecosystem-41-campaign-builder.html" class="dropdown-item">E41 Campaign Builder</a>
+                                <a href="ecosystem-40-automation-control.html" class="dropdown-item">E40 Control Panel</a>
+                                <a href="ecosystem-42-news-intelligence.html" class="dropdown-item">E42 News Intel</a>
+                            </div>
+                        </div>
+                        
+                        <!-- 6. WIZARDS -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" type="button">🎯 Wizards</button>
+                            <div class="dropdown-menu">
+                                <a href="campaign-composer-wizard.html" class="dropdown-item fw-bold">🎬 Campaign Composer</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="email-campaign-wizard.html" class="dropdown-item">📧 Email Wizard</a>
+                                <a href="sms-campaign-wizard.html" class="dropdown-item">💬 SMS Wizard</a>
+                                <a href="rvm-campaign-wizard.html" class="dropdown-item">🎤 RVM Wizard</a>
+                                <a href="phone-banking-wizard.html" class="dropdown-item">📞 Phone Wizard</a>
+                                <a href="direct-mail-wizard.html" class="dropdown-item">📬 Mail Wizard</a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Messages Dropdown -->
+                    <div class="topbar-item">
+                        <div class="dropdown">
+                            <button class="topbar-link dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown" data-bs-offset="0,22" type="button">
+                                <i data-lucide="mails" class="fs-xxl"></i>
+                                <span class="badge text-bg-success badge-circle topbar-badge">7</span>
+                            </button>
+                            <div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg">
+                                <div class="px-3 py-2 border-bottom">
+                                    <h6 class="m-0 fs-md fw-semibold">Messages</h6>
+                                </div>
+                                <div style="max-height: 300px;" data-simplebar>
+                                    <div class="dropdown-item py-2 text-muted small">Campaign messages will appear here...</div>
+                                </div>
+                                <a href="#" class="dropdown-item text-center fw-bold border-top py-2">View All</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification Dropdown -->
+                    <div class="topbar-item">
+                        <div class="dropdown">
+                            <button class="topbar-link dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown" data-bs-offset="0,22" type="button">
+                                <i data-lucide="bell" class="fs-xxl"></i>
+                                <span class="badge badge-square text-bg-warning topbar-badge">14</span>
+                            </button>
+                            <div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg">
+                                <div class="px-3 py-2 border-bottom">
+                                    <h6 class="m-0 fs-md fw-semibold">Notifications</h6>
+                                </div>
+                                <div style="max-height: 300px;" data-simplebar>
+                                    <div class="dropdown-item py-2 text-muted small">Campaign alerts will appear here...</div>
+                                </div>
+                                <a href="#" class="dropdown-item text-center fw-bold border-top py-2">View All Alerts</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings -->
+                    <div class="topbar-item d-none d-sm-flex">
+                        <button class="topbar-link" data-bs-toggle="offcanvas" data-bs-target="#theme-settings-offcanvas" type="button">
+                            <i data-lucide="settings" class="fs-xxl"></i>
+                        </button>
+                    </div>
+
+                    <!-- Light/Dark Mode -->
+                    <div class="topbar-item d-none d-sm-flex">
+                        <button class="topbar-link" id="light-dark-mode" type="button">
+                            <i data-lucide="moon" class="fs-xxl mode-light-moon"></i>
+                            <i data-lucide="sun" class="fs-xxl mode-light-sun"></i>
+                        </button>
+                    </div>
+
+                    <!-- User Dropdown - JEFF ZENGER -->
+                    <div class="topbar-item nav-user">
+                        <div class="dropdown">
+                            <a class="topbar-link dropdown-toggle drop-arrow-none px-2" data-bs-toggle="dropdown" href="#!">
+                                <img src="https://www.ncleg.gov/Members/MemberImage/H/775/High" width="32" class="rounded-circle me-lg-2 d-flex" alt="Jeff Zenger">
+                                <div class="d-lg-flex align-items-center gap-1 d-none">
+                                    <h5 class="my-0">Jeff Zenger</h5>
+                                    <i class="ti ti-chevron-down align-middle"></i>
+                                </div>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <div class="dropdown-header"><h6 class="m-0">Welcome back, Jeff!</h6></div>
+                                <a href="pages-profile.html" class="dropdown-item"><i class="ti ti-user-circle me-2"></i>Profile</a>
+                                <a href="settings.html" class="dropdown-item"><i class="ti ti-settings-2 me-2"></i>Settings</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item text-danger fw-semibold"><i class="ti ti-logout-2 me-2"></i>Log Out</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Topbar End -->
+
+        <!-- Start Main Content -->
+        <div class="content-page">
+            <div class="container-fluid">
+                
+                <!-- Profile Header -->
+                <div class="card mb-3" style="background: linear-gradient(135deg, #cc0000 0%, #990000 100%);">
+                    <div class="card-body py-3 text-white">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <a href="https://www.jeffzenger.com" target="_blank">
+                                    <img src="https://www.ncleg.gov/Members/MemberImage/H/775/High" class="rounded-circle border border-3 border-white" style="width: 80px; height: 80px; object-fit: cover;" alt="Rep. Jeff Zenger">
+                                </a>
+                            </div>
+                            <div class="col">
+                                <h4 class="mb-1"><a href="https://www.jeffzenger.com" target="_blank" class="text-white text-decoration-none">Rep. Jeff Zenger <i class="ti ti-external-link fs-6"></i></a></h4>
+                                <p class="mb-0 small opacity-75">
+                                    <span class="badge bg-white text-danger me-1">R</span>
+                                    NC House District 74 • Forsyth County • Conference Co-Chair
+                                </p>
+                            </div>
+                            <div class="col-auto">
+                                <div class="row text-center g-3">
+                                    <div class="col"><h5 class="mb-0 text-white">$245.8K</h5><small class="opacity-75">Raised</small></div>
+                                    <div class="col"><h5 class="mb-0 text-white">4,567</h5><small class="opacity-75">Donors</small></div>
+                                    <div class="col"><h5 class="mb-0 text-white">156</h5><small class="opacity-75">Volunteers</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Dashboard Content -->
+                <div class="row">
+                    <!-- Activity Feed -->
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0"><i class="ti ti-activity-heartbeat text-danger me-2"></i>Live Activity Feed</h5>
+                                <span class="badge bg-success"><i class="ti ti-live-photo me-1"></i>LIVE</span>
+                            </div>
+                            <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                                <!-- Activity items would be populated here -->
+                                <p class="text-muted">Real-time campaign activity will appear here...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Column -->
+                    <div class="col-lg-3">
+                        <div class="card mb-3">
+                            <div class="card-header py-2 bg-primary text-white">
+                                <h6 class="mb-0"><i class="ti ti-chart-bar me-2"></i>Today</h6>
+                            </div>
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted small">Raised</span>
+                                    <span class="fw-bold text-success">$8,750</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted small">New Donors</span>
+                                    <span class="fw-bold">12</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted small">Emails Opened</span>
+                                    <span class="fw-bold">47</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted small">Event RSVPs</span>
+                                    <span class="fw-bold">8</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header py-2">
+                                <h6 class="mb-0"><i class="ti ti-bolt me-2"></i>Quick Actions</h6>
+                            </div>
+                            <div class="card-body py-2">
+                                <div class="d-grid gap-2">
+                                    <a href="jeff-zenger-donors.html" class="btn btn-primary btn-sm"><i class="ti ti-users me-1"></i>View Donors</a>
+                                    <a href="email-campaign-wizard.html" class="btn btn-outline-primary btn-sm"><i class="ti ti-mail me-1"></i>Email</a>
+                                    <a href="sms-campaign-wizard.html" class="btn btn-outline-success btn-sm"><i class="ti ti-message me-1"></i>SMS</a>
+                                    <a href="rvm-campaign-wizard.html" class="btn btn-outline-info btn-sm"><i class="ti ti-microphone me-1"></i>RVM</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tools Column -->
+                    <div class="col-lg-3">
+                        <div class="card mb-3">
+                            <div class="card-header py-2">
+                                <h6 class="mb-0"><i class="ti ti-apps me-2"></i>Campaign Tools</h6>
+                            </div>
+                            <div class="card-body py-2">
+                                <div class="row g-1">
+                                    <div class="col-6"><a href="#" class="btn btn-outline-primary btn-sm w-100 py-1"><i class="ti ti-mail"></i> Email</a></div>
+                                    <div class="col-6"><a href="#" class="btn btn-outline-success btn-sm w-100 py-1"><i class="ti ti-message"></i> SMS</a></div>
+                                    <div class="col-6"><a href="#" class="btn btn-outline-info btn-sm w-100 py-1"><i class="ti ti-microphone"></i> RVM</a></div>
+                                    <div class="col-6"><a href="#" class="btn btn-outline-warning btn-sm w-100 py-1"><i class="ti ti-printer"></i> Print</a></div>
+                                    <div class="col-6"><a href="#" class="btn btn-outline-secondary btn-sm w-100 py-1"><i class="ti ti-phone"></i> Phone</a></div>
+                                    <div class="col-6"><a href="#" class="btn btn-outline-danger btn-sm w-100 py-1"><i class="ti ti-video"></i> Video</a></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header py-2">
+                                <h6 class="mb-0"><i class="ti ti-share me-2"></i>Online</h6>
+                            </div>
+                            <div class="card-body p-0">
+                                <a href="https://www.jeffzenger.com" target="_blank" class="list-group-item list-group-item-action py-2 small">
+                                    <i class="ti ti-world text-primary me-2"></i>jeffzenger.com
+                                </a>
+                                <a href="https://www.ncleg.gov/Members/Biography/H/775" target="_blank" class="list-group-item list-group-item-action py-2 small">
+                                    <i class="ti ti-building-capitol text-dark me-2"></i>NC Legislature
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Main Content -->
+
+    <!-- Vendor js -->
+    <script src="assets/js/vendors.min.js"></script>
+    <!-- App js -->
+    <script src="assets/js/app.js"></script>
+
+    <style>
+        /* BroyhillGOP Custom Styles - December 31, 2025 */
+        
+        /* Fixed topbar */
+        .app-topbar {
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 1050 !important;
+        }
+        
+        /* Compact search box */
+        .app-search {
+            width: 100px !important;
+            margin-right: 10px !important;
+        }
+        .app-search .form-control {
+            font-size: 11px !important;
+            padding: 5px 25px 5px 10px !important;
+        }
+        
+        /* Evenly spaced dropdown buttons */
+        .topbar-item.d-none.d-lg-flex {
+            gap: 4px !important;
+        }
+        .topbar-item.d-none.d-lg-flex .btn-sm {
+            padding: 4px 8px !important;
+            font-size: 12px !important;
+        }
+        
+        /* Ensure topbar doesn't overflow */
+        .topbar-menu {
+            padding-right: 10px !important;
+        }
+        
+        /* Compact user name */
+        .nav-user h5 {
+            font-size: 13px !important;
+            max-width: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Content margins */
+        .content-page {
+            margin-right: 10px !important;
+            padding-right: 10px !important;
+        }
+    </style>
+</body>
+</html>
