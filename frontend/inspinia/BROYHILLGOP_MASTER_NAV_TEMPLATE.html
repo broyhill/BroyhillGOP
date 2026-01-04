@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BroyhillGOP Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c41e3a;
+            --primary-hover: #a01830;
+            --primary-light: rgba(196, 30, 58, 0.08);
+            --secondary: #1a3a5c;
+            --accent: #d4af37;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --border: #e5e7eb;
+            --overlay: rgba(0, 0, 0, 0.5);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --transition: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+        }
+
+        /* ============================================
+           HEADER - Fixed Top Bar
+           ============================================ */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span { color: var(--primary); }
+
+        .header-center {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-stat {
+            text-align: center;
+            color: white;
+        }
+
+        .header-stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .header-stat-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .header-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .header-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .header-btn.secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .nav-trigger {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s var(--transition);
+        }
+
+        .nav-trigger:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .nav-trigger i {
+            font-size: 18px;
+            transition: transform 0.3s var(--transition);
+        }
+
+        .nav-trigger.active i {
+            transform: rotate(90deg);
+        }
+
+        /* ============================================
+           OVERLAY
+           ============================================ */
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--overlay);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s var(--transition), visibility 0.3s var(--transition);
+            z-index: 98;
+        }
+
+        .nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ============================================
+           SIDE PANEL - Half Page Navigation
+           ============================================ */
+        .nav-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 50%;
+            max-width: 600px;
+            height: 100vh;
+            background: var(--bg-white);
+            transform: translateX(100%);
+            transition: transform 0.4s var(--transition);
+            z-index: 99;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-panel.active {
+            transform: translateX(0);
+        }
+
+        .nav-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border);
+            height: 64px;
+            background: var(--secondary);
+        }
+
+        .nav-header-title {
+            font-weight: 600;
+            color: white;
+            font-size: 16px;
+        }
+
+        .nav-close {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            cursor: pointer;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            color: white;
+            transition: background 0.2s var(--transition);
+        }
+
+        .nav-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* ============================================
+           NAVIGATION CONTENT
+           ============================================ */
+        .nav-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 0;
+        }
+
+        .nav-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .nav-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .nav-content::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .nav-content::-webkit-scrollbar-thumb:hover {
+            background: #c0c0c0;
+        }
+
+        .nav-section {
+            padding: 0;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            padding: 16px 24px 8px;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-section-title i {
+            color: var(--primary);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 11px 24px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.2s var(--transition);
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+            gap: 12px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-light);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-item-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: var(--bg-light);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .nav-item:hover .nav-item-icon {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-item-label {
+            flex: 1;
+        }
+
+        .nav-item-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .nav-item-badge.new { background: var(--success); }
+        .nav-item-badge.hot { background: #ef4444; }
+        .nav-item-badge.beta { background: var(--warning); }
+
+        .nav-item-eco {
+            font-size: 10px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Submenu */
+        .nav-item.has-submenu {
+            cursor: pointer;
+        }
+
+        .nav-item-toggle {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s var(--transition);
+        }
+
+        .nav-item.has-submenu.active .nav-item-toggle {
+            transform: rotate(180deg);
+        }
+
+        .nav-submenu {
+            display: none;
+            max-height: 0;
+            overflow: hidden;
+            background: rgba(248, 249, 250, 0.7);
+            transition: max-height 0.3s var(--transition);
+        }
+
+        .nav-submenu.active {
+            display: block;
+            max-height: 1000px;
+        }
+
+        .nav-submenu .nav-item {
+            padding-left: 52px;
+            font-size: 13px;
+        }
+
+        .nav-submenu .nav-item:hover {
+            padding-left: 52px;
+        }
+
+        /* ============================================
+           NAVIGATION FOOTER
+           ============================================ */
+        .nav-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-light);
+        }
+
+        .nav-footer-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .nav-footer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--secondary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .nav-footer-info {
+            flex: 1;
+        }
+
+        .nav-footer-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .nav-footer-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .nav-footer-links {
+            display: flex;
+            gap: 16px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-footer-link {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-footer-link:hover {
+            color: var(--primary);
+        }
+
+        /* ============================================
+           MAIN CONTENT AREA
+           ============================================ */
+        main {
+            margin-top: 64px;
+            padding: 30px;
+            min-height: calc(100vh - 64px);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1024px) {
+            .nav-panel {
+                width: 70%;
+                max-width: 500px;
+            }
+            
+            .header-center {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-panel {
+                width: 100%;
+                max-width: none;
+            }
+
+            .header-btn.secondary {
+                display: none;
+            }
+
+            main {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ============================================
+         HEADER
+         ============================================ -->
+    <header>
+        <a href="/dashboard" class="logo">
+            <i class="fas fa-flag-usa"></i>
+            Broyhill<span>GOP</span>
+        </a>
+        
+        <div class="header-center">
+            <div class="header-stat">
+                <div class="header-stat-value">130,247</div>
+                <div class="header-stat-label">Total Donors</div>
+            </div>
+            <div class="header-stat">
+                <div class="header-stat-value">$2.4M</div>
+                <div class="header-stat-label">YTD Raised</div>
+            </div>
+            <div class="header-stat">
+                <div class="header-stat-value">1,247</div>
+                <div class="header-stat-label">Volunteers</div>
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <button class="header-btn">
+                <i class="fas fa-plus me-1"></i> New Campaign
+            </button>
+            <button class="header-btn secondary">
+                <i class="fas fa-bell"></i>
+            </button>
+            <button class="nav-trigger" aria-label="Open navigation">
+                <i class="fas fa-th"></i>
+                <span>All Ecosystems</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ============================================
+         OVERLAY
+         ============================================ -->
+    <div class="nav-overlay"></div>
+
+    <!-- ============================================
+         NAVIGATION PANEL
+         ============================================ -->
+    <nav class="nav-panel">
+        <div class="nav-header">
+            <span class="nav-header-title"><i class="fas fa-th me-2"></i> Platform Navigation</span>
+            <button class="nav-close" aria-label="Close navigation">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="nav-content">
+            <!-- DASHBOARD & BRAIN -->
+            <div class="nav-section">
+                <div class="nav-section-title"><i class="fas fa-brain"></i> Command Center</div>
+                <a href="/dashboard" class="nav-item active">
+                    <div class="nav-item-icon"><i class="fas fa-home"></i></div>
+                    <span class="nav-item-label">Dashboard</span>
+                </a>
+                <a href="/e20-brain" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-brain"></i></div>
+                    <span class="nav-item-label">E20 Intelligence Brain</span>
+                    <span class="nav-item-badge hot">CORE</span>
+                </a>
+                <a href="/e40-control-panel" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-sliders-h"></i></div>
+                    <span class="nav-item-label">E40 Control Panel</span>
+                </a>
+                <a href="/e27-realtime" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-chart-line"></i></div>
+                    <span class="nav-item-label">E27 Realtime Dashboard</span>
+                </a>
+            </div>
+
+            <!-- DONOR MANAGEMENT -->
+            <div class="nav-section">
+                <div class="nav-section-title"><i class="fas fa-hand-holding-usd"></i> Donor Management</div>
+                <a href="/e00-datahub" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-database"></i></div>
+                    <span class="nav-item-label">E00 DataHub</span>
+                </a>
+                <a href="/e01-donor-intelligence" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-user-chart"></i></div>
+                    <span class="nav-item-label">E01 Donor Intelligence</span>
+                </a>
+                <a href="/e02-donation-processing" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-credit-card"></i></div>
+                    <span class="nav-item-label">E02 Donation Processing</span>
+                </a>
+                <a href="/e25-donor-portal" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-user-circle"></i></div>
+                    <span class="nav-item-label">E25 Donor Portal</span>
+                </a>
+                <a href="/e39-p2p-fundraising" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-users"></i></div>
+                    <span class="nav-item-label">E39 P2P Fundraising</span>
+                </a>
+            </div>
+
+            <!-- CAMPAIGN OPERATIONS -->
+            <div class="nav-section">
+                <div class="nav-section-title"><i class="fas fa-bullhorn"></i> Campaign Operations</div>
+                <a href="/e03-candidate-profiles" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-id-card"></i></div>
+                    <span class="nav-item-label">E03 Candidate Profiles</span>
+                </a>
+                <a href="/e12-campaign-ops" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-project-diagram"></i></div>
+                    <span class="nav-item-label">E12 Campaign Operations</span>
+                </a>
+                <a href="/e24-candidate-portal" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-user-tie"></i></div>
+                    <span class="nav-item-label">E24 Candidate Portal</span>
+                </a>
+                <a href="/e41-campaign-builder" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-magic"></i></div>
+                    <span class="nav-item-label">E41 Campaign Builder</span>
+                    <span class="nav-item-badge new">NEW</span>
+                </a>
+                <a href="/e11-budget" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-wallet"></i></div>
+                    <span class="nav-item-label">E11 Budget Management</span>
+                </a>
+                <a href="/e28-financial-dashboard" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-chart-pie"></i></div>
+                    <span class="nav-item-label">E28 Financial Dashboard</span>
+                </a>
+            </div>
+
+            <!-- VOLUNTEERS & ACTIVISTS -->
+            <div class="nav-section">
+                <div class="nav-section-title"><i class="fas fa-hands-helping"></i> Volunteers & Activists</div>
+                <a href="/e05-volunteer-management" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-user-friends"></i></div>
+                    <span class="nav-item-label">E05 Volunteer Management</span>
+                </a>
+                <a href="/e26-volunteer-portal" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-hand-paper"></i></div>
+                    <span class="nav-item-label">E26 Volunteer Portal</span>
+                </a>
+                <a href="/e04-activist-network" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-network-wired"></i></div>
+                    <span class="nav-item-label">E04 Activist Network</span>
+                </a>
+                <a href="/e38-volunteer-coordination" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-tasks"></i></div>
+                    <span class="nav-item-label">E38 Volunteer Coordination</span>
+                </a>
+            </div>
+
+            <!-- COMMUNICATION CHANNELS -->
+            <div class="nav-section">
+                <div class="nav-section-title"><i class="fas fa-envelope"></i> Communication Channels</div>
+                <div class="nav-item has-submenu">
+                    <div class="nav-item-icon"><i class="fas fa-paper-plane"></i></div>
+                    <span class="nav-item-label">Digital Channels</span>
+                    <div class="nav-item-toggle"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div class="nav-submenu">
+                    <a href="/e30-email" class="nav-item">
+                        <span class="nav-item-label">E30 Email Marketing</span>
+                    </a>
+                    <a href="/e31-sms" class="nav-item">
+                        <span class="nav-item-label">E31 SMS/Text Banking</span>
+                    </a>
+                    <a href="/e32-phone-banking" class="nav-item">
+                        <span class="nav-item-label">E32 Phone Banking</span>
+                    </a>
+                    <a href="/e36-messenger" class="nav-item">
+                        <span class="nav-item-label">E36 Messenger Integration</span>
+                    </a>
+                    <a href="/e35-auto-response" class="nav-item">
+                        <span class="nav-item-label">E35 Interactive Comm Hub</span>
+                    </a>
+                </div>
+                
+                <div class="nav-item has-submenu">
+                    <div class="nav-item-icon"><i class="fas fa-mail-bulk"></i></div>
+                    <span class="nav-item-label">Print & Mail</span>
+                    <div class="nav-item-toggle"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div class="nav-submenu">
+                    <a href="/e33-direct-mail" class="nav-item">
+                        <span class="nav-item-label">E33 Direct Mail</span>
+                    </a>
+                    <a href="/e14-print-production" class="nav-item">
+                        <span class="nav-item-label">E14 Print Production</span>
+                    </a>
+                    <a href="/e18-print-advertising" class="nav-item">
+                        <span class="nav-item-label">E18 Print/VDP Advertising</span>
+                    </a>
+                </div>
+
+                <div class="nav-item has-submenu">
+                    <div class="nav-item-icon"><i class="fas fa-broadcast-tower"></i></div>
+                    <span class="nav-item-label">Broadcast & Voice</span>
+                    <div class="nav-item-toggle"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div class="nav-submenu">
+                    <a href="/e16-tv-radio" class="nav-item">
+                        <span class="nav-item-label">E16 TV/Radio</span>
+                    </a>
+                    <a href="/e17-rvm" class="nav-item">
+                        <span class="nav-item-label">E17 Ringless Voicemail</span>
+                    </a>
+                    <a href="/e46-broadcast-hub" class="nav-item">
+                        <span class="nav-item-label">E46 Broadcast Hub</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- CONTENT & AI -->
+            <div class="nav-section">
+                <div class="nav-section-title"><i class="fas fa-robot"></i> Content & AI</div>
+                <a href="/e08-communications-library" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-book"></i></div>
+                    <span class="nav-item-label">E08 Communications Library</span>
+                </a>
+                <a href="/e09-content-ai" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-pen-fancy"></i></div>
+                    <span class="nav-item-label">E09 Content Creation AI</span>
+                </a>
+                <a href="/e13-ai-hub" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-microchip"></i></div>
+                    <span class="nav-item-label">E13 AI Hub</span>
+                </a>
+                <a href="/e19-personalization" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-user-cog"></i></div>
+                    <span class="nav-item-label">E19 Personalization Engine</span>
+                </a>
+                <a href="/e47-script-generator" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-scroll"></i></div>
+                    <span class="nav-item-label">E47 AI Script Generator</span>
+                </a>
+                <a href="/e48-communication-dna" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-dna"></i></div>
+                    <span class="nav-item-label">E48 Communication DNA</span>
+                </a>
+            </div>
+
+            <!-- VIDEO & MEDIA -->
+            <div class="nav-section">
+                <div class="nav-section-title"><i class="fas fa-video"></i> Video & Media</div>
+                <a href="/e45-video-studio" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-film"></i></div>
+                    <span class="nav-item-label">E45 Video Studio</span>
+                </a>
+                <a href="/e23-creative-3d" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-cube"></i></div>
+                    <span class="nav-item-label">E23 Creative Asset 3D</span>
+                </a>
+                <a href="/e49-interview-system" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-microphone"></i></div>
+                    <span class="nav-item-label">E49 Interview System</span>
+                </a>
+                <a href="/e50-gpu-orchestrator" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-server"></i></div>
+                    <span class="nav-item-label">E50 GPU Orchestrator</span>
+                    <span class="nav-item-badge beta">BETA</span>
+                </a>
+            </div>
+
+            <!-- EVENTS -->
+            <div class="nav-section">
+                <div class="nav-section-title"><i class="fas fa-calendar-alt"></i> Events</div>
+                <a href="/e34-events" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-calendar-check"></i></div>
+                    <span class="nav-item-label">E34 Events</span>
+                </a>
+                <a href="/e37-event-management" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-clipboard-list"></i></div>
+                    <span class="nav-item-label">E37 Event Management</span>
+                </a>
+                <a href="/e54-calendar-scheduling" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-clock"></i></div>
+                    <span class="nav-item-label">E54 Calendar Scheduling</span>
+                </a>
+            </div>
+
+            <!-- ANALYTICS & INTELLIGENCE -->
+            <div class="nav-section">
+                <div class="nav-section-title"><i class="fas fa-chart-bar"></i> Analytics & Intelligence</div>
+                <a href="/e06-analytics" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-chart-area"></i></div>
+                    <span class="nav-item-label">E06 Analytics Engine</span>
+                </a>
+                <a href="/e21-ml-clustering" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-project-diagram"></i></div>
+                    <span class="nav-item-label">E21 ML Clustering</span>
+                </a>
+                <a href="/e22-ab-testing" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-flask"></i></div>
+                    <span class="nav-item-label">E22 A/B Testing Engine</span>
+                </a>
+                <a href="/e29-analytics-dashboard" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    <span class="nav-item-label">E29 Analytics Dashboard</span>
+                </a>
+                <a href="/e42-news-intelligence" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-newspaper"></i></div>
+                    <span class="nav-item-label">E42 News Intelligence</span>
+                </a>
+            </div>
+
+            <!-- COMPLIANCE & OPERATIONS -->
+            <div class="nav-section">
+                <div class="nav-section-title"><i class="fas fa-shield-alt"></i> Compliance & Operations</div>
+                <a href="/e07-issue-tracking" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <span class="nav-item-label">E07 Issue Tracking</span>
+                </a>
+                <a href="/e10-compliance" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-balance-scale"></i></div>
+                    <span class="nav-item-label">E10 Compliance Manager</span>
+                </a>
+                <a href="/e44-vendor-compliance" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-user-shield"></i></div>
+                    <span class="nav-item-label">E44 Vendor Compliance</span>
+                </a>
+                <a href="/e15-contact-directory" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-address-book"></i></div>
+                    <span class="nav-item-label">E15 Contact Directory</span>
+                </a>
+                <a href="/e53-document-generation" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-file-alt"></i></div>
+                    <span class="nav-item-label">E53 Document Generation</span>
+                </a>
+            </div>
+
+            <!-- ADVOCACY & TRAINING -->
+            <div class="nav-section">
+                <div class="nav-section-title"><i class="fas fa-bullhorn"></i> Advocacy & Training</div>
+                <a href="/e43-advocacy-tools" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-fist-raised"></i></div>
+                    <span class="nav-item-label">E43 Advocacy Tools</span>
+                </a>
+                <a href="/e11-training-lms" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <span class="nav-item-label">E11 Training LMS</span>
+                </a>
+            </div>
+
+            <!-- INTEGRATION & API -->
+            <div class="nav-section">
+                <div class="nav-section-title"><i class="fas fa-plug"></i> Integration & API</div>
+                <a href="/e51-nexus" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-sitemap"></i></div>
+                    <span class="nav-item-label">E51 Nexus</span>
+                </a>
+                <a href="/e52-messaging-center" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-comments"></i></div>
+                    <span class="nav-item-label">E52 Messaging Center</span>
+                </a>
+                <a href="/e55-api-gateway" class="nav-item">
+                    <div class="nav-item-icon"><i class="fas fa-code"></i></div>
+                    <span class="nav-item-label">E55 API Gateway</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="nav-footer">
+            <div class="nav-footer-user">
+                <div class="nav-footer-avatar">EB</div>
+                <div class="nav-footer-info">
+                    <div class="nav-footer-name">Eddie Broyhill</div>
+                    <div class="nav-footer-role">NC Republican Committeeman</div>
+                </div>
+            </div>
+            <div class="nav-footer-links">
+                <a href="/settings" class="nav-footer-link">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+                <a href="/help" class="nav-footer-link">
+                    <i class="fas fa-question-circle"></i> Help
+                </a>
+                <a href="/logout" class="nav-footer-link">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================
+         MAIN CONTENT (PLACEHOLDER)
+         ============================================ -->
+    <main>
+        <h1 style="margin-bottom: 24px;">Dashboard</h1>
+        <p style="color: var(--text-secondary);">Click "All Ecosystems" in the header to access the platform navigation panel.</p>
+        
+        <!-- YOUR ECOSYSTEM CONTENT GOES HERE -->
+        
+    </main>
+
+    <!-- ============================================
+         JAVASCRIPT
+         ============================================ -->
+    <script>
+        const navTrigger = document.querySelector('.nav-trigger');
+        const navPanel = document.querySelector('.nav-panel');
+        const navOverlay = document.querySelector('.nav-overlay');
+        const navClose = document.querySelector('.nav-close');
+        const navItems = document.querySelectorAll('.nav-item.has-submenu');
+
+        function openNav() {
+            navPanel.classList.add('active');
+            navOverlay.classList.add('active');
+            navTrigger.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeNav() {
+            navPanel.classList.remove('active');
+            navOverlay.classList.remove('active');
+            navTrigger.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        navTrigger.addEventListener('click', openNav);
+        navClose.addEventListener('click', closeNav);
+        navOverlay.addEventListener('click', closeNav);
+
+        // Handle submenu toggles
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const submenu = item.nextElementSibling;
+                if (submenu && submenu.classList.contains('nav-submenu')) {
+                    // Close other submenus
+                    document.querySelectorAll('.nav-submenu.active').forEach(menu => {
+                        if (menu !== submenu) {
+                            menu.classList.remove('active');
+                            menu.previousElementSibling.classList.remove('active');
+                        }
+                    });
+                    submenu.classList.toggle('active');
+                    item.classList.toggle('active');
+                }
+            });
+        });
+
+        // Close nav on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeNav();
+            }
+        });
+
+        // Close nav on link click
+        document.querySelectorAll('.nav-item:not(.has-submenu)').forEach(link => {
+            link.addEventListener('click', () => {
+                setTimeout(closeNav, 150);
+            });
+        });
+
+        // Set active nav item based on current URL
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav-item[href]').forEach(item => {
+            if (item.getAttribute('href') === currentPath) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
