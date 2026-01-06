@@ -1,0 +1,10 @@
+{
+  "input": {
+    "image_url": "https://ncnewsline.com/wp-content/uploads/2024/03/Boliek-Campaign-Photo.png",
+    "audio_url": "https://example.com/test_audio.wav",
+    "prompt": "A confident politician speaking at a podium with natural hand gestures",
+    "num_steps": 30,
+    "guidance_scale": 4.5,
+    "audio_scale": 3.0
+  }
+}
