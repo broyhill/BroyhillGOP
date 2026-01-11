@@ -502,6 +502,10 @@ class IntelligenceBrain:
         if 'gotv' in event_type:
             channels.extend(['phone', 'sms', 'rvm'])
         
+        # Personalized video for high-value donors
+        if 'major_donor' in event_type or 'thank_you' in event_type:
+            channels.append('video')
+        
         return list(set(channels))
     
     def _select_targets(self, event_data: Dict, channels: List[str]) -> List[Dict]:
@@ -525,7 +529,8 @@ class IntelligenceBrain:
             'rvm': 0.03,
             'social': 0.05,
             'tv': 500,
-            'radio': 100
+            'radio': 100,
+            'video': 0.25
         }
         
         total = 0
