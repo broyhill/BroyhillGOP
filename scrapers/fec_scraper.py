@@ -31,7 +31,7 @@ FEC_API_KEY = os.getenv("FEC_API_KEY", "DEMO_KEY")  # Get real key from fec.gov
 FEC_BASE_URL = "https://api.open.fec.gov/v1"
 
 # Supabase Configuration
-SUPABASE_URL = os.getenv("SUPABASE_URL", "postgresql://postgres.isbgjpnbocdkeslofota:poSkon-hurpok-6wuzwo@aws-0-us-east-1.pooler.supabase.com:6543/postgres")
+SUPABASE_URL = os.getenv("SUPABASE_URL", "postgresql://postgres.nqkoprtmgewchlynjxqz:poSkon-hurpok-6wuzwo@aws-0-us-east-1.pooler.supabase.com:6543/postgres")
 
 # Scraper Configuration
 PROGRESS_FILE = "/root/fec_progress.json"
@@ -99,6 +99,7 @@ def get_republican_candidates(election_cycle: int, page: int = 1) -> Dict:
     params = {
         'api_key': FEC_API_KEY,
         'party': 'REP',  # REPUBLICANS ONLY
+         'state': 'NC', # NC CANDIDATES ONLY
         'cycle': election_cycle,
         'per_page': 100,
         'page': page,
