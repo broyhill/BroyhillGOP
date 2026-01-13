@@ -34,7 +34,7 @@ NCBOE_SEARCH_URL = f"{NCBOE_BASE_URL}/CFTxnLkup"
 NCBOE_DOWNLOAD_URL = f"{NCBOE_BASE_URL}/CFOrgLkup/ExportDetailResults"
 
 # Supabase Configuration
-SUPABASE_URL = os.getenv("SUPABASE_URL", "postgresql://postgres.isbgjpnbocdkeslofota:poSkon-hurpok-6wuzwo@aws-0-us-east-1.pooler.supabase.com:6543/postgres")
+SUPABASE_URL = os.getenv("SUPABASE_URL", "postgresql://postgres.nqkoprtmgewchlynjxqz:poSkon-hurpok-6wuzwo@aws-0-us-east-1.pooler.supabase.com:6543/postgres")
 
 # Scraper Configuration
 PROGRESS_FILE = "/root/ncboe_progress.json"
