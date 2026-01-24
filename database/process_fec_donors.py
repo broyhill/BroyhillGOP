@@ -21,7 +21,7 @@ from collections import defaultdict
 
 # Configuration
 SUPABASE_URL = "https://isbgjpnbocdkeslofota.supabase.co"
-SUPABASE_KEY = "your-anon-key-here"  # Replace with actual key
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzYmdqcG5ib2Nka2VzbG9mb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3MDc3MDcsImV4cCI6MjA4MDI4MzcwN30.pSF0-C-QOklmDWtbexUvnFphuz_bFTdF4INaBMSW1SM"  # Replace with actual key
 DOWNLOADS_PATH = Path.home() / "Downloads"
 BATCH_SIZE = 1000
 
