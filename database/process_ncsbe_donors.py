@@ -203,6 +203,14 @@ def transform_to_donorsnew(ncsbe_records: list) -> list:
             'isdonor': True,
             'sourcencsbe': True,
             'rawncsbe': json.dumps(transactions[:10]),
+                        'committeessupported': list(set(tx.get('Committee Name', '') for tx in transactions if tx.get('Committee Name'))),
+            'candidatessupported': list(set(tx.get('Candidate/Referendum Name', '') for tx in transactions if tx.get('Candidate/Referendum Name'))),
+            'committeedonations': {  # Amount donated to each committee
+                comm: sum(float(tx.get('Amount', '0').replace('$', '').replace(',', '')) 
+                         for tx in transactions 
+                         if tx.get('Committee Name') == comm)
+                for comm in set(tx.get('Committee Name', '') for tx in transactions if tx.get('Committee Name'))
+            },
             'dedupekeynamezip': dedupe_key,
             'createdat': datetime.now().isoformat(),
             'updatedat': datetime.now().isoformat()
