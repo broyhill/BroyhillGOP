@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BroyhillGOP | Ecosystem Control Panel</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --navy: #1e293b;
+            --navy-light: #334155;
+            --blue: #3b82f6;
+            --blue-hover: #2563eb;
+            --green: #10b981;
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            --purple: #8b5cf6;
+            --cyan: #06b6d4;
+            --gray-bg: #f1f5f9;
+            --white: #ffffff;
+            --text: #334155;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-bg);
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--navy);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-header h1 {
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .sidebar-header .subtitle {
+            color: var(--blue);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        .sidebar-search {
+            padding: 16px 24px;
+        }
+        
+        .sidebar-search input {
+            width: 100%;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: var(--navy-light);
+            color: white;
+            font-size: 13px;
+        }
+        
+        .sidebar-search input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .nav-section {
+            padding: 8px 0;
+        }
+        
+        .nav-section-title {
+            padding: 12px 24px 8px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.4);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
+        
+        .nav-item.active {
+            background: rgba(59,130,246,0.1);
+            color: var(--blue);
+            border-left-color: var(--blue);
+        }
+        
+        .nav-item i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 14px;
+        }
+        
+        .nav-item .badge {
+            margin-left: auto;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .nav-item .badge.live { background: var(--green); color: white; }
+        .nav-item .badge.new { background: var(--red); color: white; }
+        .nav-item .badge.count { background: var(--navy-light); color: rgba(255,255,255,0.7); }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+        
+        .topbar {
+            background: white;
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .topbar h2 {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .topbar-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--blue);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--blue-hover);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--gray-bg);
+        }
+        
+        .content {
+            padding: 32px;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border);
+        }
+        
+        .stat-card .label {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+        
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+        
+        .stat-card .change {
+            font-size: 12px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .stat-card .change.up { color: var(--green); }
+        .stat-card .change.down { color: var(--red); }
+        
+        /* Ecosystem Directory */
+        .directory-section {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+        
+        .directory-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .directory-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .directory-header h3 i {
+            color: var(--blue);
+        }
+        
+        .directory-header .count {
+            background: var(--gray-bg);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .ecosystem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            padding: 24px;
+        }
+        
+        .eco-card {
+            background: var(--gray-bg);
+            border-radius: 10px;
+            padding: 16px;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .eco-card:hover {
+            background: white;
+            border-color: var(--blue);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .eco-card.expanded {
+            grid-column: span 2;
+            background: white;
+            border-color: var(--blue);
+        }
+        
+        .eco-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .eco-id {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--blue);
+            background: rgba(59,130,246,0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        
+        .eco-status {
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .eco-status.online { background: #dcfce7; color: #166534; }
+        .eco-status.offline { background: #fee2e2; color: #991b1b; }
+        .eco-status.pending { background: #fef3c7; color: #92400e; }
+        
+        .eco-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .eco-card p {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+        
+        .eco-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .eco-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--green);
+        }
+        
+        .eco-toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+        
+        .eco-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .eco-toggle .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+        
+        .eco-toggle .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        
+        .eco-toggle input:checked + .slider {
+            background-color: var(--green);
+        }
+        
+        .eco-toggle input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+        
+        /* Expanded Features */
+        .eco-features {
+            display: none;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .eco-card.expanded .eco-features {
+            display: block;
+        }
+        
+        .feature-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .feature-row:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-info {
+            flex: 1;
+        }
+        
+        .feature-info .name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .feature-info .desc {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+        
+        /* Social Media Section */
+        .social-section {
+            background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+            border-radius: 12px;
+            padding: 24px;
+            color: white;
+            margin-bottom: 24px;
+        }
+        
+        .social-section h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        
+        .social-section p {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .social-platforms {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .platform-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 16px 20px;
+            flex: 1;
+            backdrop-filter: blur(10px);
+        }
+        
+        .platform-card i {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .platform-card .name {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .platform-card .stats {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        
+        /* Pipeline Visualization */
+        .pipeline-section {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .pipeline-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+        }
+        
+        .pipeline-node {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .pipeline-node .icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gray-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 24px;
+        }
+        
+        .pipeline-node .icon.active {
+            background: var(--blue);
+            color: white;
+        }
+        
+        .pipeline-node .label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .pipeline-node .sublabel {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+        
+        .pipeline-arrow {
+            font-size: 20px;
+            color: var(--text-light);
+        }
+        
+        /* Activity Log */
+        .activity-section {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        
+        .activity-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .activity-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .activity-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 16px;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .activity-icon.news { background: #dbeafe; color: #1d4ed8; }
+        .activity-icon.social { background: #f3e8ff; color: #7c3aed; }
+        .activity-icon.video { background: #dcfce7; color: #166534; }
+        .activity-icon.brain { background: #fef3c7; color: #92400e; }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-content .title {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .activity-content .desc {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .activity-time {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar { width: 60px; }
+            .sidebar-header h1, .sidebar-header .subtitle, 
+            .sidebar-search, .nav-section-title, 
+            .nav-item span, .nav-item .badge { display: none; }
+            .nav-item { justify-content: center; padding: 16px; }
+            .nav-item i { margin: 0; font-size: 18px; }
+            .main-content { margin-left: 60px; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h1>BroyhillGOP</h1>
+            <div class="subtitle">Ecosystem Control Panel v2.0</div>
+        </div>
+        
+        <div class="sidebar-search">
+            <input type="text" placeholder="Search ecosystems..." id="searchInput">
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">Dashboard</div>
+            <a class="nav-item active" onclick="showSection('overview')">
+                <i class="fas fa-home"></i>
+                <span>Overview</span>
+            </a>
+            <a class="nav-item" onclick="showSection('directory')">
+                <i class="fas fa-th-large"></i>
+                <span>Ecosystem Directory</span>
+                <span class="badge count">57</span>
+            </a>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">Core Systems</div>
+            <a class="nav-item" onclick="showSection('brain')">
+                <i class="fas fa-brain"></i>
+                <span>E20 Intelligence Brain</span>
+                <span class="badge live">LIVE</span>
+            </a>
+            <a class="nav-item" onclick="showSection('social')">
+                <i class="fas fa-share-alt"></i>
+                <span>E19 Social Media</span>
+                <span class="badge live">LIVE</span>
+            </a>
+            <a class="nav-item" onclick="showSection('news')">
+                <i class="fas fa-newspaper"></i>
+                <span>E42 News Intel</span>
+                <span class="badge live">LIVE</span>
+            </a>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">AI Production</div>
+            <a class="nav-item" onclick="showSection('video')">
+                <i class="fas fa-video"></i>
+                <span>E45 Video Studio</span>
+            </a>
+            <a class="nav-item" onclick="showSection('voice')">
+                <i class="fas fa-microphone"></i>
+                <span>E47 Voice Engine</span>
+            </a>
+            <a class="nav-item" onclick="showSection('synthesis')">
+                <i class="fas fa-magic"></i>
+                <span>E48 Video Synthesis</span>
+            </a>
+            <a class="nav-item" onclick="showSection('broadcast')">
+                <i class="fas fa-broadcast-tower"></i>
+                <span>E46 Broadcast Hub</span>
+            </a>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">Channels</div>
+            <a class="nav-item" onclick="showSection('email')">
+                <i class="fas fa-envelope"></i>
+                <span>E30 Email</span>
+            </a>
+            <a class="nav-item" onclick="showSection('sms')">
+                <i class="fas fa-sms"></i>
+                <span>E31 SMS</span>
+            </a>
+            <a class="nav-item" onclick="showSection('phone')">
+                <i class="fas fa-phone"></i>
+                <span>E32 Phone Banking</span>
+            </a>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">Intelligence</div>
+            <a class="nav-item" onclick="showSection('donor')">
+                <i class="fas fa-hand-holding-usd"></i>
+                <span>E1 Donor Intelligence</span>
+            </a>
+            <a class="nav-item" onclick="showSection('volunteer')">
+                <i class="fas fa-users"></i>
+                <span>E4 Activist Network</span>
+            </a>
+            <a class="nav-item" onclick="showSection('analytics')">
+                <i class="fas fa-chart-line"></i>
+                <span>E6 Analytics</span>
+            </a>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">Settings</div>
+            <a class="nav-item" onclick="showSection('settings')">
+                <i class="fas fa-cog"></i>
+                <span>Configuration</span>
+            </a>
+            <a class="nav-item" onclick="showSection('api')">
+                <i class="fas fa-key"></i>
+                <span>API Keys</span>
+            </a>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="topbar">
+            <h2>
+                <i class="fas fa-rocket" style="color: var(--blue);"></i>
+                Ecosystem Command Center
+            </h2>
+            <div class="topbar-actions">
+                <button class="btn btn-secondary">
+                    <i class="fas fa-sync"></i> Refresh
+                </button>
+                <button class="btn btn-primary" onclick="deployAll()">
+                    <i class="fas fa-upload"></i> Deploy All
+                </button>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="label">Total Ecosystems</div>
+                    <div class="value">57</div>
+                    <div class="change up"><i class="fas fa-arrow-up"></i> 3 new this week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Platform Value</div>
+                    <div class="value">$4.25M</div>
+                    <div class="change up"><i class="fas fa-arrow-up"></i> +$175K (E56)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Active Events/Day</div>
+                    <div class="value">110M</div>
+                    <div class="change">E20 Brain processing</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Social Posts/Day</div>
+                    <div class="value">10K+</div>
+                    <div class="change up"><i class="fas fa-arrow-up"></i> 5,000 candidates</div>
+                </div>
+            </div>
+            
+            <!-- Social Media Pipeline -->
+            <div class="social-section">
+                <h3><i class="fas fa-share-alt"></i> Social Media Automation Pipeline</h3>
+                <p>E42 News → E20 Brain → E47 Voice → E48 Video → E19 Social</p>
+                <div class="social-platforms">
+                    <div class="platform-card">
+                        <i class="fab fa-facebook"></i>
+                        <div class="name">Facebook</div>
+                        <div class="stats">25 posts/day max • 20min spacing</div>
+                    </div>
+                    <div class="platform-card">
+                        <i class="fab fa-twitter"></i>
+                        <div class="name">Twitter/X</div>
+                        <div class="stats">100 posts/day • API v2</div>
+                    </div>
+                    <div class="platform-card">
+                        <i class="fab fa-instagram"></i>
+                        <div class="name">Instagram</div>
+                        <div class="stats">Graph API • Reels ready</div>
+                    </div>
+                    <div class="platform-card">
+                        <i class="fab fa-linkedin"></i>
+                        <div class="name">LinkedIn</div>
+                        <div class="stats">20 posts/day • Company pages</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pipeline Visualization -->
+            <div class="pipeline-section">
+                <h3><i class="fas fa-project-diagram"></i> AI Video Pipeline Flow</h3>
+                <div class="pipeline">
+                    <div class="pipeline-node">
+                        <div class="icon active"><i class="fas fa-newspaper"></i></div>
+                        <div class="label">E42 News</div>
+                        <div class="sublabel">Crisis Detection</div>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-node">
+                        <div class="icon active"><i class="fas fa-brain"></i></div>
+                        <div class="label">E20 Brain</div>
+                        <div class="sublabel">GO/NO-GO</div>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-node">
+                        <div class="icon active"><i class="fas fa-microphone"></i></div>
+                        <div class="label">E47 Voice</div>
+                        <div class="sublabel">Chatterbox TTS</div>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-node">
+                        <div class="icon active"><i class="fas fa-magic"></i></div>
+                        <div class="label">E48 Video</div>
+                        <div class="sublabel">Hallo/Wav2Lip</div>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-node">
+                        <div class="icon active"><i class="fas fa-share-alt"></i></div>
+                        <div class="label">E19 Social</div>
+                        <div class="sublabel">Multi-Platform</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- E19 Social Media Controls -->
+            <div class="directory-section">
+                <div class="directory-header">
+                    <h3><i class="fas fa-sliders-h"></i> E19 Social Media Controls</h3>
+                    <span class="count">12 Features</span>
+                </div>
+                <div class="ecosystem-grid">
+                    <div class="eco-card" onclick="toggleExpand(this)">
+                        <div class="eco-card-header">
+                            <span class="eco-id">AUTOMATION</span>
+                            <span class="eco-status online">ACTIVE</span>
+                        </div>
+                        <h4>Auto-Generate Posts</h4>
+                        <p>AI generates social posts from news events</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">Enabled</span>
+                            <label class="eco-toggle">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" onclick="toggleExpand(this)">
+                        <div class="eco-card-header">
+                            <span class="eco-id">WORKFLOW</span>
+                            <span class="eco-status online">8PM-11PM</span>
+                        </div>
+                        <h4>Nightly Approval</h4>
+                        <p>8PM generate → SMS approval → 11PM auto-approve</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">20:00</span>
+                            <label class="eco-toggle">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" onclick="toggleExpand(this)">
+                        <div class="eco-card-header">
+                            <span class="eco-id">AI VIDEO</span>
+                            <span class="eco-status online">GPU READY</span>
+                        </div>
+                        <h4>AI Video Generation</h4>
+                        <p>Generate talking head videos via E47/E48</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">$0.17/video</span>
+                            <label class="eco-toggle">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" onclick="toggleExpand(this)">
+                        <div class="eco-card-header">
+                            <span class="eco-id">VOICE</span>
+                            <span class="eco-status online">CLONED</span>
+                        </div>
+                        <h4>Voice Cloning</h4>
+                        <p>30-sec clone via Chatterbox TTS</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">95% match</span>
+                            <label class="eco-toggle">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" onclick="toggleExpand(this)">
+                        <div class="eco-card-header">
+                            <span class="eco-id">CRISIS</span>
+                            <span class="eco-status online">ARMED</span>
+                        </div>
+                        <h4>Crisis Auto-Response</h4>
+                        <p>Auto-generate posts for E42 crisis events</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">&lt;5 min</span>
+                            <label class="eco-toggle">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" onclick="toggleExpand(this)">
+                        <div class="eco-card-header">
+                            <span class="eco-id">COMPLIANCE</span>
+                            <span class="eco-status online">STRICT</span>
+                        </div>
+                        <h4>Facebook Compliance</h4>
+                        <p>Rate limits, disclaimers, AI disclosure</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">8 checks</span>
+                            <label class="eco-toggle">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Full Ecosystem Directory -->
+            <div class="directory-section">
+                <div class="directory-header">
+                    <h3><i class="fas fa-th-large"></i> Complete Ecosystem Directory</h3>
+                    <span class="count">57 Systems</span>
+                </div>
+                <div class="ecosystem-grid" id="ecosystemGrid">
+                    <!-- Core Infrastructure -->
+                    <div class="eco-card" data-category="core">
+                        <div class="eco-card-header">
+                            <span class="eco-id">E0</span>
+                            <span class="eco-status online">100%</span>
+                        </div>
+                        <h4>DataHub</h4>
+                        <p>PostgreSQL + Redis foundation, Event Bus</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">$500K</span>
+                            <label class="eco-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" data-category="core">
+                        <div class="eco-card-header">
+                            <span class="eco-id">E1</span>
+                            <span class="eco-status online">100%</span>
+                        </div>
+                        <h4>Donor Intelligence</h4>
+                        <p>3D grading, ML predictions, churn analysis</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">$120K</span>
+                            <label class="eco-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" data-category="core">
+                        <div class="eco-card-header">
+                            <span class="eco-id">E2</span>
+                            <span class="eco-status online">100%</span>
+                        </div>
+                        <h4>Donation Processing</h4>
+                        <p>WinRed/Anedot, recurring, attribution</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">$85K</span>
+                            <label class="eco-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" data-category="brain">
+                        <div class="eco-card-header">
+                            <span class="eco-id">E20</span>
+                            <span class="eco-status online">LIVE</span>
+                        </div>
+                        <h4>Intelligence Brain</h4>
+                        <p>Central orchestration, 110M events/day</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">$200K</span>
+                            <label class="eco-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" data-category="social">
+                        <div class="eco-card-header">
+                            <span class="eco-id">E19</span>
+                            <span class="eco-status online">LIVE</span>
+                        </div>
+                        <h4>Social Media Manager</h4>
+                        <p>FB, Twitter, Instagram, LinkedIn posting</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">$200K</span>
+                            <label class="eco-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" data-category="news">
+                        <div class="eco-card-header">
+                            <span class="eco-id">E42</span>
+                            <span class="eco-status online">LIVE</span>
+                        </div>
+                        <h4>News Intelligence</h4>
+                        <p>13K sources, crisis detection &lt;5 min</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">$150K</span>
+                            <label class="eco-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" data-category="video">
+                        <div class="eco-card-header">
+                            <span class="eco-id">E45</span>
+                            <span class="eco-status online">100%</span>
+                        </div>
+                        <h4>Video Studio</h4>
+                        <p>Recording, teleprompter, Zoom integration</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">$85K</span>
+                            <label class="eco-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" data-category="video">
+                        <div class="eco-card-header">
+                            <span class="eco-id">E46</span>
+                            <span class="eco-status online">100%</span>
+                        </div>
+                        <h4>Broadcast Hub</h4>
+                        <p>Live streaming, 50155, clip extraction</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">$75K</span>
+                            <label class="eco-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" data-category="ai">
+                        <div class="eco-card-header">
+                            <span class="eco-id">E47</span>
+                            <span class="eco-status online">GPU</span>
+                        </div>
+                        <h4>Voice Engine</h4>
+                        <p>Chatterbox TTS, voice cloning 95%</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">$60K</span>
+                            <label class="eco-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" data-category="ai">
+                        <div class="eco-card-header">
+                            <span class="eco-id">E48</span>
+                            <span class="eco-status online">GPU</span>
+                        </div>
+                        <h4>Video Synthesis</h4>
+                        <p>Hallo/Wav2Lip talking head generation</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">$60K</span>
+                            <label class="eco-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" data-category="channel">
+                        <div class="eco-card-header">
+                            <span class="eco-id">E30</span>
+                            <span class="eco-status online">100%</span>
+                        </div>
+                        <h4>Email System</h4>
+                        <p>Marketo clone, drip sequences, A/B testing</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">$100K</span>
+                            <label class="eco-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                        </div>
+                    </div>
+                    
+                    <div class="eco-card" data-category="new">
+                        <div class="eco-card-header">
+                            <span class="eco-id">E56</span>
+                            <span class="eco-status online">NEW</span>
+                        </div>
+                        <h4>Visitor Deanonymization</h4>
+                        <p>30-65% ID rate vs 1.5% industry</p>
+                        <div class="eco-meta">
+                            <span class="eco-value">$175K</span>
+                            <label class="eco-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Activity Log -->
+            <div class="activity-section">
+                <div class="activity-header">
+                    <h3><i class="fas fa-stream"></i> Live Event Stream</h3>
+                    <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">
+                        <i class="fas fa-pause"></i> Pause
+                    </button>
+                </div>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon news"><i class="fas fa-newspaper"></i></div>
+                        <div class="activity-content">
+                            <div class="title">news.positive_coverage</div>
+                            <div class="desc">Charlotte Observer: "Broyhill announces infrastructure plan"</div>
+                        </div>
+                        <div class="activity-time">2m ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon brain"><i class="fas fa-brain"></i></div>
+                        <div class="activity-content">
+                            <div class="title">brain.decision_made</div>
+                            <div class="desc">GO → Amplify positive news via E19 Social</div>
+                        </div>
+                        <div class="activity-time">2m ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon social"><i class="fas fa-share-alt"></i></div>
+                        <div class="activity-content">
+                            <div class="title">social.post.scheduled</div>
+                            <div class="desc">Facebook + Twitter post queued for 3:00 PM</div>
+                        </div>
+                        <div class="activity-time">2m ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon video"><i class="fas fa-video"></i></div>
+                        <div class="activity-content">
+                            <div class="title">video.synthesis_complete</div>
+                            <div class="desc">30s talking head video generated via E48</div>
+                        </div>
+                        <div class="activity-time">15m ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon news"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="activity-content">
+                            <div class="title">news.crisis_detected</div>
+                            <div class="desc">WRAL: Opponent attack ad launched - URGENT</div>
+                        </div>
+                        <div class="activity-time">1h ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // Toggle ecosystem card expansion
+        function toggleExpand(card) {
+            card.classList.toggle('expanded');
+        }
+        
+        // Search ecosystems
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            document.querySelectorAll('.eco-card').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        });
+        
+        // Show section
+        function showSection(section) {
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // In a full app, this would show/hide sections
+            console.log('Show section:', section);
+        }
+        
+        // Deploy all
+        function deployAll() {
+            if (confirm('Deploy all ecosystems to GitHub and Hetzner?')) {
+                alert('Deployment started...\n\nGitHub: Pushing to broyhill/BroyhillGOP\nHetzner: 5.9.99.109\n\nCheck console for progress.');
+            }
+        }
+        
+        // Simulate live events
+        const events = [
+            { icon: 'news', title: 'news.mention_detected', desc: 'Fayetteville Observer mentioned campaign' },
+            { icon: 'social', title: 'social.post.published', desc: 'Facebook post published successfully' },
+            { icon: 'brain', title: 'brain.action_triggered', desc: 'Email campaign triggered for A+ donors' },
+            { icon: 'video', title: 'video.export_ready', desc: 'Campaign video exported to E19' }
+        ];
+        
+        setInterval(() => {
+            const event = events[Math.floor(Math.random() * events.length)];
+            const list = document.querySelector('.activity-list');
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+            item.innerHTML = `
+                <div class="activity-icon ${event.icon}"><i class="fas fa-${event.icon === 'news' ? 'newspaper' : event.icon === 'social' ? 'share-alt' : event.icon === 'brain' ? 'brain' : 'video'}"></i></div>
+                <div class="activity-content">
+                    <div class="title">${event.title}</div>
+                    <div class="desc">${event.desc}</div>
+                </div>
+                <div class="activity-time">just now</div>
+            `;
+            list.insertBefore(item, list.firstChild);
+            
+            // Keep only last 10 events
+            while (list.children.length > 10) {
+                list.removeChild(list.lastChild);
+            }
+        }, 15000);
+    </script>
+</body>
+</html>
