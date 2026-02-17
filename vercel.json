@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "name": "broyhillgop",
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "framework": null,
+  "public": true,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/", "destination": "/broyhillgop-homepage.html" },
+    { "source": "/donors", "destination": "/inspinia-full/datatables.html" },
+    { "source": "/volunteers", "destination": "/inspinia-full/contacts.html" },
+    { "source": "/candidates", "destination": "/inspinia-full/clients.html" },
+    { "source": "/analytics", "destination": "/inspinia-full/dashboard-2.html" },
+    { "source": "/email", "destination": "/inspinia-full/email.html" },
+    { "source": "/calendar", "destination": "/inspinia-full/calendar.html" },
+    { "source": "/settings", "destination": "/inspinia-full/roles.html" }
+  ],
+  "trailingSlash": false
+}
