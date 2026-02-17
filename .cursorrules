@@ -1,0 +1,148 @@
+# BroyhillGOP Frontend — Cursor AI Rules
+# This file tells Cursor's AI how to build the BroyhillGOP platform frontend.
+# Place this file in the ROOT of your Cursor project alongside the inspinia-full/ folder.
+
+## PROJECT IDENTITY
+You are building the BroyhillGOP political campaign SaaS platform frontend.
+- Product: BroyhillGOP — SaaS for ~3,900 NC Republican candidates
+- Template: INSPINIA v4.0.1 (Bootstrap 5.3.6) — EXACT reproduction required
+- Backend: Supabase (PostgreSQL) — 197 tables, 60M+ rows
+- Deployment: Vercel
+- The complete Inspinia source template is in inspinia-full/ — reference it for EVERY component
+
+## REPRODUCTION MANDATE
+This is NOT "inspired by" Inspinia. This IS Inspinia, rebranded for BroyhillGOP.
+- Every page layout, sidebar nav item, topbar element must match the template exactly
+- All 43 plugins must be included and functional
+- All CSS variables, fonts, spacing, and border-radius must be preserved
+- Dark mode, 6 theme skins, and responsive breakpoints must work identically
+- Only replace: logos/favicons → BroyhillGOP, sample data → real political data
+
+## FRAMEWORK STACK (from inspinia-full/)
+- Bootstrap 5.3.6 (core framework)
+- ApexCharts (22 chart types, 120+ variants)
+- ECharts (11 chart types, 80+ variants)
+- DataTables (14 configuration variants + custom tables)
+- jQuery (required by DataTables)
+- Lucide Icons (primary), Tabler Icons (secondary), 269 Country Flags
+- FullCalendar, Quill, Summernote, Dropzone, Filepond, Choices.js
+- SweetAlert2, GLightbox, SimpleBar, SortableJS, Muuri
+- Flatpickr, noUiSlider, Pickr, InputMask, Typeahead
+- See INSPINIA_TEMPLATE_SPECIFICATION.docx for complete 43-plugin manifest
+
+## CSS COLOR SYSTEM
+Primary:    #1AB394 (teal — buttons, links, active states)
+Secondary:  #1C84C6 (blue — secondary actions)
+Success:    #0ACF97 (green — confirmations)
+Info:       #23C6C8 (cyan — informational)
+Warning:    #F8AC59 (orange — warnings)
+Danger:     #ED5565 (red — errors, destructive)
+Purple:     #7B70EF (special indicators)
+Body BG:    #F3F4F6 (light), #17181E (dark)
+Body Text:  #6C757D (light), #ADB5BD (dark)
+
+## FONT STACK
+Primary: Open Sans (300-800)
+Secondary: Roboto (100-900)
+Alternatives: Inter, Poppins, IBM Plex Sans, Nunito
+Monospace: SFMono-Regular, Menlo, Consolas
+
+## THEME CONFIGURATION (data attributes on <html>)
+data-skin: classic | modern | material | saas | minimal | flat
+data-bs-theme: light | dark | system
+data-layout-position: fixed | scrollable
+data-topbar-color: light | dark
+data-menu-color: dark | light | gradient | gray
+data-sidenav-size: default | compact | condensed | offcanvas | on-hover
+data-sidenav-user: true | false
+
+## RESPONSIVE BREAKPOINTS
+Mobile:  <= 767.98px  → sidebar offcanvas
+Tablet:  768-1140px   → sidebar condensed (icons only)
+Desktop: > 1140px     → full sidebar
+
+## SUPABASE BACKEND
+Host: aws-1-us-east-1.pooler.supabase.com
+Database: postgres
+Project ref: isbgjpnbocdkeslofota
+API URL: https://isbgjpnbocdkeslofota.supabase.co
+
+### KEY TABLES FOR FRONTEND
+| Table | Rows | Use For |
+|-------|------|---------|
+| donor_master_v2 | 131,513 | Donor profiles, search, grading |
+| donor_donations_v2 | 724,419 | Donation history, charts |
+| donor_addresses_v2 | 195,568 | Address display, geo mapping |
+| donor_contacts | 241,762 | Contact info per source |
+| volunteers_master | 13,562 | Volunteer management |
+| person_tags | 128,076 | Tag filtering (37 tag types) |
+| candidate_profiles | 9,759 | Candidate directory |
+| nc_voters | 9,087,044 | Voter lookup |
+| unified_contact_master | 9,088,075 | Cross-system identity |
+| fec_raw_schedule_a | 197,101 | FEC donation records |
+| nc_boe_donations_raw | 535,304 | State donation records |
+| winred_ncgop_contacts | 194,279 | WinRed contacts |
+| contact_enrichment | 234,402 | Apollo/BetterContact data |
+
+### KEY COLUMN NAMES (these are NOT obvious)
+donor_master_v2:
+  - canonical_name (NOT full_name)
+  - phone1, phone2, phone3 (NOT phone)
+  - employers (text[] array, NOT employer)
+  - professions (text[] array, NOT occupation)
+
+volunteers_master:
+  - cell_phone (NOT phone)
+  - address_1 (NOT address)
+  - zip5 (NOT zip_code)
+  - source_files (text[] array, NOT source)
+  - person_id (PRIMARY KEY, format: LAST|FIRST3|ZIP|SUFFIX)
+
+## ECOSYSTEM-TO-PAGE MAPPING
+When building a BroyhillGOP ecosystem, use these Inspinia pages:
+
+| Ecosystem | Inspinia Source Pages |
+|-----------|---------------------|
+| Donor Intelligence | index.html + DataTables + Charts + widgets.html |
+| Volunteer Mgmt | contacts.html + DataTables + calendar.html + chat.html |
+| Campaign Ops | projects.html + project-kanban.html + pages-timeline.html |
+| Email/Text | email.html + outlook.html + email-compose.html + chat.html |
+| Events | calendar.html + DataTables + form-wizard.html + invoices.html |
+| Candidate CRM | clients.html + companies.html + pages-profile.html + forms |
+| News/Media | blog.html + article.html + pin-board.html |
+| Analytics | dashboard-2.html + dashboard-3.html + metrics.html + all charts |
+| Admin/Settings | roles.html + permissions.html + api-keys.html + forms |
+| Fundraising | ecommerce-*.html (all 13 pages) |
+
+## FILE REFERENCE
+- Full Inspinia source: inspinia-full/
+- Complete specification: INSPINIA_TEMPLATE_SPECIFICATION.docx
+- Core CSS: inspinia-full/assets/css/app.css (584 KB, all variables)
+- Core JS: inspinia-full/assets/js/app.js (20 KB, App class)
+- Config: inspinia-full/assets/js/config.js (theme system)
+- Page scripts: inspinia-full/assets/js/pages/ (94 files)
+- Plugins: inspinia-full/assets/plugins/ (43 libraries)
+
+## VERCEL DEPLOYMENT
+- Team: broyhill-gop
+- Account: ed-5297 (ed@broyhill.net)
+- Live URLs: broyhill-gop.vercel.app, candidate-portal-henna.vercel.app
+- Token: Set as VERCEL_TOKEN environment variable
+- Deploy command: vercel --prod --yes --token=$VERCEL_TOKEN
+- vercel.json in project root handles routing (/ → homepage, /donors → datatables, etc.)
+
+## GITHUB REPOSITORY
+- Primary repo: github.com/broyhill/BroyhillGOP (Public, Vercel-deployed)
+- Backup repo: github.com/broyhill/BroyhillGOP-COMPLETE-PLATFORM (Private)
+- Branch: candidate-portal-v2 → auto-deploys to Vercel
+- Token: Set as GITHUB_TOKEN environment variable
+
+## CODING RULES
+1. When building any component, FIRST open the corresponding inspinia-full/ HTML file
+2. Copy the exact HTML structure, CSS classes, and JS initialization
+3. Replace sample data with Supabase queries using the table/column names above
+4. Keep all Bootstrap classes, custom Inspinia classes, and plugin initializations
+5. Test dark mode, responsive breakpoints, and theme skin switching
+6. Never simplify, remove, or "modernize" any Inspinia component — reproduce exactly
+7. Deploy with: vercel --prod --yes --token=$VERCEL_TOKEN
+8. All pages must connect to Supabase for live data — no static/sample data in production
