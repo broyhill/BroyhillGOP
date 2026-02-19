@@ -1,2 +1,42 @@
+# Credentials and secrets
 .cursor/mcp.json
 BROYHILLGOP_CREDENTIALS_MASTER.md
+*.env
+*.env.bak*
+config/supabase.env
+config/runpod.env
+
+# Data files (too large for GitHub, stay on Hetzner)
+data/
+*.csv
+*.tsv
+*.zip
+*.gz
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Node
+node_modules/
+
+# Backups
+*.backup
+*.bak
+*.corrupted_backup_*
+
