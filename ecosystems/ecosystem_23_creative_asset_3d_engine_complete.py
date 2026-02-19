@@ -1048,6 +1048,80 @@ def deploy_creative_engine():
 if __name__ == "__main__":
     import sys
     import random
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 23CreativeAsset3DEngineCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 23CreativeAsset3DEngineCompleteValidationError(23CreativeAsset3DEngineCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 23CreativeAsset3DEngineCompleteDatabaseError(23CreativeAsset3DEngineCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 23CreativeAsset3DEngineCompleteAPIError(23CreativeAsset3DEngineCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 23CreativeAsset3DEngineCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 23CreativeAsset3DEngineCompleteValidationError(23CreativeAsset3DEngineCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 23CreativeAsset3DEngineCompleteDatabaseError(23CreativeAsset3DEngineCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 23CreativeAsset3DEngineCompleteAPIError(23CreativeAsset3DEngineCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_creative_engine()
     elif len(sys.argv) > 1 and sys.argv[1] == "--stats":

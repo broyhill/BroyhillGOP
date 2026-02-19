@@ -1023,6 +1023,44 @@ DRAFT 3:
 def main():
     """CLI entry point"""
     import argparse
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 51NexusCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 51NexusCompleteValidationError(51NexusCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 51NexusCompleteDatabaseError(51NexusCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 51NexusCompleteAPIError(51NexusCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 51NexusCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 51NexusCompleteValidationError(51NexusCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 51NexusCompleteDatabaseError(51NexusCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 51NexusCompleteAPIError(51NexusCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
     
     parser = argparse.ArgumentParser(description='NEXUS AI Agent System')
     parser.add_argument('command', choices=[

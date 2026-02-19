@@ -1987,6 +1987,44 @@ CREATE INDEX IF NOT EXISTS idx_donor_social_links_donor ON donor_social_links(do
 async def main():
     """Example usage"""
     import argparse
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 01SocialOauthMaximumCaptureError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 01SocialOauthMaximumCaptureValidationError(01SocialOauthMaximumCaptureError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 01SocialOauthMaximumCaptureDatabaseError(01SocialOauthMaximumCaptureError):
+    """Database error in this ecosystem"""
+    pass
+
+class 01SocialOauthMaximumCaptureAPIError(01SocialOauthMaximumCaptureError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 01SocialOauthMaximumCaptureError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 01SocialOauthMaximumCaptureValidationError(01SocialOauthMaximumCaptureError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 01SocialOauthMaximumCaptureDatabaseError(01SocialOauthMaximumCaptureError):
+    """Database error in this ecosystem"""
+    pass
+
+class 01SocialOauthMaximumCaptureAPIError(01SocialOauthMaximumCaptureError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
     
     parser = argparse.ArgumentParser(description="Social OAuth Maximum Data Capture")
     parser.add_argument("--candidate-id", required=True, help="Candidate ID")

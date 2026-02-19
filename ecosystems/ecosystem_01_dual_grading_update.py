@@ -22,6 +22,96 @@ from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
 
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === CONFIGURATION MANAGEMENT (Auto-added by repair tool) ===
+import os
+from dataclasses import dataclass
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 01DualGradingUpdateError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 01DualGradingUpdateValidationError(01DualGradingUpdateError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 01DualGradingUpdateDatabaseError(01DualGradingUpdateError):
+    """Database error in this ecosystem"""
+    pass
+
+class 01DualGradingUpdateAPIError(01DualGradingUpdateError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 01DualGradingUpdateError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 01DualGradingUpdateValidationError(01DualGradingUpdateError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 01DualGradingUpdateDatabaseError(01DualGradingUpdateError):
+    """Database error in this ecosystem"""
+    pass
+
+class 01DualGradingUpdateAPIError(01DualGradingUpdateError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+@dataclass
+class Config:
+    """Configuration settings loaded from environment"""
+    DATABASE_URL: str = os.getenv('DATABASE_URL', 'postgresql://localhost/broyhillgop')
+    API_KEY: str = os.getenv('API_KEY', '')
+    DEBUG: bool = os.getenv('DEBUG', 'false').lower() == 'true'
+    LOG_LEVEL: str = os.getenv('LOG_LEVEL', 'INFO')
+
+config = Config()
+# === END CONFIGURATION ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('ecosystem1.donor_intelligence')
 

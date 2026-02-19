@@ -1,3 +1,15 @@
+import logging
+import os
+
+# === LOGGING CONFIGURATION (Auto-added by repair tool) ===
+log_level = os.getenv('LOG_LEVEL', 'INFO')
+logging.basicConfig(
+    level=getattr(logging, log_level),
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+# === END LOGGING ===
+
 # ecosystem_19_social_media_manager.py
 # BROYHILLGOP - Multi-Platform Social Media Posting Engine
 # ECOSYSTEM 19: Social Media Manager (Replaces previous 65% version)
@@ -846,6 +858,44 @@ async def run_event_listener():
 
 if __name__ == "__main__":
     import sys
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 19SocialMediaManagerError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 19SocialMediaManagerValidationError(19SocialMediaManagerError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 19SocialMediaManagerDatabaseError(19SocialMediaManagerError):
+    """Database error in this ecosystem"""
+    pass
+
+class 19SocialMediaManagerAPIError(19SocialMediaManagerError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 19SocialMediaManagerError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 19SocialMediaManagerValidationError(19SocialMediaManagerError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 19SocialMediaManagerDatabaseError(19SocialMediaManagerError):
+    """Database error in this ecosystem"""
+    pass
+
+class 19SocialMediaManagerAPIError(19SocialMediaManagerError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
     
     if len(sys.argv) > 1 and sys.argv[1] == 'listen':
         asyncio.run(run_event_listener())

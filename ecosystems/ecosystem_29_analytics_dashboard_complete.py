@@ -1034,5 +1034,79 @@ def deploy_analytics_dashboard():
 
 if __name__ == "__main__":
     import sys
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 29AnalyticsDashboardCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 29AnalyticsDashboardCompleteValidationError(29AnalyticsDashboardCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 29AnalyticsDashboardCompleteDatabaseError(29AnalyticsDashboardCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 29AnalyticsDashboardCompleteAPIError(29AnalyticsDashboardCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 29AnalyticsDashboardCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 29AnalyticsDashboardCompleteValidationError(29AnalyticsDashboardCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 29AnalyticsDashboardCompleteDatabaseError(29AnalyticsDashboardCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 29AnalyticsDashboardCompleteAPIError(29AnalyticsDashboardCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_analytics_dashboard()

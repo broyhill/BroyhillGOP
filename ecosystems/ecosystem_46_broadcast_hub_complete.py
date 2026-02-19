@@ -35,6 +35,80 @@ import uuid
 import hashlib
 import re
 
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 46BroadcastHubCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 46BroadcastHubCompleteValidationError(46BroadcastHubCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 46BroadcastHubCompleteDatabaseError(46BroadcastHubCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 46BroadcastHubCompleteAPIError(46BroadcastHubCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 46BroadcastHubCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 46BroadcastHubCompleteValidationError(46BroadcastHubCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 46BroadcastHubCompleteDatabaseError(46BroadcastHubCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 46BroadcastHubCompleteAPIError(46BroadcastHubCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
+
 # ============================================================================
 # CONFIGURATION
 # ============================================================================

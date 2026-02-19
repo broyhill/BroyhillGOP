@@ -1455,6 +1455,44 @@ def deploy_donor_intelligence():
 
 if __name__ == "__main__":
     import sys
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 01DonorIntelligenceCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 01DonorIntelligenceCompleteValidationError(01DonorIntelligenceCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 01DonorIntelligenceCompleteDatabaseError(01DonorIntelligenceCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 01DonorIntelligenceCompleteAPIError(01DonorIntelligenceCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 01DonorIntelligenceCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 01DonorIntelligenceCompleteValidationError(01DonorIntelligenceCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 01DonorIntelligenceCompleteDatabaseError(01DonorIntelligenceCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 01DonorIntelligenceCompleteAPIError(01DonorIntelligenceCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
     
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_donor_intelligence()

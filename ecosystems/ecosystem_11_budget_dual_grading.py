@@ -1,3 +1,15 @@
+import logging
+import os
+
+# === LOGGING CONFIGURATION (Auto-added by repair tool) ===
+log_level = os.getenv('LOG_LEVEL', 'INFO')
+logging.basicConfig(
+    level=getattr(logging, log_level),
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+# === END LOGGING ===
+
 #!/usr/bin/env python3
 """
 ============================================================================
@@ -17,6 +29,80 @@ in small ponds, while still treating them as VIPs for local races.
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 11BudgetDualGradingError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 11BudgetDualGradingValidationError(11BudgetDualGradingError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 11BudgetDualGradingDatabaseError(11BudgetDualGradingError):
+    """Database error in this ecosystem"""
+    pass
+
+class 11BudgetDualGradingAPIError(11BudgetDualGradingError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 11BudgetDualGradingError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 11BudgetDualGradingValidationError(11BudgetDualGradingError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 11BudgetDualGradingDatabaseError(11BudgetDualGradingError):
+    """Database error in this ecosystem"""
+    pass
+
+class 11BudgetDualGradingAPIError(11BudgetDualGradingError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
 
 # ============================================================================
 # BUDGET ALLOCATION BY GRADE

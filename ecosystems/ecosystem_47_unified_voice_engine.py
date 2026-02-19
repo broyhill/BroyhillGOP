@@ -318,6 +318,44 @@ class AudioPostProcessor:
             return output_path
         except:
             import shutil
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 47UnifiedVoiceEngineError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 47UnifiedVoiceEngineValidationError(47UnifiedVoiceEngineError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 47UnifiedVoiceEngineDatabaseError(47UnifiedVoiceEngineError):
+    """Database error in this ecosystem"""
+    pass
+
+class 47UnifiedVoiceEngineAPIError(47UnifiedVoiceEngineError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 47UnifiedVoiceEngineError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 47UnifiedVoiceEngineValidationError(47UnifiedVoiceEngineError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 47UnifiedVoiceEngineDatabaseError(47UnifiedVoiceEngineError):
+    """Database error in this ecosystem"""
+    pass
+
+class 47UnifiedVoiceEngineAPIError(47UnifiedVoiceEngineError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
             shutil.copy(input_path, output_path)
             return output_path
 

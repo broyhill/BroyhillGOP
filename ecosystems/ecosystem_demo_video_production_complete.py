@@ -1034,6 +1034,44 @@ def deploy_demo_ecosystem():
 
 if __name__ == "__main__":
     import sys
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class DemoVideoProductionCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class DemoVideoProductionCompleteValidationError(DemoVideoProductionCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class DemoVideoProductionCompleteDatabaseError(DemoVideoProductionCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class DemoVideoProductionCompleteAPIError(DemoVideoProductionCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class DemoVideoProductionCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class DemoVideoProductionCompleteValidationError(DemoVideoProductionCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class DemoVideoProductionCompleteDatabaseError(DemoVideoProductionCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class DemoVideoProductionCompleteAPIError(DemoVideoProductionCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_demo_ecosystem()
     elif len(sys.argv) > 1 and sys.argv[1] == "--stats":

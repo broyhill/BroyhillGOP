@@ -1171,6 +1171,62 @@ USAGE:
 ------
 from ecosystem_50_gpu_orchestrator_complete import E50Client
 
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 50GpuOrchestratorCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 50GpuOrchestratorCompleteValidationError(50GpuOrchestratorCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 50GpuOrchestratorCompleteDatabaseError(50GpuOrchestratorCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 50GpuOrchestratorCompleteAPIError(50GpuOrchestratorCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 50GpuOrchestratorCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 50GpuOrchestratorCompleteValidationError(50GpuOrchestratorCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 50GpuOrchestratorCompleteDatabaseError(50GpuOrchestratorCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 50GpuOrchestratorCompleteAPIError(50GpuOrchestratorCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
+
 client = E50Client("https://gpu.yourdomain.com")
 
 # Generate video spot

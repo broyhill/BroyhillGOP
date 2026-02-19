@@ -653,6 +653,44 @@ def deploy_demo_controller():
 
 if __name__ == "__main__":
     import sys
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class DemoControllerCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class DemoControllerCompleteValidationError(DemoControllerCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class DemoControllerCompleteDatabaseError(DemoControllerCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class DemoControllerCompleteAPIError(DemoControllerCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class DemoControllerCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class DemoControllerCompleteValidationError(DemoControllerCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class DemoControllerCompleteDatabaseError(DemoControllerCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class DemoControllerCompleteAPIError(DemoControllerCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
     
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_demo_controller()
