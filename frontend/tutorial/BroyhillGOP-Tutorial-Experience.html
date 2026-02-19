@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NC Republican Data Committee — BroyhillGOP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600;700&display=swap');
+
+        :root {
+            --red: #c41e3a;
+            --red-dark: #9a1730;
+            --navy: #0a1628;
+            --navy-light: #1a2a4a;
+            --gold: #d4af37;
+            --gold-light: #e8cc6e;
+            --white: #ffffff;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --curtain-red: #8b1a1a;
+            --curtain-dark: #5c1010;
+            --stage-wood: #8B6914;
+            --stage-dark: #5a4510;
+            --spotlight: rgba(255, 245, 200, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'Inter', sans-serif; }
+
+        /* ===== SCREEN MANAGER ===== */
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; pointer-events: none; transition: opacity 0.8s ease;
+            overflow-y: auto;
+        }
+        .screen.active { opacity: 1; pointer-events: all; }
+
+        /* ===== SCREEN 1: LANDING PAGE ===== */
+        #landing {
+            background: var(--navy);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; color: var(--white);
+            background-image:
+                radial-gradient(ellipse at 50% 0%, rgba(196,30,58,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 100%, rgba(212,175,55,0.08) 0%, transparent 50%),
+                linear-gradient(180deg, #0a1628 0%, #0f1f3a 50%, #0a1628 100%);
+        }
+        .landing-stars {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image:
+                radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.3), transparent),
+                radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.2), transparent),
+                radial-gradient(1px 1px at 60% 20%, rgba(255,255,255,0.3), transparent),
+                radial-gradient(1px 1px at 80% 50%, rgba(255,255,255,0.2), transparent),
+                radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.25), transparent),
+                radial-gradient(1px 1px at 70% 90%, rgba(255,255,255,0.2), transparent),
+                radial-gradient(1.5px 1.5px at 50% 50%, rgba(212,175,55,0.3), transparent),
+                radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.3), transparent);
+        }
+        .landing-content { position: relative; z-index: 2; max-width: 800px; padding: 40px 20px; }
+        .landing-seal {
+            width: 120px; height: 120px; margin: 0 auto 30px;
+            border: 3px solid var(--gold); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 70%);
+            animation: sealGlow 3s ease-in-out infinite;
+        }
+        @keyframes sealGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(212,175,55,0.2); }
+            50% { box-shadow: 0 0 40px rgba(212,175,55,0.4); }
+        }
+        .landing-seal i { font-size: 48px; color: var(--gold); }
+        .landing-badge {
+            display: inline-block; padding: 6px 20px; border: 1px solid var(--gold);
+            border-radius: 30px; font-family: 'Cinzel', serif; font-size: 11px;
+            letter-spacing: 3px; text-transform: uppercase; color: var(--gold);
+            margin-bottom: 24px;
+        }
+        .landing-title {
+            font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 700;
+            line-height: 1.2; margin-bottom: 8px;
+        }
+        .landing-title .gold { color: var(--gold); }
+        .landing-subtitle {
+            font-family: 'Cinzel', serif; font-size: 16px; letter-spacing: 2px;
+            color: var(--gold-light); margin-bottom: 24px; text-transform: uppercase;
+        }
+        .landing-desc {
+            font-size: 16px; line-height: 1.8; color: rgba(255,255,255,0.7);
+            max-width: 600px; margin: 0 auto 16px;
+        }
+        .landing-partners {
+            display: flex; align-items: center; justify-content: center; gap: 32px;
+            margin: 32px 0; padding: 20px 0; border-top: 1px solid rgba(212,175,55,0.2);
+            border-bottom: 1px solid rgba(212,175,55,0.2);
+        }
+        .partner-name { font-family: 'Cinzel', serif; font-size: 14px; color: rgba(255,255,255,0.6); letter-spacing: 1px; }
+        .partner-divider { color: var(--gold); font-size: 20px; }
+        .landing-enter-btn {
+            display: inline-flex; align-items: center; gap: 12px;
+            padding: 16px 48px; background: var(--red); color: white;
+            border: none; border-radius: 50px; font-family: 'Cinzel', serif;
+            font-size: 16px; letter-spacing: 2px; text-transform: uppercase;
+            cursor: pointer; transition: all 0.3s ease; margin-top: 20px;
+            box-shadow: 0 4px 24px rgba(196,30,58,0.4);
+        }
+        .landing-enter-btn:hover {
+            background: var(--red-dark); transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(196,30,58,0.5);
+        }
+        .landing-enter-btn i { transition: transform 0.3s; }
+        .landing-enter-btn:hover i { transform: translateX(4px); }
+        .landing-footer {
+            position: absolute; bottom: 20px; left: 0; right: 0; text-align: center;
+            font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 1px;
+        }
+
+        /* ===== SCREEN 2: REGISTRATION ===== */
+        #registration {
+            background: linear-gradient(135deg, var(--navy) 0%, #0f1f3a 100%);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .reg-container {
+            background: var(--white); border-radius: 16px; width: 100%; max-width: 640px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4); overflow: hidden;
+            max-height: 95vh; overflow-y: auto;
+        }
+        .reg-header {
+            background: var(--navy); padding: 28px 32px; text-align: center; color: white;
+            border-bottom: 3px solid var(--gold);
+        }
+        .reg-header h2 { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 4px; }
+        .reg-header p { font-size: 13px; color: rgba(255,255,255,0.6); }
+        .reg-body { padding: 28px 32px; }
+        .form-row { display: grid; gap: 16px; margin-bottom: 16px; }
+        .form-row.three { grid-template-columns: 1fr 0.6fr 1fr; }
+        .form-row.two { grid-template-columns: 1fr 1fr; }
+        .form-group label {
+            display: block; font-size: 12px; font-weight: 600; color: var(--gray-600);
+            margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%; padding: 10px 14px; border: 1.5px solid var(--gray-200);
+            border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s; background: white; color: var(--gray-800);
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none; border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(196,30,58,0.1);
+        }
+        .form-group input::placeholder { color: var(--gray-400); }
+        .form-group .required { color: var(--red); }
+        .form-divider {
+            height: 1px; background: var(--gray-200); margin: 20px 0;
+        }
+        .form-section-label {
+            font-family: 'Cinzel', serif; font-size: 13px; color: var(--navy);
+            letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .form-section-label::after {
+            content: ''; flex: 1; height: 1px; background: var(--gray-200);
+        }
+        .terms-check {
+            display: flex; align-items: flex-start; gap: 10px; margin: 20px 0;
+            padding: 14px; background: var(--gray-100); border-radius: 8px;
+        }
+        .terms-check input[type="checkbox"] {
+            width: 18px; height: 18px; margin-top: 2px; accent-color: var(--red); cursor: pointer;
+        }
+        .terms-check label { font-size: 13px; color: var(--gray-600); line-height: 1.5; cursor: pointer; }
+        .terms-check a { color: var(--red); text-decoration: none; }
+        .reg-submit-btn {
+            width: 100%; padding: 14px; background: var(--red); color: white; border: none;
+            border-radius: 10px; font-family: 'Cinzel', serif; font-size: 15px;
+            letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+            transition: all 0.3s; box-shadow: 0 4px 16px rgba(196,30,58,0.3);
+        }
+        .reg-submit-btn:hover { background: var(--red-dark); transform: translateY(-1px); }
+        .reg-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .reg-submit-btn i { margin-left: 8px; }
+
+        /* ===== SCREEN 3: THEATER ===== */
+        #theater {
+            background: #000; overflow: hidden;
+        }
+        .theater-wrapper {
+            width: 100%; height: 100%; position: relative;
+            display: flex; flex-direction: column;
+        }
+
+        /* Ceiling */
+        .theater-ceiling {
+            height: 40px; background: linear-gradient(180deg, #1a0a0a 0%, #2a1515 100%);
+            position: relative; z-index: 10;
+        }
+        .ceiling-molding {
+            position: absolute; bottom: 0; left: 0; right: 0; height: 8px;
+            background: linear-gradient(180deg, var(--gold) 0%, #a08020 100%);
+            box-shadow: 0 2px 8px rgba(212,175,55,0.3);
+        }
+
+        /* Curtains */
+        .curtain-area {
+            flex: 1; position: relative; overflow: hidden;
+            background: #0a0505;
+        }
+        .curtain-left, .curtain-right {
+            position: absolute; top: 0; width: 55%; height: 100%; z-index: 5;
+            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .curtain-left { left: 0; transform: translateX(0); }
+        .curtain-right { right: 0; transform: translateX(0); }
+        .curtains-open .curtain-left { transform: translateX(-85%); }
+        .curtains-open .curtain-right { transform: translateX(85%); }
+
+        .curtain-fabric {
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--curtain-red) 0px, var(--curtain-dark) 15px,
+                var(--curtain-red) 30px, #7a1515 45px,
+                var(--curtain-red) 60px
+            );
+            box-shadow: inset 0 0 60px rgba(0,0,0,0.5);
+        }
+        .curtain-left .curtain-fabric {
+            border-right: 6px solid var(--gold);
+        }
+        .curtain-right .curtain-fabric {
+            border-left: 6px solid var(--gold);
+        }
+        .curtain-valance {
+            position: absolute; top: 0; left: 0; right: 0; height: 60px; z-index: 8;
+            background: var(--curtain-red);
+            border-bottom: 5px solid var(--gold);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .valance-drape {
+            position: absolute; bottom: -20px; left: 0; right: 0; height: 20px;
+            background: repeating-conic-gradient(var(--curtain-red) 0% 25%, transparent 0% 50%)
+                        0 0 / 40px 20px;
+        }
+
+        /* Stage */
+        .stage-area {
+            position: absolute; bottom: 0; left: 0; right: 0; z-index: 4;
+        }
+        .stage-floor {
+            height: 100px;
+            background: linear-gradient(180deg, var(--stage-wood) 0%, var(--stage-dark) 60%, #3a2a08 100%);
+            border-top: 4px solid var(--gold);
+            box-shadow: inset 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .stage-floor::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 100%;
+            background: repeating-linear-gradient(
+                90deg, transparent 0px, transparent 80px,
+                rgba(0,0,0,0.1) 80px, rgba(0,0,0,0.1) 82px
+            );
+        }
+
+        /* Movie Screen */
+        .movie-screen {
+            position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+            width: 65%; max-width: 700px; aspect-ratio: 16/9;
+            background: #111; border: 3px solid #333; border-radius: 4px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            z-index: 3; display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+        .screen-content {
+            width: 100%; height: 100%; display: flex; align-items: center;
+            justify-content: center; color: white; text-align: center;
+            padding: 20px; background: #0a0a0a;
+        }
+
+        /* Characters on stage */
+        .stage-characters {
+            position: absolute; bottom: 100px; left: 0; right: 0; height: 280px;
+            z-index: 6; display: flex; align-items: flex-end; justify-content: center;
+            gap: 60px; padding: 0 60px;
+        }
+        .character {
+            display: flex; flex-direction: column; align-items: center;
+            opacity: 0; transform: translateY(20px);
+            transition: all 0.8s ease;
+        }
+        .character.visible { opacity: 1; transform: translateY(0); }
+        .character-body {
+            width: 80px; height: 160px; position: relative;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .character-head {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: linear-gradient(135deg, #f0d0a0, #d4a574);
+            border: 2px solid rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; position: relative; z-index: 2;
+        }
+        .character-torso {
+            width: 70px; height: 90px; margin-top: -8px;
+            border-radius: 8px 8px 4px 4px; position: relative;
+        }
+        .character-name {
+            font-family: 'Cinzel', serif; font-size: 11px; color: var(--gold);
+            letter-spacing: 1px; margin-top: 8px; white-space: nowrap;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+        }
+        .char-jason .character-torso { background: linear-gradient(180deg, #1a2a4a, #0f1a30); }
+        .char-trump .character-torso { background: linear-gradient(180deg, #1a1a3a, #0a0a20); }
+        .char-candidate .character-torso { background: linear-gradient(180deg, #2a1a1a, #1a0f0f); }
+
+        /* Speech bubble */
+        .speech-bubble {
+            position: absolute; bottom: 290px; left: 50%; transform: translateX(-50%);
+            background: rgba(255,255,255,0.95); color: var(--gray-800);
+            padding: 16px 24px; border-radius: 16px; max-width: 500px;
+            font-size: 14px; line-height: 1.6; text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 20;
+            opacity: 0; transition: opacity 0.5s;
+        }
+        .speech-bubble.visible { opacity: 1; }
+        .speech-bubble::after {
+            content: ''; position: absolute; bottom: -10px; left: 50%;
+            transform: translateX(-50%); border: 10px solid transparent;
+            border-top-color: rgba(255,255,255,0.95);
+        }
+        .speech-name {
+            font-family: 'Cinzel', serif; font-size: 11px; color: var(--red);
+            letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px;
+        }
+
+        /* Spotlight effect */
+        .spotlight {
+            position: absolute; top: 0; width: 200px; height: 100%;
+            background: radial-gradient(ellipse at 50% 0%, rgba(255,245,200,0.08) 0%, transparent 70%);
+            z-index: 2; opacity: 0; transition: opacity 0.5s;
+        }
+        .spotlight.on { opacity: 1; }
+
+        /* Theater controls */
+        .theater-controls {
+            position: absolute; bottom: 20px; right: 20px; z-index: 30;
+            display: flex; gap: 8px;
+        }
+        .theater-btn {
+            padding: 8px 16px; background: rgba(255,255,255,0.1); color: white;
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 6px;
+            font-size: 12px; cursor: pointer; backdrop-filter: blur(4px);
+            transition: all 0.2s;
+        }
+        .theater-btn:hover { background: rgba(255,255,255,0.2); }
+        .theater-btn.primary { background: var(--red); border-color: var(--red); }
+
+        /* Continue button (flashing) */
+        .continue-btn {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 30; padding: 14px 40px; background: var(--gold);
+            color: var(--navy); border: none; border-radius: 50px;
+            font-family: 'Cinzel', serif; font-size: 15px; letter-spacing: 2px;
+            text-transform: uppercase; cursor: pointer; opacity: 0;
+            transition: opacity 0.5s; box-shadow: 0 4px 20px rgba(212,175,55,0.4);
+            animation: btnPulse 2s ease-in-out infinite;
+        }
+        .continue-btn.visible { opacity: 1; }
+        @keyframes btnPulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(212,175,55,0.4); }
+            50% { box-shadow: 0 4px 40px rgba(212,175,55,0.8); }
+        }
+
+        /* ===== SCREEN 4: COMMAND CENTER ===== */
+        #command-center {
+            background: var(--gray-100);
+        }
+        .cc-placeholder {
+            width: 100%; height: 100%; display: flex; align-items: center;
+            justify-content: center; flex-direction: column; gap: 16px;
+            color: var(--gray-600);
+        }
+        .cc-placeholder i { font-size: 48px; color: var(--gold); }
+        .cc-placeholder h2 { font-family: 'Playfair Display', serif; color: var(--navy); }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        .fade-in-up { animation: fadeInUp 0.8s ease forwards; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .landing-title { font-size: 28px; }
+            .landing-partners { flex-direction: column; gap: 12px; }
+            .form-row.three { grid-template-columns: 1fr; }
+            .form-row.two { grid-template-columns: 1fr; }
+            .reg-container { max-width: 100%; border-radius: 0; }
+            .stage-characters { gap: 20px; padding: 0 20px; }
+            .movie-screen { width: 80%; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== SCREEN 1: LANDING PAGE ==================== -->
+<div class="screen active" id="landing">
+    <div class="landing-stars"></div>
+    <div class="landing-content">
+        <div class="landing-seal">
+            <i class="fas fa-landmark"></i>
+        </div>
+        <div class="landing-badge">Est. 2025 · North Carolina</div>
+        <h1 class="landing-title">
+            The <span class="gold">NC Republican</span><br>Data Committee
+        </h1>
+        <div class="landing-subtitle">Empowering Every Republican Candidate</div>
+        <p class="landing-desc">
+            The North Carolina Republican Party and BroyhillGOP have joined forces
+            to create an unprecedented resource — a full-spectrum campaign intelligence
+            platform built exclusively for NC Republican candidates.
+        </p>
+        <p class="landing-desc" style="font-size: 14px; color: rgba(255,255,255,0.5);">
+            From your first day on the trail to Election Night victory,
+            every tool, every resource, every advantage — personalized for you.
+        </p>
+        <div class="landing-partners">
+            <span class="partner-name">NC Republican Party</span>
+            <span class="partner-divider">✦</span>
+            <span class="partner-name">BroyhillGOP</span>
+            <span class="partner-divider">✦</span>
+            <span class="partner-name">Republican National Committee</span>
+        </div>
+        <button class="landing-enter-btn" onclick="goToRegistration()">
+            Enter <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+    <div class="landing-footer">
+        NC REPUBLICAN DATA COMMITTEE &copy; 2025 &mdash; ALL RIGHTS RESERVED
+    </div>
+</div>
+
+<!-- ==================== SCREEN 2: REGISTRATION ==================== -->
+<div class="screen" id="registration">
+    <div class="reg-container">
+        <div class="reg-header">
+            <h2>Candidate Registration</h2>
+            <p>NC Republican Data Committee &middot; Secure Portal</p>
+        </div>
+        <div class="reg-body">
+            <div class="form-section-label">Personal Information</div>
+            <div class="form-row three">
+                <div class="form-group">
+                    <label>First Name <span class="required">*</span></label>
+                    <input type="text" id="reg-first" placeholder="First name" required>
+                </div>
+                <div class="form-group">
+                    <label>Middle</label>
+                    <input type="text" id="reg-middle" placeholder="M.I.">
+                </div>
+                <div class="form-group">
+                    <label>Last Name <span class="required">*</span></label>
+                    <input type="text" id="reg-last" placeholder="Last name" required>
+                </div>
+            </div>
+            <div class="form-row two">
+                <div class="form-group">
+                    <label>Preferred Name <span class="required">*</span></label>
+                    <input type="text" id="reg-preferred" placeholder="What should we call you?">
+                </div>
+                <div class="form-group">
+                    <label>Party Affiliation</label>
+                    <input type="text" value="Republican" readonly style="background: var(--gray-100); color: var(--gray-600);">
+                </div>
+            </div>
+
+            <div class="form-divider"></div>
+            <div class="form-section-label">Office Sought</div>
+            <div class="form-row three" style="grid-template-columns: 1fr 1fr 1fr;">
+                <div class="form-group">
+                    <label>Level <span class="required">*</span></label>
+                    <select id="reg-level" onchange="updateOfficeOptions()">
+                        <option value="">Select level...</option>
+                        <option value="federal">Federal</option>
+                        <option value="statewide">Statewide</option>
+                        <option value="state-leg">State Legislature</option>
+                        <option value="county">County</option>
+                        <option value="municipal">Municipal</option>
+                        <option value="judicial">Judicial</option>
+                        <option value="school">School Board</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Office <span class="required">*</span></label>
+                    <select id="reg-office">
+                        <option value="">Select office...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>District / Seat</label>
+                    <select id="reg-district">
+                        <option value="">Select district...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-divider"></div>
+            <div class="form-section-label">Contact Information</div>
+            <div class="form-row two">
+                <div class="form-group">
+                    <label>Email Address <span class="required">*</span></label>
+                    <input type="email" id="reg-email" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Cell Phone <span class="required">*</span></label>
+                    <input type="tel" id="reg-phone" placeholder="(919) 555-0100">
+                </div>
+            </div>
+
+            <div class="terms-check">
+                <input type="checkbox" id="reg-terms" onchange="toggleSubmit()">
+                <label for="reg-terms">
+                    I agree to the <a href="#">Terms &amp; Conditions</a> and
+                    <a href="#">Privacy Policy</a> of the NC Republican Data Committee.
+                    I understand this platform is provided exclusively for registered
+                    Republican candidates in the State of North Carolina.
+                </label>
+            </div>
+
+            <button class="reg-submit-btn" id="reg-submit" disabled onclick="goToTheater()">
+                Begin Your Experience <i class="fas fa-theater-masks"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== SCREEN 3: THEATER ==================== -->
+<div class="screen" id="theater">
+    <div class="theater-wrapper">
+        <div class="theater-ceiling">
+            <div class="ceiling-molding"></div>
+        </div>
+        <div class="curtain-area" id="curtain-area">
+            <!-- Valance -->
+            <div class="curtain-valance">
+                <div class="valance-drape"></div>
+            </div>
+
+            <!-- Curtains -->
+            <div class="curtain-left"><div class="curtain-fabric"></div></div>
+            <div class="curtain-right"><div class="curtain-fabric"></div></div>
+
+            <!-- Movie Screen -->
+            <div class="movie-screen" id="movie-screen">
+                <div class="screen-content" id="screen-content">
+                    <div style="opacity: 0.3; font-size: 12px; letter-spacing: 2px;">STANDBY</div>
+                </div>
+            </div>
+
+            <!-- Spotlights -->
+            <div class="spotlight" id="spot-left" style="left: 20%;"></div>
+            <div class="spotlight" id="spot-center" style="left: 50%; transform: translateX(-50%);"></div>
+            <div class="spotlight" id="spot-right" style="right: 20%;"></div>
+
+            <!-- Characters -->
+            <div class="stage-characters" id="stage-characters">
+                <div class="character char-jason" id="char-jason">
+                    <div class="character-body">
+                        <div class="character-head">👤</div>
+                        <div class="character-torso"></div>
+                    </div>
+                    <div class="character-name">JASON SIMMONS</div>
+                </div>
+                <div class="character char-trump" id="char-trump" style="display:none;">
+                    <div class="character-body">
+                        <div class="character-head">🎬</div>
+                        <div class="character-torso"></div>
+                    </div>
+                    <div class="character-name">ON SCREEN</div>
+                </div>
+                <div class="character char-candidate" id="char-candidate">
+                    <div class="character-body">
+                        <div class="character-head">👤</div>
+                        <div class="character-torso"></div>
+                    </div>
+                    <div class="character-name" id="char-candidate-name">CANDIDATE</div>
+                </div>
+            </div>
+
+            <!-- Speech Bubble -->
+            <div class="speech-bubble" id="speech-bubble">
+                <div class="speech-name" id="speech-name"></div>
+                <div id="speech-text"></div>
+            </div>
+
+            <!-- Stage Floor -->
+            <div class="stage-area">
+                <div class="stage-floor"></div>
+            </div>
+        </div>
+
+        <!-- Continue Button -->
+        <button class="continue-btn" id="continue-btn" onclick="goToCommandCenter()">
+            Enter Your Command Center <i class="fas fa-arrow-right" style="margin-left:8px;"></i>
+        </button>
+    </div>
+</div>
+
+<!-- ==================== SCREEN 4: COMMAND CENTER ==================== -->
+<div class="screen" id="command-center">
+    <div class="cc-placeholder">
+        <i class="fas fa-rocket"></i>
+        <h2 id="cc-welcome">Welcome to Your Command Center</h2>
+        <p>Your personalized campaign headquarters is ready.</p>
+        <p style="font-size: 13px; color: var(--gray-400);">[ Full Command Center Dashboard loads here ]</p>
+    </div>
+</div>
+
+<script>
+    // ===== STATE =====
+    let candidateData = {};
+
+    // ===== NAVIGATION =====
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function goToRegistration() {
+        showScreen('registration');
+    }
+
+    function goToTheater() {
+        // Capture form data
+        candidateData = {
+            first: document.getElementById('reg-first').value.trim(),
+            middle: document.getElementById('reg-middle').value.trim(),
+            last: document.getElementById('reg-last').value.trim(),
+            preferred: document.getElementById('reg-preferred').value.trim() || document.getElementById('reg-first').value.trim(),
+            level: document.getElementById('reg-level').value,
+            office: document.getElementById('reg-office').value,
+            district: document.getElementById('reg-district').value,
+            email: document.getElementById('reg-email').value.trim(),
+            phone: document.getElementById('reg-phone').value.trim()
+        };
+
+        document.getElementById('char-candidate-name').textContent = candidateData.preferred.toUpperCase();
+
+        showScreen('theater');
+        setTimeout(startTheaterSequence, 1500);
+    }
+
+    function goToCommandCenter() {
+        document.getElementById('cc-welcome').textContent =
+            `Welcome, ${candidateData.preferred} — Your Command Center`;
+        showScreen('command-center');
+    }
+
+    // ===== REGISTRATION HELPERS =====
+    function toggleSubmit() {
+        const terms = document.getElementById('reg-terms').checked;
+        document.getElementById('reg-submit').disabled = !terms;
+    }
+
+    function updateOfficeOptions() {
+        const level = document.getElementById('reg-level').value;
+        const officeSelect = document.getElementById('reg-office');
+        const districtSelect = document.getElementById('reg-district');
+
+        const offices = {
+            'federal': ['U.S. Senate', 'U.S. House of Representatives'],
+            'statewide': ['Governor', 'Lt. Governor', 'Attorney General', 'Secretary of State',
+                         'State Treasurer', 'State Auditor', 'Superintendent of Public Instruction',
+                         'Commissioner of Insurance', 'Commissioner of Labor', 'Commissioner of Agriculture'],
+            'state-leg': ['State Senate', 'State House of Representatives'],
+            'county': ['County Commissioner', 'Sheriff', 'Register of Deeds', 'Clerk of Court',
+                       'District Attorney', 'Board of Elections'],
+            'municipal': ['Mayor', 'City Council', 'Town Council', 'Town Manager'],
+            'judicial': ['Supreme Court', 'Court of Appeals', 'Superior Court', 'District Court'],
+            'school': ['School Board']
+        };
+
+        officeSelect.innerHTML = '<option value="">Select office...</option>';
+        (offices[level] || []).forEach(o => {
+            officeSelect.innerHTML += `<option value="${o}">${o}</option>`;
+        });
+
+        // District options
+        districtSelect.innerHTML = '<option value="">Select district...</option>';
+        if (['federal', 'state-leg'].includes(level)) {
+            for (let i = 1; i <= (level === 'federal' ? 14 : 50); i++) {
+                districtSelect.innerHTML += `<option value="${i}">District ${i}</option>`;
+            }
+        } else if (level === 'county') {
+            const counties = ['Alamance','Buncombe','Burke','Cabarrus','Catawba','Cumberland',
+                            'Davidson','Durham','Forsyth','Gaston','Guilford','Henderson',
+                            'Iredell','Johnston','Mecklenburg','New Hanover','Onslow','Orange',
+                            'Pitt','Randolph','Robeson','Rowan','Union','Wake','Watauga'];
+            counties.forEach(c => {
+                districtSelect.innerHTML += `<option value="${c}">${c} County</option>`;
+            });
+        }
+    }
+
+    // ===== THEATER SEQUENCE =====
+    async function startTheaterSequence() {
+        const name = candidateData.preferred;
+        const fullName = `${candidateData.first} ${candidateData.last}`;
+        const office = candidateData.office || 'public office';
+
+        // 1. Open curtains
+        await delay(500);
+        document.getElementById('curtain-area').classList.add('curtains-open');
+        await delay(2000);
+
+        // 2. Spotlight center, Jason walks out
+        document.getElementById('spot-center').classList.add('on');
+        await delay(500);
+        document.getElementById('char-jason').classList.add('visible');
+        await delay(1200);
+
+        // 3. Jason speaks - welcome
+        await showSpeech('Jason Simmons',
+            `Welcome, ${name}! On behalf of the North Carolina Republican Party, ` +
+            `I want to personally thank you for stepping up to serve your community. ` +
+            `Your willingness to run for ${office} is exactly the kind of leadership North Carolina needs.`,
+            6000);
+
+        await showSpeech('Jason Simmons',
+            `The Party has taken extraordinary steps to ensure your success. ` +
+            `Through our partnership with BroyhillGOP, we've built an innovation platform ` +
+            `that puts the full resources of the National and State party at your fingertips. ` +
+            `Let me show you what I mean...`,
+            6000);
+
+        // 4. Jason turns, movie screen activates - Trump appears
+        hideSpeech();
+        await delay(800);
+        document.getElementById('spot-center').classList.remove('on');
+
+        // Screen lights up
+        const screenEl = document.getElementById('screen-content');
+        screenEl.style.background = 'linear-gradient(135deg, #0a1628, #1a2a4a)';
+        screenEl.innerHTML = `
+            <div style="padding: 20px;">
+                <div style="font-size: 48px; margin-bottom: 12px;">🇺🇸</div>
+                <div style="font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 8px;">
+                    President Donald J. Trump
+                </div>
+                <div style="font-size: 12px; color: rgba(255,255,255,0.5); letter-spacing: 2px;">
+                    A SPECIAL MESSAGE
+                </div>
+            </div>
+        `;
+        await delay(2000);
+
+        // 5. Trump speaks (on screen)
+        await showSpeech('President Trump',
+            `${name}, let me tell you something — what you're doing is incredible. ` +
+            `Running for office, that takes guts, that takes real courage. ` +
+            `And the people of North Carolina are lucky to have you.`,
+            5000);
+
+        await showSpeech('President Trump',
+            `We've built something very special here, very powerful. ` +
+            `The tools, the technology, the support — nobody has anything like this. ` +
+            `Nobody. And it's all for you, ${name}. Go win!`,
+            5000);
+
+        // 6. Candidate steps out from stage right
+        hideSpeech();
+        await delay(1000);
+        document.getElementById('spot-right').classList.add('on');
+        document.getElementById('char-candidate').classList.add('visible');
+        await delay(1500);
+
+        // 7. Candidate waves to Trump
+        await showSpeech(fullName,
+            `Mr. President — thank you sir. This is an honor I never expected. ` +
+            `Having your support means everything, and I won't let you down.`,
+            5000);
+
+        // 8. Candidate turns, shakes hands with Jason
+        document.getElementById('spot-center').classList.add('on');
+        await delay(500);
+
+        await showSpeech(fullName,
+            `Jason, thank you for this incredible platform. ` +
+            `The Republican Party standing behind its candidates like this — ` +
+            `that's how we win up and down the ballot.`,
+            4500);
+
+        // 9. Candidate faces audience - the surprise moment
+        await delay(500);
+        await showSpeech(fullName,
+            `And you... you weren't expecting this, were you, ${name}? ` +
+            `<span style="font-style:italic; color: var(--gray-400);">` +
+            `[ audience laughs ]</span>`,
+            4000);
+
+        // 10. Candidate shares bio and platform
+        await showSpeech(fullName,
+            `My name is ${fullName}, and I'm running for ${office} ` +
+            `because I believe in the promise of North Carolina. ` +
+            `I believe in strong families, safe communities, and the freedom ` +
+            `to build the life you choose.`,
+            6000);
+
+        await showSpeech(fullName,
+            `I'm asking for your vote. I'm asking for your financial support ` +
+            `to power this campaign. And I'm inviting every one of you ` +
+            `to join us as a volunteer — because together, we will deliver ` +
+            `a victory for the people.`,
+            6000);
+
+        // 11. Final thanks and wave
+        await showSpeech(fullName,
+            `Thank you, Mr. President. Thank you, Chairman Simmons. ` +
+            `And thank you, North Carolina. Let's go win this!`,
+            4000);
+
+        hideSpeech();
+        await delay(1000);
+
+        // 12. Screen fades, continue button appears
+        screenEl.innerHTML = `
+            <div style="padding: 20px;">
+                <div style="font-size: 36px; margin-bottom: 12px;">⭐</div>
+                <div style="font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 3px; color: var(--gold);">
+                    YOUR PLATFORM AWAITS
+                </div>
+            </div>
+        `;
+
+        document.getElementById('continue-btn').classList.add('visible');
+    }
+
+    // ===== SPEECH HELPERS =====
+    function showSpeech(name, text, duration) {
+        return new Promise(resolve => {
+            const bubble = document.getElementById('speech-bubble');
+            document.getElementById('speech-name').textContent = name;
+            document.getElementById('speech-text').innerHTML = text;
+            bubble.classList.add('visible');
+            setTimeout(() => {
+                resolve();
+            }, duration);
+        });
+    }
+
+    function hideSpeech() {
+        document.getElementById('speech-bubble').classList.remove('visible');
+    }
+
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+</script>
+</body>
+</html>
