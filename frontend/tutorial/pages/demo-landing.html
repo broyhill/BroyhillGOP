@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BroyhillGOP | Experience the Future of Political Fundraising</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-red: #C41E3A;
+            --dark-red: #8B0000;
+            --crimson: #DC143C;
+            --navy: #0A1628;
+            --navy-light: #1A2A44;
+            --gold: #D4AF37;
+            --white: #FFFFFF;
+            --gray-100: #F7F8FA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', -apple-system, sans-serif;
+            background: var(--navy);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(196, 30, 58, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(26, 42, 68, 0.8) 0%, var(--navy) 70%);
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--white);
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 4s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Main Container */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        /* Logo Section */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--white);
+            text-shadow: 0 4px 30px rgba(196, 30, 58, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .logo-text span {
+            color: var(--primary-red);
+        }
+
+        .tagline {
+            font-size: 1.25rem;
+            color: var(--gold);
+            margin-top: 0.5rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* Login Card */
+        .login-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .card-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-header p {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.95rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--gold);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(255,255,255,0.08);
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 1.1rem;
+            font-family: 'Source Sans Pro', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-red);
+            background: rgba(255,255,255,0.12);
+            box-shadow: 0 0 0 4px rgba(196, 30, 58, 0.2);
+        }
+
+        /* Bullseye Button */
+        .bullseye-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .bullseye-instruction {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .bullseye-btn {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            background: transparent;
+            transition: transform 0.3s ease;
+        }
+
+        .bullseye-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .bullseye-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Bullseye Rings */
+        .bullseye-ring {
+            position: absolute;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .ring-1 {
+            width: 140px;
+            height: 140px;
+            background: var(--dark-red);
+            box-shadow: 
+                0 8px 30px rgba(196, 30, 58, 0.5),
+                inset 0 2px 10px rgba(255,255,255,0.2);
+            animation: pulse 2s infinite;
+        }
+
+        .ring-2 {
+            width: 110px;
+            height: 110px;
+            background: var(--white);
+        }
+
+        .ring-3 {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-red);
+        }
+
+        .ring-4 {
+            width: 50px;
+            height: 50px;
+            background: var(--white);
+        }
+
+        .ring-5 {
+            width: 24px;
+            height: 24px;
+            background: var(--crimson);
+            box-shadow: 0 0 20px var(--primary-red);
+        }
+
+        /* Bullseye Hover Effect */
+        .bullseye-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .bullseye-btn:hover::after {
+            opacity: 1;
+            width: 170px;
+            height: 170px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 8px 30px rgba(196, 30, 58, 0.5); }
+            50% { box-shadow: 0 8px 50px rgba(196, 30, 58, 0.8), 0 0 60px rgba(196, 30, 58, 0.4); }
+        }
+
+        .bullseye-text {
+            margin-top: 1rem;
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Features Section */
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .feature {
+            text-align: center;
+            color: var(--white);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-text {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .feature-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--navy);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary-red);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--white);
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .loading-subtext {
+            color: var(--gold);
+            font-size: 0.95rem;
+        }
+
+        .loading-progress {
+            width: 300px;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            margin-top: 2rem;
+            overflow: hidden;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-red), var(--gold));
+            width: 0%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .loading-steps {
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+
+        .loading-step {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            padding: 0.25rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .loading-step.active {
+            color: var(--gold);
+        }
+
+        .loading-step.complete {
+            color: #28A745;
+        }
+
+        .loading-step .check {
+            display: none;
+        }
+
+        .loading-step.complete .check {
+            display: inline;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 2rem;
+            text-align: center;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .logo-text {
+                font-size: 2.5rem;
+            }
+            
+            .login-card {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .features {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .bullseye-btn {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .ring-1 { width: 120px; height: 120px; }
+            .ring-2 { width: 95px; height: 95px; }
+            .ring-3 { width: 70px; height: 70px; }
+            .ring-4 { width: 45px; height: 45px; }
+            .ring-5 { width: 22px; height: 22px; }
+        }
+
+        /* Error State */
+        .form-group.error input {
+            border-color: var(--primary-red);
+            background: rgba(196, 30, 58, 0.1);
+        }
+
+        .error-message {
+            color: var(--primary-red);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .form-group.error .error-message {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation"></div>
+    <div class="stars" id="stars"></div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Logo -->
+        <div class="logo-section">
+            <h1 class="logo-text">Broyhill<span>GOP</span></h1>
+            <p class="tagline">Precision • Intelligence • Victory</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="login-card">
+            <div class="card-header">
+                <h2>Experience Your Platform</h2>
+                <p>Enter your credentials to launch your personalized demo</p>
+            </div>
+
+            <form id="demo-login-form">
+                <div class="form-group" id="email-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" placeholder="candidate@example.com" required>
+                    <p class="error-message">Please enter a valid email address</p>
+                </div>
+
+                <div class="form-group" id="firstname-group">
+                    <label>First Name</label>
+                    <input type="text" id="firstname" placeholder="Your first name" required>
+                    <p class="error-message">Please enter your first name</p>
+                </div>
+
+                <div class="form-group" id="password-group">
+                    <label>Demo Access Code</label>
+                    <input type="password" id="password" placeholder="Enter: DEMO" required>
+                    <p class="error-message">Access code is: DEMO</p>
+                </div>
+
+                <div class="bullseye-container">
+                    <p class="bullseye-instruction">Hit the bullseye to launch your demo</p>
+                    <button type="submit" class="bullseye-btn" id="bullseye">
+                        <div class="bullseye-ring ring-1"></div>
+                        <div class="bullseye-ring ring-2"></div>
+                        <div class="bullseye-ring ring-3"></div>
+                        <div class="bullseye-ring ring-4"></div>
+                        <div class="bullseye-ring ring-5"></div>
+                    </button>
+                    <p class="bullseye-text">Launch Demo</p>
+                </div>
+            </form>
+        </div>
+
+        <!-- Features -->
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">👥</div>
+                <div class="feature-value">243,575</div>
+                <div class="feature-text">Donors in Database</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-value">87%</div>
+                <div class="feature-text">Match Accuracy</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📈</div>
+                <div class="feature-value">3-5x</div>
+                <div class="feature-text">Conversion Increase</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p class="loading-text" id="loading-text">Discovering Your Profile...</p>
+            <p class="loading-subtext" id="loading-subtext">Personalizing your BroyhillGOP experience</p>
+            
+            <div class="loading-progress">
+                <div class="loading-progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div class="loading-steps">
+                <div class="loading-step" id="step-1">
+                    <span class="check">✓</span> Verifying credentials
+                </div>
+                <div class="loading-step" id="step-2">
+                    <span class="check">✓</span> Loading candidate profile
+                </div>
+                <div class="loading-step" id="step-3">
+                    <span class="check">✓</span> Matching donors (243,575)
+                </div>
+                <div class="loading-step" id="step-4">
+                    <span class="check">✓</span> Generating AI presentation
+                </div>
+                <div class="loading-step" id="step-5">
+                    <span class="check">✓</span> Preparing personalized demo
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 BroyhillGOP | <a href="#">Privacy Policy</a> | <a href="#">Support</a></p>
+    </footer>
+
+    <script>
+        // Create stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 4 + 's';
+                star.style.width = Math.random() * 2 + 1 + 'px';
+                star.style.height = star.style.width;
+                starsContainer.appendChild(star);
+            }
+        }
+        createStars();
+
+        // Form validation and submission
+        const form = document.getElementById('demo-login-form');
+        const emailInput = document.getElementById('email');
+        const firstnameInput = document.getElementById('firstname');
+        const passwordInput = document.getElementById('password');
+        const loadingOverlay = document.getElementById('loading-overlay');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let isValid = true;
+            
+            // Validate email
+            const emailGroup = document.getElementById('email-group');
+            if (!emailInput.value || !emailInput.value.includes('@')) {
+                emailGroup.classList.add('error');
+                isValid = false;
+            } else {
+                emailGroup.classList.remove('error');
+            }
+            
+            // Validate first name
+            const firstnameGroup = document.getElementById('firstname-group');
+            if (!firstnameInput.value.trim()) {
+                firstnameGroup.classList.add('error');
+                isValid = false;
+            } else {
+                firstnameGroup.classList.remove('error');
+            }
+            
+            // Validate password (must be "DEMO")
+            const passwordGroup = document.getElementById('password-group');
+            if (passwordInput.value.toUpperCase() !== 'DEMO') {
+                passwordGroup.classList.add('error');
+                isValid = false;
+            } else {
+                passwordGroup.classList.remove('error');
+            }
+            
+            if (isValid) {
+                launchDemo();
+            }
+        });
+
+        // Remove error on input
+        [emailInput, firstnameInput, passwordInput].forEach(input => {
+            input.addEventListener('input', function() {
+                this.parentElement.classList.remove('error');
+            });
+        });
+
+        // Launch demo with loading animation
+        function launchDemo() {
+            loadingOverlay.classList.add('active');
+            
+            const steps = [
+                { id: 'step-1', text: 'Verifying credentials', progress: 10 },
+                { id: 'step-2', text: 'Loading candidate profile', progress: 30 },
+                { id: 'step-3', text: 'Matching donors (243,575)', progress: 55 },
+                { id: 'step-4', text: 'Generating AI presentation', progress: 80 },
+                { id: 'step-5', text: 'Preparing personalized demo', progress: 100 }
+            ];
+            
+            const progressBar = document.getElementById('progress-bar');
+            const loadingText = document.getElementById('loading-text');
+            
+            let currentStep = 0;
+            
+            function processStep() {
+                if (currentStep > 0) {
+                    document.getElementById(steps[currentStep - 1].id).classList.remove('active');
+                    document.getElementById(steps[currentStep - 1].id).classList.add('complete');
+                }
+                
+                if (currentStep < steps.length) {
+                    const step = steps[currentStep];
+                    document.getElementById(step.id).classList.add('active');
+                    loadingText.textContent = step.text + '...';
+                    progressBar.style.width = step.progress + '%';
+                    currentStep++;
+                    
+                    // Random delay between 4-8 seconds for realistic feel (total ~30 seconds)
+                    const delay = 4000 + Math.random() * 4000;
+                    setTimeout(processStep, delay);
+                } else {
+                    // Complete - redirect to demo player
+                    setTimeout(() => {
+                        const email = encodeURIComponent(emailInput.value);
+                        const name = encodeURIComponent(firstnameInput.value);
+                        window.location.href = `demo-player.html?email=${email}&name=${name}`;
+                    }, 1000);
+                }
+            }
+            
+            // Start processing
+            setTimeout(processStep, 500);
+        }
+
+        // Bullseye hover sound effect (optional)
+        const bullseye = document.getElementById('bullseye');
+        bullseye.addEventListener('mouseenter', function() {
+            // Could add hover sound here
+        });
+    </script>
+</body>
+</html>

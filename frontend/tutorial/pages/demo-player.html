@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BroyhillGOP | Your Personalized Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-red: #C41E3A;
+            --dark-red: #8B0000;
+            --navy: #0A1628;
+            --navy-light: #1A2A44;
+            --gold: #D4AF37;
+            --white: #FFFFFF;
+            --success: #28A745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', -apple-system, sans-serif;
+            background: var(--navy);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Main Demo Container */
+        .demo-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+        }
+
+        /* Platform Mockup Background */
+        .platform-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--white);
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .platform-bg.visible {
+            opacity: 1;
+        }
+
+        /* Platform Header */
+        .platform-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(90deg, var(--primary-red), var(--dark-red));
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            z-index: 50;
+            opacity: 0;
+            transform: translateY(-100%);
+            transition: all 0.5s ease;
+        }
+
+        .platform-header.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .platform-logo {
+            font-family: 'Playfair Display', serif;
+            color: var(--white);
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .platform-nav {
+            display: flex;
+            gap: 2rem;
+            margin-left: auto;
+        }
+
+        .nav-item {
+            color: rgba(255,255,255,0.9);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .nav-item.highlight {
+            animation: navHighlight 1s ease infinite;
+        }
+
+        @keyframes navHighlight {
+            0%, 100% { background: rgba(212, 175, 55, 0.3); }
+            50% { background: rgba(212, 175, 55, 0.6); }
+        }
+
+        /* Platform Sidebar */
+        .platform-sidebar {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 250px;
+            height: calc(100% - 60px);
+            background: var(--navy);
+            z-index: 40;
+            opacity: 0;
+            transform: translateX(-100%);
+            transition: all 0.5s ease 0.2s;
+        }
+
+        .platform-sidebar.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .sidebar-section {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-title {
+            color: var(--gold);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.75rem;
+        }
+
+        .sidebar-item {
+            color: rgba(255,255,255,0.8);
+            padding: 0.625rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-item:hover, .sidebar-item.active {
+            background: rgba(255,255,255,0.1);
+            color: var(--white);
+        }
+
+        .sidebar-item.highlight {
+            animation: sidebarHighlight 1s ease infinite;
+            background: rgba(196, 30, 58, 0.3);
+        }
+
+        @keyframes sidebarHighlight {
+            0%, 100% { background: rgba(196, 30, 58, 0.3); }
+            50% { background: rgba(196, 30, 58, 0.6); }
+        }
+
+        /* Platform Content Area */
+        .platform-content {
+            position: absolute;
+            top: 60px;
+            left: 250px;
+            width: calc(100% - 250px);
+            height: calc(100% - 60px);
+            background: #F5F7FA;
+            padding: 2rem;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.5s ease 0.4s;
+        }
+
+        .platform-content.visible {
+            opacity: 1;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+        }
+
+        .stat-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stat-card.highlight {
+            box-shadow: 0 0 0 3px var(--gold), 0 4px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            color: var(--success);
+            margin-top: 0.25rem;
+        }
+
+        /* AI Avatar Container */
+        .avatar-container {
+            position: fixed;
+            z-index: 100;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .avatar-container.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Avatar Positions */
+        .avatar-container.pos-center {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .avatar-container.pos-center.visible {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .avatar-container.pos-bottom-right {
+            bottom: 2rem;
+            right: 2rem;
+        }
+
+        .avatar-container.pos-bottom-left {
+            bottom: 2rem;
+            left: 270px;
+        }
+
+        .avatar-container.pos-top-right {
+            top: 80px;
+            right: 2rem;
+        }
+
+        /* Avatar Sizes */
+        .avatar-container.size-fullscreen .avatar-frame {
+            width: 400px;
+            height: 400px;
+        }
+
+        .avatar-container.size-large .avatar-frame {
+            width: 300px;
+            height: 300px;
+        }
+
+        .avatar-container.size-medium .avatar-frame {
+            width: 200px;
+            height: 200px;
+        }
+
+        .avatar-container.size-small .avatar-frame {
+            width: 150px;
+            height: 150px;
+        }
+
+        /* Avatar Frame */
+        .avatar-frame {
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border: 4px solid var(--gold);
+        }
+
+        .avatar-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: var(--navy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        /* Speaking Indicator */
+        .speaking-indicator {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .avatar-container.speaking .speaking-indicator {
+            opacity: 1;
+        }
+
+        .speaking-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 50%;
+            animation: speakingBounce 0.6s ease infinite;
+        }
+
+        .speaking-dot:nth-child(2) { animation-delay: 0.1s; }
+        .speaking-dot:nth-child(3) { animation-delay: 0.2s; }
+
+        @keyframes speakingBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Avatar Name Tag */
+        .avatar-name {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--navy);
+            color: var(--white);
+            padding: 0.375rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        /* Pointer Arrow */
+        .pointer-arrow {
+            position: fixed;
+            z-index: 90;
+            font-size: 4rem;
+            color: var(--primary-red);
+            text-shadow: 0 4px 10px rgba(196, 30, 58, 0.5);
+            opacity: 0;
+            transition: all 0.5s ease;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .pointer-arrow.visible {
+            opacity: 1;
+        }
+
+        .pointer-arrow.animate {
+            animation: pointerPulse 1s ease infinite;
+        }
+
+        @keyframes pointerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        /* Bubble Callout */
+        .bubble-callout {
+            position: fixed;
+            z-index: 95;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 350px;
+            opacity: 0;
+            transform: scale(0.9) translateY(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .bubble-callout.visible {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        .bubble-callout::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 12px solid transparent;
+        }
+
+        .bubble-callout.arrow-left::before {
+            left: -24px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-right-color: var(--white);
+        }
+
+        .bubble-callout.arrow-right::before {
+            right: -24px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left-color: var(--white);
+        }
+
+        .bubble-callout.arrow-top::before {
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-color: var(--white);
+        }
+
+        .bubble-callout.arrow-bottom::before {
+            bottom: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-top-color: var(--white);
+        }
+
+        .bubble-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .bubble-text {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .bubble-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Click Sound Visual */
+        .click-ripple {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            pointer-events: none;
+            z-index: 200;
+            opacity: 0;
+        }
+
+        .click-ripple.animate {
+            animation: rippleEffect 0.6s ease-out forwards;
+        }
+
+        @keyframes rippleEffect {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+
+        /* Welcome Overlay */
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--navy);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s ease;
+        }
+
+        .welcome-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .welcome-content {
+            text-align: center;
+            color: var(--white);
+        }
+
+        .welcome-avatars {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid var(--gold);
+            background: var(--navy-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            opacity: 0;
+            transform: scale(0.5);
+            animation: avatarEntrance 0.8s ease forwards;
+        }
+
+        .welcome-avatar:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes avatarEntrance {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .welcome-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            animation: fadeIn 1s ease 0.8s forwards;
+        }
+
+        .welcome-subtext {
+            font-size: 1.1rem;
+            color: var(--gold);
+            opacity: 0;
+            animation: fadeIn 1s ease 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Progress Bar */
+        .demo-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            z-index: 300;
+        }
+
+        .demo-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-red), var(--gold));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Controls */
+        .demo-controls {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            z-index: 150;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .demo-controls.visible {
+            opacity: 1;
+        }
+
+        .control-btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255,255,255,0.95);
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        }
+
+        .control-btn.primary {
+            background: var(--primary-red);
+            color: var(--white);
+        }
+
+        /* Ecosystem Labels */
+        .ecosystem-label {
+            position: fixed;
+            top: 80px;
+            left: 270px;
+            background: var(--navy);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 60;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.4s ease;
+        }
+
+        .ecosystem-label.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .ecosystem-label span {
+            color: var(--gold);
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="demo-progress">
+        <div class="demo-progress-bar" id="progress-bar"></div>
+    </div>
+
+    <!-- Welcome Overlay -->
+    <div class="welcome-overlay" id="welcome-overlay">
+        <div class="welcome-content">
+            <div class="welcome-avatars">
+                <div class="welcome-avatar" id="candidate-avatar">👤</div>
+                <div class="welcome-avatar" id="ed-avatar">👤</div>
+            </div>
+            <h1 class="welcome-text">Welcome, <span id="candidate-name">Candidate</span>!</h1>
+            <p class="welcome-subtext">Ed Broyhill will guide you through your personalized BroyhillGOP platform</p>
+        </div>
+    </div>
+
+    <!-- Main Demo Container -->
+    <div class="demo-container">
+        <!-- Platform Background -->
+        <div class="platform-bg" id="platform-bg"></div>
+        
+        <!-- Platform Header -->
+        <header class="platform-header" id="platform-header">
+            <div class="platform-logo">BroyhillGOP</div>
+            <nav class="platform-nav">
+                <div class="nav-item" data-section="dashboard">Dashboard</div>
+                <div class="nav-item" data-section="donors">Donors</div>
+                <div class="nav-item" data-section="campaigns">Campaigns</div>
+                <div class="nav-item" data-section="analytics">Analytics</div>
+                <div class="nav-item" data-section="volunteers">Volunteers</div>
+            </nav>
+        </header>
+
+        <!-- Platform Sidebar -->
+        <aside class="platform-sidebar" id="platform-sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Ecosystems</div>
+                <div class="sidebar-item" data-eco="0">🗄️ Data Hub</div>
+                <div class="sidebar-item" data-eco="1">🎯 Donor Intelligence</div>
+                <div class="sidebar-item" data-eco="2">💰 Donation Tracking</div>
+                <div class="sidebar-item" data-eco="3">📧 Campaign Outreach</div>
+                <div class="sidebar-item" data-eco="5">👥 Volunteer Mgmt</div>
+                <div class="sidebar-item" data-eco="7">📊 Analytics</div>
+                <div class="sidebar-item" data-eco="13">🤖 AI Hub</div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Quick Actions</div>
+                <div class="sidebar-item">➕ New Campaign</div>
+                <div class="sidebar-item">📤 Export Data</div>
+                <div class="sidebar-item">⚙️ Settings</div>
+            </div>
+        </aside>
+
+        <!-- Platform Content -->
+        <main class="platform-content" id="platform-content">
+            <div class="dashboard-grid">
+                <div class="stat-card" id="stat-donors">
+                    <div class="stat-label">Total Donors Matched</div>
+                    <div class="stat-value" id="donor-count">0</div>
+                    <div class="stat-change">↑ 87% match rate</div>
+                </div>
+                <div class="stat-card" id="stat-funds">
+                    <div class="stat-label">Fundraising Potential</div>
+                    <div class="stat-value" id="fund-amount">$0</div>
+                    <div class="stat-change">↑ Based on giving history</div>
+                </div>
+                <div class="stat-card" id="stat-campaigns">
+                    <div class="stat-label">Active Campaigns</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-change">4 channels active</div>
+                </div>
+                <div class="stat-card" id="stat-grade">
+                    <div class="stat-label">Your Donor Grade</div>
+                    <div class="stat-value" style="color: var(--success);">A+</div>
+                    <div class="stat-change">Top 5% of candidates</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Ecosystem Label -->
+        <div class="ecosystem-label" id="ecosystem-label">
+            <span>Ecosystem 0:</span> Data Hub
+        </div>
+    </div>
+
+    <!-- Avatar Container -->
+    <div class="avatar-container pos-center size-fullscreen" id="avatar-container">
+        <div class="avatar-frame">
+            <div class="avatar-image" id="avatar-image">👤</div>
+        </div>
+        <div class="speaking-indicator">
+            <div class="speaking-dot"></div>
+            <div class="speaking-dot"></div>
+            <div class="speaking-dot"></div>
+        </div>
+        <div class="avatar-name" id="avatar-name">Ed Broyhill</div>
+    </div>
+
+    <!-- Pointer Arrow -->
+    <div class="pointer-arrow" id="pointer-arrow">👆</div>
+
+    <!-- Bubble Callout -->
+    <div class="bubble-callout arrow-left" id="bubble-callout">
+        <div class="bubble-icon">🎯</div>
+        <div class="bubble-title">Donor Intelligence</div>
+        <div class="bubble-text">Our AI has matched you with 28,450 donors who align with your positions on fiscal responsibility and 2nd Amendment rights.</div>
+    </div>
+
+    <!-- Click Ripple Effect -->
+    <div class="click-ripple" id="click-ripple"></div>
+
+    <!-- Demo Controls -->
+    <div class="demo-controls" id="demo-controls">
+        <button class="control-btn" onclick="skipSection()">⏭️ Skip</button>
+        <button class="control-btn" onclick="togglePause()">⏸️ Pause</button>
+        <button class="control-btn primary" onclick="continueDemo()">Continue ▶️</button>
+    </div>
+
+    <!-- Audio for click sounds -->
+    <audio id="click-sound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH+Onp2ckZaGdm1tbXZ/h4uHgHdxcG9wcHN2fICEhoiFgnx3dHJycXFydXl9gYWIiIiFgn14dHFvb29xdHh9gYaIiYqIhYJ+eXRwbm5ub3J2en+EiIqLioiEgHt3c29ubm5vcnZ7gISIi4yLiYWBfHh0cG5ubm9ydnuAhYmMjYyKhoJ9eHRwbm1ub3J2e4CGioyOjYuHg355dXBubW1vcnZ7gIWJjI6OjIiEgHx3c29tbW5vcnd7gIWJjI6OjYqGgn15dHBubW1vcnd8gIaKjY6OjImFgX15dHBubW5vcnd8gYaKjY+OjYqGgn55dXFvbm5vcnd8gYaKjY+PjYqGgn55dXBubW5wcnd8gYaKjY+PjYqGgn55dXFvbm5vcnd8gYaKjY+PjYqHg396dXFvbm5wcnh9gYaKjY+PjYqHg396dXFvbm5wcnh9gYaKjY+PjYqHg396dXFvbm5wcXh9gYeLjY+PjYqHg396dXFvbm5wcXh9goeKjY+PjYqHg396dnFvbm5wcXh9goeKjY+PjYqHhH96dnJwbm5wcXl+goeKjY+QjYuHhH96dnJwb25wcXl+goeKjY+QjouHhH96dnJwb29wcXl+goeKjY+QjouHhH96dnJwb29wcXl+goeKjY+QjouHhH97dnJwb29wcXl+goeKjo+QjouIhH97dnJwb29wcXl+goeKjo+QjouIhH97dnJwb29xcnl+g4eKjo+QjouIhYB7d3Jwb29xcnl+g4eKjo+QjouIhYB7d3Jwb29xcnl/g4eLjo+QjouIhYB7d3Jwb29xcnl/g4eLjo+QjoyIhYB8d3Nwb29xcnl/g4eLjo+Qj4yIhYB8d3Nwb29xcnp/g4eLjo+Qj4yJhYF8d3Nwb29xcnp/g4eLjo+Qj4yJhYF8d3NxcG9xcnp/g4eLjo+Qj4yJhoF8eHNxcG9xcnp/g4iLjo+Qj4yJhoF8eHNxcHBxcnp/g4iLjo+Qj4yJhoF9eHRxcHBxc3p/g4iLjo+Qj42JhoJ9eHRxcHBxc3qAhIiLjo+Qj42KhoJ9eHRxcHBxc3qAhIiLj5CQj42KhoJ9eXRxcHBxc3uAhIiLj5CQj42KhoJ9eXVycXBxc3uAhIiMj5CQj42Kh4J+eXVycXBydHuAhYiMj5CQkI2Kh4N+eXVycXFydHuAhYiMj5CQkI2Lh4N+enVycXFydHuBhYiMj5CQkI6Lh4N/enZycXFydHuBhYmMj5CQkI6Lh4N/enZzcnFydXyBhYmMj5GQkI6Lh4N/e3ZzcnFydXyBhYmMkJGQkI6LiIN/e3ZzcnFydXyBhomMkJGRkI6LiIN/e3dzcnJydXyChomMkJGRkI6MiIR/fHdzcnJydXyCho" type="audio/wav">
+    </audio>
+
+    <script>
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const candidateName = decodeURIComponent(urlParams.get('name') || 'Candidate');
+        const candidateEmail = decodeURIComponent(urlParams.get('email') || '');
+
+        // Update welcome text
+        document.getElementById('candidate-name').textContent = candidateName;
+
+        // Demo state
+        let currentStep = 0;
+        let isPaused = false;
+        let demoSteps = [];
+
+        // Initialize demo sequence
+        function initDemo() {
+            demoSteps = [
+                // Step 0: Welcome - avatars talk
+                {
+                    type: 'welcome',
+                    duration: 5000,
+                    action: () => {
+                        // Welcome already showing
+                    }
+                },
+                // Step 1: Candidate avatar speaks
+                {
+                    type: 'avatar-speak',
+                    speaker: 'candidate',
+                    text: `Welcome to my personalized BroyhillGOP platform!`,
+                    duration: 4000,
+                    action: () => {
+                        // Candidate introduction
+                    }
+                },
+                // Step 2: Ed appears
+                {
+                    type: 'avatar-speak',
+                    speaker: 'ed',
+                    text: `Thank you, ${candidateName}! I'm Ed Broyhill, and I'll show you how our platform will transform your campaign.`,
+                    duration: 5000,
+                    action: () => {
+                        // Ed introduction
+                    }
+                },
+                // Step 3: Hide welcome, show platform
+                {
+                    type: 'transition',
+                    duration: 2000,
+                    action: () => {
+                        document.getElementById('welcome-overlay').classList.add('hidden');
+                        document.getElementById('platform-bg').classList.add('visible');
+                        document.getElementById('platform-header').classList.add('visible');
+                        document.getElementById('platform-sidebar').classList.add('visible');
+                        document.getElementById('platform-content').classList.add('visible');
+                        
+                        // Move avatar to corner
+                        const avatar = document.getElementById('avatar-container');
+                        avatar.classList.remove('pos-center', 'size-fullscreen');
+                        avatar.classList.add('pos-bottom-right', 'size-medium', 'visible');
+                    }
+                },
+                // Step 4: Show dashboard cards
+                {
+                    type: 'reveal',
+                    duration: 3000,
+                    action: () => {
+                        document.querySelectorAll('.stat-card').forEach((card, i) => {
+                            setTimeout(() => card.classList.add('visible'), i * 200);
+                        });
+                        animateNumber('donor-count', 0, 28450, 2000);
+                        animateNumber('fund-amount', 0, 6200000, 2000, '$', true);
+                    }
+                },
+                // Step 5: Point to donor count
+                {
+                    type: 'point',
+                    target: 'stat-donors',
+                    pointer: '👈',
+                    bubble: {
+                        title: '🎯 Donor Intelligence',
+                        text: `${candidateName}, our AI has matched you with 28,450 donors who strongly align with your positions. These aren't random names—they're pre-qualified supporters.`
+                    },
+                    duration: 8000,
+                    action: () => {
+                        document.getElementById('stat-donors').classList.add('highlight');
+                        showPointer('right', getElementCenter('stat-donors'));
+                        showBubble('stat-donors', 'right');
+                        setSpeaking(true);
+                    }
+                },
+                // Step 6: Point to fundraising potential
+                {
+                    type: 'point',
+                    target: 'stat-funds',
+                    pointer: '👈',
+                    bubble: {
+                        title: '💰 Fundraising Potential',
+                        text: `Based on historical giving patterns, your matched donors have a combined giving potential of $6.2 million. We help you tap into that.`
+                    },
+                    duration: 7000,
+                    action: () => {
+                        document.getElementById('stat-donors').classList.remove('highlight');
+                        document.getElementById('stat-funds').classList.add('highlight');
+                        showPointer('right', getElementCenter('stat-funds'));
+                        showBubble('stat-funds', 'right');
+                    }
+                },
+                // Step 7: Point to sidebar - Donor Intelligence
+                {
+                    type: 'point',
+                    target: '[data-eco="1"]',
+                    pointer: '👉',
+                    bubble: {
+                        title: '📊 21-Tier Donor Grading',
+                        text: `Every donor is graded from A+ to U-. We know who's most likely to donate, how much, and when. No more guessing.`
+                    },
+                    duration: 8000,
+                    action: () => {
+                        document.getElementById('stat-funds').classList.remove('highlight');
+                        document.querySelector('[data-eco="1"]').classList.add('highlight');
+                        updateEcosystemLabel(1, 'Donor Intelligence');
+                        showPointer('left', getElementCenter('[data-eco="1"]'));
+                        showBubble('[data-eco="1"]', 'left');
+                    }
+                },
+                // Step 8: Point to Campaign Outreach
+                {
+                    type: 'point',
+                    target: '[data-eco="3"]',
+                    pointer: '👉',
+                    bubble: {
+                        title: '📧 1,536 Campaign Templates',
+                        text: `4 channels × 24 purposes × 16 follow-ups. Our AI generates personalized outreach that converts 3-5x better than generic campaigns.`
+                    },
+                    duration: 8000,
+                    action: () => {
+                        document.querySelector('[data-eco="1"]').classList.remove('highlight');
+                        document.querySelector('[data-eco="3"]').classList.add('highlight');
+                        updateEcosystemLabel(3, 'Campaign Outreach');
+                        showPointer('left', getElementCenter('[data-eco="3"]'));
+                        showBubble('[data-eco="3"]', 'left');
+                    }
+                },
+                // Step 9: Point to AI Hub
+                {
+                    type: 'point',
+                    target: '[data-eco="13"]',
+                    pointer: '👉',
+                    bubble: {
+                        title: '🤖 AI Hub',
+                        text: `This is where the magic happens. Our AI analyzes 860 data points per donor to create perfect matches and generate compelling campaign content.`
+                    },
+                    duration: 8000,
+                    action: () => {
+                        document.querySelector('[data-eco="3"]').classList.remove('highlight');
+                        document.querySelector('[data-eco="13"]').classList.add('highlight');
+                        updateEcosystemLabel(13, 'AI Hub');
+                        showPointer('left', getElementCenter('[data-eco="13"]'));
+                        showBubble('[data-eco="13"]', 'left');
+                    }
+                },
+                // Step 10: Final CTA
+                {
+                    type: 'conclusion',
+                    duration: 10000,
+                    action: () => {
+                        document.querySelector('[data-eco="13"]').classList.remove('highlight');
+                        hidePointer();
+                        hideBubble();
+                        
+                        // Move avatar to center
+                        const avatar = document.getElementById('avatar-container');
+                        avatar.classList.remove('pos-bottom-right', 'size-medium');
+                        avatar.classList.add('pos-center', 'size-large');
+                        
+                        showBubble(null, 'center', {
+                            title: `🎯 Ready to Win, ${candidateName}?`,
+                            text: `You've seen what BroyhillGOP can do. 28,450 donors waiting. $6.2M potential. Let's get started. Hit the button below to activate your campaign.`
+                        });
+                        
+                        document.getElementById('demo-controls').classList.add('visible');
+                    }
+                }
+            ];
+
+            // Start the demo
+            setTimeout(runStep, 3000);
+        }
+
+        function runStep() {
+            if (isPaused || currentStep >= demoSteps.length) return;
+            
+            const step = demoSteps[currentStep];
+            updateProgress();
+            
+            // Execute step action
+            if (step.action) step.action();
+            
+            // Play click sound for point steps
+            if (step.type === 'point') {
+                playClickSound();
+            }
+            
+            currentStep++;
+            
+            // Schedule next step
+            if (currentStep < demoSteps.length) {
+                setTimeout(runStep, step.duration);
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentStep / demoSteps.length) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+        }
+
+        // Helper functions
+        function getElementCenter(selector) {
+            const el = typeof selector === 'string' ? document.querySelector(selector) : selector;
+            if (!el) return { x: 0, y: 0 };
+            const rect = el.getBoundingClientRect();
+            return {
+                x: rect.left + rect.width / 2,
+                y: rect.top + rect.height / 2
+            };
+        }
+
+        function showPointer(direction, position) {
+            const pointer = document.getElementById('pointer-arrow');
+            const offset = 60;
+            
+            let x = position.x;
+            let y = position.y;
+            
+            switch(direction) {
+                case 'left':
+                    pointer.textContent = '👉';
+                    x -= offset + 50;
+                    break;
+                case 'right':
+                    pointer.textContent = '👈';
+                    x += offset;
+                    break;
+                case 'up':
+                    pointer.textContent = '👇';
+                    y -= offset;
+                    break;
+                case 'down':
+                    pointer.textContent = '👆';
+                    y += offset;
+                    break;
+            }
+            
+            pointer.style.left = x + 'px';
+            pointer.style.top = y + 'px';
+            pointer.classList.add('visible', 'animate');
+        }
+
+        function hidePointer() {
+            const pointer = document.getElementById('pointer-arrow');
+            pointer.classList.remove('visible', 'animate');
+        }
+
+        function showBubble(targetSelector, direction, customContent) {
+            const bubble = document.getElementById('bubble-callout');
+            
+            if (customContent) {
+                bubble.querySelector('.bubble-title').textContent = customContent.title;
+                bubble.querySelector('.bubble-text').textContent = customContent.text;
+            }
+            
+            // Position bubble
+            let x, y;
+            
+            if (targetSelector === null) {
+                // Center bubble
+                x = window.innerWidth / 2 - 175;
+                y = window.innerHeight / 2 + 100;
+                bubble.className = 'bubble-callout arrow-top';
+            } else {
+                const target = document.querySelector(targetSelector);
+                const rect = target.getBoundingClientRect();
+                
+                switch(direction) {
+                    case 'left':
+                        x = rect.right + 40;
+                        y = rect.top + rect.height / 2 - 60;
+                        bubble.className = 'bubble-callout arrow-left';
+                        break;
+                    case 'right':
+                        x = rect.left - 390;
+                        y = rect.top + rect.height / 2 - 60;
+                        bubble.className = 'bubble-callout arrow-right';
+                        break;
+                }
+            }
+            
+            bubble.style.left = x + 'px';
+            bubble.style.top = y + 'px';
+            bubble.classList.add('visible');
+        }
+
+        function hideBubble() {
+            document.getElementById('bubble-callout').classList.remove('visible');
+        }
+
+        function setSpeaking(speaking) {
+            const avatar = document.getElementById('avatar-container');
+            if (speaking) {
+                avatar.classList.add('speaking');
+            } else {
+                avatar.classList.remove('speaking');
+            }
+        }
+
+        function updateEcosystemLabel(num, name) {
+            const label = document.getElementById('ecosystem-label');
+            label.innerHTML = `<span>Ecosystem ${num}:</span> ${name}`;
+            label.classList.add('visible');
+        }
+
+        function playClickSound() {
+            // Visual click effect
+            const ripple = document.getElementById('click-ripple');
+            const pointer = document.getElementById('pointer-arrow');
+            const rect = pointer.getBoundingClientRect();
+            
+            ripple.style.left = (rect.left + rect.width / 2 - 20) + 'px';
+            ripple.style.top = (rect.top + rect.height / 2 - 20) + 'px';
+            ripple.classList.remove('animate');
+            void ripple.offsetWidth; // Trigger reflow
+            ripple.classList.add('animate');
+            
+            // Play sound
+            const sound = document.getElementById('click-sound');
+            sound.currentTime = 0;
+            sound.play().catch(() => {});
+        }
+
+        function animateNumber(elementId, start, end, duration, prefix = '', format = false) {
+            const element = document.getElementById(elementId);
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                let current = Math.floor(start + (end - start) * progress);
+                
+                if (format) {
+                    element.textContent = prefix + current.toLocaleString();
+                } else {
+                    element.textContent = prefix + current.toLocaleString();
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+
+        // Control functions
+        function togglePause() {
+            isPaused = !isPaused;
+            if (!isPaused) runStep();
+        }
+
+        function skipSection() {
+            if (currentStep < demoSteps.length - 1) {
+                currentStep = demoSteps.length - 1;
+                demoSteps[currentStep].action();
+                updateProgress();
+            }
+        }
+
+        function continueDemo() {
+            // Redirect to signup or next action
+            alert('🎉 Demo Complete!\n\nReady to activate your BroyhillGOP campaign?\n\nContact us to get started!');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', initDemo);
+    </script>
+</body>
+</html>

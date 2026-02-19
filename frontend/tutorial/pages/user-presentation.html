@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BroyhillGOP | Your Personalized Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-red: #C41E3A;
+            --dark-red: #8B0000;
+            --navy: #0A1628;
+            --navy-light: #1A2A44;
+            --gold: #D4AF37;
+            --white: #FFFFFF;
+            --gray-100: #F7F8FA;
+            --gray-200: #E5E7EB;
+            --gray-600: #6B7280;
+            --success: #28A745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', -apple-system, sans-serif;
+            background: var(--navy);
+            min-height: 100vh;
+            color: var(--white);
+        }
+
+        /* ========== WELCOME SCREEN ========== */
+        .welcome-screen {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, var(--navy) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-screen::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 30%, rgba(196, 30, 58, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 70%, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-5%, -5%); }
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 700px;
+        }
+
+        .welcome-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-logo span {
+            color: var(--primary-red);
+        }
+
+        .welcome-tagline {
+            color: var(--gold);
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .welcome-greeting {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        .welcome-name {
+            color: var(--gold);
+        }
+
+        .welcome-message {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Stats Preview */
+        .stats-preview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 600px) {
+            .stats-preview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 1.25rem 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .start-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem 3rem;
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .start-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 40px rgba(196, 30, 58, 0.4);
+        }
+
+        .start-button .icon {
+            font-size: 1.5rem;
+        }
+
+        .welcome-footer {
+            position: absolute;
+            bottom: 2rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.9rem;
+        }
+
+        /* ========== PRESENTATION SCREEN ========== */
+        .presentation-screen {
+            min-height: 100vh;
+            display: none;
+            flex-direction: column;
+        }
+
+        .presentation-screen.active {
+            display: flex;
+        }
+
+        /* Video Container */
+        .video-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            position: relative;
+        }
+
+        .video-player {
+            width: 100%;
+            max-width: 1280px;
+            aspect-ratio: 16/9;
+            background: var(--navy-light);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem;
+        }
+
+        .video-player video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.7);
+            padding: 2rem;
+        }
+
+        .video-placeholder .icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        .avatar-preview {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            max-width: 600px;
+        }
+
+        .avatar-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            border: 3px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .avatar-script {
+            flex: 1;
+            text-align: left;
+        }
+
+        .avatar-script .speaking {
+            font-style: italic;
+            color: var(--gold);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Progress Bar */
+        .video-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .video-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-red), var(--gold));
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        /* Controls */
+        .video-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(0,0,0,0.8);
+            border-radius: 50px;
+        }
+
+        .control-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 50%;
+            color: var(--white);
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: var(--primary-red);
+        }
+
+        /* ========== COMPLETION / BULLSEYE SCREEN ========== */
+        .completion-screen {
+            min-height: 100vh;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            position: relative;
+        }
+
+        .completion-screen.active {
+            display: flex;
+        }
+
+        .completion-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .completion-message {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+            max-width: 600px;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* BULLSEYE BUTTON */
+        .bullseye-container {
+            margin: 2rem 0;
+        }
+
+        .bullseye-btn {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: 
+                radial-gradient(circle at 50% 50%, var(--white) 0%, var(--white) 15%, 
+                var(--primary-red) 15%, var(--primary-red) 30%,
+                var(--white) 30%, var(--white) 45%,
+                var(--primary-red) 45%, var(--primary-red) 60%,
+                var(--white) 60%, var(--white) 75%,
+                var(--primary-red) 75%, var(--primary-red) 100%);
+            border: 4px solid var(--gold);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 50px rgba(196, 30, 58, 0.5);
+            position: relative;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 10px 50px rgba(196, 30, 58, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 15px 60px rgba(196, 30, 58, 0.7); }
+        }
+
+        .bullseye-btn:hover {
+            animation: none;
+            transform: scale(1.1);
+            box-shadow: 0 20px 70px rgba(196, 30, 58, 0.8);
+        }
+
+        .bullseye-btn::after {
+            content: '🎯';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .bullseye-label {
+            margin-top: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .bullseye-sublabel {
+            color: rgba(255,255,255,0.6);
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Platform Ready Badge */
+        .platform-ready {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid var(--success);
+            border-radius: 50px;
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        /* ========== DEPLOYING SCREEN ========== */
+        .deploying-screen {
+            min-height: 100vh;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            background: var(--navy);
+        }
+
+        .deploying-screen.active {
+            display: flex;
+        }
+
+        .deploy-spinner {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: var(--gold);
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .deploy-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .deploy-status {
+            color: var(--gold);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .deploy-steps {
+            text-align: left;
+            max-width: 400px;
+        }
+
+        .deploy-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            color: rgba(255,255,255,0.5);
+            font-size: 1rem;
+        }
+
+        .deploy-step.active {
+            color: var(--gold);
+        }
+
+        .deploy-step.complete {
+            color: var(--success);
+        }
+
+        .deploy-step .check {
+            width: 24px;
+            text-align: center;
+        }
+
+        /* ========== DEPLOYED SUCCESS SCREEN ========== */
+        .deployed-screen {
+            min-height: 100vh;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+        }
+
+        .deployed-screen.active {
+            display: flex;
+        }
+
+        .success-icon {
+            font-size: 6rem;
+            margin-bottom: 1.5rem;
+            animation: bounceIn 0.6s ease;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .deployed-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--success);
+        }
+
+        .deployed-message {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+            max-width: 600px;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .platform-url {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            color: var(--gold);
+            margin-bottom: 2rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-btn {
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
+            color: var(--white);
+            border: none;
+        }
+
+        .action-btn.secondary {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid var(--white);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        /* ========== MOBILE ========== */
+        @media (max-width: 768px) {
+            .welcome-logo { font-size: 2rem; }
+            .welcome-greeting { font-size: 1.75rem; }
+            .bullseye-btn { width: 150px; height: 150px; }
+            .avatar-preview { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- WELCOME SCREEN -->
+    <div class="welcome-screen" id="welcome-screen">
+        <div class="welcome-content">
+            <div class="welcome-logo">Broyhill<span>GOP</span></div>
+            <div class="welcome-tagline">AI-Powered Campaign Intelligence</div>
+            
+            <h1 class="welcome-greeting">
+                Welcome, <span class="welcome-name" id="user-first-name">Candidate</span>!
+            </h1>
+            
+            <p class="welcome-message">
+                Your personalized demo for <strong id="user-campaign">Your Campaign</strong> is ready. 
+                We've matched you with donors who align with your positions and prepared your custom platform.
+            </p>
+
+            <!-- Stats Preview from Library -->
+            <div class="stats-preview">
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-donors">--</div>
+                    <div class="stat-label">Matched Donors</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-potential">--</div>
+                    <div class="stat-label">Est. Potential</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-match">--</div>
+                    <div class="stat-label">Match Rate</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-grade">--</div>
+                    <div class="stat-label">Top Grade</div>
+                </div>
+            </div>
+            
+            <button class="start-button" onclick="startPresentation()">
+                <span class="icon">▶️</span>
+                <span>Watch Your Demo</span>
+            </button>
+        </div>
+        
+        <div class="welcome-footer">
+            Demo ID: <span id="demo-id">BGOP-DEMO-XXX</span> • Prepared for <span id="footer-name">you</span>
+        </div>
+    </div>
+
+    <!-- PRESENTATION SCREEN -->
+    <div class="presentation-screen" id="presentation-screen">
+        <div class="video-container" id="video-container">
+            <div class="video-player" id="video-player">
+                <div class="video-placeholder" id="video-placeholder">
+                    <div class="icon">🎬</div>
+                    <div style="font-size: 1.25rem; margin-bottom: 1rem;">Your Personalized Presentation</div>
+                    
+                    <div class="avatar-preview">
+                        <div class="avatar-image">👤</div>
+                        <div class="avatar-script">
+                            <div class="speaking" id="script-preview">
+                                "Welcome, <span class="name-insert">Candidate</span>! I'm Ed Broyhill, and I'm excited to show you how BroyhillGOP will transform your <span class="campaign-insert">campaign</span>..."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <video id="main-video" style="display: none;" onended="onVideoEnd()">
+                    <source src="" type="video/mp4">
+                </video>
+            </div>
+            
+            <div class="video-progress">
+                <div class="video-progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div class="video-controls">
+                <button class="control-btn" onclick="togglePlay()" id="play-btn">⏸️</button>
+                <button class="control-btn" onclick="skipToEnd()">⏭️ Skip</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMPLETION / BULLSEYE SCREEN -->
+    <div class="completion-screen" id="completion-screen">
+        <div class="platform-ready">
+            ✅ Your Platform is Ready to Deploy
+        </div>
+        
+        <h1 class="completion-title">Ready to Transform Your Campaign?</h1>
+        
+        <p class="completion-message">
+            <span id="completion-name">Candidate</span>, you've seen how BroyhillGOP can revolutionize your <span id="completion-campaign">campaign</span>. 
+            Your personalized platform with <span id="completion-donors">2,847</span> matched donors is ready to deploy.
+        </p>
+
+        <div class="bullseye-container">
+            <button class="bullseye-btn" onclick="deployPlatform()" id="bullseye-btn" title="Click to Deploy Your Platform"></button>
+            <div class="bullseye-label">Hit the Bullseye</div>
+            <div class="bullseye-sublabel">Deploy Your Platform Now</div>
+        </div>
+
+        <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-top: 2rem;">
+            Or <a href="#schedule" style="color: var(--gold);">schedule a call</a> to discuss first
+        </p>
+    </div>
+
+    <!-- DEPLOYING SCREEN -->
+    <div class="deploying-screen" id="deploying-screen">
+        <div class="deploy-spinner"></div>
+        <h1 class="deploy-title">Deploying Your Platform</h1>
+        <p class="deploy-status" id="deploy-status">Initializing...</p>
+        
+        <div class="deploy-steps">
+            <div class="deploy-step" id="deploy-step-1">
+                <span class="check">⬜</span>
+                <span>Configuring your campaign profile</span>
+            </div>
+            <div class="deploy-step" id="deploy-step-2">
+                <span class="check">⬜</span>
+                <span>Loading donor database (<span id="deploy-donor-count">2,847</span> donors)</span>
+            </div>
+            <div class="deploy-step" id="deploy-step-3">
+                <span class="check">⬜</span>
+                <span>Setting up AI campaign builder</span>
+            </div>
+            <div class="deploy-step" id="deploy-step-4">
+                <span class="check">⬜</span>
+                <span>Generating personalized templates</span>
+            </div>
+            <div class="deploy-step" id="deploy-step-5">
+                <span class="check">⬜</span>
+                <span>Activating your platform</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEPLOYED SUCCESS SCREEN -->
+    <div class="deployed-screen" id="deployed-screen">
+        <div class="success-icon">🎉</div>
+        <h1 class="deployed-title">Platform Deployed!</h1>
+        
+        <p class="deployed-message">
+            Congratulations, <span id="deployed-name">Candidate</span>! Your BroyhillGOP platform is now live. 
+            You have instant access to <span id="deployed-donors">2,847</span> matched donors and the full suite of AI-powered campaign tools.
+        </p>
+
+        <div class="platform-url" id="platform-url">
+            https://app.broyhillgop.com/<span id="url-slug">your-campaign</span>
+        </div>
+
+        <div class="action-buttons">
+            <a href="#" class="action-btn primary" id="launch-platform-btn">
+                🚀 Launch Your Platform
+            </a>
+            <a href="#" class="action-btn secondary" onclick="replayDemo()">
+                🔄 Watch Demo Again
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // USER DATA - Pulled from URL params (from library)
+        // ========================================
+        let userData = {
+            firstName: 'Candidate',
+            lastName: '',
+            campaign: 'Your Campaign',
+            office: 'Your Office',
+            donors: '2,847',
+            potential: '$127,500',
+            matchRate: '87%',
+            topGrade: 'A+',
+            demoId: 'BGOP-DEMO-XXX',
+            videoUrl: '',
+            platformReady: true
+        };
+
+        // ========================================
+        // INITIALIZATION - Pull from library via URL
+        // ========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            
+            // Load user data from URL params (set by login page from library)
+            userData.firstName = params.get('firstName') || 'Candidate';
+            userData.lastName = params.get('lastName') || '';
+            userData.campaign = params.get('campaign') || 'Your Campaign';
+            userData.office = params.get('office') || 'Your Office';
+            userData.donors = params.get('donors') || '2,847';
+            userData.potential = params.get('potential') || '$127,500';
+            userData.matchRate = params.get('matchRate') || '87%';
+            userData.topGrade = params.get('topGrade') || 'A+';
+            userData.demoId = params.get('demoId') || 'BGOP-DEMO-XXX';
+            userData.videoUrl = params.get('videoUrl') || '';
+            userData.platformReady = params.get('platformReady') === 'true';
+            
+            populateUserData();
+        });
+
+        function populateUserData() {
+            const fullName = userData.firstName + (userData.lastName ? ' ' + userData.lastName : '');
+            
+            // Welcome screen
+            document.getElementById('user-first-name').textContent = userData.firstName;
+            document.getElementById('user-campaign').textContent = userData.campaign;
+            document.getElementById('footer-name').textContent = fullName;
+            document.getElementById('demo-id').textContent = userData.demoId;
+            
+            // Stats
+            document.getElementById('stat-donors').textContent = userData.donors;
+            document.getElementById('stat-potential').textContent = userData.potential;
+            document.getElementById('stat-match').textContent = userData.matchRate;
+            document.getElementById('stat-grade').textContent = userData.topGrade;
+            
+            // Script preview
+            document.querySelectorAll('.name-insert').forEach(el => el.textContent = userData.firstName);
+            document.querySelectorAll('.campaign-insert').forEach(el => el.textContent = userData.campaign);
+            
+            // Completion screen
+            document.getElementById('completion-name').textContent = userData.firstName;
+            document.getElementById('completion-campaign').textContent = userData.campaign;
+            document.getElementById('completion-donors').textContent = userData.donors;
+            
+            // Deploy screen
+            document.getElementById('deploy-donor-count').textContent = userData.donors;
+            
+            // Deployed screen
+            document.getElementById('deployed-name').textContent = userData.firstName;
+            document.getElementById('deployed-donors').textContent = userData.donors;
+            
+            // URL slug
+            const slug = userData.campaign.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+            document.getElementById('url-slug').textContent = slug;
+            document.getElementById('platform-url').textContent = `https://app.broyhillgop.com/${slug}`;
+            document.getElementById('launch-platform-btn').href = `https://app.broyhillgop.com/${slug}`;
+        }
+
+        // ========================================
+        // SCREEN NAVIGATION
+        // ========================================
+        function showScreen(screenId) {
+            const screens = ['welcome-screen', 'presentation-screen', 'completion-screen', 'deploying-screen', 'deployed-screen'];
+            
+            screens.forEach(id => {
+                const screen = document.getElementById(id);
+                if (id === screenId) {
+                    screen.classList.add('active');
+                    if (id === 'welcome-screen') screen.style.display = 'flex';
+                } else {
+                    screen.classList.remove('active');
+                    if (id === 'welcome-screen') screen.style.display = 'none';
+                }
+            });
+        }
+
+        // ========================================
+        // PRESENTATION
+        // ========================================
+        function startPresentation() {
+            showScreen('presentation-screen');
+            
+            const video = document.getElementById('main-video');
+            const placeholder = document.getElementById('video-placeholder');
+            
+            if (userData.videoUrl) {
+                // Load video from library
+                video.querySelector('source').src = userData.videoUrl;
+                video.load();
+                video.style.display = 'block';
+                placeholder.style.display = 'none';
+                video.play();
+                trackProgress();
+            } else {
+                // Demo mode - simulate presentation
+                simulatePresentation();
+            }
+        }
+
+        function simulatePresentation() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 1;
+                document.getElementById('progress-bar').style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    onVideoEnd();
+                }
+            }, 300); // ~30 second demo
+        }
+
+        function trackProgress() {
+            const video = document.getElementById('main-video');
+            video.addEventListener('timeupdate', () => {
+                const progress = (video.currentTime / video.duration) * 100;
+                document.getElementById('progress-bar').style.width = progress + '%';
+            });
+        }
+
+        function togglePlay() {
+            const video = document.getElementById('main-video');
+            if (video.style.display !== 'none') {
+                if (video.paused) {
+                    video.play();
+                    document.getElementById('play-btn').textContent = '⏸️';
+                } else {
+                    video.pause();
+                    document.getElementById('play-btn').textContent = '▶️';
+                }
+            }
+        }
+
+        function skipToEnd() {
+            onVideoEnd();
+        }
+
+        function onVideoEnd() {
+            showScreen('completion-screen');
+        }
+
+        // ========================================
+        // BULLSEYE - DEPLOY PLATFORM
+        // ========================================
+        async function deployPlatform() {
+            showScreen('deploying-screen');
+            
+            const steps = [
+                { id: 'deploy-step-1', status: 'Configuring campaign profile...', delay: 1500 },
+                { id: 'deploy-step-2', status: `Loading ${userData.donors} donors...`, delay: 2000 },
+                { id: 'deploy-step-3', status: 'Setting up AI campaign builder...', delay: 1500 },
+                { id: 'deploy-step-4', status: 'Generating personalized templates...', delay: 2000 },
+                { id: 'deploy-step-5', status: 'Activating your platform...', delay: 1500 }
+            ];
+            
+            for (let i = 0; i < steps.length; i++) {
+                const step = steps[i];
+                
+                // Mark current step active
+                document.getElementById(step.id).classList.add('active');
+                document.getElementById(step.id).querySelector('.check').textContent = '⏳';
+                document.getElementById('deploy-status').textContent = step.status;
+                
+                await new Promise(resolve => setTimeout(resolve, step.delay));
+                
+                // Mark complete
+                document.getElementById(step.id).classList.remove('active');
+                document.getElementById(step.id).classList.add('complete');
+                document.getElementById(step.id).querySelector('.check').textContent = '✅';
+            }
+            
+            // Show success screen
+            await new Promise(resolve => setTimeout(resolve, 500));
+            showScreen('deployed-screen');
+        }
+
+        // ========================================
+        // REPLAY
+        // ========================================
+        function replayDemo() {
+            document.getElementById('progress-bar').style.width = '0%';
+            
+            // Reset deploy steps
+            for (let i = 1; i <= 5; i++) {
+                const step = document.getElementById('deploy-step-' + i);
+                step.classList.remove('active', 'complete');
+                step.querySelector('.check').textContent = '⬜';
+            }
+            
+            showScreen('welcome-screen');
+        }
+    </script>
+</body>
+</html>
