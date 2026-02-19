@@ -1337,6 +1337,80 @@ def deploy_activist_network():
 
 if __name__ == "__main__":
     import sys
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 04ActivistNetworkCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 04ActivistNetworkCompleteValidationError(04ActivistNetworkCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 04ActivistNetworkCompleteDatabaseError(04ActivistNetworkCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 04ActivistNetworkCompleteAPIError(04ActivistNetworkCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 04ActivistNetworkCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 04ActivistNetworkCompleteValidationError(04ActivistNetworkCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 04ActivistNetworkCompleteDatabaseError(04ActivistNetworkCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 04ActivistNetworkCompleteAPIError(04ActivistNetworkCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
     
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_activist_network()

@@ -670,6 +670,60 @@ class DocumentGenerator:
         # For now, return HTML as bytes (placeholder)
         try:
             from weasyprint import HTML
+
+# === CONFIGURATION MANAGEMENT (Auto-added by repair tool) ===
+import os
+from dataclasses import dataclass
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 53DocumentGenerationCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 53DocumentGenerationCompleteValidationError(53DocumentGenerationCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 53DocumentGenerationCompleteDatabaseError(53DocumentGenerationCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 53DocumentGenerationCompleteAPIError(53DocumentGenerationCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 53DocumentGenerationCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 53DocumentGenerationCompleteValidationError(53DocumentGenerationCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 53DocumentGenerationCompleteDatabaseError(53DocumentGenerationCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 53DocumentGenerationCompleteAPIError(53DocumentGenerationCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+@dataclass
+class Config:
+    """Configuration settings loaded from environment"""
+    DATABASE_URL: str = os.getenv('DATABASE_URL', 'postgresql://localhost/broyhillgop')
+    API_KEY: str = os.getenv('API_KEY', '')
+    DEBUG: bool = os.getenv('DEBUG', 'false').lower() == 'true'
+    LOG_LEVEL: str = os.getenv('LOG_LEVEL', 'INFO')
+
+config = Config()
+# === END CONFIGURATION ===
+
             pdf_bytes = HTML(string=html_content).write_pdf()
             return pdf_bytes
         except ImportError:

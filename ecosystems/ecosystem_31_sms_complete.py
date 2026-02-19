@@ -816,6 +816,44 @@ def deploy_sms_system():
 
 if __name__ == "__main__":
     import sys
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 31SmsCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 31SmsCompleteValidationError(31SmsCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 31SmsCompleteDatabaseError(31SmsCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 31SmsCompleteAPIError(31SmsCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 31SmsCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 31SmsCompleteValidationError(31SmsCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 31SmsCompleteDatabaseError(31SmsCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 31SmsCompleteAPIError(31SmsCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_sms_system()
     else:

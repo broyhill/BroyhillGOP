@@ -1,3 +1,15 @@
+import logging
+import os
+
+# === LOGGING CONFIGURATION (Auto-added by repair tool) ===
+log_level = os.getenv('LOG_LEVEL', 'INFO')
+logging.basicConfig(
+    level=getattr(logging, log_level),
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+# === END LOGGING ===
+
 #!/usr/bin/env python3
 """
 ============================================================================
@@ -14,6 +26,80 @@ Updated to route emails based on dual grading (state vs county)
 from typing import List, Dict, Optional
 from dataclasses import dataclass
 from enum import Enum
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 30EmailDualGradingError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 30EmailDualGradingValidationError(30EmailDualGradingError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 30EmailDualGradingDatabaseError(30EmailDualGradingError):
+    """Database error in this ecosystem"""
+    pass
+
+class 30EmailDualGradingAPIError(30EmailDualGradingError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 30EmailDualGradingError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 30EmailDualGradingValidationError(30EmailDualGradingError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 30EmailDualGradingDatabaseError(30EmailDualGradingError):
+    """Database error in this ecosystem"""
+    pass
+
+class 30EmailDualGradingAPIError(30EmailDualGradingError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
 
 # ============================================================================
 # EMAIL ROUTING BY GRADE

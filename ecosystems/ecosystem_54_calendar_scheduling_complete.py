@@ -34,6 +34,60 @@ from dataclasses import dataclass, field
 from enum import Enum
 from collections import defaultdict
 
+# === CONFIGURATION MANAGEMENT (Auto-added by repair tool) ===
+import os
+from dataclasses import dataclass
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 54CalendarSchedulingCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 54CalendarSchedulingCompleteValidationError(54CalendarSchedulingCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 54CalendarSchedulingCompleteDatabaseError(54CalendarSchedulingCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 54CalendarSchedulingCompleteAPIError(54CalendarSchedulingCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 54CalendarSchedulingCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 54CalendarSchedulingCompleteValidationError(54CalendarSchedulingCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 54CalendarSchedulingCompleteDatabaseError(54CalendarSchedulingCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 54CalendarSchedulingCompleteAPIError(54CalendarSchedulingCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+@dataclass
+class Config:
+    """Configuration settings loaded from environment"""
+    DATABASE_URL: str = os.getenv('DATABASE_URL', 'postgresql://localhost/broyhillgop')
+    API_KEY: str = os.getenv('API_KEY', '')
+    DEBUG: bool = os.getenv('DEBUG', 'false').lower() == 'true'
+    LOG_LEVEL: str = os.getenv('LOG_LEVEL', 'INFO')
+
+config = Config()
+# === END CONFIGURATION ===
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('ecosystem54.calendar')
 

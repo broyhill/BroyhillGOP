@@ -2135,6 +2135,44 @@ def initialize_schema(db_url: str = None):
 def main():
     """CLI for E56 operations"""
     import sys
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 56VisitorDeanonymizationCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 56VisitorDeanonymizationCompleteValidationError(56VisitorDeanonymizationCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 56VisitorDeanonymizationCompleteDatabaseError(56VisitorDeanonymizationCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 56VisitorDeanonymizationCompleteAPIError(56VisitorDeanonymizationCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 56VisitorDeanonymizationCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 56VisitorDeanonymizationCompleteValidationError(56VisitorDeanonymizationCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 56VisitorDeanonymizationCompleteDatabaseError(56VisitorDeanonymizationCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 56VisitorDeanonymizationCompleteAPIError(56VisitorDeanonymizationCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
     
     if len(sys.argv) < 2:
         print("Usage: python ecosystem_56_visitor_deanonymization_complete.py <command>")

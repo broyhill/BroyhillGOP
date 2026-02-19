@@ -408,6 +408,60 @@ class APIGateway:
             return {'Authorization': f"Bearer {token}"}
         elif credential.auth_type == AuthType.BASIC:
             import base64
+
+# === CONFIGURATION MANAGEMENT (Auto-added by repair tool) ===
+import os
+from dataclasses import dataclass
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 55ApiGatewayCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 55ApiGatewayCompleteValidationError(55ApiGatewayCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 55ApiGatewayCompleteDatabaseError(55ApiGatewayCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 55ApiGatewayCompleteAPIError(55ApiGatewayCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 55ApiGatewayCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 55ApiGatewayCompleteValidationError(55ApiGatewayCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 55ApiGatewayCompleteDatabaseError(55ApiGatewayCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 55ApiGatewayCompleteAPIError(55ApiGatewayCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+@dataclass
+class Config:
+    """Configuration settings loaded from environment"""
+    DATABASE_URL: str = os.getenv('DATABASE_URL', 'postgresql://localhost/broyhillgop')
+    API_KEY: str = os.getenv('API_KEY', '')
+    DEBUG: bool = os.getenv('DEBUG', 'false').lower() == 'true'
+    LOG_LEVEL: str = os.getenv('LOG_LEVEL', 'INFO')
+
+config = Config()
+# === END CONFIGURATION ===
+
             auth_str = f"{credential.api_key}:{credential.api_secret or ''}"
             encoded = base64.b64encode(auth_str.encode()).decode()
             return {'Authorization': f"Basic {encoded}"}

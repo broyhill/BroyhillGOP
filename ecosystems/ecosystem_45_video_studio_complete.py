@@ -1408,6 +1408,44 @@ def deploy_video_studio():
 
 if __name__ == "__main__":
     import sys
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 45VideoStudioCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 45VideoStudioCompleteValidationError(45VideoStudioCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 45VideoStudioCompleteDatabaseError(45VideoStudioCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 45VideoStudioCompleteAPIError(45VideoStudioCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 45VideoStudioCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 45VideoStudioCompleteValidationError(45VideoStudioCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 45VideoStudioCompleteDatabaseError(45VideoStudioCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 45VideoStudioCompleteAPIError(45VideoStudioCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
     
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_video_studio()

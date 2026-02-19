@@ -1,3 +1,15 @@
+import logging
+import os
+
+# === LOGGING CONFIGURATION (Auto-added by repair tool) ===
+log_level = os.getenv('LOG_LEVEL', 'INFO')
+logging.basicConfig(
+    level=getattr(logging, log_level),
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+# === END LOGGING ===
+
 # ecosystem_19_personalization_engine.py
 # BROYHILLGOP - AI Content Personalization Engine
 # ECOSYSTEM 19: Social Media Manager - Voice Matching Component
@@ -30,6 +42,80 @@ import re
 from typing import Dict, List, Optional
 import random
 from collections import Counter
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 19PersonalizationEngineError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 19PersonalizationEngineValidationError(19PersonalizationEngineError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 19PersonalizationEngineDatabaseError(19PersonalizationEngineError):
+    """Database error in this ecosystem"""
+    pass
+
+class 19PersonalizationEngineAPIError(19PersonalizationEngineError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 19PersonalizationEngineError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 19PersonalizationEngineValidationError(19PersonalizationEngineError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 19PersonalizationEngineDatabaseError(19PersonalizationEngineError):
+    """Database error in this ecosystem"""
+    pass
+
+class 19PersonalizationEngineAPIError(19PersonalizationEngineError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
 
 
 class PersonalizationEngine:

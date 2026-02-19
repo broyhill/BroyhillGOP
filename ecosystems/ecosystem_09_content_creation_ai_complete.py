@@ -804,6 +804,62 @@ def deploy_content_creation():
 
 if __name__ == "__main__":
     import sys
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 09ContentCreationAiCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 09ContentCreationAiCompleteValidationError(09ContentCreationAiCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 09ContentCreationAiCompleteDatabaseError(09ContentCreationAiCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 09ContentCreationAiCompleteAPIError(09ContentCreationAiCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 09ContentCreationAiCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 09ContentCreationAiCompleteValidationError(09ContentCreationAiCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 09ContentCreationAiCompleteDatabaseError(09ContentCreationAiCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 09ContentCreationAiCompleteAPIError(09ContentCreationAiCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_content_creation()
     elif len(sys.argv) > 1 and sys.argv[1] == "--stats":

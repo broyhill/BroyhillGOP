@@ -1141,5 +1141,79 @@ def deploy_volunteer_portal():
 
 if __name__ == "__main__":
     import sys
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 26VolunteerPortalCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 26VolunteerPortalCompleteValidationError(26VolunteerPortalCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 26VolunteerPortalCompleteDatabaseError(26VolunteerPortalCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 26VolunteerPortalCompleteAPIError(26VolunteerPortalCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 26VolunteerPortalCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 26VolunteerPortalCompleteValidationError(26VolunteerPortalCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 26VolunteerPortalCompleteDatabaseError(26VolunteerPortalCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 26VolunteerPortalCompleteAPIError(26VolunteerPortalCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_volunteer_portal()

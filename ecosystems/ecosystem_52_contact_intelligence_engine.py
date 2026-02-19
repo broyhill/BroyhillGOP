@@ -3300,6 +3300,44 @@ ORDER BY sp.conservative_score DESC, sp.enriched_at DESC;
 async def main():
     """Main entry point for E50 Contact Intelligence Engine"""
     import argparse
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 52ContactIntelligenceEngineError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 52ContactIntelligenceEngineValidationError(52ContactIntelligenceEngineError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 52ContactIntelligenceEngineDatabaseError(52ContactIntelligenceEngineError):
+    """Database error in this ecosystem"""
+    pass
+
+class 52ContactIntelligenceEngineAPIError(52ContactIntelligenceEngineError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 52ContactIntelligenceEngineError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 52ContactIntelligenceEngineValidationError(52ContactIntelligenceEngineError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 52ContactIntelligenceEngineDatabaseError(52ContactIntelligenceEngineError):
+    """Database error in this ecosystem"""
+    pass
+
+class 52ContactIntelligenceEngineAPIError(52ContactIntelligenceEngineError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
     
     parser = argparse.ArgumentParser(description='E50 Contact Intelligence Engine')
     parser.add_argument('--job', choices=[

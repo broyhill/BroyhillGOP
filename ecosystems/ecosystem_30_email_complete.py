@@ -1823,6 +1823,44 @@ def deploy_email_system():
 
 if __name__ == "__main__":
     import sys
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 30EmailCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 30EmailCompleteValidationError(30EmailCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 30EmailCompleteDatabaseError(30EmailCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 30EmailCompleteAPIError(30EmailCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 30EmailCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 30EmailCompleteValidationError(30EmailCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 30EmailCompleteDatabaseError(30EmailCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 30EmailCompleteAPIError(30EmailCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
     
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_email_system()

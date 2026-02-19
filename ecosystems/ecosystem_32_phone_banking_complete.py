@@ -829,6 +829,80 @@ def deploy_phone_banking():
 
 if __name__ == "__main__":
     import sys
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === ERROR HANDLING (Auto-added by repair tool) ===
+import traceback
+from functools import wraps
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 32PhoneBankingCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 32PhoneBankingCompleteValidationError(32PhoneBankingCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 32PhoneBankingCompleteDatabaseError(32PhoneBankingCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 32PhoneBankingCompleteAPIError(32PhoneBankingCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 32PhoneBankingCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 32PhoneBankingCompleteValidationError(32PhoneBankingCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 32PhoneBankingCompleteDatabaseError(32PhoneBankingCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 32PhoneBankingCompleteAPIError(32PhoneBankingCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+# === END ERROR HANDLING ===
+
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_phone_banking()
     elif len(sys.argv) > 1 and sys.argv[1] == "--stats":

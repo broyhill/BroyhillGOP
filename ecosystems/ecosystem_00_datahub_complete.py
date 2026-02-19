@@ -660,6 +660,44 @@ def deploy_datahub_completion():
 
 if __name__ == "__main__":
     import sys
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 00DatahubCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 00DatahubCompleteValidationError(00DatahubCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 00DatahubCompleteDatabaseError(00DatahubCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 00DatahubCompleteAPIError(00DatahubCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class 00DatahubCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class 00DatahubCompleteValidationError(00DatahubCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class 00DatahubCompleteDatabaseError(00DatahubCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class 00DatahubCompleteAPIError(00DatahubCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
     
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_datahub_completion()
