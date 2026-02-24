@@ -1,0 +1,175 @@
+{
+  "name": "E55 Autonomous Intelligence Agent — n8n Webhook Configurations",
+  "description": "Webhook endpoints and workflow triggers for n8n/Make.com integration",
+  "version": "1.0.0",
+  "base_url": "https://isbgjpnbocdkeslofota.supabase.co/functions/v1/e55-agent",
+
+  "webhooks": {
+    "prospect_discovered": {
+      "description": "Triggered when a new prospect is discovered from any issue group",
+      "n8n_trigger": "Webhook",
+      "url": "/prospect/discover",
+      "method": "POST",
+      "payload_schema": {
+        "agent_id": "uuid",
+        "golden_record_id": "bigint",
+        "origin_type": "enum: issue_group_post|issue_group_comment|issue_group_member_list|newsletter_organic|news_cycle_activation|connector_referral|event_registration|social_media_engagement",
+        "group_id": "uuid (optional)",
+        "issue": "text (optional)",
+        "news_event": "text (optional)",
+        "content": "text (optional) — original post/comment that triggered discovery",
+        "connector_id": "bigint (optional)",
+        "connector_name": "text (optional)"
+      },
+      "downstream_actions": [
+        "Queue for waterfall enrichment",
+        "Subscribe to matching newsletter",
+        "Check for connector potential",
+        "Log in activity feed"
+      ]
+    },
+
+    "enrichment_complete": {
+      "description": "Triggered after waterfall enrichment completes for a prospect",
+      "n8n_trigger": "Supabase Trigger (on UPDATE e55_enrichment_queue WHERE pipeline_status='complete')",
+      "downstream_actions": [
+        "IF donor_propensity_score > 70: Create donor_cultivation outreach sequence",
+        "IF connector_score > 50: Create connector_engage sequence",
+        "IF volunteer_propensity_score > 60: Create volunteer_recruit sequence",
+        "Update golden record with enriched data",
+        "Generate pre-call briefing if meeting scheduled"
+      ]
+    },
+
+    "newsletter_escalation": {
+      "description": "Triggered when a newsletter subscriber hits the auto-escalation threshold (5+ opens, 3+ clicks)",
+      "n8n_trigger": "Supabase Trigger (on UPDATE e55_newsletter_tracking WHERE auto_escalation_triggered=true)",
+      "downstream_actions": [
+        "Move prospect to 'engaged_reader' funnel stage",
+        "Create event_invite outreach sequence",
+        "Alert candidate about hot prospect",
+        "Generate pre-call briefing"
+      ]
+    },
+
+    "news_cycle_event": {
+      "description": "Triggered when a news cycle event is registered",
+      "n8n_trigger": "Webhook",
+      "url": "/news/event",
+      "method": "POST",
+      "payload_schema": {
+        "headline": "text",
+        "summary": "text",
+        "issue_category": "enum: official_gop|second_amendment|pro_life|business_economic|veterans_military|agricultural_rural|faith_based|education_parents|law_enforcement|civic_fraternal|professional|maga_populist|liberty_constitutional|heritage_historical",
+        "related_directories": "text[] — directory categories to activate",
+        "impact_level": "enum: critical|high|medium|low",
+        "source_url": "text (optional)",
+        "affected_counties": "text[] (optional)",
+        "ai_talking_points": "jsonb[] (optional)"
+      },
+      "downstream_actions": [
+        "Activate related directories for all agents with news_cycle_auto=true",
+        "Generate talking points",
+        "Queue newsletter blast to all affected subscribers",
+        "Create news_cycle_response outreach sequences"
+      ]
+    },
+
+    "inbox_message": {
+      "description": "Triggered when a new inbound message arrives in the unified inbox",
+      "n8n_trigger": "Supabase Trigger (on INSERT e55_unified_inbox WHERE direction='inbound')",
+      "downstream_actions": [
+        "IF intent=donation_intent AND urgency=high: Alert candidate immediately",
+        "IF intent=volunteer_offer: Create volunteer onboarding sequence",
+        "IF intent=complaint: Flag for candidate review",
+        "Generate AI draft response",
+        "Update engagement score"
+      ]
+    },
+
+    "connector_identified": {
+      "description": "Triggered when a super-connector is identified (score > 50)",
+      "n8n_trigger": "Supabase Trigger (on INSERT/UPDATE e55_connector_scores WHERE connector_score >= 50)",
+      "downstream_actions": [
+        "Create connector_engage outreach sequence",
+        "Generate connector briefing",
+        "Alert candidate about high-value connection",
+        "Add to VIP contact list"
+      ]
+    },
+
+    "capacity_signal_detected": {
+      "description": "Triggered when a new wealth/capacity signal is detected",
+      "n8n_trigger": "Supabase Trigger (on INSERT e55_capacity_signals WHERE capacity_impact='strong_positive')",
+      "downstream_actions": [
+        "Recalculate donor propensity score",
+        "IF capacity upgrades to major_donor: Create donor_cultivation sequence",
+        "Update pre-call briefing",
+        "Alert campaign finance team"
+      ]
+    },
+
+    "icp_search_scheduled": {
+      "description": "Scheduled ICP re-search (weekly refresh)",
+      "n8n_trigger": "Cron (weekly)",
+      "cron_expression": "0 6 * * 1",
+      "downstream_actions": [
+        "Re-execute all active ICP profiles",
+        "Compare new matches vs previous run",
+        "Queue new matches for enrichment",
+        "Report new prospects to candidate"
+      ]
+    }
+  },
+
+  "n8n_workflow_templates": {
+    "prospect_pipeline": {
+      "description": "Full prospect discovery → enrichment → outreach pipeline",
+      "nodes": [
+        {"name": "Webhook Trigger", "type": "n8n-nodes-base.webhook", "config": {"path": "e55-prospect"}},
+        {"name": "Record Discovery", "type": "n8n-nodes-base.httpRequest", "config": {"url": "{{base_url}}/prospect/discover"}},
+        {"name": "Queue Enrichment", "type": "n8n-nodes-base.httpRequest", "config": {"url": "{{base_url}}/prospect/enrich"}},
+        {"name": "Wait for Enrichment", "type": "n8n-nodes-base.wait", "config": {"amount": 30, "unit": "seconds"}},
+        {"name": "Check Scores", "type": "n8n-nodes-base.if", "config": {"condition": "donor_propensity_score > 50"}},
+        {"name": "Create Outreach", "type": "n8n-nodes-base.httpRequest", "config": {"url": "{{base_url}}/outreach/sequence"}},
+        {"name": "Subscribe Newsletter", "type": "n8n-nodes-base.httpRequest", "config": {"url": "{{base_url}}/newsletter/subscribe"}}
+      ]
+    },
+
+    "news_cycle_reactor": {
+      "description": "News event → group activation → newsletter blast → outreach",
+      "nodes": [
+        {"name": "RSS/News Monitor", "type": "n8n-nodes-base.rssFeedRead", "config": {"url": "https://news.google.com/rss/search?q=North+Carolina+politics"}},
+        {"name": "AI Classify", "type": "n8n-nodes-base.openAi", "config": {"prompt": "Classify this news for political campaign relevance..."}},
+        {"name": "Register Event", "type": "n8n-nodes-base.httpRequest", "config": {"url": "{{base_url}}/news/event"}},
+        {"name": "Activate Groups", "type": "n8n-nodes-base.httpRequest", "config": {"url": "{{base_url}}/news/activate"}},
+        {"name": "Send Newsletters", "type": "n8n-nodes-base.emailSend", "config": {"to": "{{affected_subscribers}}"}}
+      ]
+    },
+
+    "enrichment_batch_processor": {
+      "description": "Batch process enrichment queue every 15 minutes",
+      "nodes": [
+        {"name": "Cron Trigger", "type": "n8n-nodes-base.cron", "config": {"cronExpression": "*/15 * * * *"}},
+        {"name": "Get Queue", "type": "n8n-nodes-base.supabase", "config": {"table": "e55_enrichment_queue", "filter": "pipeline_status=queued", "limit": 10}},
+        {"name": "FEC Lookup", "type": "n8n-nodes-base.httpRequest", "config": {"url": "https://api.open.fec.gov/v1/schedules/schedule_a/"}},
+        {"name": "NCBOE Lookup", "type": "n8n-nodes-base.supabase", "config": {"table": "datatrust_nc_full"}},
+        {"name": "PDL Enrichment", "type": "n8n-nodes-base.httpRequest", "config": {"url": "https://api.peopledatalabs.com/v5/person/enrich"}},
+        {"name": "Score & Save", "type": "n8n-nodes-base.supabase", "config": {"table": "e55_enrichment_queue", "operation": "update"}}
+      ]
+    }
+  },
+
+  "make_scenario_templates": {
+    "prospect_discovery_pipeline": {
+      "trigger": "Custom Webhook",
+      "modules": ["HTTP Request → Supabase Search → Router → Supabase Insert → Email"],
+      "description": "Same as n8n prospect pipeline but for Make.com"
+    },
+    "daily_intelligence_digest": {
+      "trigger": "Schedule (daily 7:00 AM)",
+      "modules": ["Supabase Query → Aggregator → Text Aggregator → Email"],
+      "description": "Daily summary email to candidate with new prospects, news events, inbox highlights"
+    }
+  }
+}

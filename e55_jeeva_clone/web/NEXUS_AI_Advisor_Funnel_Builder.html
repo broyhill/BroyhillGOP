@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS AI Advisor — Campaign Funnel Builder</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #0B1120; color: #E2E8F0; min-height: 100vh; }
+  .app { display: flex; height: 100vh; }
+  .sidebar { width: 280px; background: #111827; border-right: 1px solid #1E293B; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  
+  .logo-area { padding: 20px; border-bottom: 1px solid #1E293B; }
+  .logo-area h1 { font-size: 20px; font-weight: 800; color: #D4A843; letter-spacing: 2px; }
+  .logo-area p { font-size: 11px; color: #64748B; margin-top: 4px; letter-spacing: 1px; }
+  
+  .advisor-card { margin: 16px; padding: 16px; background: linear-gradient(135deg, #1E293B, #0F172A); border: 1px solid #2563EB; border-radius: 12px; }
+  .advisor-card .avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #2563EB, #7C3AED); display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 10px; }
+  .advisor-card h3 { font-size: 14px; color: #93C5FD; font-weight: 600; }
+  .advisor-card .status { font-size: 11px; color: #4ADE80; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+  .advisor-card .status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #4ADE80; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  
+  .nav-section { padding: 12px 16px; }
+  .nav-section h4 { font-size: 10px; color: #475569; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; color: #94A3B8; transition: all .2s; margin-bottom: 2px; }
+  .nav-item:hover { background: #1E293B; color: #E2E8F0; }
+  .nav-item.active { background: #1E3A5F; color: #60A5FA; }
+  .nav-item .badge { margin-left: auto; font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 700; color: white; }
+  
+  .schedule-box { margin: 12px 16px; padding: 12px; background: #1E293B; border-radius: 8px; border: 1px solid #334155; }
+  .schedule-box h4 { font-size: 11px; color: #D4A843; margin-bottom: 8px; }
+  .schedule-item { font-size: 11px; color: #94A3B8; padding: 4px 0; display: flex; justify-content: space-between; }
+  .schedule-item .sdate { color: #60A5FA; font-weight: 600; }
+  
+  .main-header { padding: 16px 24px; border-bottom: 1px solid #1E293B; background: #0F172A; }
+  .main-header h2 { font-size: 18px; font-weight: 700; color: #F1F5F9; }
+  .main-header .subtitle { font-size: 12px; color: #64748B; }
+  .content { flex: 1; overflow-y: auto; padding: 24px; }
+  
+  /* Funnel type selector */
+  .funnel-types { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .ft-btn { padding: 8px 16px; border-radius: 20px; border: 1px solid #334155; background: #111827; color: #94A3B8; font-size: 12px; cursor: pointer; transition: all .2s; font-family: inherit; }
+  .ft-btn:hover { border-color: #2563EB; color: #60A5FA; }
+  .ft-btn.active { background: #1E3A5F; border-color: #2563EB; color: #60A5FA; font-weight: 600; }
+  
+  /* Category clusters */
+  .cluster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .cluster-card { background: #111827; border: 2px solid #1E293B; border-radius: 12px; padding: 20px; cursor: pointer; transition: all .3s; }
+  .cluster-card:hover { border-color: #2563EB; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37,99,235,.12); }
+  .cluster-card.selected { border-color: #D4A843; background: linear-gradient(135deg, #1A1A2E, #1E293B); }
+  .cluster-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .cluster-icon { font-size: 28px; }
+  .cluster-title { font-size: 16px; font-weight: 700; color: #F1F5F9; }
+  .cluster-count { font-size: 11px; color: #D4A843; font-weight: 600; }
+  .cluster-desc { font-size: 12px; color: #94A3B8; line-height: 1.5; margin-bottom: 12px; }
+  .issue-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .issue-tag { font-size: 10px; padding: 4px 10px; border-radius: 12px; background: #1E293B; color: #94A3B8; border: 1px solid #334155; cursor: pointer; transition: all .2s; user-select: none; }
+  .issue-tag:hover { border-color: #60A5FA; color: #60A5FA; }
+  .issue-tag.on { background: #1E3A5F; border-color: #2563EB; color: #60A5FA; }
+  .issue-tag.primary { background: #422006; border-color: #D4A843; color: #D4A843; }
+  
+  /* Selected issues summary */
+  .selected-bar { background: #111827; border: 1px solid #1E293B; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .selected-bar h4 { font-size: 12px; color: #D4A843; white-space: nowrap; }
+  .selected-issues { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
+  .sel-issue { font-size: 11px; padding: 4px 10px; border-radius: 12px; background: #1E3A5F; color: #60A5FA; display: flex; align-items: center; gap: 4px; }
+  .sel-issue .remove { cursor: pointer; opacity: .6; font-size: 10px; }
+  .sel-issue .remove:hover { opacity: 1; }
+  .gen-btn { background: linear-gradient(135deg, #C8102E, #991B1B); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: inherit; transition: all .3s; }
+  .gen-btn:hover { transform: scale(1.03); box-shadow: 0 6px 20px rgba(200,16,46,.4); }
+  .gen-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+  
+  /* Generation progress */
+  .gen-box { background: #111827; border: 1px solid #1E293B; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .gen-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .spinner { width: 24px; height: 24px; border: 3px solid #1E293B; border-top-color: #D4A843; border-radius: 50%; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .gen-step { display: flex; align-items: center; gap: 12px; padding: 8px 14px; border-radius: 8px; font-size: 13px; color: #475569; transition: all .4s; }
+  .gen-step.active { background: #1E293B; color: #60A5FA; }
+  .gen-step.done { color: #4ADE80; }
+  .step-icon { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; border: 2px solid #334155; }
+  .gen-step.active .step-icon { border-color: #2563EB; background: #1E3A5F; }
+  .gen-step.done .step-icon { background: #065F46; border-color: #4ADE80; }
+  
+  /* Output cards */
+  .output-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; }
+  .output-card { background: #111827; border: 1px solid #1E293B; border-radius: 12px; overflow: hidden; transition: all .3s; cursor: pointer; }
+  .output-card:hover { border-color: #2563EB; transform: translateY(-2px); }
+  .oc-header { padding: 16px; display: flex; align-items: center; gap: 12px; }
+  .oc-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .oc-title { font-size: 14px; font-weight: 600; color: #F1F5F9; }
+  .oc-sub { font-size: 11px; color: #64748B; margin-top: 2px; }
+  .oc-body { padding: 0 16px 16px; font-size: 12px; color: #94A3B8; line-height: 1.6; }
+  .oc-footer { padding: 12px 16px; border-top: 1px solid #1E293B; display: flex; justify-content: space-between; font-size: 11px; }
+  .oc-footer .st { color: #4ADE80; }
+  .oc-footer .act { color: #60A5FA; font-weight: 600; }
+  
+  /* Pipeline */
+  .pipeline { display: flex; align-items: center; gap: 0; margin: 20px 0; overflow-x: auto; padding-bottom: 8px; }
+  .pipe-step { display: flex; flex-direction: column; align-items: center; min-width: 90px; }
+  .pipe-dot { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .pipe-label { font-size: 9px; color: #64748B; margin-top: 6px; text-align: center; max-width: 80px; line-height: 1.3; }
+  .pipe-count { font-size: 10px; color: #D4A843; font-weight: 700; margin-top: 2px; }
+  .pipe-arrow { color: #334155; font-size: 14px; margin: 0 -4px; }
+  .pipe-step.lit .pipe-dot { background: #1E3A5F; border: 2px solid #2563EB; }
+  .pipe-step.gold .pipe-dot { background: #422006; border: 2px solid #D4A843; }
+  
+  /* Advisor box */
+  .advisor-box { margin-top: 24px; background: linear-gradient(135deg, #1E293B, #0F172A); border: 1px solid #2563EB; border-radius: 12px; padding: 20px; }
+  .advisor-box .ab-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .ab-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #2563EB, #7C3AED); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .advisor-box p { font-size: 13px; line-height: 1.6; margin-bottom: 8px; }
+  .ab-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .ab-actions button { padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 600; border: none; }
+  .ab-primary { background: #2563EB; color: white; }
+  .ab-secondary { background: #1E293B; border: 1px solid #334155 !important; color: #94A3B8; }
+  
+  .fade-in { animation: fadeIn .5s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="logo-area"><h1>NEXUS</h1><p>Campaign Intelligence Platform</p></div>
+    <div class="advisor-card">
+      <div class="avatar">🤖</div>
+      <h3>E55 AI Advisor</h3>
+      <div class="status">Online — Ready to deploy</div>
+    </div>
+    <div class="nav-section">
+      <h4>Campaign Tools</h4>
+      <div class="nav-item active"><span>🎯</span> Funnel Builder <span class="badge" style="background:#C8102E">NEW</span></div>
+      <div class="nav-item"><span>📅</span> Town Hall Schedule</div>
+      <div class="nav-item"><span>💡</span> Solutions Library</div>
+      <div class="nav-item"><span>👥</span> Group Directories</div>
+      <div class="nav-item"><span>🔍</span> Prospect Origins</div>
+      <div class="nav-item"><span>📡</span> News Cycle</div>
+    </div>
+    <div class="schedule-box">
+      <h4>📅 Town Hall Schedule</h4>
+      <div class="schedule-item"><span>Infrastructure & Roads</span><span class="sdate">Mar 4</span></div>
+      <div class="schedule-item"><span>Schools & Education</span><span class="sdate">Mar 11</span></div>
+      <div class="schedule-item"><span>Public Safety & Crime</span><span class="sdate">Mar 18</span></div>
+      <div class="schedule-item"><span>Taxes & Government</span><span class="sdate">Mar 25</span></div>
+      <div class="schedule-item"><span>Health & Community</span><span class="sdate">Apr 1</span></div>
+      <div class="schedule-item"><span>Growth & Development</span><span class="sdate">Apr 8</span></div>
+    </div>
+    <div class="nav-section">
+      <h4>Active Funnels</h4>
+      <div class="nav-item"><span>🛣️</span> Infrastructure TH <span class="badge" style="background:#065F46">LIVE</span></div>
+      <div class="nav-item"><span>🏫</span> Education TH <span class="badge" style="background:#7C3AED">DRAFT</span></div>
+    </div>
+  </div>
+  
+  <div class="main">
+    <div class="main-header">
+      <h2>🎯 Campaign Funnel Builder</h2>
+      <div class="subtitle">Select a funnel type → pick an issue cluster → toggle individual issues → E55 builds the full campaign</div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<script>
+const CLUSTERS = [
+  { id: 'infrastructure', icon: '🛣️', title: 'Infrastructure & Roads', color: '#2563EB',
+    desc: 'Roads, bridges, water, sewer, broadband, utilities — the physical backbone of community life',
+    issues: [
+      { id: 'potholes', label: 'Pothole & Road Repair', primary: true },
+      { id: 'bridges', label: 'Bridge Safety' },
+      { id: 'water_quality', label: 'Water Quality & Testing' },
+      { id: 'sewer', label: 'Sewer & Stormwater' },
+      { id: 'broadband', label: 'Rural Broadband Access' },
+      { id: 'sidewalks', label: 'Sidewalks & Greenways' },
+      { id: 'streetlights', label: 'Streetlight Repair' },
+      { id: 'flooding', label: 'Flooding & Drainage' },
+      { id: 'trash', label: 'Trash & Recycling' },
+      { id: 'transit', label: 'Public Transit' },
+      { id: 'power', label: 'Power Grid Reliability' },
+      { id: 'cell_towers', label: 'Cell Tower Coverage' },
+    ]},
+  { id: 'education', icon: '🏫', title: 'Schools & Education', color: '#7C3AED',
+    desc: 'School safety, curriculum, funding, teacher retention, school choice, special education, buses',
+    issues: [
+      { id: 'school_safety', label: 'School Safety & Security', primary: true },
+      { id: 'curriculum', label: 'Curriculum Standards' },
+      { id: 'school_choice', label: 'School Choice & Charters' },
+      { id: 'teacher_pay', label: 'Teacher Pay & Retention' },
+      { id: 'school_buses', label: 'Bus Routes & Safety' },
+      { id: 'special_ed', label: 'Special Education Services' },
+      { id: 'school_funding', label: 'School Bond & Budget' },
+      { id: 'parental_rights', label: 'Parental Rights' },
+      { id: 'school_board', label: 'School Board Accountability' },
+      { id: 'homework_policy', label: 'Homework & Testing Policy' },
+      { id: 'gifted', label: 'Gifted Programs' },
+      { id: 'trades', label: 'Trade & Vocational Ed' },
+    ]},
+  { id: 'safety', icon: '🛡️', title: 'Public Safety & Crime', color: '#DC2626',
+    desc: 'Law enforcement, crime prevention, drug enforcement, emergency services, neighborhood watch',
+    issues: [
+      { id: 'crime', label: 'Crime Prevention', primary: true },
+      { id: 'police_funding', label: 'Police Staffing & Funding' },
+      { id: 'drug_enforcement', label: 'Drug Enforcement' },
+      { id: 'ems', label: 'EMS Response Times' },
+      { id: 'fire', label: 'Fire Department Resources' },
+      { id: 'neighborhood_watch', label: 'Neighborhood Watch' },
+      { id: 'dui', label: 'DUI Enforcement' },
+      { id: '2a', label: '2nd Amendment Rights' },
+      { id: 'domestic', label: 'Domestic Violence Prevention' },
+      { id: 'gangs', label: 'Gang Activity & Prevention' },
+      { id: 'sex_offender', label: 'Sex Offender Registry' },
+      { id: 'bail_reform', label: 'Bail Reform Opposition' },
+    ]},
+  { id: 'taxes', icon: '💰', title: 'Taxes & Government Spending', color: '#D97706',
+    desc: 'Property taxes, government efficiency, budget transparency, tax relief, regulatory reform',
+    issues: [
+      { id: 'property_tax', label: 'Property Tax Relief', primary: true },
+      { id: 'revaluation', label: 'Revaluation Protests' },
+      { id: 'budget', label: 'Budget Transparency' },
+      { id: 'waste', label: 'Government Waste' },
+      { id: 'impact_fees', label: 'Impact & Development Fees' },
+      { id: 'sales_tax', label: 'Sales Tax Policy' },
+      { id: 'incentives', label: 'Corporate Tax Incentives' },
+      { id: 'audit', label: 'Government Audit Demand' },
+      { id: 'regulation', label: 'Regulatory Reform' },
+      { id: 'occupancy_tax', label: 'Occupancy & Tourism Tax' },
+    ]},
+  { id: 'health', icon: '🏥', title: 'Health & Community Services', color: '#059669',
+    desc: 'Healthcare access, mental health, substance abuse, senior services, disability, veterans',
+    issues: [
+      { id: 'healthcare', label: 'Healthcare Access', primary: true },
+      { id: 'mental_health', label: 'Mental Health Services' },
+      { id: 'substance', label: 'Substance Abuse Treatment' },
+      { id: 'senior', label: 'Senior Services' },
+      { id: 'veterans', label: 'Veteran Support' },
+      { id: 'disability', label: 'Disability Services' },
+      { id: 'rural_clinic', label: 'Rural Clinic Funding' },
+      { id: 'ambulance', label: 'Ambulance Coverage' },
+      { id: 'food_access', label: 'Food Desert Solutions' },
+      { id: 'childcare', label: 'Childcare Availability' },
+    ]},
+  { id: 'disaster', icon: '🌪️', title: 'Disaster Preparedness & Relief', color: '#0891B2',
+    desc: 'Hurricane, flood, tornado prep, emergency shelters, FEMA coordination, recovery assistance',
+    issues: [
+      { id: 'hurricane', label: 'Hurricane Preparedness', primary: true },
+      { id: 'flood_zones', label: 'Flood Zone Management' },
+      { id: 'emergency_shelters', label: 'Emergency Shelter Access' },
+      { id: 'fema', label: 'FEMA Coordination' },
+      { id: 'backup_power', label: 'Backup Power Systems' },
+      { id: 'evac_routes', label: 'Evacuation Routes' },
+      { id: 'volunteer_fire', label: 'Volunteer Fire/Rescue' },
+      { id: 'dam_safety', label: 'Dam & Levee Safety' },
+      { id: 'tree_removal', label: 'Storm Debris Removal' },
+      { id: 'insurance', label: 'Insurance Cost Relief' },
+    ]},
+  { id: 'growth', icon: '🏗️', title: 'Growth & Development', color: '#4338CA',
+    desc: 'Zoning, housing, annexation, small business, economic development, historic preservation',
+    issues: [
+      { id: 'zoning', label: 'Zoning & Land Use', primary: true },
+      { id: 'housing', label: 'Housing Affordability' },
+      { id: 'annexation', label: 'Annexation Opposition' },
+      { id: 'small_business', label: 'Small Business Support' },
+      { id: 'jobs', label: 'Job Creation & Retention' },
+      { id: 'historic', label: 'Historic Preservation' },
+      { id: 'airbnb', label: 'Short-Term Rental Policy' },
+      { id: 'solar_farms', label: 'Solar/Wind Farm Zoning' },
+      { id: 'ag_land', label: 'Farmland Protection' },
+      { id: 'downtown', label: 'Downtown Revitalization' },
+    ]},
+  { id: 'values', icon: '⛪', title: 'Faith, Family & Values', color: '#BE185D',
+    desc: 'Religious liberty, family values, life issues, election integrity, constitutional rights',
+    issues: [
+      { id: 'religious_liberty', label: 'Religious Liberty', primary: true },
+      { id: 'pro_life', label: 'Pro-Life Advocacy' },
+      { id: 'election_integrity', label: 'Election Integrity' },
+      { id: 'border', label: 'Border Security' },
+      { id: 'flag', label: 'Patriotism & Flag' },
+      { id: 'censorship', label: 'Anti-Censorship' },
+      { id: 'constitution', label: 'Constitutional Rights' },
+      { id: 'homeschool', label: 'Homeschool Freedom' },
+      { id: 'library', label: 'Library Content Review' },
+      { id: 'gender', label: 'Protect Women\'s Sports' },
+    ]},
+];
+
+const FUNNEL_TYPES = [
+  { id: 'townhall', label: '🎤 Town Hall', active: true },
+  { id: 'rally', label: '📢 Rally' },
+  { id: 'doorknock', label: '🚪 Door Knock' },
+  { id: 'fundraiser', label: '💰 Fundraiser' },
+  { id: 'newsletter', label: '📧 Newsletter' },
+  { id: 'petition', label: '📋 Petition' },
+  { id: 'coalition', label: '🤝 Coalition' },
+  { id: 'gotv', label: '🗳️ GOTV Blitz' },
+];
+
+let selectedType = 'townhall';
+let selectedCluster = null;
+let selectedIssues = new Set();
+
+function render() {
+  const c = document.getElementById('content');
+  c.innerHTML = `
+    <!-- Funnel type pills -->
+    <div class="funnel-types">
+      ${FUNNEL_TYPES.map(f => `<button class="ft-btn ${f.id===selectedType?'active':''}" onclick="pickType('${f.id}')">${f.label}</button>`).join('')}
+    </div>
+    
+    <!-- Selected issues bar -->
+    <div class="selected-bar" id="selBar" ${selectedIssues.size===0?'style="display:none"':''}>
+      <h4>📌 ${selectedIssues.size} Issues Selected</h4>
+      <div class="selected-issues">${[...selectedIssues].map(id => {
+        const issue = findIssue(id);
+        return issue ? `<span class="sel-issue">${issue.label}<span class="remove" onclick="toggleIssue('${id}')">✕</span></span>` : '';
+      }).join('')}</div>
+      <button class="gen-btn" onclick="generate()">🚀 Build Funnel</button>
+    </div>
+    
+    <!-- Cluster grid -->
+    <div style="font-size:13px;color:#D4A843;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">
+      Issue Clusters — pick a category, then toggle individual issues
+    </div>
+    <div class="cluster-grid">
+      ${CLUSTERS.map(cl => `
+        <div class="cluster-card ${selectedCluster===cl.id?'selected':''}" onclick="pickCluster('${cl.id}')">
+          <div class="cluster-header">
+            <span class="cluster-icon">${cl.icon}</span>
+            <div>
+              <div class="cluster-title">${cl.title}</div>
+              <div class="cluster-count">${cl.issues.length} issues · ${cl.issues.filter(i=>selectedIssues.has(i.id)).length} selected</div>
+            </div>
+          </div>
+          <div class="cluster-desc">${cl.desc}</div>
+          <div class="issue-tags">
+            ${cl.issues.map(i => `<span class="issue-tag ${selectedIssues.has(i.id)?'on':''} ${i.primary?'primary':''}" onclick="event.stopPropagation();toggleIssue('${i.id}')">${i.label}</span>`).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    
+    <!-- Generation output area -->
+    <div id="genArea"></div>
+  `;
+}
+
+function findIssue(id) {
+  for (const cl of CLUSTERS) for (const i of cl.issues) if (i.id === id) return i;
+  return null;
+}
+
+function findClusterForIssue(id) {
+  for (const cl of CLUSTERS) for (const i of cl.issues) if (i.id === id) return cl;
+  return null;
+}
+
+function pickType(id) { selectedType = id; render(); }
+
+function pickCluster(id) {
+  if (selectedCluster === id) {
+    selectedCluster = null;
+  } else {
+    selectedCluster = id;
+    const cl = CLUSTERS.find(c => c.id === id);
+    // Select all issues in cluster by default
+    cl.issues.forEach(i => selectedIssues.add(i.id));
+  }
+  render();
+}
+
+function toggleIssue(id) {
+  if (selectedIssues.has(id)) selectedIssues.delete(id);
+  else selectedIssues.add(id);
+  render();
+}
+
+function generate() {
+  if (selectedIssues.size === 0) return;
+  
+  const clusterMap = {};
+  [...selectedIssues].forEach(id => {
+    const cl = findClusterForIssue(id);
+    if (!clusterMap[cl.id]) clusterMap[cl.id] = { cluster: cl, issues: [] };
+    clusterMap[cl.id].issues.push(findIssue(id));
+  });
+  
+  const clusterNames = Object.values(clusterMap).map(c => c.cluster.title).join(' + ');
+  const ftype = FUNNEL_TYPES.find(f => f.id === selectedType);
+  
+  const steps = [
+    { label: `Scanning local news for ${selectedIssues.size} issue signals`, ecos: ['E55','E12'] },
+    { label: 'Researching municipal success stories for each issue', ecos: ['E55'] },
+    { label: 'Cross-referencing issues to find affinity connections', ecos: ['E55','E03'] },
+    { label: 'Identifying community groups across all issue areas', ecos: ['E55','E15'] },
+    { label: `Building multi-issue ${ftype.label} agenda`, ecos: ['E55'] },
+    { label: `Generating Solutions Briefing (${selectedIssues.size} issues)`, ecos: ['E55','E03'] },
+    { label: 'Creating Facebook campaign with cross-issue posts', ecos: ['E55','E28'] },
+    { label: 'Drafting subscriber email with issue digest', ecos: ['E55','E03'] },
+    { label: 'Writing press advisory with multi-issue angle', ecos: ['E55','E12'] },
+    { label: 'Building group interchange templates', ecos: ['E55','E15'] },
+    { label: 'Setting up cross-issue conversion pipeline', ecos: ['E55','E44'] },
+    { label: 'Compiling Action Kit with all assets', ecos: ['E55','E03'] },
+  ];
+  
+  const area = document.getElementById('genArea');
+  area.innerHTML = `
+    <div class="gen-box fade-in">
+      <div class="gen-header">
+        <div class="spinner"></div>
+        <h3 style="font-size:16px;color:#F1F5F9;">E55 building <strong>${ftype.label}</strong> funnel: ${clusterNames}</h3>
+      </div>
+      <div id="genSteps">${steps.map((s,i) => `
+        <div class="gen-step" id="gs${i}">
+          <div class="step-icon">${i+1}</div>
+          <span>${s.label}</span>
+          <span style="margin-left:auto;font-size:9px;color:#475569">${s.ecos.join(' ')}</span>
+        </div>
+      `).join('')}</div>
+    </div>
+  `;
+  
+  let cur = 0;
+  const iv = setInterval(() => {
+    if (cur > 0) { const p = document.getElementById('gs'+(cur-1)); p.classList.remove('active'); p.classList.add('done'); p.querySelector('.step-icon').innerHTML = '✓'; }
+    if (cur < steps.length) { const s = document.getElementById('gs'+cur); s.classList.add('active'); cur++; }
+    else { clearInterval(iv); setTimeout(() => showOutputs(clusterMap, ftype), 500); }
+  }, 700);
+}
+
+function showOutputs(clusterMap, ftype) {
+  const issueCount = selectedIssues.size;
+  const clusterCount = Object.keys(clusterMap).length;
+  const outputs = [
+    { icon: '📄', bg: '#1E3A5F', title: `Multi-Issue Solutions Briefing`, sub: `.docx — ${issueCount} issues covered`, desc: `Success stories from municipalities nationwide for each issue. Organized by cluster with cross-issue connections highlighted.` },
+    { icon: '📋', bg: '#422006', title: `${ftype.label} Agenda`, sub: `Structured ${issueCount}-topic agenda`, desc: `Time-blocked agenda with issue groupings, transition talking points, and audience Q&A segments per cluster.` },
+    { icon: '📱', bg: '#1E40AF', title: 'Facebook Campaign Series', sub: `${5 + clusterCount * 2} posts`, desc: `Announcement, per-cluster teasers, group interchange posts, countdown, and post-event recap.` },
+    { icon: '✉️', bg: '#991B1B', title: 'Subscriber Email', sub: 'Issue digest format', desc: `Multi-topic email with sections per cluster. Highlights key stats and solutions. Registration CTA.` },
+    { icon: '📰', bg: '#1B2A4A', title: 'Press Advisory', sub: 'Multi-angle media pitch', desc: `Press advisory featuring the multi-issue approach as the story angle. Positioned as community problem-solving.` },
+    { icon: '💬', bg: '#6B21A8', title: 'Group Admin DMs', sub: `${clusterCount * 3}+ templates`, desc: `Personalized outreach for group admins in each issue area. Cross-pollination messaging built in.` },
+    { icon: '🔄', bg: '#065F46', title: 'Cross-Issue Conversion Funnel', sub: '6-stage pipeline', desc: `Tracks which issues brought each contact in and identifies multi-issue connectors with highest scores.` },
+    { icon: '📊', bg: '#374151', title: 'Prospect Origin Report', sub: `Tracking ${issueCount} issue signals`, desc: `Every contact tagged with origin issue, group, and cluster. Cross-issue overlap analysis included.` },
+  ];
+  
+  const area = document.getElementById('genArea');
+  area.innerHTML += `
+    <div class="fade-in" style="margin-top: 24px;">
+      <div style="font-size:13px;color:#D4A843;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">
+        Conversion Pipeline
+      </div>
+      <div class="pipeline">
+        <div class="pipe-step lit"><div class="pipe-dot">📡</div><div class="pipe-label">${issueCount} Issues Detected</div></div>
+        <span class="pipe-arrow">→</span>
+        <div class="pipe-step lit"><div class="pipe-dot">🔬</div><div class="pipe-label">Solutions Found</div><div class="pipe-count">${issueCount * 3}+ cities</div></div>
+        <span class="pipe-arrow">→</span>
+        <div class="pipe-step lit"><div class="pipe-dot">📧</div><div class="pipe-label">Newsletter</div><div class="pipe-count">~2.4K subs</div></div>
+        <span class="pipe-arrow">→</span>
+        <div class="pipe-step gold"><div class="pipe-dot">${ftype.label.split(' ')[0]}</div><div class="pipe-label">${ftype.label}</div></div>
+        <span class="pipe-arrow">→</span>
+        <div class="pipe-step lit"><div class="pipe-dot">👥</div><div class="pipe-label">Groups</div><div class="pipe-count">${clusterCount * 8}+ groups</div></div>
+        <span class="pipe-arrow">→</span>
+        <div class="pipe-step lit"><div class="pipe-dot">📰</div><div class="pipe-label">Press</div><div class="pipe-count">~8 outlets</div></div>
+        <span class="pipe-arrow">→</span>
+        <div class="pipe-step lit"><div class="pipe-dot">📱</div><div class="pipe-label">Facebook</div><div class="pipe-count">${5+clusterCount*2} posts</div></div>
+        <span class="pipe-arrow">→</span>
+        <div class="pipe-step gold"><div class="pipe-dot">🏛️</div><div class="pipe-label">Constituency</div></div>
+      </div>
+      
+      <div style="font-size:13px;color:#D4A843;text-transform:uppercase;letter-spacing:2px;margin: 20px 0 12px;">
+        ✅ Generated Assets — Ready to Deploy
+      </div>
+      <div class="output-grid">
+        ${outputs.map(o => `
+          <div class="output-card">
+            <div class="oc-header">
+              <div class="oc-icon" style="background:${o.bg}">${o.icon}</div>
+              <div><div class="oc-title">${o.title}</div><div class="oc-sub">${o.sub}</div></div>
+            </div>
+            <div class="oc-body">${o.desc}</div>
+            <div class="oc-footer"><span class="st">✓ Ready</span><span class="act">Open →</span></div>
+          </div>
+        `).join('')}
+      </div>
+      
+      <div class="advisor-box">
+        <div class="ab-head">
+          <div class="ab-avatar">🤖</div>
+          <div style="font-size:14px;font-weight:600;color:#93C5FD">E55 AI Advisor</div>
+        </div>
+        <p style="color:#E2E8F0">Your <strong>${ftype.label}</strong> funnel is ready with <strong>${issueCount} issues across ${clusterCount} clusters</strong>. I built solutions briefings for each issue, identified <strong>${clusterCount * 8}+ community groups</strong> to recruit, and created cross-issue interchange posts that connect people who care about one issue to related issues in the same cluster.</p>
+        <p style="color:#94A3B8"><strong>Key insight:</strong> I found <strong>${Math.floor(issueCount * 1.8)} contacts</strong> who appear in groups across multiple issue areas — these are your super-connectors. The person complaining about potholes in one group is often the same person worried about flooding in another and property taxes in a third.</p>
+        <div class="ab-actions">
+          <button class="ab-primary">Deploy Full Campaign</button>
+          <button class="ab-secondary">Edit Agenda</button>
+          <button class="ab-secondary">View Super-Connectors</button>
+          <button class="ab-secondary">Schedule Series</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E55 — Autonomous Intelligence Agent | BroyhillGOP</title>
+<style>
+:root {
+  --primary: #c41e3a;
+  --primary-dark: #9e1830;
+  --secondary: #1a3a5c;
+  --secondary-light: #2a5a8c;
+  --accent: #d4af37;
+  --bg: #0f1923;
+  --bg-card: #1a2836;
+  --bg-card-hover: #223344;
+  --text: #e8edf2;
+  --text-muted: #8899aa;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --border: #2a3f52;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(--text); }
+.app { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+
+/* Sidebar */
+.sidebar { background:#0d1520; border-right:1px solid var(--border); padding:20px 0; overflow-y:auto; }
+.sidebar-brand { padding:0 20px 20px; border-bottom:1px solid var(--border); margin-bottom:16px; }
+.sidebar-brand h1 { font-size:14px; color:var(--accent); letter-spacing:2px; text-transform:uppercase; }
+.sidebar-brand p { font-size:11px; color:var(--text-muted); margin-top:4px; }
+.nav-section { padding:8px 20px; font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; margin-top:12px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:10px 20px; cursor:pointer; transition:all .2s; font-size:13px; color:var(--text-muted); }
+.nav-item:hover { background:rgba(255,255,255,.05); color:var(--text); }
+.nav-item.active { background:rgba(196,30,58,.15); color:var(--primary); border-left:3px solid var(--primary); }
+.nav-icon { font-size:16px; width:20px; text-align:center; }
+.nav-badge { margin-left:auto; background:var(--primary); color:#fff; font-size:10px; padding:2px 7px; border-radius:10px; }
+
+/* Main Content */
+.main { padding:24px; overflow-y:auto; }
+.page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+.page-header h2 { font-size:22px; font-weight:600; }
+.page-header .status { display:flex; align-items:center; gap:8px; }
+.status-dot { width:10px; height:10px; border-radius:50%; background:var(--success); animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+/* Stats Bar */
+.stats-bar { display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:24px; }
+.stat-card { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:16px; text-align:center; }
+.stat-value { font-size:28px; font-weight:700; color:var(--accent); }
+.stat-label { font-size:11px; color:var(--text-muted); margin-top:4px; text-transform:uppercase; letter-spacing:.5px; }
+
+/* Tabs */
+.tabs { display:flex; gap:4px; margin-bottom:20px; background:rgba(0,0,0,.2); border-radius:8px; padding:4px; }
+.tab { padding:8px 16px; border-radius:6px; cursor:pointer; font-size:13px; color:var(--text-muted); transition:all .2s; }
+.tab:hover { color:var(--text); }
+.tab.active { background:var(--secondary); color:#fff; }
+
+/* Cards Grid */
+.cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; }
+.card { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:all .2s; }
+.card:hover { border-color:var(--secondary-light); transform:translateY(-2px); }
+.card-header { padding:16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); }
+.card-title { font-size:14px; font-weight:600; }
+.card-body { padding:16px; }
+.card-footer { padding:12px 16px; background:rgba(0,0,0,.15); display:flex; justify-content:space-between; align-items:center; }
+
+/* Directory Toggles */
+.directory { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; margin-bottom:12px; overflow:hidden; }
+.directory-header { padding:14px 18px; display:flex; align-items:center; gap:12px; cursor:pointer; }
+.directory-header:hover { background:rgba(255,255,255,.02); }
+.dir-icon { font-size:20px; }
+.dir-name { flex:1; font-weight:600; font-size:14px; }
+.dir-count { font-size:11px; color:var(--text-muted); margin-right:12px; }
+.toggle { width:44px; height:24px; background:#334; border-radius:12px; position:relative; cursor:pointer; transition:all .3s; }
+.toggle.on { background:var(--success); }
+.toggle::after { content:''; width:20px; height:20px; background:#fff; border-radius:50%; position:absolute; top:2px; left:2px; transition:all .3s; }
+.toggle.on::after { left:22px; }
+.directory-groups { padding:0 18px 14px; display:none; }
+.directory.expanded .directory-groups { display:block; }
+.group-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.05); }
+.group-row:last-child { border-bottom:none; }
+.group-name { flex:1; font-size:13px; }
+.group-members { font-size:11px; color:var(--text-muted); }
+.group-toggle { width:36px; height:20px; background:#334; border-radius:10px; position:relative; cursor:pointer; transition:all .3s; }
+.group-toggle.on { background:var(--success); }
+.group-toggle::after { content:''; width:16px; height:16px; background:#fff; border-radius:50%; position:absolute; top:2px; left:2px; transition:all .3s; }
+.group-toggle.on::after { left:18px; }
+
+/* ICP Builder */
+.icp-builder { background:linear-gradient(135deg,#1a2836,#0d1520); border:1px solid var(--accent); border-radius:12px; padding:24px; margin-bottom:24px; }
+.icp-input { width:100%; background:rgba(0,0,0,.3); border:1px solid var(--border); border-radius:8px; padding:14px 16px; color:var(--text); font-size:14px; resize:none; outline:none; }
+.icp-input:focus { border-color:var(--accent); }
+.icp-input::placeholder { color:var(--text-muted); }
+
+/* News Events */
+.news-event { background:var(--bg-card); border-left:4px solid; border-radius:0 8px 8px 0; padding:14px 18px; margin-bottom:10px; }
+.news-event.critical { border-color:var(--danger); }
+.news-event.high { border-color:var(--warning); }
+.news-event.medium { border-color:var(--secondary-light); }
+.news-event .headline { font-weight:600; font-size:14px; }
+.news-event .meta { font-size:11px; color:var(--text-muted); margin-top:4px; }
+.impact-badge { font-size:10px; padding:2px 8px; border-radius:4px; font-weight:700; text-transform:uppercase; }
+.impact-badge.critical { background:rgba(239,68,68,.2); color:var(--danger); }
+.impact-badge.high { background:rgba(245,158,11,.2); color:var(--warning); }
+.impact-badge.medium { background:rgba(42,90,140,.2); color:var(--secondary-light); }
+
+/* Enrichment Sources */
+.source-tier { margin-bottom:16px; }
+.tier-header { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accent); margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+.source-row { display:flex; align-items:center; gap:12px; padding:6px 0; font-size:12px; }
+.source-name { flex:1; }
+.hit-rate { width:60px; text-align:right; }
+.hit-bar { width:80px; height:6px; background:#223; border-radius:3px; overflow:hidden; }
+.hit-bar-fill { height:100%; border-radius:3px; }
+.source-cost { width:50px; text-align:right; font-size:11px; color:var(--text-muted); }
+
+/* Prospect Origin Table */
+table { width:100%; border-collapse:collapse; }
+th { text-align:left; padding:10px 12px; font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--text-muted); border-bottom:2px solid var(--border); }
+td { padding:10px 12px; font-size:13px; border-bottom:1px solid rgba(255,255,255,.05); }
+tr:hover td { background:rgba(255,255,255,.02); }
+
+/* Buttons */
+.btn { padding:8px 16px; border:none; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; transition:all .2s; }
+.btn-primary { background:var(--primary); color:#fff; }
+.btn-primary:hover { background:var(--primary-dark); }
+.btn-accent { background:var(--accent); color:#000; }
+.btn-accent:hover { background:#c9a432; }
+.btn-outline { background:transparent; border:1px solid var(--border); color:var(--text-muted); }
+.btn-outline:hover { border-color:var(--text); color:var(--text); }
+.btn-success { background:var(--success); color:#fff; }
+.btn-sm { padding:5px 10px; font-size:11px; }
+
+/* Presets */
+.presets { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
+.preset { padding:6px 14px; border-radius:20px; font-size:12px; cursor:pointer; border:1px solid var(--border); color:var(--text-muted); transition:all .2s; }
+.preset:hover { border-color:var(--accent); color:var(--accent); }
+.preset.active { background:var(--accent); color:#000; border-color:var(--accent); font-weight:600; }
+
+/* Search */
+.search-bar { position:relative; margin-bottom:16px; }
+.search-bar input { width:100%; padding:10px 16px 10px 40px; background:rgba(0,0,0,.2); border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:13px; outline:none; }
+.search-bar input:focus { border-color:var(--accent); }
+.search-bar::before { content:'🔍'; position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:14px; }
+
+/* Funnel */
+.funnel { display:flex; gap:4px; align-items:center; }
+.funnel-stage { padding:4px 10px; background:rgba(255,255,255,.05); border-radius:4px; font-size:11px; text-align:center; }
+.funnel-stage.active { background:var(--primary); color:#fff; }
+.funnel-arrow { color:var(--text-muted); font-size:10px; }
+
+/* Discovery Card */
+.discover-card { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:10px; }
+.discover-card .match-score { font-size:24px; font-weight:700; color:var(--success); }
+.discover-card .platform-badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:10px; background:rgba(42,90,140,.3); color:var(--secondary-light); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+/* Responsive */
+@media(max-width:900px) { .app{grid-template-columns:1fr;} .sidebar{display:none;} .stats-bar{grid-template-columns:repeat(3,1fr);} }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <h1>BroyhillGOP</h1>
+    <p>E55 Intelligence Agent</p>
+  </div>
+
+  <div class="nav-section">Command Center</div>
+  <div class="nav-item active" onclick="showPage('dashboard')">
+    <span class="nav-icon">📊</span> Dashboard
+  </div>
+  <div class="nav-item" onclick="showPage('directories')">
+    <span class="nav-icon">🗂️</span> Group Directories
+    <span class="nav-badge">14</span>
+  </div>
+  <div class="nav-item" onclick="showPage('icp')">
+    <span class="nav-icon">🎯</span> ICP Builder
+  </div>
+  <div class="nav-item" onclick="showPage('prospects')">
+    <span class="nav-icon">👥</span> Prospect Origins
+  </div>
+  <div class="nav-item" onclick="showPage('enrichment')">
+    <span class="nav-icon">🔬</span> Enrichment Pipeline
+  </div>
+
+  <div class="nav-section">Intelligence</div>
+  <div class="nav-item" onclick="showPage('news')">
+    <span class="nav-icon">📰</span> News Cycle
+    <span class="nav-badge" style="background:var(--danger)">3</span>
+  </div>
+  <div class="nav-item" onclick="showPage('connectors')">
+    <span class="nav-icon">🔗</span> Connectors
+  </div>
+  <div class="nav-item" onclick="showPage('newsletters')">
+    <span class="nav-icon">📧</span> Newsletters
+  </div>
+
+  <div class="nav-section">Outreach</div>
+  <div class="nav-item" onclick="showPage('inbox')">
+    <span class="nav-icon">📬</span> Unified Inbox
+    <span class="nav-badge">12</span>
+  </div>
+  <div class="nav-item" onclick="showPage('sequences')">
+    <span class="nav-icon">⚡</span> Sequences
+  </div>
+  <div class="nav-item" onclick="showPage('briefings')">
+    <span class="nav-icon">📋</span> Pre-Call Briefings
+  </div>
+
+  <div class="nav-section">Settings</div>
+  <div class="nav-item" onclick="showPage('sources')">
+    <span class="nav-icon">🌊</span> Enrichment Sources
+    <span class="nav-badge" style="background:var(--secondary-light)">80</span>
+  </div>
+  <div class="nav-item" onclick="showPage('activity')">
+    <span class="nav-icon">📜</span> Activity Log
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- ═══════════ DASHBOARD ═══════════ -->
+  <div id="page-dashboard" class="page">
+    <div class="page-header">
+      <h2>E55 Intelligence Dashboard</h2>
+      <div class="status">
+        <div class="status-dot"></div>
+        <span style="font-size:13px;color:var(--success)">Agent Active</span>
+        <span style="font-size:11px;color:var(--text-muted);margin-left:8px">District: NC House 74</span>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-groups">14</div>
+        <div class="stat-label">Active Directories</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-prospects">2,847</div>
+        <div class="stat-label">Prospects Sourced</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-enriched">1,923</div>
+        <div class="stat-label">Enriched</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-newsletters">847</div>
+        <div class="stat-label">Newsletter Subs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-connectors">23</div>
+        <div class="stat-label">Connectors Found</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-donors">142</div>
+        <div class="stat-label">Donors Converted</div>
+      </div>
+    </div>
+
+    <!-- Funnel Visualization -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header"><span class="card-title">Prospect Funnel</span></div>
+      <div class="card-body" style="display:flex;justify-content:center;padding:24px">
+        <div class="funnel">
+          <div class="funnel-stage active" style="padding:12px 24px;font-size:14px">Identified<br><b>2,847</b></div>
+          <div class="funnel-arrow">→</div>
+          <div class="funnel-stage active" style="padding:12px 20px;font-size:13px">Newsletter<br><b>847</b></div>
+          <div class="funnel-arrow">→</div>
+          <div class="funnel-stage active" style="padding:12px 16px;font-size:12px">Engaged<br><b>412</b></div>
+          <div class="funnel-arrow">→</div>
+          <div class="funnel-stage active" style="padding:12px 14px;font-size:11px">Event<br><b>189</b></div>
+          <div class="funnel-arrow">→</div>
+          <div class="funnel-stage active" style="padding:10px 12px;font-size:11px;background:var(--success)">Volunteer<br><b>87</b></div>
+          <div class="funnel-arrow">→</div>
+          <div class="funnel-stage active" style="padding:10px 10px;font-size:11px;background:var(--accent);color:#000">Donor<br><b>142</b></div>
+          <div class="funnel-arrow">→</div>
+          <div class="funnel-stage active" style="padding:8px 8px;font-size:10px;background:var(--primary)">Leader<br><b>23</b></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Origin Attribution -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header">
+        <span class="card-title">Prospect Origin Attribution — Where Do They Come From?</span>
+      </div>
+      <div class="card-body" style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Directory Category</th>
+              <th>Prospects</th>
+              <th>Newsletter</th>
+              <th>Donors</th>
+              <th>Volunteers</th>
+              <th>Conversion %</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>🎯 Second Amendment</td><td>487</td><td>198</td><td>34</td><td>22</td><td style="color:var(--success)">11.5%</td></tr>
+            <tr><td>🕊️ Pro-Life / Family</td><td>423</td><td>167</td><td>28</td><td>19</td><td style="color:var(--success)">11.1%</td></tr>
+            <tr><td>💼 Business / Economic</td><td>398</td><td>142</td><td>41</td><td>8</td><td style="color:var(--success)">12.3%</td></tr>
+            <tr><td>⛪ Faith-Based</td><td>356</td><td>134</td><td>18</td><td>15</td><td>9.3%</td></tr>
+            <tr><td>🏛️ Official GOP</td><td>312</td><td>89</td><td>12</td><td>11</td><td>7.4%</td></tr>
+            <tr><td>🎖️ Veterans / Military</td><td>234</td><td>67</td><td>8</td><td>6</td><td>6.0%</td></tr>
+            <tr><td>🌾 Agricultural / Rural</td><td>198</td><td>45</td><td>3</td><td>4</td><td>3.5%</td></tr>
+            <tr><td>🚔 Law Enforcement</td><td>167</td><td>34</td><td>2</td><td>3</td><td>3.0%</td></tr>
+            <tr><td>📚 Education / Parents</td><td>145</td><td>28</td><td>1</td><td>2</td><td>2.1%</td></tr>
+            <tr><td>🦅 MAGA / Populist</td><td>127</td><td>43</td><td>5</td><td>7</td><td>9.4%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">Recent Agent Activity</span></div>
+      <div class="card-body">
+        <div style="font-size:13px;line-height:2">
+          <div>🔬 <span style="color:var(--text-muted)">2m ago</span> — Enriched <b>John Parker</b> (GR#45,123) — Donor propensity: <span style="color:var(--success)">78/100</span></div>
+          <div>👥 <span style="color:var(--text-muted)">5m ago</span> — Discovered prospect via <b>NRA Local Chapter</b> (2A group post about HB-1234)</div>
+          <div>📰 <span style="color:var(--text-muted)">12m ago</span> — News cycle activated: <b>Fentanyl Seizure on I-40</b> — 3 directories auto-activated</div>
+          <div>📧 <span style="color:var(--text-muted)">18m ago</span> — Newsletter escalation: <b>Sarah Mitchell</b> hit 5+ opens on "2A Defense Report"</div>
+          <div>🔗 <span style="color:var(--text-muted)">25m ago</span> — Connector identified: <b>Robert Williams</b> (score: 72) — 6 groups, 2 leadership roles</div>
+          <div>⚡ <span style="color:var(--text-muted)">32m ago</span> — Outreach sequence completed: <b>donor_cultivation</b> for GR#44,987 — 3 replies</div>
+          <div>📋 <span style="color:var(--text-muted)">1h ago</span> — Pre-call briefing generated for meeting with <b>David Chen</b> (major donor potential)</div>
+          <div>🎯 <span style="color:var(--text-muted)">1h ago</span> — ICP search "High-Value 2A Donors in Forsyth" found <b>234 matches</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ GROUP DIRECTORIES ═══════════ -->
+  <div id="page-directories" class="page" style="display:none">
+    <div class="page-header">
+      <h2>Issue Group Directories</h2>
+      <div><button class="btn btn-primary" onclick="saveConfig()">💾 Save Configuration</button></div>
+    </div>
+
+    <!-- Presets -->
+    <div class="presets" id="presets">
+      <div class="preset active" onclick="setPreset('full')">Full Conservative</div>
+      <div class="preset" onclick="setPreset('fiscal')">Fiscal Focus</div>
+      <div class="preset" onclick="setPreset('social')">Social Conservative</div>
+      <div class="preset" onclick="setPreset('law')">Law & Order</div>
+      <div class="preset" onclick="setPreset('rural')">Rural NC</div>
+      <div class="preset" onclick="setPreset('maga')">MAGA Base</div>
+      <div class="preset" onclick="setPreset('suburban')">Suburban Outreach</div>
+    </div>
+
+    <div class="search-bar"><input type="text" placeholder="Search groups..." onkeyup="filterGroups(this.value)"></div>
+
+    <div id="directories-container"></div>
+  </div>
+
+  <!-- ═══════════ ICP BUILDER ═══════════ -->
+  <div id="page-icp" class="page" style="display:none">
+    <div class="page-header"><h2>Ideal Constituent Profile Builder</h2></div>
+
+    <div class="icp-builder">
+      <p style="font-size:12px;color:var(--accent);margin-bottom:10px">NATURAL LANGUAGE SEARCH — Describe your ideal prospect</p>
+      <textarea class="icp-input" rows="3" placeholder='e.g., "Find major donors in real estate who support 2A in Forsyth County who donated over $500"'></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+        <div style="font-size:11px;color:var(--text-muted)">AI parses your description into structured filters → searches 211,500 golden records → auto-enriches matches via 80+ sources</div>
+        <button class="btn btn-accent">🎯 Search & Enrich</button>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Saved ICP Profiles</span></div>
+        <div class="card-body">
+          <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+            <div style="font-weight:600;font-size:14px">High-Value 2A Donors</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px">"Find donors over $500 in gun rights groups in Forsyth County"</div>
+            <div style="display:flex;gap:12px;margin-top:6px;font-size:11px">
+              <span style="color:var(--success)">234 matches</span>
+              <span>189 enriched</span>
+              <span>23 contacted</span>
+              <span style="color:var(--accent)">8 converted</span>
+            </div>
+          </div>
+          <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+            <div style="font-weight:600;font-size:14px">Business Owner Connectors</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px">"Find business owners with connector score over 40 in Wake and Forsyth"</div>
+            <div style="display:flex;gap:12px;margin-top:6px;font-size:11px">
+              <span style="color:var(--success)">156 matches</span>
+              <span>98 enriched</span>
+              <span>12 contacted</span>
+              <span style="color:var(--accent)">5 converted</span>
+            </div>
+          </div>
+          <div style="padding:8px 0">
+            <div style="font-weight:600;font-size:14px">Faith Leader Volunteers</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px">"Active church leaders in rural NC counties with high engagement"</div>
+            <div style="display:flex;gap:12px;margin-top:6px;font-size:11px">
+              <span style="color:var(--success)">89 matches</span>
+              <span>67 enriched</span>
+              <span>15 contacted</span>
+              <span style="color:var(--accent)">11 converted</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Enrichment Depth Selector</span></div>
+        <div class="card-body">
+          <div style="display:grid;gap:10px">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px;border:1px solid var(--border);border-radius:6px">
+              <input type="radio" name="depth" value="basic"> <div><b>Basic</b> — FEC + NCBOE only <span style="color:var(--success);font-size:11px">(Free)</span></div>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px;border:1px solid var(--accent);border-radius:6px;background:rgba(212,175,55,.05)">
+              <input type="radio" name="depth" value="standard" checked> <div><b>Standard</b> — + Property + Social <span style="color:var(--success);font-size:11px">(Free)</span></div>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px;border:1px solid var(--border);border-radius:6px">
+              <input type="radio" name="depth" value="deep"> <div><b>Deep</b> — + Commercial APIs <span style="color:var(--warning);font-size:11px">($0.03-0.10/lookup)</span></div>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px;border:1px solid var(--border);border-radius:6px">
+              <input type="radio" name="depth" value="exhaustive"> <div><b>Exhaustive</b> — All 80+ sources <span style="color:var(--danger);font-size:11px">($0.25-0.50/lookup)</span></div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ NEWS CYCLE ═══════════ -->
+  <div id="page-news" class="page" style="display:none">
+    <div class="page-header"><h2>News Cycle Intelligence</h2></div>
+
+    <div style="margin-bottom:20px">
+      <div class="news-event critical">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="headline">🔥 NC General Assembly Introduces Concealed Carry Expansion Bill HB-1234</div>
+          <span class="impact-badge critical">CRITICAL</span>
+        </div>
+        <div class="meta">2 hours ago · Related: Second Amendment, Law Enforcement, MAGA/Populist · Forsyth, Wake, Mecklenburg</div>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button class="btn btn-primary btn-sm">🎯 Activate 3 Directories</button>
+          <button class="btn btn-accent btn-sm">📧 Blast "2A Defense Report"</button>
+          <button class="btn btn-outline btn-sm">📋 View Talking Points</button>
+        </div>
+      </div>
+
+      <div class="news-event high">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="headline">📚 Forsyth County School Board Votes on Book Removal Policy</div>
+          <span class="impact-badge high">HIGH</span>
+        </div>
+        <div class="meta">5 hours ago · Related: Education/Parents, Faith-Based, MAGA/Populist · Forsyth County</div>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button class="btn btn-primary btn-sm">🎯 Activate 2 Directories</button>
+          <button class="btn btn-accent btn-sm">📧 Blast "Faith & Family Update"</button>
+        </div>
+      </div>
+
+      <div class="news-event medium">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="headline">💰 NC Tax Reform Bill Proposes Flat Rate Reduction to 4.25%</div>
+          <span class="impact-badge medium">MEDIUM</span>
+        </div>
+        <div class="meta">1 day ago · Related: Business/Economic, Liberty/Constitutional · Statewide</div>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button class="btn btn-outline btn-sm">🎯 Activate Directories</button>
+          <button class="btn btn-outline btn-sm">📧 Newsletter Blast</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ ENRICHMENT SOURCES ═══════════ -->
+  <div id="page-sources" class="page" style="display:none">
+    <div class="page-header">
+      <h2>Waterfall Enrichment Sources</h2>
+      <div style="font-size:12px;color:var(--text-muted)">80 sources · 7 tiers · Priority-ordered cascade</div>
+    </div>
+    <div id="sources-container"></div>
+  </div>
+
+  <!-- Placeholder pages -->
+  <div id="page-prospects" class="page" style="display:none">
+    <div class="page-header"><h2>Prospect Origin Tracking</h2></div>
+    <p style="color:var(--text-muted)">Every prospect tagged with: which issue group, which news cycle, which connector. Full attribution chain.</p>
+  </div>
+  <div id="page-enrichment" class="page" style="display:none">
+    <div class="page-header"><h2>Enrichment Pipeline</h2></div>
+    <p style="color:var(--text-muted)">Real-time waterfall enrichment queue. FEC → NCBOE → Property → Social → Commercial → Political.</p>
+  </div>
+  <div id="page-connectors" class="page" style="display:none">
+    <div class="page-header"><h2>Super Connectors</h2></div>
+    <p style="color:var(--text-muted)">Score = (groups × 15) + (leadership × 25). Cap 100. The 5-10 people who move communities.</p>
+  </div>
+  <div id="page-newsletters" class="page" style="display:none">
+    <div class="page-header"><h2>Issue Newsletters</h2></div>
+    <p style="color:var(--text-muted)">2A Defense Report · Faith & Family Update · Economic Freedom Report · Heritage Sentinel · and more.</p>
+  </div>
+  <div id="page-inbox" class="page" style="display:none">
+    <div class="page-header"><h2>Unified Inbox</h2></div>
+    <p style="color:var(--text-muted)">AI-classified inbound: donation_intent, volunteer_offer, event_interest, issue_question, endorsement.</p>
+  </div>
+  <div id="page-sequences" class="page" style="display:none">
+    <div class="page-header"><h2>Outreach Sequences</h2></div>
+    <p style="color:var(--text-muted)">Multi-step automated: newsletter_welcome, donor_cultivation, connector_engage, news_cycle_response.</p>
+  </div>
+  <div id="page-briefings" class="page" style="display:none">
+    <div class="page-header"><h2>Pre-Call Briefings</h2></div>
+    <p style="color:var(--text-muted)">AI-generated meeting prep: origin story, shared connections, donation history, issue alignment, suggested ask.</p>
+  </div>
+  <div id="page-activity" class="page" style="display:none">
+    <div class="page-header"><h2>Activity Log</h2></div>
+    <p style="color:var(--text-muted)">Full audit trail: enrichment_run, group_scan, prospect_discovered, newsletter_sent, outreach_step, ai_decision.</p>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// DIRECTORY DATA
+// ═══════════════════════════════════════════════════
+const DIRECTORIES = [
+  { name:"Official GOP Infrastructure", icon:"🏛️", color:"#1B3A5C", category:"official_gop",
+    groups:[{id:"county_gop",name:"County GOP Committee",members:342,newsletter:"Party Update"},{id:"rep_women",name:"Republican Women's Club",members:187,newsletter:"Party Update"},{id:"young_rep",name:"Young Republicans",members:94,newsletter:"Party Update"},{id:"gop_mens",name:"GOP Men's Club",members:128,newsletter:"Party Update"},{id:"precinct_chairs",name:"Precinct Chairs Network",members:63,newsletter:"Party Update"}]},
+  { name:"Second Amendment / Gun Rights", icon:"🎯", color:"#8B0000", category:"second_amendment",
+    groups:[{id:"nra_local",name:"NRA Local Chapter",members:1240,newsletter:"2A Defense Report"},{id:"goa",name:"Gun Owners of America - NC",members:567,newsletter:"2A Defense Report"},{id:"nc_rifle",name:"NC Rifle & Pistol Assn",members:890,newsletter:"2A Defense Report"},{id:"shoot_club",name:"Local Shooting Sports Club",members:234,newsletter:"2A Defense Report"},{id:"ccw_group",name:"Concealed Carry Alliance",members:445,newsletter:"2A Defense Report"}]},
+  { name:"Pro-Life / Family Values", icon:"🕊️", color:"#6B3FA0", category:"pro_life",
+    groups:[{id:"nc_rtl",name:"NC Right to Life - Local",members:678,newsletter:"Faith & Family Update"},{id:"crisis_preg",name:"Crisis Pregnancy Center Network",members:156,newsletter:"Faith & Family Update"},{id:"march_life",name:"March for Life NC Chapter",members:423,newsletter:"Faith & Family Update"},{id:"family_council",name:"NC Family Policy Council",members:312,newsletter:"Faith & Family Update"}]},
+  { name:"Business / Economic", icon:"💼", color:"#2E7D32", category:"business_economic",
+    groups:[{id:"chamber",name:"Chamber of Commerce",members:456,newsletter:"Economic Freedom Report"},{id:"rotary",name:"Rotary Club",members:89,newsletter:"Economic Freedom Report"},{id:"biz_assn",name:"Local Business Association",members:234,newsletter:"Economic Freedom Report"},{id:"re_board",name:"Real Estate Board",members:178,newsletter:"Economic Freedom Report"},{id:"home_builders",name:"Home Builders Association",members:145,newsletter:"Economic Freedom Report"},{id:"restaurant_assn",name:"Restaurant & Hospitality Assn",members:112,newsletter:"Economic Freedom Report"}]},
+  { name:"Veterans / Military", icon:"🎖️", color:"#556B2F", category:"veterans_military",
+    groups:[{id:"vfw",name:"VFW Post",members:234,newsletter:"Heritage Sentinel"},{id:"amer_legion",name:"American Legion",members:345,newsletter:"Heritage Sentinel"},{id:"mil_officers",name:"Military Officers Assn",members:89,newsletter:"Heritage Sentinel"},{id:"combat_vets",name:"Combat Veterans MC",members:67,newsletter:"Heritage Sentinel"}]},
+  { name:"Agricultural / Rural", icon:"🌾", color:"#8B6914", category:"agricultural_rural",
+    groups:[{id:"farm_bureau",name:"Farm Bureau Local",members:456,newsletter:"Rural NC Report"},{id:"cattlemen",name:"Cattlemen's Association",members:123,newsletter:"Rural NC Report"},{id:"tobacco_growers",name:"Tobacco Growers Assn",members:89,newsletter:"Rural NC Report"},{id:"rural_coop",name:"Rural Electric Co-op Members",members:567,newsletter:"Rural NC Report"}]},
+  { name:"Faith-Based", icon:"⛪", color:"#4A0E4E", category:"faith_based",
+    groups:[{id:"baptist_assn",name:"Baptist Association",members:890,newsletter:"Faith & Family Update"},{id:"catholic_men",name:"Knights of Columbus",members:234,newsletter:"Faith & Family Update"},{id:"evangelical",name:"Evangelical Alliance",members:567,newsletter:"Faith & Family Update"},{id:"bible_study",name:"Community Bible Study",members:145,newsletter:"Faith & Family Update"}]},
+  { name:"Education / Parents", icon:"📚", color:"#1565C0", category:"education_parents",
+    groups:[{id:"parents_rights",name:"Parents' Rights Coalition",members:345,newsletter:"Education Watch"},{id:"homeschool",name:"Homeschool Association",members:234,newsletter:"Education Watch"},{id:"school_choice",name:"School Choice Alliance",members:189,newsletter:"Education Watch"},{id:"pta_conservative",name:"Conservative PTA Network",members:156,newsletter:"Education Watch"}]},
+  { name:"Law Enforcement / Public Safety", icon:"🚔", color:"#37474F", category:"law_enforcement",
+    groups:[{id:"fop",name:"Fraternal Order of Police",members:345,newsletter:"Blue Line Report"},{id:"sheriffs_assn",name:"NC Sheriffs' Association",members:89,newsletter:"Blue Line Report"},{id:"fire_assn",name:"Firefighters Association",members:234,newsletter:"Blue Line Report"},{id:"ems_assn",name:"EMS Workers Union",members:123,newsletter:"Blue Line Report"}]},
+  { name:"Civic / Fraternal", icon:"🤝", color:"#5D4037", category:"civic_fraternal",
+    groups:[{id:"masons",name:"Masonic Lodge",members:178,newsletter:"Civic Leader Report"},{id:"elks",name:"Elks Club",members:145,newsletter:"Civic Leader Report"},{id:"lions",name:"Lions Club",members:112,newsletter:"Civic Leader Report"},{id:"kiwanis",name:"Kiwanis Club",members:89,newsletter:"Civic Leader Report"}]},
+  { name:"Professional", icon:"👔", color:"#00695C", category:"professional",
+    groups:[{id:"bar_assn",name:"Bar Association (Conservative)",members:234,newsletter:"Professional Network"},{id:"med_society",name:"Medical Society",members:178,newsletter:"Professional Network"},{id:"engineering",name:"Engineers Club",members:123,newsletter:"Professional Network"}]},
+  { name:"MAGA / Populist", icon:"🦅", color:"#B71C1C", category:"maga_populist",
+    groups:[{id:"maga_rally",name:"MAGA Rally Organizers",members:567,newsletter:"Patriot Brief"},{id:"trump_club",name:"Trump Club",members:890,newsletter:"Patriot Brief"},{id:"america_first",name:"America First Coalition",members:345,newsletter:"Patriot Brief"},{id:"grassroots",name:"Grassroots NC",members:234,newsletter:"Patriot Brief"}]},
+  { name:"Liberty / Constitutional", icon:"🗽", color:"#E65100", category:"liberty_constitutional",
+    groups:[{id:"tea_party",name:"Tea Party Patriots",members:234,newsletter:"Liberty Watch"},{id:"john_birch",name:"John Birch Society",members:89,newsletter:"Liberty Watch"},{id:"oath_keepers",name:"Constitutional Oath Keepers",members:145,newsletter:"Liberty Watch"},{id:"tenth_amend",name:"10th Amendment Center",members:67,newsletter:"Liberty Watch"}]},
+  { name:"Heritage / Historical", icon:"🏰", color:"#4E342E", category:"heritage_historical",
+    groups:[{id:"dar",name:"DAR Chapter",members:178,newsletter:"Heritage Sentinel"},{id:"sar",name:"Sons of the American Revolution",members:123,newsletter:"Heritage Sentinel"},{id:"historical_society",name:"County Historical Society",members:89,newsletter:"Heritage Sentinel"}]}
+];
+
+// State
+let dirStates = DIRECTORIES.map(() => true);
+let groupOverrides = {};
+let expandedDirs = {};
+
+// ═══════════════════════════════════════════════════
+// PAGE NAVIGATION
+// ═══════════════════════════════════════════════════
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+  document.getElementById('page-' + page).style.display = 'block';
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  if (page === 'directories') renderDirectories();
+  if (page === 'sources') renderSources();
+}
+
+// ═══════════════════════════════════════════════════
+// DIRECTORIES
+// ═══════════════════════════════════════════════════
+function renderDirectories() {
+  const container = document.getElementById('directories-container');
+  container.innerHTML = DIRECTORIES.map((dir, i) => `
+    <div class="directory ${expandedDirs[i] ? 'expanded' : ''}" id="dir-${i}">
+      <div class="directory-header" onclick="toggleExpand(${i})">
+        <span class="dir-icon">${dir.icon}</span>
+        <span class="dir-name">${dir.name}</span>
+        <span class="dir-count">${dir.groups.length} groups · ${dir.groups.reduce((s,g)=>s+g.members,0).toLocaleString()} reach</span>
+        <div class="toggle ${dirStates[i]?'on':''}" onclick="event.stopPropagation();toggleDir(${i})"></div>
+      </div>
+      <div class="directory-groups">
+        ${dir.groups.map(g => `
+          <div class="group-row">
+            <span class="group-name">${g.name}</span>
+            <span class="group-members">${g.members.toLocaleString()} members</span>
+            <span style="font-size:10px;color:var(--text-muted)">${g.newsletter}</span>
+            <div class="group-toggle ${getGroupState(i,g.id)?'on':''}" onclick="toggleGroup(${i},'${g.id}')"></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleDir(i) { dirStates[i] = !dirStates[i]; renderDirectories(); }
+function toggleExpand(i) { expandedDirs[i] = !expandedDirs[i]; renderDirectories(); }
+function getGroupState(dirIdx, groupId) {
+  if (groupOverrides[`${dirIdx}-${groupId}`] !== undefined) return groupOverrides[`${dirIdx}-${groupId}`];
+  return dirStates[dirIdx];
+}
+function toggleGroup(dirIdx, groupId) {
+  const key = `${dirIdx}-${groupId}`;
+  groupOverrides[key] = !getGroupState(dirIdx, groupId);
+  renderDirectories();
+}
+function filterGroups(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll('.directory').forEach(d => {
+    const text = d.textContent.toLowerCase();
+    d.style.display = text.includes(q) ? 'block' : 'none';
+  });
+}
+
+// Presets
+const PRESETS = {
+  full: [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  fiscal: [1,0,0,1,0,0,0,0,0,0,1,0,1,0],
+  social: [1,0,1,0,0,0,1,1,0,0,0,0,0,1],
+  law: [1,1,0,0,1,0,0,0,1,0,0,0,0,0],
+  rural: [1,1,0,0,1,1,1,0,0,1,0,0,0,1],
+  maga: [1,1,1,0,1,0,1,1,1,0,0,1,1,0],
+  suburban: [1,0,0,1,0,0,1,1,0,0,1,0,0,0]
+};
+function setPreset(name) {
+  dirStates = PRESETS[name].map(Boolean);
+  groupOverrides = {};
+  document.querySelectorAll('.preset').forEach(p => p.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  renderDirectories();
+}
+function saveConfig() {
+  const config = {
+    directories_active: DIRECTORIES.filter((_,i) => dirStates[i]).map(d => d.category),
+    groups_active: Object.entries(groupOverrides).filter(([_,v])=>v).map(([k])=>k),
+    timestamp: new Date().toISOString()
+  };
+  console.log('Saving config:', config);
+  alert('Configuration saved to e55_agent_profiles.monitoring_config');
+}
+
+// ═══════════════════════════════════════════════════
+// ENRICHMENT SOURCES
+// ═══════════════════════════════════════════════════
+const SOURCES = [
+  {tier:"Government / Free",sources:[
+    {name:"FEC Contributions",hit:85,cost:0},{name:"NC Board of Elections",hit:92,cost:0},{name:"NC Property Records",hit:68,cost:0},
+    {name:"NC Secretary of State",hit:35,cost:0},{name:"County Tax Records",hit:72,cost:0},{name:"Census/ACS Data",hit:95,cost:0},
+    {name:"SEC EDGAR Filings",hit:8,cost:0},{name:"NCBOE Campaign Finance",hit:45,cost:0}
+  ]},
+  {tier:"Social Media",sources:[
+    {name:"Facebook Public",hit:55,cost:0},{name:"LinkedIn Public",hit:42,cost:0},{name:"Truth Social",hit:15,cost:0},
+    {name:"X/Twitter",hit:38,cost:0},{name:"Meetup Groups",hit:25,cost:0},{name:"Nextdoor",hit:20,cost:0},
+    {name:"Church Directories",hit:18,cost:0}
+  ]},
+  {tier:"Commercial Data",sources:[
+    {name:"People Data Labs",hit:78,cost:3},{name:"Proxycurl",hit:72,cost:5},{name:"Hunter.io",hit:65,cost:2},
+    {name:"Clearbit",hit:58,cost:5},{name:"ZoomInfo",hit:70,cost:10},{name:"Apollo.io",hit:62,cost:3},
+    {name:"FullContact",hit:62,cost:3},{name:"BeenVerified",hit:70,cost:5},{name:"Whitepages Pro",hit:72,cost:3}
+  ]},
+  {tier:"Political-Specific",sources:[
+    {name:"DataTrust Voter File",hit:88,cost:1},{name:"L2 Political",hit:85,cost:2},{name:"TargetSmart",hit:82,cost:3},
+    {name:"Aristotle",hit:60,cost:5},{name:"OpenSecrets/CRP",hit:55,cost:0},{name:"NCGOP Voter Vault",hit:75,cost:0}
+  ]},
+  {tier:"Business / Professional",sources:[
+    {name:"Dun & Bradstreet",hit:45,cost:8},{name:"GuideStar 990s",hit:35,cost:3},{name:"State Bar Directory",hit:25,cost:0},
+    {name:"Real Estate License",hit:28,cost:0},{name:"BBB Listings",hit:40,cost:0}
+  ]},
+  {tier:"Wealth / Capacity",sources:[
+    {name:"Zillow/Redfin Estimates",hit:65,cost:0},{name:"Charitable Foundation 990s",hit:18,cost:0},
+    {name:"Alumni Associations",hit:22,cost:0},{name:"Hunting/Fishing License",hit:35,cost:0}
+  ]}
+];
+
+function renderSources() {
+  const container = document.getElementById('sources-container');
+  container.innerHTML = SOURCES.map(tier => `
+    <div class="source-tier">
+      <div class="tier-header">${tier.tier} (${tier.sources.length} sources)</div>
+      ${tier.sources.map(s => `
+        <div class="source-row">
+          <span class="source-name">${s.name}</span>
+          <div class="hit-bar"><div class="hit-bar-fill" style="width:${s.hit}%;background:${s.hit>70?'var(--success)':s.hit>40?'var(--warning)':'var(--text-muted)'}"></div></div>
+          <span class="hit-rate">${s.hit}%</span>
+          <span class="source-cost">${s.cost>0?'$'+((s.cost)/100).toFixed(2):'Free'}</span>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+// Initial render
+renderDirectories();
+</script>
+</body>
+</html>
