@@ -1,0 +1,20 @@
+[Unit]
+Description=E55 Autonomous Intelligence Agent - Jeeva Clone for BroyhillGOP
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/broyhillgop/e55_jeeva_clone/agent
+ExecStart=/usr/bin/python3 e55_enrichment_agent.py daemon
+Restart=always
+RestartSec=30
+Environment=SUPABASE_URL=https://isbgjpnbocdkeslofota.supabase.co
+Environment=SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+Environment=E55_LOG_LEVEL=INFO
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=e55-agent
+
+[Install]
+WantedBy=multi-user.target
