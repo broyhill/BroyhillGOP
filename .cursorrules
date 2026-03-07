@@ -10,6 +10,9 @@ You are building the BroyhillGOP political campaign SaaS platform frontend.
 - Deployment: Vercel
 - The complete Inspinia source template is in inspinia-full/ — reference it for EVERY component
 
+## DATABASE / IDENTITY (RFC-001)
+For any database rebuild, identity resolution, schema changes, or pipeline work: ALWAYS follow docs/CLAUDE_INSTRUCTIONS_RFC001_REBUILD.md. Key rule: rebuild the core.person_spine layer (RFC-001), do NOT destructively clean or merge existing golden_records. Authority: Claude-Cursor-ecosystems.md (RFC-001) in repo root.
+
 ## REPRODUCTION MANDATE
 This is NOT "inspired by" Inspinia. This IS Inspinia, rebranded for BroyhillGOP.
 - Every page layout, sidebar nav item, topbar element must match the template exactly
