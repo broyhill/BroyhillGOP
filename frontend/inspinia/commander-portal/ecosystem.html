@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-sidenav-size="default" data-layout-mode="light" data-topbar-color="dark" data-menu-color="dark">
+<head>
+    <meta charset="utf-8">
+    <title>Donor Ecosystem | BroyhillGOP Commander</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="assets/images/favicon.ico">
+    <script src="assets/js/config.js"></script>
+    <link href="assets/css/vendors.min.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/app.min.css" rel="stylesheet" type="text/css">
+    <style>
+        .donor-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; }
+        .mega { background: #e74c3c; color: #fff; }
+        .major { background: #f39c12; color: #fff; }
+        .mid { background: #3498db; color: #fff; }
+        .base { background: #95a5a6; color: #fff; }
+        .sortable { cursor: pointer; user-select: none; }
+        .sortable:hover { background: rgba(0,0,0,0.03); }
+        .sort-arrow { opacity: 0.3; }
+        .sort-arrow.active { opacity: 1; }
+        #searchInput { max-width: 300px; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div id="sidebar-container" data-active="ecosystem"></div>
+        <div id="topbar-container" data-title="DONOR ECOSYSTEM"></div>
+
+        <div class="page-content">
+            <div class="container-fluid">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h4 class="fw-bold mb-1">Dave Boliek Donor Network</h4>
+                        <p class="text-muted mb-0">820 unique donors &bull; $1.6M raised &bull; SIC-classified by industry</p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <input type="text" id="searchInput" class="form-control d-inline-block" placeholder="Search donors by name, city, or industry...">
+                    </div>
+                </div>
+
+                <!-- Filter Badges -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <button class="btn btn-sm btn-soft-danger me-1 filter-btn active" data-filter="all">All (820)</button>
+                        <button class="btn btn-sm btn-soft-danger me-1 filter-btn" data-filter="mega">MEGA ($100K+)</button>
+                        <button class="btn btn-sm btn-soft-warning me-1 filter-btn" data-filter="major">MAJOR ($10K+)</button>
+                        <button class="btn btn-sm btn-soft-info me-1 filter-btn" data-filter="mid">MID ($5K+)</button>
+                        <button class="btn btn-sm btn-soft-secondary filter-btn" data-filter="base">BASE (&lt;$5K)</button>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-centered mb-0" id="donorTable">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th class="sortable" data-col="rank"># <span class="sort-arrow active">▼</span></th>
+                                        <th class="sortable" data-col="name">Donor Name <span class="sort-arrow">▼</span></th>
+                                        <th class="sortable" data-col="amount">Total Given <span class="sort-arrow">▼</span></th>
+                                        <th class="sortable" data-col="donations">Donations <span class="sort-arrow">▼</span></th>
+                                        <th class="sortable" data-col="city">City <span class="sort-arrow">▼</span></th>
+                                        <th class="sortable" data-col="employer">Employer</th>
+                                        <th class="sortable" data-col="industry">Industry <span class="sort-arrow">▼</span></th>
+                                        <th>Tier</th>
+                                        <th>Profile</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="donorBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
+                        <span class="text-muted" id="showingCount">Showing 820 of 820 donors</span>
+                        <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/vendors.min.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="nav.js"></script>
+    <script src="donors-data.js"></script>
+    <script src="ecosystem-app.js"></script>
+</body>
+</html>

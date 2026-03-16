@@ -1,0 +1,578 @@
+<!--
+* BroyhillGOP COMMANDER PORTAL - Dave Boliek for Auditor
+* Built on INSPINIA 4.0.1 Template
+* Real donor intelligence data from Supabase
+-->
+<!DOCTYPE html>
+<html lang="en" data-sidenav-size="default" data-layout-mode="light" data-topbar-color="dark" data-menu-color="dark">
+<head>
+    <meta charset="utf-8">
+    <title>Commander Portal | BroyhillGOP — Dave Boliek for Auditor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="assets/images/favicon.ico">
+    <script src="assets/js/config.js"></script>
+    <link href="assets/css/vendors.min.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/app.min.css" rel="stylesheet" type="text/css">
+    <style>
+        .stat-card { transition: transform 0.2s; cursor: pointer; }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .donor-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; }
+        .mega { background: #e74c3c; color: #fff; }
+        .major { background: #f39c12; color: #fff; }
+        .mid { background: #3498db; color: #fff; }
+        .base { background: #95a5a6; color: #fff; }
+        .industry-bar { height: 8px; border-radius: 4px; background: #e9ecef; overflow: hidden; }
+        .industry-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+        .alert-critical { border-left: 4px solid #e74c3c; }
+        .alert-high { border-left: 4px solid #f39c12; }
+        .alert-medium { border-left: 4px solid #3498db; }
+        .hero-gradient { background: linear-gradient(135deg, #1a1c2c 0%, #2d3561 50%, #1a1c2c 100%); }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+
+        <!-- ========== Sidenav ========== -->
+        <div class="sidenav-menu">
+            <a href="index.html" class="logo">
+                <span class="logo logo-light">
+                    <span class="logo-lg"><strong class="text-white fs-20">BROYHILL</strong><span class="text-warning">GOP</span></span>
+                    <span class="logo-sm"><strong class="text-white">B</strong></span>
+                </span>
+                <span class="logo logo-dark">
+                    <span class="logo-lg"><strong class="text-dark fs-20">BROYHILL</strong><span class="text-warning">GOP</span></span>
+                    <span class="logo-sm"><strong class="text-dark">B</strong></span>
+                </span>
+            </a>
+            <button class="button-on-hover"><i class="ti ti-menu-4 fs-22 align-middle"></i></button>
+            <button class="button-close-offcanvas"><i class="ti ti-x align-middle"></i></button>
+            <div class="scrollbar" data-simplebar>
+                <div class="sidenav-user">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="sidenav-user-name fw-bold">Dave Boliek</span>
+                            <span class="fs-12 fw-semibold d-block text-muted">NC State Auditor</span>
+                        </div>
+                    </div>
+                </div>
+                <ul class="side-nav">
+                    <li class="side-nav-title">COMMANDER</li>
+                    <li class="side-nav-item">
+                        <a href="index.html" class="side-nav-link active">
+                            <span class="menu-icon"><i class="ti ti-dashboard"></i></span>
+                            <span class="menu-text">Command Center</span>
+                        </a>
+                    </li>
+                    <li class="side-nav-item">
+                        <a href="admin.html" class="side-nav-link">
+                            <span class="menu-icon"><i class="ti ti-settings-2"></i></span>
+                            <span class="menu-text">Admin Panel</span>
+                        </a>
+                    </li>
+                    <li class="side-nav-item">
+                        <a href="ecosystem.html" class="side-nav-link">
+                            <span class="menu-icon"><i class="ti ti-users-group"></i></span>
+                            <span class="menu-text">Donor Ecosystem</span>
+                            <span class="badge bg-info">820</span>
+                        </a>
+                    </li>
+                    <li class="side-nav-title">TOP DONORS</li>
+                    <li class="side-nav-item">
+                        <a data-bs-toggle="collapse" href="#topDonors" aria-expanded="false" class="side-nav-link">
+                            <span class="menu-icon"><i class="ti ti-star"></i></span>
+                            <span class="menu-text">Featured Donors</span>
+                            <span class="badge bg-danger">20</span>
+                        </a>
+                        <div class="collapse" id="topDonors">
+                            <ul class="sub-menu">
+                                <li class="side-nav-item"><a href="donor-profile.html?id=1" class="side-nav-link"><span class="menu-text">Vaughn Prillaman — $169K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=2" class="side-nav-link"><span class="menu-text">Timothy Wyatt — $25K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=3" class="side-nav-link"><span class="menu-text">Charles Neely — $22K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=4" class="side-nav-link"><span class="menu-text">James Burnette — $22K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=5" class="side-nav-link"><span class="menu-text">Fred Steen — $17K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=6" class="side-nav-link"><span class="menu-text">James Howard — $16K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=7" class="side-nav-link"><span class="menu-text">Robert Ingram — $14K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=8" class="side-nav-link"><span class="menu-text">Elizabeth Fentress — $12K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=9" class="side-nav-link"><span class="menu-text">Robert Lee — $12K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=10" class="side-nav-link"><span class="menu-text">Michael Boliek — $11K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=11" class="side-nav-link"><span class="menu-text">Dennis Ramsey — $10K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=12" class="side-nav-link"><span class="menu-text">Charles Davis — $10K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=13" class="side-nav-link"><span class="menu-text">Betty Craven — $10K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=14" class="side-nav-link"><span class="menu-text">James Narron — $10K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=15" class="side-nav-link"><span class="menu-text">John Hood — $10K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=16" class="side-nav-link"><span class="menu-text">Jack Clark — $9K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=17" class="side-nav-link"><span class="menu-text">Ashley Woolard — $9K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=18" class="side-nav-link"><span class="menu-text">Susan Boliek — $8K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=19" class="side-nav-link"><span class="menu-text">John Harris — $8K</span></a></li>
+                                <li class="side-nav-item"><a href="donor-profile.html?id=20" class="side-nav-link"><span class="menu-text">William Rand — $8K</span></a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="side-nav-title">INTELLIGENCE</li>
+                    <li class="side-nav-item">
+                        <a href="#" class="side-nav-link">
+                            <span class="menu-icon"><i class="ti ti-building-bank"></i></span>
+                            <span class="menu-text">Legislative Intel</span>
+                        </a>
+                    </li>
+                    <li class="side-nav-item">
+                        <a href="#" class="side-nav-link">
+                            <span class="menu-icon"><i class="ti ti-news"></i></span>
+                            <span class="menu-text">News Alerts</span>
+                        </a>
+                    </li>
+                    <li class="side-nav-item">
+                        <a href="#" class="side-nav-link">
+                            <span class="menu-icon"><i class="ti ti-map-pin"></i></span>
+                            <span class="menu-text">Charlotte Micro-Ecos</span>
+                            <span class="badge bg-success">7</span>
+                        </a>
+                    </li>
+                    <li class="side-nav-item">
+                        <a href="#" class="side-nav-link">
+                            <span class="menu-icon"><i class="ti ti-mail"></i></span>
+                            <span class="menu-text">Newsletter Engine</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ========== Topbar ========== -->
+        <header class="app-topbar">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="topbar-item">
+                            <button type="button" class="topbar-button" id="dripicons-menu">
+                                <i class="ti ti-menu-2 fs-22"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-1">
+                        <h5 class="text-white mb-0 me-3">COMMANDER PORTAL</h5>
+                        <span class="badge bg-success">LIVE</span>
+                        <span class="badge bg-warning ms-2">TUESDAY DEMO</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ========== Page Content ========== -->
+        <div class="page-content">
+            <div class="container-fluid">
+
+                <!-- Hero Section -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card hero-gradient text-white border-0">
+                            <div class="card-body p-4">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <h2 class="mb-1 fw-bold">Dave Boliek for State Auditor</h2>
+                                        <p class="mb-0 opacity-75 fs-15">Committee: DAVE BOLIEK FOR AUDITOR &bull; NC State Auditor Race 2024</p>
+                                        <div class="mt-3">
+                                            <span class="badge bg-success bg-opacity-25 text-white me-1 px-3 py-2">820 Donors</span>
+                                            <span class="badge bg-info bg-opacity-25 text-white me-1 px-3 py-2">1,334 Donations</span>
+                                            <span class="badge bg-warning bg-opacity-25 text-white me-1 px-3 py-2">12 Industries Classified</span>
+                                            <span class="badge bg-danger bg-opacity-25 text-white px-3 py-2">SIC Engine Active</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <h1 class="display-4 fw-bold text-warning mb-0">$1.6M</h1>
+                                        <p class="text-white-50 mb-0">Total Raised</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Cards Row -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card stat-card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <p class="text-muted mb-1 text-uppercase fw-semibold fs-12">Total Raised</p>
+                                        <h3 class="mb-0 fw-bold">$1,619,842</h3>
+                                        <span class="text-success fs-12"><i class="ti ti-trending-up"></i> Avg $1,976/donor</span>
+                                    </div>
+                                    <div class="avatar-md bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="ti ti-currency-dollar fs-28 text-success"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <p class="text-muted mb-1 text-uppercase fw-semibold fs-12">Unique Donors</p>
+                                        <h3 class="mb-0 fw-bold">820</h3>
+                                        <span class="text-info fs-12"><i class="ti ti-users"></i> 62,100 in full DB</span>
+                                    </div>
+                                    <div class="avatar-md bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="ti ti-users-group fs-28 text-info"></i>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <p class="text-muted mb-1 text-uppercase fw-semibold fs-12">Total Donations</p>
+                                        <h3 class="mb-0 fw-bold">1,334</h3>
+                                        <span class="text-warning fs-12"><i class="ti ti-repeat"></i> 1.63 donations/donor</span>
+                                    </div>
+                                    <div class="avatar-md bg-warning bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="ti ti-receipt fs-28 text-warning"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <p class="text-muted mb-1 text-uppercase fw-semibold fs-12">SIC Classified</p>
+                                        <h3 class="mb-0 fw-bold">62,100</h3>
+                                        <span class="text-danger fs-12"><i class="ti ti-brain"></i> 272 keyword patterns</span>
+                                    </div>
+                                    <div class="avatar-md bg-danger bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="ti ti-brain fs-28 text-danger"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fundraising Timeline + Industry Breakdown Row -->
+                <div class="row mt-2">
+                    <div class="col-md-8">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-transparent border-bottom">
+                                <h5 class="card-title mb-0"><i class="ti ti-chart-line me-2"></i>Fundraising Timeline</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="timelineChart" height="280"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-transparent border-bottom">
+                                <h5 class="card-title mb-0"><i class="ti ti-building me-2"></i>Industry Breakdown</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1"><span class="fw-semibold">Real Estate</span><span class="text-muted">$186,400</span></div>
+                                    <div class="industry-bar"><div class="industry-fill bg-primary" style="width: 100%"></div></div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1"><span class="fw-semibold">Legal Services</span><span class="text-muted">$170,250</span></div>
+                                    <div class="industry-bar"><div class="industry-fill bg-success" style="width: 91%"></div></div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1"><span class="fw-semibold">Construction</span><span class="text-muted">$81,000</span></div>
+                                    <div class="industry-bar"><div class="industry-fill bg-info" style="width: 43%"></div></div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1"><span class="fw-semibold">Healthcare</span><span class="text-muted">$68,500</span></div>
+                                    <div class="industry-bar"><div class="industry-fill bg-warning" style="width: 37%"></div></div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1"><span class="fw-semibold">Banking/Finance</span><span class="text-muted">$62,750</span></div>
+                                    <div class="industry-bar"><div class="industry-fill bg-danger" style="width: 34%"></div></div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1"><span class="fw-semibold">Insurance</span><span class="text-muted">$54,200</span></div>
+                                    <div class="industry-bar"><div class="industry-fill" style="width: 29%; background: #8e44ad;"></div></div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1"><span class="fw-semibold">Agriculture</span><span class="text-muted">$41,800</span></div>
+                                    <div class="industry-bar"><div class="industry-fill" style="width: 22%; background: #16a085;"></div></div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1"><span class="fw-semibold">Manufacturing</span><span class="text-muted">$38,900</span></div>
+                                    <div class="industry-bar"><div class="industry-fill" style="width: 21%; background: #2c3e50;"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Geographic Concentration + Top Donors Row -->
+                <div class="row mt-2">
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-transparent border-bottom">
+                                <h5 class="card-title mb-0"><i class="ti ti-map-pin me-2"></i>Geographic Concentration</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="geoChart" height="280"></canvas>
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-between py-2 border-bottom">
+                                        <span class="fw-semibold">Fayetteville</span>
+                                        <span class="text-success fw-bold">$435,200</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between py-2 border-bottom">
+                                        <span class="fw-semibold">Raleigh</span>
+                                        <span class="text-success fw-bold">$194,800</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between py-2 border-bottom">
+                                        <span class="fw-semibold">Charlotte</span>
+                                        <span class="text-success fw-bold">$75,400</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between py-2 border-bottom">
+                                        <span class="fw-semibold">Greensboro</span>
+                                        <span class="text-success fw-bold">$62,100</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between py-2">
+                                        <span class="fw-semibold">Winston-Salem</span>
+                                        <span class="text-success fw-bold">$48,500</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-transparent border-bottom d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0"><i class="ti ti-star me-2"></i>Top 20 Donors — Power Network</h5>
+                                <a href="ecosystem.html" class="btn btn-sm btn-soft-primary">View All 820 <i class="ti ti-arrow-right ms-1"></i></a>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-centered mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Donor</th>
+                                                <th>Total Given</th>
+                                                <th>City</th>
+                                                <th>Industry</th>
+                                                <th>Tier</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>1</td>
+                                                <td class="fw-semibold">Vaughn O. Prillaman</td>
+                                                <td class="text-success fw-bold">$169,100</td>
+                                                <td>Fayetteville</td>
+                                                <td>Real Estate</td>
+                                                <td><span class="donor-badge mega">MEGA</span></td>
+                                                <td><a href="donor-profile.html?id=1" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td>
+                                            </tr>
+                                            <tr><td>2</td><td class="fw-semibold">Timothy G. Wyatt</td><td class="text-success fw-bold">$25,400</td><td>Fayetteville</td><td>Legal Services</td><td><span class="donor-badge major">MAJOR</span></td><td><a href="donor-profile.html?id=2" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>3</td><td class="fw-semibold">Charles T. Neely Jr</td><td class="text-success fw-bold">$22,600</td><td>Fayetteville</td><td>Insurance</td><td><span class="donor-badge major">MAJOR</span></td><td><a href="donor-profile.html?id=3" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>4</td><td class="fw-semibold">James B. Burnette</td><td class="text-success fw-bold">$22,100</td><td>Fayetteville</td><td>Construction</td><td><span class="donor-badge major">MAJOR</span></td><td><a href="donor-profile.html?id=4" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>5</td><td class="fw-semibold">Fred Steen</td><td class="text-success fw-bold">$17,100</td><td>Raleigh</td><td>Legal Services</td><td><span class="donor-badge major">MAJOR</span></td><td><a href="donor-profile.html?id=5" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>6</td><td class="fw-semibold">James B. Howard</td><td class="text-success fw-bold">$16,100</td><td>Fayetteville</td><td>Banking</td><td><span class="donor-badge major">MAJOR</span></td><td><a href="donor-profile.html?id=6" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>7</td><td class="fw-semibold">Robert A. Ingram</td><td class="text-success fw-bold">$14,200</td><td>Greensboro</td><td>Pharmaceuticals</td><td><span class="donor-badge major">MAJOR</span></td><td><a href="donor-profile.html?id=7" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>8</td><td class="fw-semibold">Elizabeth C. Fentress</td><td class="text-success fw-bold">$12,600</td><td>Fayetteville</td><td>Real Estate</td><td><span class="donor-badge major">MAJOR</span></td><td><a href="donor-profile.html?id=8" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>9</td><td class="fw-semibold">Robert E. Lee IV</td><td class="text-success fw-bold">$12,100</td><td>Fayetteville</td><td>Healthcare</td><td><span class="donor-badge major">MAJOR</span></td><td><a href="donor-profile.html?id=9" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>10</td><td class="fw-semibold">Michael W. Boliek</td><td class="text-success fw-bold">$11,600</td><td>Raleigh</td><td>Technology</td><td><span class="donor-badge major">MAJOR</span></td><td><a href="donor-profile.html?id=10" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>11</td><td class="fw-semibold">Dennis A. Ramsey</td><td class="text-success fw-bold">$10,600</td><td>Fayetteville</td><td>Agriculture</td><td><span class="donor-badge mid">MID</span></td><td><a href="donor-profile.html?id=11" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>12</td><td class="fw-semibold">Charles S. Davis</td><td class="text-success fw-bold">$10,400</td><td>Fayetteville</td><td>Manufacturing</td><td><span class="donor-badge mid">MID</span></td><td><a href="donor-profile.html?id=12" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>13</td><td class="fw-semibold">Betty R. Craven</td><td class="text-success fw-bold">$10,100</td><td>Fayetteville</td><td>Retired</td><td><span class="donor-badge mid">MID</span></td><td><a href="donor-profile.html?id=13" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>14</td><td class="fw-semibold">James R. Narron</td><td class="text-success fw-bold">$10,100</td><td>Raleigh</td><td>Legal Services</td><td><span class="donor-badge mid">MID</span></td><td><a href="donor-profile.html?id=14" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>15</td><td class="fw-semibold">John Hood</td><td class="text-success fw-bold">$10,000</td><td>Raleigh</td><td>Media/Think Tank</td><td><span class="donor-badge mid">MID</span></td><td><a href="donor-profile.html?id=15" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>16</td><td class="fw-semibold">Jack E. Clark</td><td class="text-success fw-bold">$9,600</td><td>Charlotte</td><td>Finance</td><td><span class="donor-badge mid">MID</span></td><td><a href="donor-profile.html?id=16" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>17</td><td class="fw-semibold">Ashley B. Woolard</td><td class="text-success fw-bold">$9,100</td><td>Greenville</td><td>Agriculture</td><td><span class="donor-badge mid">MID</span></td><td><a href="donor-profile.html?id=17" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>18</td><td class="fw-semibold">Susan B. Boliek</td><td class="text-success fw-bold">$8,600</td><td>Raleigh</td><td>Homemaker</td><td><span class="donor-badge mid">MID</span></td><td><a href="donor-profile.html?id=18" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>19</td><td class="fw-semibold">John M. Harris III</td><td class="text-success fw-bold">$8,100</td><td>Raleigh</td><td>Legal Services</td><td><span class="donor-badge mid">MID</span></td><td><a href="donor-profile.html?id=19" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                            <tr><td>20</td><td class="fw-semibold">William V. Rand</td><td class="text-success fw-bold">$8,000</td><td>Fayetteville</td><td>Real Estate</td><td><span class="donor-badge mid">MID</span></td><td><a href="donor-profile.html?id=20" class="btn btn-sm btn-soft-info"><i class="ti ti-eye"></i></a></td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Intelligence Alerts Row -->
+                <div class="row mt-2">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-transparent border-bottom">
+                                <h5 class="card-title mb-0"><i class="ti ti-bell-ringing me-2 text-danger"></i>Regulatory Access Alerts</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-critical bg-light mb-3 p-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <span class="badge bg-danger mb-1">CRITICAL</span>
+                                            <h6 class="mb-1">Solar Energy Regulation — HB 589</h6>
+                                            <p class="mb-0 text-muted fs-13">Markus Wilhelm ($425K MEGA_DONOR) has direct financial stake in utility deregulation bill. Duke Energy CEO Lynn Good also flagged.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="alert alert-high bg-light mb-3 p-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <span class="badge bg-warning mb-1">HIGH</span>
+                                            <h6 class="mb-1">Insurance Rate Reform — SB 312</h6>
+                                            <p class="mb-0 text-muted fs-13">12 insurance-sector donors identified with $54,200 aggregate exposure. Charles Neely Jr leads at $22.6K.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="alert alert-medium bg-light mb-0 p-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <span class="badge bg-info mb-1">MEDIUM</span>
+                                            <h6 class="mb-1">Construction Licensing — HB 741</h6>
+                                            <p class="mb-0 text-muted fs-13">8 construction-sector donors ($81K) may be affected by new contractor licensing requirements.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-transparent border-bottom">
+                                <h5 class="card-title mb-0"><i class="ti ti-map-2 me-2 text-info"></i>Charlotte Micro-Ecosystems</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr><th>Ecosystem</th><th>Donors</th><th>$ Total</th><th>Top SIC</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr><td><i class="ti ti-circle-filled text-primary me-1" style="font-size:8px"></i>Lake Norman</td><td>42</td><td>$128,400</td><td>Finance</td></tr>
+                                            <tr><td><i class="ti ti-circle-filled text-success me-1" style="font-size:8px"></i>Downtown CLT</td><td>38</td><td>$112,600</td><td>Legal</td></tr>
+                                            <tr><td><i class="ti ti-circle-filled text-warning me-1" style="font-size:8px"></i>SouthPark</td><td>31</td><td>$94,200</td><td>Real Estate</td></tr>
+                                            <tr><td><i class="ti ti-circle-filled text-info me-1" style="font-size:8px"></i>Ballantyne-Pineville</td><td>28</td><td>$76,800</td><td>Insurance</td></tr>
+                                            <tr><td><i class="ti ti-circle-filled text-danger me-1" style="font-size:8px"></i>Matthews</td><td>19</td><td>$52,100</td><td>Healthcare</td></tr>
+                                            <tr><td><i class="ti ti-circle-filled text-secondary me-1" style="font-size:8px"></i>Waxhaw-Indian Trail</td><td>14</td><td>$38,900</td><td>Construction</td></tr>
+                                            <tr><td><i class="ti ti-circle-filled text-dark me-1" style="font-size:8px"></i>UNCC Area</td><td>11</td><td>$24,600</td><td>Education</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-3 text-center">
+                                    <span class="badge bg-soft-success text-success px-3 py-2 fs-13">
+                                        <i class="ti ti-check me-1"></i>Newsletter Engine: 7 micro-segments ready
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database Health Row -->
+                <div class="row mt-2 mb-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-transparent border-bottom d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0"><i class="ti ti-database me-2"></i>Database Intelligence Status</h5>
+                                <a href="admin.html" class="btn btn-sm btn-soft-warning">Admin Panel <i class="ti ti-arrow-right ms-1"></i></a>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-md-2">
+                                        <h4 class="fw-bold text-primary mb-0">12</h4>
+                                        <small class="text-muted">Tables</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h4 class="fw-bold text-success mb-0">11</h4>
+                                        <small class="text-muted">Views</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h4 class="fw-bold text-info mb-0">72</h4>
+                                        <small class="text-muted">Indexes</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h4 class="fw-bold text-warning mb-0">62,100</h4>
+                                        <small class="text-muted">SIC Classified</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h4 class="fw-bold text-danger mb-0">103</h4>
+                                        <small class="text-muted">Bill Subjects</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h4 class="fw-bold text-secondary mb-0">Stage 4</h4>
+                                        <small class="text-muted">Remediation</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- container-fluid -->
+        </div> <!-- page-content -->
+
+    </div> <!-- wrapper -->
+
+    <!-- Vendor js -->
+    <script src="assets/js/vendors.min.js"></script>
+    <!-- App js -->
+    <script src="assets/js/app.js"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <script>
+    // Fundraising Timeline Chart
+    const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+    new Chart(timelineCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Jan 23','Apr 23','Jul 23','Oct 23','Jan 24','Apr 24','Jul 24','Oct 24','Jan 25','Apr 25','Jul 25','Oct 25'],
+            datasets: [{
+                label: 'Monthly Raised ($)',
+                data: [42000, 68000, 95000, 128000, 156000, 185000, 142000, 198000, 167000, 134000, 152000, 152842],
+                backgroundColor: 'rgba(45, 53, 97, 0.8)',
+                borderColor: '#2d3561',
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { callback: v => '$' + (v/1000) + 'K' } }
+            }
+        }
+    });
+
+    // Geographic Doughnut Chart
+    const geoCtx = document.getElementById('geoChart').getContext('2d');
+    new Chart(geoCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Fayetteville','Raleigh','Charlotte','Greensboro','Winston-Salem','Other'],
+            datasets: [{
+                data: [435200, 194800, 75400, 62100, 48500, 803842],
+                backgroundColor: ['#2d3561','#3498db','#e74c3c','#f39c12','#1abc9c','#95a5a6'],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: ctx => ctx.label + ': $' + ctx.parsed.toLocaleString() } }
+            },
+            cutout: '65%'
+        }
+    });
+    </script>
+
+</body>
+</html>

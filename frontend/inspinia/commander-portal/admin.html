@@ -1,0 +1,236 @@
+<!--
+* BroyhillGOP COMMANDER PORTAL - Admin Panel
+* Built on INSPINIA 4.0.1 Template
+-->
+<!DOCTYPE html>
+<html lang="en" data-sidenav-size="default" data-layout-mode="light" data-topbar-color="dark" data-menu-color="dark">
+<head>
+    <meta charset="utf-8">
+    <title>Admin Panel | BroyhillGOP Commander</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="assets/images/favicon.ico">
+    <script src="assets/js/config.js"></script>
+    <link href="assets/css/vendors.min.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/app.min.css" rel="stylesheet" type="text/css">
+    <style>
+        .pipeline-step { border-left: 3px solid #e9ecef; padding: 12px 20px; margin-bottom: 8px; transition: all 0.2s; }
+        .pipeline-step.completed { border-left-color: #1abc9c; background: rgba(26,188,156,0.05); }
+        .pipeline-step.active { border-left-color: #f39c12; background: rgba(243,156,18,0.08); }
+        .pipeline-step.pending { border-left-color: #95a5a6; opacity: 0.7; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+        .stat-card { transition: transform 0.2s; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+
+        <div id="sidebar-container" data-active="admin"></div>
+        <div id="topbar-container" data-title="ADMIN PANEL"></div>
+
+        <div class="page-content">
+            <div class="container-fluid">
+
+                <!-- Admin Header -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="fw-bold mb-1">System Administration</h4>
+                                <p class="text-muted mb-0">donor_intelligence schema &bull; Supabase PostgreSQL &bull; Last sync: March 15, 2026</p>
+                            </div>
+                            <span class="badge bg-success px-3 py-2 fs-13"><i class="ti ti-circle-filled me-1" style="font-size:8px"></i>Database Connected</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schema Stats Row -->
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="card stat-card border-0 shadow-sm text-center">
+                            <div class="card-body py-3">
+                                <h3 class="fw-bold text-primary mb-0">12</h3>
+                                <small class="text-muted">Tables</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="card stat-card border-0 shadow-sm text-center"><div class="card-body py-3"><h3 class="fw-bold text-success mb-0">11</h3><small class="text-muted">Views</small></div></div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="card stat-card border-0 shadow-sm text-center"><div class="card-body py-3"><h3 class="fw-bold text-info mb-0">72</h3><small class="text-muted">Indexes</small></div></div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="card stat-card border-0 shadow-sm text-center"><div class="card-body py-3"><h3 class="fw-bold text-warning mb-0">272</h3><small class="text-muted">SIC Patterns</small></div></div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="card stat-card border-0 shadow-sm text-center"><div class="card-body py-3"><h3 class="fw-bold text-danger mb-0">74</h3><small class="text-muted">Prof Patterns</small></div></div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="card stat-card border-0 shadow-sm text-center"><div class="card-body py-3"><h3 class="fw-bold text-secondary mb-0">103</h3><small class="text-muted">Bill Subjects</small></div></div>
+                    </div>
+                </div>
+
+                <!-- Table Inventory + Remediation Pipeline -->
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-transparent border-bottom">
+                                <h5 class="card-title mb-0"><i class="ti ti-table me-2"></i>Table Inventory — donor_intelligence</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr><th>Table</th><th>Rows</th><th>Status</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr><td class="fw-semibold">sic_divisions</td><td>11</td><td><span class="badge bg-success">Active</span></td></tr>
+                                            <tr><td class="fw-semibold">sic_keyword_patterns</td><td>272</td><td><span class="badge bg-success">Active</span></td></tr>
+                                            <tr><td class="fw-semibold">profession_sic_patterns</td><td>74</td><td><span class="badge bg-success">Active</span></td></tr>
+                                            <tr><td class="fw-semibold">employer_sic_master</td><td>62,100</td><td><span class="badge bg-success">Active</span></td></tr>
+                                            <tr><td class="fw-semibold">ecosystem_definitions</td><td>7</td><td><span class="badge bg-success">Active</span></td></tr>
+                                            <tr><td class="fw-semibold">bill_subject_sic_mapping</td><td>103</td><td><span class="badge bg-success">Active</span></td></tr>
+                                            <tr><td class="fw-semibold">bill_sponsors</td><td>0</td><td><span class="badge bg-warning">Pending</span></td></tr>
+                                            <tr><td class="fw-semibold">news_intelligence</td><td>1</td><td><span class="badge bg-info">Testing</span></td></tr>
+                                            <tr><td class="fw-semibold">newsletter_campaigns</td><td>0</td><td><span class="badge bg-warning">Pending</span></td></tr>
+                                            <tr><td class="fw-semibold">newsletter_recipients</td><td>0</td><td><span class="badge bg-warning">Pending</span></td></tr>
+                                            <tr><td class="fw-semibold">donor_alerts</td><td>0</td><td><span class="badge bg-warning">Pending</span></td></tr>
+                                            <tr><td class="fw-semibold">candidate_ideology_seeds</td><td>8</td><td><span class="badge bg-success">Active</span></td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-transparent border-bottom">
+                                <h5 class="card-title mb-0"><i class="ti ti-git-merge me-2"></i>8-Stage Remediation Pipeline</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="pipeline-step completed">
+                                    <div class="d-flex justify-content-between"><strong>Stage 1: DataTrust Split</strong><span class="badge bg-success">Complete</span></div>
+                                    <small class="text-muted">Split 234K DataTrust rows → person_master spine</small>
+                                </div>
+                                <div class="pipeline-step completed">
+                                    <div class="d-flex justify-content-between"><strong>Stage 2: NC BOE Ingest</strong><span class="badge bg-success">Complete</span></div>
+                                    <small class="text-muted">62,100 donors ingested with committee + amount data</small>
+                                </div>
+                                <div class="pipeline-step completed">
+                                    <div class="d-flex justify-content-between"><strong>Stage 3: SIC Engine</strong><span class="badge bg-success">Complete</span></div>
+                                    <small class="text-muted">272 keyword + 74 profession patterns → employer_sic_master</small>
+                                </div>
+                                <div class="pipeline-step active">
+                                    <div class="d-flex justify-content-between"><strong>Stage 4: Identity Resolution</strong><span class="badge bg-warning">In Progress</span></div>
+                                    <small class="text-muted">Fuzzy name matching, address normalization, golden records</small>
+                                </div>
+                                <div class="pipeline-step pending">
+                                    <div class="d-flex justify-content-between"><strong>Stage 5: FEC Linkage</strong><span class="badge bg-secondary">Pending</span></div>
+                                    <small class="text-muted">Link 103,554 orphaned FEC DCM entries to spine</small>
+                                </div>
+                                <div class="pipeline-step pending">
+                                    <div class="d-flex justify-content-between"><strong>Stage 6: Donor Scoring</strong><span class="badge bg-secondary">Pending</span></div>
+                                    <small class="text-muted">Capacity estimation, tier assignment, faction scoring</small>
+                                </div>
+                                <div class="pipeline-step pending">
+                                    <div class="d-flex justify-content-between"><strong>Stage 7: Legislative Layer</strong><span class="badge bg-secondary">Pending</span></div>
+                                    <small class="text-muted">Bill sponsorship ingestion, regulatory access mapping</small>
+                                </div>
+                                <div class="pipeline-step pending">
+                                    <div class="d-flex justify-content-between"><strong>Stage 8: Newsletter Deploy</strong><span class="badge bg-secondary">Pending</span></div>
+                                    <small class="text-muted">Micro-segment newsletter generation + alert system</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Views + SIC Engine Row -->
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-transparent border-bottom">
+                                <h5 class="card-title mb-0"><i class="ti ti-eye me-2"></i>View Inventory (11 views)</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover mb-0">
+                                        <thead class="table-light"><tr><th>View Name</th><th>Purpose</th></tr></thead>
+                                        <tbody>
+                                            <tr><td class="fw-semibold">vw_donor_industry_profile</td><td>Donor SIC classification with division names</td></tr>
+                                            <tr><td class="fw-semibold">vw_industry_concentration</td><td>Committee-level industry dollar aggregation</td></tr>
+                                            <tr><td class="fw-semibold">vw_cross_committee_donors</td><td>Donors giving to 2+ committees</td></tr>
+                                            <tr><td class="fw-semibold">vw_donor_ecosystem_map</td><td>Donor geo → Charlotte micro-ecosystem</td></tr>
+                                            <tr><td class="fw-semibold">vw_ecosystem_summary</td><td>Ecosystem-level donor + dollar aggregation</td></tr>
+                                            <tr><td class="fw-semibold">vw_regulatory_access_triggers</td><td>Bill subjects × SIC codes × donors</td></tr>
+                                            <tr><td class="fw-semibold">vw_news_donor_impact</td><td>News stories × affected donors</td></tr>
+                                            <tr><td class="fw-semibold">vw_ecosystem_newsletter_queue</td><td>Per-ecosystem newsletter targeting</td></tr>
+                                            <tr><td class="fw-semibold">vw_district_newsletter_composer</td><td>District-level newsletter content</td></tr>
+                                            <tr><td class="fw-semibold">vw_alert_generator</td><td>Auto-generates CRITICAL/HIGH/MED/LOW alerts</td></tr>
+                                            <tr><td class="fw-semibold">vw_sic_classification_audit</td><td>Audit trail for SIC engine matches</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-transparent border-bottom">
+                                <h5 class="card-title mb-0"><i class="ti ti-brain me-2"></i>SIC Classification Engine</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center mb-4">
+                                    <div class="col-4">
+                                        <div class="rounded bg-primary bg-opacity-10 p-3">
+                                            <h3 class="fw-bold text-primary mb-0">Layer 1</h3>
+                                            <small class="text-muted">Employer Keywords</small>
+                                            <div class="mt-1"><span class="badge bg-primary">272 patterns</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="rounded bg-warning bg-opacity-10 p-3">
+                                            <h3 class="fw-bold text-warning mb-0">Layer 2</h3>
+                                            <small class="text-muted">Profession Fallback</small>
+                                            <div class="mt-1"><span class="badge bg-warning">74 patterns</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="rounded bg-success bg-opacity-10 p-3">
+                                            <h3 class="fw-bold text-success mb-0">Output</h3>
+                                            <small class="text-muted">employer_sic_master</small>
+                                            <div class="mt-1"><span class="badge bg-success">62,100 rows</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="alert alert-danger bg-danger bg-opacity-10 border-danger mb-3">
+                                    <strong><i class="ti ti-alert-triangle me-1"></i>CRITICAL:</strong> employer_sic_master is THE canonical table. Do NOT create employer_registry or employer_alias — they duplicate this table.
+                                </div>
+                                <h6 class="fw-bold mb-2">SIC Divisions Covered</h6>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <span class="badge bg-soft-primary text-primary">A: Agriculture</span>
+                                    <span class="badge bg-soft-success text-success">B: Mining</span>
+                                    <span class="badge bg-soft-info text-info">C: Construction</span>
+                                    <span class="badge bg-soft-warning text-warning">D: Manufacturing</span>
+                                    <span class="badge bg-soft-danger text-danger">E: Transportation</span>
+                                    <span class="badge bg-soft-dark text-dark">F: Wholesale</span>
+                                    <span class="badge bg-soft-primary text-primary">G: Retail</span>
+                                    <span class="badge bg-soft-success text-success">H: Finance/Insurance/RE</span>
+                                    <span class="badge bg-soft-info text-info">I: Services</span>
+                                    <span class="badge bg-soft-warning text-warning">J: Public Admin</span>
+                                    <span class="badge bg-soft-danger text-danger">K: Nonclassifiable</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/vendors.min.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="nav.js"></script>
+</body>
+</html>
