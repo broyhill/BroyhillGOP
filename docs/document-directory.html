@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BroyhillGOP Document Directory</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #1a0a0a; color: #e8d5d5; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+  header { background: #8b0000; padding: 24px 32px; border-bottom: 3px solid #cc0000; }
+  header h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: 1px; }
+  header p { color: #ffaaaa; margin-top: 4px; font-size: 0.9rem; }
+  .controls { padding: 20px 32px; background: #2a0a0a; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  #search { flex: 1; min-width: 240px; padding: 10px 16px; background: #3a0a0a; border: 1px solid #8b0000; color: #e8d5d5; border-radius: 6px; font-size: 1rem; outline: none; }
+  #search:focus { border-color: #cc0000; }
+  .chip { padding: 6px 14px; border-radius: 20px; border: 1px solid #8b0000; background: transparent; color: #ffaaaa; cursor: pointer; font-size: 0.82rem; transition: all .2s; }
+  .chip.active, .chip:hover { background: #8b0000; color: #fff; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; padding: 24px 32px; }
+  .card { background: #2a0a0a; border: 1px solid #5a1a1a; border-radius: 8px; padding: 18px; transition: border-color .2s, transform .2s; }
+  .card:hover { border-color: #cc0000; transform: translateY(-2px); }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .card-title { font-weight: 600; font-size: 0.95rem; color: #fff; flex: 1; }
+  .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; background: #8b0000; color: #ffcccc; white-space: nowrap; margin-left: 8px; }
+  .card-snippet { font-size: 0.82rem; color: #c0a0a0; line-height: 1.5; margin-bottom: 12px; }
+  .card-meta { font-size: 0.75rem; color: #805050; display: flex; gap: 12px; }
+  .card a { color: #ff6666; text-decoration: none; font-size: 0.82rem; font-weight: 600; }
+  .card a:hover { color: #ff9999; }
+  #count { color: #ff9999; font-size: 0.85rem; padding: 0 32px 8px; }
+  mark { background: #8b0000; color: #fff; border-radius: 2px; padding: 0 2px; }
+  .empty { text-align: center; padding: 60px; color: #805050; grid-column: 1/-1; }
+</style>
+</head>
+<body>
+<header>
+  <h1>BroyhillGOP Document Directory</h1>
+  <p>NC Republican Campaign Platform — 58 Ecosystems · Supabase · Hetzner · ~5,000 Candidates</p>
+</header>
+<div class="controls">
+  <input type="text" id="search" placeholder="Search documents..." oninput="render()">
+  <button class="chip active" onclick="setFilter('All',this)">All</button>
+  <button class="chip" onclick="setFilter('Platform',this)">Platform</button>
+  <button class="chip" onclick="setFilter('Ecosystems',this)">Ecosystems</button>
+  <button class="chip" onclick="setFilter('Database',this)">Database</button>
+  <button class="chip" onclick="setFilter('Strategy',this)">Strategy</button>
+  <button class="chip" onclick="setFilter('Data',this)">Data</button>
+  <button class="chip" onclick="setFilter('Sessions',this)">Sessions</button>
+  <button class="chip" onclick="setFilter('Reference',this)">Reference</button>
+</div>
+<div id="count"></div>
+<div class="grid" id="grid"></div>
+
+<script>
+const DOCS = [
+  // Platform
+  { title:"BroyhillGOP Platform Overview", cat:"Platform", snippet:"Multi-tenant SaaS for ~5,000 NC Republican candidates across 5,000+ electable offices. 58 modular ecosystems, Supabase PostgreSQL, Hetzner GEX44 server.", date:"2026-03", tags:"platform saas overview candidates nc republican" },
+  { title:"E20 Brain Hub Intelligence Architecture", cat:"Platform", snippet:"The central nervous system of BroyhillGOP. Quantifiable reasoning engine that orchestrates 55 ecosystems, profiles donor microsegments, and optimizes donation ROI.", date:"2026-01", url:"https://docs.google.com/document/d/1vV90zqMzw7asbyFomG54erXIc0zOa9HUSVD0OJZgX6s", tags:"brain e20 intelligence ai donor psychology" },
+  { title:"E20 Brain Audit Report", cat:"Platform", snippet:"March 2026 deployment audit. nc_voters: 9.1M rows, person_master: 7.6M, datatrust_profiles: 7.6M. 100+ public tables, 1,004 stored functions.", date:"2026-03", url:"https://docs.google.com/document/d/1OSaELCaeyUe86EPCdCHUx-RVU99PUcSd0uFwfc_L86E", tags:"audit brain e20 database status" },
+  { title:"BroyhillGOP Frontend Orchestration", cat:"Platform", snippet:"Frontend architecture using Inspinia admin template. Layer 7 specification for all ecosystem admin panels.", date:"2026-01", tags:"frontend inspinia ui admin layer7" },
+  { title:"Candidate UX Specification", cat:"Platform", snippet:"UX specification for the candidate-facing portal. Covers onboarding, dashboard, ecosystem access for ~5,000 NC Republican candidates.", date:"2026-01", tags:"candidate ux portal ui specification" },
+  { title:"BroyhillGOP Homepage", cat:"Platform", snippet:"Platform homepage design and content for the BroyhillGOP SaaS marketing site.", date:"2026-01", url:"https://github.com/broyhill/BroyhillGOP/blob/main/broyhillgop-homepage.html", tags:"homepage marketing website" },
+  // Ecosystems
+  { title:"Complete Ecosystem Inventory (58 Ecosystems)", cat:"Ecosystems", snippet:"E01 Donor Intelligence through E58. 46 blueprints built as of Feb 2026. Each ecosystem is a 7-layer blueprint: DDL, Indexes, RLS, API, Triggers, Brain, Inspinia.", date:"2026-02", tags:"ecosystem inventory catalog e01 e58 all blueprints" },
+  { title:"Ecosystem Gap Analysis", cat:"Ecosystems", snippet:"Missing ecosystems: E13, E14, E18, E23, E27, E29, E49, E50, E55, E56, E57, E58. Blocking dependencies and build order analysis.", date:"2026-02", tags:"gap analysis missing ecosystems blocking" },
+  { title:"BroyhillGOP Ecosystem Catalog", cat:"Ecosystems", snippet:"Full catalog of all 58 ecosystems with descriptions, dependencies, and deployment status. The master reference for ecosystem architecture.", date:"2026-02", tags:"ecosystem catalog all 58 reference" },
+  { title:"E01 Donor Intelligence Deploy", cat:"Ecosystems", snippet:"Deployed ecosystem for donor profiling, affinity scoring, and microsegmentation. Includes calculate_donor_affinity_score and related functions.", date:"2026-01", tags:"e01 donor intelligence deploy affinity" },
+  { title:"Inspinia Template Specification", cat:"Ecosystems", snippet:"Admin panel specification using the Inspinia Bootstrap template. All ecosystem Layer 7 admin UIs must conform to this spec.", date:"2026-01", tags:"inspinia template admin layer7 frontend" },
+  { title:"Nexus Brain Integration Spec Vol 1", cat:"Ecosystems", snippet:"Integration specification for the Nexus/E20 Brain Hub connecting all 55+ operational ecosystems via event bus and trigger system.", date:"2026-01", tags:"nexus brain integration spec e20" },
+  { title:"B2B Rocket Analysis — BroyhillGOP Replication", cat:"Ecosystems", snippet:"Analysis of B2B Rocket's campaign platform for replication patterns applicable to BroyhillGOP's multi-candidate SaaS model.", date:"2026-01", tags:"b2b rocket analysis replication saas" },
+  { title:"Perplexity Brain Architecture Session", cat:"Ecosystems", snippet:"Complete Perplexity AI session output for E20 Brain Hub architecture. All code blocks and schema definitions from the design session.", date:"2026-03", url:"https://github.com/broyhill/BroyhillGOP/blob/main/Perplexity_Brain_Architecture_Session_Complete.md", tags:"perplexity brain architecture session code" },
+  // Database
+  { title:"8-Stage Database Remediation Plan", cat:"Database", snippet:"Stage 0: Cleanup ✅ → Stage 1: Voter Spine → Stage 2: Split DataTrust → Stage 3: Identity Clustering → Stage 4: Re-Link → Stage 5: Golden Record → Stage 6: Resume Loads → Stage 7: Audit & Freeze", date:"2026-03", tags:"remediation database stages golden record identity" },
+  { title:"Person Master Schema", cat:"Database", snippet:"Core identity table schema. person_master: 7.6M rows. Source of truth for canonical identity after golden record pipeline completes.", date:"2026-01", url:"https://github.com/broyhill/BroyhillGOP/blob/main/PERSON_MASTER_SCHEMA.sql", tags:"person master schema sql identity" },
+  { title:"Database Architecture Rules", cat:"Database", snippet:"NEVER treat donations as duplicates. Cluster first then roll up. All tables need organization_id. UUIDs only, no SERIAL. RLS on every table.", date:"2026-02", tags:"database rules architecture constraints rls uuid" },
+  { title:"Identity Resolution Overhaul Plan", cat:"Database", snippet:"Execution plan for resolving 287K donors without rncid. BOE fuzzy match strategy, 25 name variations per person, clustering approach.", date:"2026-03", tags:"identity resolution overhaul clustering donors" },
+  { title:"Pipeline DDL", cat:"Database", snippet:"Full DDL for the BroyhillGOP ingestion pipeline. Raw tables, staging tables, and transformation logic for DataTrust, BOE, FEC, and RNC data.", date:"2026-01", url:"https://github.com/broyhill/BroyhillGOP/blob/main/pipeline_ddl.sql", tags:"pipeline ddl sql tables schema ingestion" },
+  { title:"NCBOE Ingestion Pipeline Master Plan V2", cat:"Database", snippet:"NC Board of Elections data ingestion: 9.1M voter records loaded. Pipeline for matching donors to voters via fuzzy name+address matching.", date:"2026-03", tags:"ncboe ingestion pipeline voter file nc boe" },
+  { title:"Canonical Tables Audit", cat:"Database", snippet:"Audit of all canonical/golden record tables. Identifies dedup_* tables built on false premises to be ignored. Maps correct table hierarchy.", date:"2026-02", tags:"canonical tables audit dedup golden record" },
+  { title:"Matching Logic Audit Complete", cat:"Database", snippet:"Complete audit of donor-to-voter matching logic. fn_normalize_donor_name, match_donor_to_voter (2 overloads), normalize_address functions.", date:"2026-03", tags:"matching logic audit donor voter normalize" },
+  { title:"Pre-Rollback Snapshot Mar 18 2026", cat:"Database", snippet:"Database state snapshot before major migration. Used as recovery point for pipeline changes.", date:"2026-03", url:"https://github.com/broyhill/BroyhillGOP/blob/main/docs/PRE_ROLLBACK_SNAPSHOT_Mar18_2026.md", tags:"rollback snapshot march 2026 recovery" },
+  // Strategy
+  { title:"BroyhillGOP Formal Development Process", cat:"Strategy", snippet:"Formal process for ecosystem development. Blocks ecosystem tables until golden record pipeline is complete to avoid 212-table sprawl problem.", date:"2026-02", tags:"development process formal rules strategy" },
+  { title:"RFC-001 Architecture Review", cat:"Strategy", snippet:"Architecture review and corrective plan after 3 days of AI sessions produced documents instead of database changes. Hard rules established.", date:"2026-02", tags:"rfc architecture review rules" },
+  { title:"Claude Deployment Gate", cat:"Strategy", snippet:"Gate criteria before any production deployment. Checklist for schema validation, RLS verification, and data integrity checks.", date:"2026-02", tags:"deployment gate claude checklist production" },
+  { title:"Quick Start for New Session", cat:"Strategy", snippet:"Mandatory startup instructions for every Claude session. Read SESSION-STATE.md first. Do actual database work, not documentation.", date:"2026-03", tags:"quick start new session startup instructions" },
+  // Data
+  { title:"FEC Party Committee Donations", cat:"Data", snippet:"2.2M FEC party committee donation records loaded. fec_schedule_a_raw pipeline for individual FEC donor matching pending.", date:"2026-03", tags:"fec donations data federal election commission" },
+  { title:"RNC DataHub Connection", cat:"Data", snippet:"RNC proprietary scores: 1.1M rows. RNC voter core: 1.1M rows. DataTrust client credentials and connection configuration.", date:"2026-02", tags:"rnc datahub connection scores voter" },
+  { title:"DataTrust Donor Candidate Affinity Revised", cat:"Data", snippet:"Revised affinity scoring model for DataTrust donor-to-candidate matching. Uses donation history, geographic overlap, and issue alignment.", date:"2026-02", tags:"datatrust affinity donor candidate scoring" },
+  { title:"NCBOE Schema Reference", cat:"Data", snippet:"Full schema reference for NC Board of Elections voter file. 9.1M NC voter records. Column definitions, data types, and index strategy.", date:"2026-03", tags:"ncboe schema voter file nc elections" },
+  { title:"Perplexity FEC Donor Matching Plan", cat:"Data", snippet:"Perplexity-generated plan for matching FEC individual donors to BroyhillGOP donor profiles. Identity resolution approach for federal donors.", date:"2026-03", tags:"perplexity fec donor matching plan" },
+  // Sessions
+  { title:"Master Handoff — Complete", cat:"Sessions", snippet:"Complete handoff document from the major database build session. All decisions, schema changes, and next steps documented.", date:"2026-03", url:"https://github.com/broyhill/BroyhillGOP/blob/main/docs/00_MASTER_HANDOFF_COMPLETE.md", tags:"handoff complete session master" },
+  { title:"Cursor Briefing — Identity Resolution V2", cat:"Sessions", snippet:"Briefing document for Cursor on identity resolution V2. BOE re-link strategy, clustering approach, golden record pipeline.", date:"2026-03", tags:"cursor briefing identity resolution v2" },
+  // Reference
+  { title:"Donor Ranges and Limits Rules", cat:"Reference", snippet:"Hard rules: donations are NOT duplicates. Each donation row = one transaction. dedup_* tables built on false premise — ignore them.", date:"2026-02", tags:"donor rules limits ranges reference" },
+  { title:"Donor Selection Algorithm Spec", cat:"Reference", snippet:"Algorithm specification for selecting donors for outreach. Expected value formula: (predicted_amount × conversion_rate) - fatigue_cost.", date:"2026-02", tags:"donor selection algorithm spec expected value" },
+  { title:"Triple Grading Enhancement", cat:"Reference", snippet:"Enhancement to the donor grading system. Three-dimensional scoring: financial capacity, psychological responsiveness, fatigue risk.", date:"2026-02", tags:"grading donor triple enhancement scoring" },
+];
+
+let activeFilter = 'All';
+
+function setFilter(f, el) {
+  activeFilter = f;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function hl(text, q) {
+  if (!q) return text;
+  return text.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'), '<mark>$1</mark>');
+}
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const filtered = DOCS.filter(d => {
+    const matchCat = activeFilter === 'All' || d.cat === activeFilter;
+    const matchQ = !q || d.title.toLowerCase().includes(q) || d.snippet.toLowerCase().includes(q) || (d.tags||'').includes(q);
+    return matchCat && matchQ;
+  });
+  document.getElementById('count').textContent = `${filtered.length} document${filtered.length !== 1 ? 's' : ''}`;
+  document.getElementById('grid').innerHTML = filtered.length ? filtered.map(d => `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">${hl(d.title, q)}</div>
+        <span class="badge">${d.cat}</span>
+      </div>
+      <div class="card-snippet">${hl(d.snippet, q)}</div>
+      <div class="card-meta">
+        <span>${d.date}</span>
+        ${d.url ? `<a href="${d.url}" target="_blank">Open →</a>` : ''}
+      </div>
+    </div>`).join('') : '<div class="empty">No documents match your search.</div>';
+}
+
+render();
+</script>
+</body>
+</html>
