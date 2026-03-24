@@ -1,5 +1,5 @@
 """
-BroyhillGOP Relay v1.1 — HTTP bridge + inter-agent message channel
+BroyhillGOP Relay v1.2 — HTTP bridge + inter-agent message channel + startup briefing
 Port  : 8080  (RELAY_PORT in .env)
 Auth  : X-API-Key header must match RELAY_API_KEY in .env
 
@@ -70,7 +70,7 @@ START_TIME = time.time()
 # ── App ───────────────────────────────────────────────────────────────────────
 app = FastAPI(
     title="BroyhillGOP Relay",
-    version="1.1.0",
+    version="1.2.0",
     description="HTTP bridge: Perplexity ↔ Claude ↔ Supabase ↔ Redis",
 )
 
@@ -150,7 +150,7 @@ async def health():
     return {
         "status": "ok",
         "uptime_seconds": uptime,
-        "relay_version": "1.1.0",
+        "relay_version": "1.2.0",
         "redis": "ok" if redis_ok else "unreachable",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
@@ -456,6 +456,144 @@ async def not_found(request: Request, exc):
 
 # ─────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    log.info(f"BroyhillGOP Relay v1.1 starting on port {RELAY_PORT}")
+    log.info(f"BroyhillGOP Relay v1.2 starting on port {RELAY_PORT}")
     uvicorn.run("relay:app", host="0.0.0.0", port=RELAY_PORT,
                 log_level="info", access_log=True, reload=False)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Startup briefing — project state + last session + to-do list
+# ─────────────────────────────────────────────────────────────────────────────
+
+SESSION_STATE_PATH = "/app/SESSION-STATE.md"
+
+def _read_session_state() -> str:
+    try:
+        with open(SESSION_STATE_PATH, "r") as f:
+            return f.read()
+    except FileNotFoundError:
+        return "⚠️  SESSION-STATE.md not found at /app/SESSION-STATE.md"
+    except Exception as e:
+        return f"⚠️  Could not read SESSION-STATE.md: {e}"
+
+
+def _get_live_db_status() -> dict:
+    """Pull live queue counts so briefing always reflects reality."""
+    try:
+        result = supabase.rpc("execute_sql", {"query": """
+            SELECT status, count(*)::int AS cnt
+            FROM public.rncid_resolution_queue
+            GROUP BY status ORDER BY status
+        """}).execute()
+        return {row["status"]: row["cnt"] for row in (result.data or [])}
+    except Exception:
+        # Fallback: direct table query
+        try:
+            rows = supabase.table("rncid_resolution_queue").select("status").execute()
+            counts: dict = {}
+            for row in (rows.data or []):
+                s = row["status"]
+                counts[s] = counts.get(s, 0) + 1
+            return counts
+        except Exception as e:
+            return {"error": str(e)}
+
+
+def _get_unread_counts() -> dict:
+    """How many unread messages are waiting for each agent."""
+    try:
+        result = supabase.table("agent_messages") \
+            .select("to_agent") \
+            .is_("read_at", "null") \
+            .execute()
+        counts: dict = {"perplexity": 0, "claude": 0, "both": 0}
+        for row in (result.data or []):
+            ta = row.get("to_agent", "")
+            if ta in counts:
+                counts[ta] += 1
+        return counts
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@app.get("/briefing", dependencies=[Depends(require_key)])
+async def get_briefing(agent: str = Query("both", description="'perplexity', 'claude', or 'both'")):
+    """
+    Full startup briefing: SESSION-STATE.md + live DB status + unread message counts.
+    Call this at the start of every session. Perplexity's .bashrc calls it automatically.
+    """
+    state_md   = _read_session_state()
+    db_status  = _get_live_db_status()
+    unread     = _get_unread_counts()
+    inbox_cnt  = unread.get(agent, 0) + unread.get("both", 0)
+
+    return {
+        "briefing_for": agent,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "relay_version": "1.2.0",
+        "live_db_status": db_status,
+        "unread_messages": {
+            "for_you": inbox_cnt,
+            "breakdown": unread,
+            "inbox_url": f"GET /inbox?agent={agent}&unread_only=true",
+        },
+        "session_state": state_md,
+    }
+
+
+@app.post("/briefing/announce", dependencies=[Depends(require_key)])
+async def announce_briefing(
+    agent: str = Query(..., description="Agent announcing their presence: 'perplexity' or 'claude'")
+):
+    """
+    Called automatically when an agent starts a session.
+    1. Reads SESSION-STATE.md
+    2. Posts a system message to agent_messages so the other agent knows this one is online
+    3. Returns the full briefing so the calling agent is immediately oriented
+    """
+    _validate_agent(agent, "agent")
+    other = "claude" if agent == "perplexity" else "perplexity"
+    state_md  = _read_session_state()
+    db_status = _get_live_db_status()
+    unread    = _get_unread_counts()
+    inbox_cnt = unread.get(agent, 0) + unread.get("both", 0)
+
+    # Announce presence to the other agent
+    announcement_body = (
+        f"🟢 {agent.capitalize()} is now online — {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}\n"
+        f"DB queue: {db_status}\n"
+        f"Your unread messages: {unread.get(other, 0) + unread.get('both', 0)}\n"
+        f"Check /inbox?agent={other}&unread_only=true for pending items."
+    )
+    try:
+        supabase.table("agent_messages").insert({
+            "from_agent": "system",
+            "to_agent":   other,
+            "subject":    f"{agent.capitalize()} session started",
+            "body":       announcement_body,
+            "thread_id":  "session-announce",
+        }).execute()
+        # Also blast on Redis so a live listener catches it
+        r.publish("bgop:agent_channel", json.dumps({
+            "event":     "agent_online",
+            "agent":     agent,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }))
+    except Exception as e:
+        log.warning(f"/briefing/announce notify failed: {e}")
+
+    log.info(f"/briefing/announce agent={agent} inbox={inbox_cnt} unread")
+
+    return {
+        "announced": True,
+        "agent": agent,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "relay_version": "1.2.0",
+        "live_db_status": db_status,
+        "unread_messages": {
+            "for_you": inbox_cnt,
+            "breakdown": unread,
+            "inbox_url": f"GET /inbox?agent={agent}&unread_only=true",
+        },
+        "session_state": state_md,
+    }
