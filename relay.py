@@ -1,5 +1,5 @@
 """
-BroyhillGOP Relay v1.2 — HTTP bridge + inter-agent message channel + startup briefing
+BroyhillGOP Relay v1.3 — HTTP bridge + inter-agent message channel + startup briefing
 Port  : 8080  (RELAY_PORT in .env)
 Auth  : X-API-Key header must match RELAY_API_KEY in .env
 
@@ -70,7 +70,7 @@ START_TIME = time.time()
 # ── App ───────────────────────────────────────────────────────────────────────
 app = FastAPI(
     title="BroyhillGOP Relay",
-    version="1.2.0",
+    version="1.3.0",
     description="HTTP bridge: Perplexity ↔ Claude ↔ Supabase ↔ Redis",
 )
 
@@ -150,7 +150,7 @@ async def health():
     return {
         "status": "ok",
         "uptime_seconds": uptime,
-        "relay_version": "1.2.0",
+        "relay_version": "1.3.0",
         "redis": "ok" if redis_ok else "unreachable",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
@@ -194,6 +194,8 @@ async def ask(req: AskRequest):
         is_json = True
     except json.JSONDecodeError:
         pass
+    total_tokens = resp.usage.input_tokens + resp.usage.output_tokens
+    _record_heartbeat(req.context.get("agent","unknown") if req.context else "unknown", total_tokens)
     log.info(f"/ask {elapsed}s json={is_json} tokens={resp.usage.output_tokens}")
     return {
         "response": parsed,
@@ -456,7 +458,7 @@ async def not_found(request: Request, exc):
 
 # ─────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    log.info(f"BroyhillGOP Relay v1.2 starting on port {RELAY_PORT}")
+    log.info(f"BroyhillGOP Relay v1.3 starting on port {RELAY_PORT}")
     uvicorn.run("relay:app", host="0.0.0.0", port=RELAY_PORT,
                 log_level="info", access_log=True, reload=False)
 
@@ -530,7 +532,7 @@ async def get_briefing(agent: str = Query("both", description="'perplexity', 'cl
     return {
         "briefing_for": agent,
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "relay_version": "1.2.0",
+        "relay_version": "1.3.0",
         "live_db_status": db_status,
         "unread_messages": {
             "for_you": inbox_cnt,
@@ -588,7 +590,7 @@ async def announce_briefing(
         "announced": True,
         "agent": agent,
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "relay_version": "1.2.0",
+        "relay_version": "1.3.0",
         "live_db_status": db_status,
         "unread_messages": {
             "for_you": inbox_cnt,
@@ -596,4 +598,226 @@ async def announce_briefing(
             "inbox_url": f"GET /inbox?agent={agent}&unread_only=true",
         },
         "session_state": state_md,
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Context health, checkpointing, and dead-man's switch
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Claude Sonnet context window (conservative limit — actual is ~200K)
+CONTEXT_LIMIT_TOKENS = 160_000
+WARN_YELLOW = 0.70   # 70% → warning in response
+WARN_RED    = 0.90   # 90% → force checkpoint + alert other agent
+
+SESSION_STATE_PATH = "/app/SESSION-STATE.md"   # already defined above but safe to restate
+HEARTBEAT_TIMEOUT  = 900   # 15 minutes in seconds
+
+
+def _session_token_key(agent: str) -> str:
+    return f"bgop:ctx:{agent}:tokens"
+
+def _session_heartbeat_key(agent: str) -> str:
+    return f"bgop:ctx:{agent}:heartbeat"
+
+def _record_heartbeat(agent: str, tokens_used: int = 0):
+    """Update heartbeat timestamp and cumulative token count."""
+    try:
+        pipe = r.pipeline()
+        pipe.incrby(_session_token_key(agent), tokens_used)
+        pipe.set(_session_heartbeat_key(agent), int(time.time()), ex=3600)
+        pipe.execute()
+    except Exception:
+        pass
+
+def _get_context_health(agent: str) -> dict:
+    try:
+        total = int(r.get(_session_token_key(agent)) or 0)
+        last_beat = r.get(_session_heartbeat_key(agent))
+        last_seen = int(last_beat) if last_beat else None
+        pct = round(total / CONTEXT_LIMIT_TOKENS, 3)
+        if pct >= WARN_RED:
+            level = "CRITICAL"
+        elif pct >= WARN_YELLOW:
+            level = "WARNING"
+        else:
+            level = "OK"
+        return {
+            "agent": agent,
+            "session_tokens_used": total,
+            "context_limit": CONTEXT_LIMIT_TOKENS,
+            "percent_full": round(pct * 100, 1),
+            "level": level,
+            "last_heartbeat": last_seen,
+            "seconds_since_heartbeat": int(time.time()) - last_seen if last_seen else None,
+        }
+    except Exception as e:
+        return {"agent": agent, "error": str(e)}
+
+def _force_checkpoint_alert(agent: str, pct: float):
+    """Post a red-alert to agent_messages when context is nearly full."""
+    other = "claude" if agent == "perplexity" else "perplexity"
+    body = (
+        f"🔴 CONTEXT CRITICAL — {agent.upper()} is at {round(pct*100,1)}% context capacity.\n"
+        f"They may go offline soon without warning.\n"
+        f"Last checkpoint is in SESSION-STATE.md.\n"
+        f"If they go silent: read /inbox?agent={other} and continue from SESSION-STATE.\n"
+        f"Timestamp: {datetime.now(timezone.utc).isoformat()}"
+    )
+    try:
+        supabase.table("agent_messages").insert({
+            "from_agent": "system",
+            "to_agent":   other,
+            "subject":    f"⚠️ {agent} context nearly full",
+            "body":       body,
+            "thread_id":  "context-alerts",
+        }).execute()
+        r.publish("bgop:agent_channel", json.dumps({
+            "event": "context_critical", "agent": agent,
+            "percent": round(pct * 100, 1),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }))
+        log.warning(f"Context alert fired for {agent} at {round(pct*100,1)}%")
+    except Exception as e:
+        log.error(f"Could not send context alert: {e}")
+
+
+@app.get("/context-health", dependencies=[Depends(require_key)])
+async def context_health(agent: str = Query("both")):
+    """
+    Returns token usage and context window health for one or both agents.
+    Call this periodically to know when you're approaching the limit.
+    """
+    if agent == "both":
+        return {
+            "perplexity": _get_context_health("perplexity"),
+            "claude":     _get_context_health("claude"),
+            "timestamp":  datetime.now(timezone.utc).isoformat(),
+        }
+    _validate_agent(agent, "agent")
+    return _get_context_health(agent)
+
+
+class CheckpointRequest(BaseModel):
+    agent: str = Field(..., description="'perplexity' or 'claude'")
+    work_in_progress: str = Field(..., description="What you were doing when you checkpointed")
+    completed_this_session: Optional[str] = None
+    next_steps: Optional[str] = None
+    blockers: Optional[str] = None
+    payload: Optional[dict] = None
+
+@app.post("/checkpoint", dependencies=[Depends(require_key)])
+async def checkpoint(req: CheckpointRequest):
+    """
+    Save a mid-session checkpoint.
+    - Appends a dated entry to SESSION-STATE.md on disk
+    - Posts to agent_messages so the other agent sees it immediately
+    - Resets the context token counter (checkpoint = clean slate for tracking)
+    Call this any time you sense you're getting near your limit, or when
+    completing a major piece of work.
+    """
+    _validate_agent(req.agent, "agent")
+    other = "claude" if req.agent == "perplexity" else "perplexity"
+    health = _get_context_health(req.agent)
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
+    # Build checkpoint block to append to SESSION-STATE.md
+    checkpoint_block = f"""
+
+---
+## CHECKPOINT — {req.agent.upper()} — {ts}
+**Context health at checkpoint:** {health.get('percent_full', '?')}% full ({health.get('session_tokens_used', '?')} tokens)
+
+### Work In Progress
+{req.work_in_progress}
+"""
+    if req.completed_this_session:
+        checkpoint_block += f"\n### Completed This Session\n{req.completed_this_session}\n"
+    if req.next_steps:
+        checkpoint_block += f"\n### Next Steps (pick up here)\n{req.next_steps}\n"
+    if req.blockers:
+        checkpoint_block += f"\n### Blockers / Needs Eddie Approval\n{req.blockers}\n"
+    checkpoint_block += "---\n"
+
+    # Write to SESSION-STATE.md
+    written = False
+    try:
+        with open(SESSION_STATE_PATH, "a") as f:
+            f.write(checkpoint_block)
+        written = True
+        log.info(f"Checkpoint written to {SESSION_STATE_PATH} for {req.agent}")
+    except Exception as e:
+        log.error(f"Could not write checkpoint to disk: {e}")
+
+    # Post to agent_messages so other agent is notified immediately
+    message_body = (
+        f"🔖 CHECKPOINT from {req.agent.upper()} at {ts}\n"
+        f"Context: {health.get('percent_full','?')}% full\n\n"
+        f"**In Progress:** {req.work_in_progress}\n"
+    )
+    if req.next_steps:
+        message_body += f"\n**Next Steps:** {req.next_steps}\n"
+    if req.blockers:
+        message_body += f"\n**Blockers:** {req.blockers}\n"
+    message_body += f"\nFull checkpoint appended to SESSION-STATE.md."
+
+    try:
+        supabase.table("agent_messages").insert({
+            "from_agent": req.agent,
+            "to_agent":   other,
+            "subject":    f"🔖 Checkpoint — {ts}",
+            "body":       message_body,
+            "payload":    req.payload,
+            "thread_id":  "checkpoints",
+        }).execute()
+        r.publish("bgop:agent_channel", json.dumps({
+            "event": "checkpoint", "agent": req.agent, "timestamp": ts
+        }))
+    except Exception as e:
+        log.warning(f"Could not post checkpoint to agent_messages: {e}")
+
+    # Reset token counter after checkpoint
+    try:
+        r.set(_session_token_key(req.agent), 0, ex=3600)
+    except Exception:
+        pass
+
+    return {
+        "checkpointed": True,
+        "agent": req.agent,
+        "written_to_disk": written,
+        "context_at_checkpoint": health,
+        "timestamp": ts,
+    }
+
+
+@app.get("/heartbeat", dependencies=[Depends(require_key)])
+async def heartbeat(agent: str = Query(..., description="'perplexity' or 'claude'")):
+    """
+    Lightweight ping — call every few minutes to prove you're still alive.
+    The dead-man's switch checks this; if silent > 15 min, it alerts the other agent.
+    Returns your current context health so you always know where you stand.
+    """
+    _validate_agent(agent, "agent")
+    _record_heartbeat(agent, 0)
+    health = _get_context_health(agent)
+
+    # Check if other agent has gone silent
+    other = "claude" if agent == "perplexity" else "perplexity"
+    other_health = _get_context_health(other)
+    other_last = other_health.get("seconds_since_heartbeat")
+    other_alert = None
+    if other_last is not None and other_last > HEARTBEAT_TIMEOUT:
+        other_alert = (
+            f"⚠️ {other} has not checked in for {other_last // 60} minutes. "
+            f"They may have gone offline."
+        )
+
+    return {
+        "agent": agent,
+        "alive": True,
+        "your_context": health,
+        "other_agent_status": other_health,
+        "other_agent_alert": other_alert,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
