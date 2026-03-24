@@ -18,9 +18,14 @@
 
 ## THE SINGLE MOST IMPORTANT RULE
 
-> **RNCID (`datatrust_rncid`) is the universal anchor for every donor record across every source.**
+> **RNCID (`voter_rncid`) is the universal anchor for every donor record across every source.**
 
-Every pipeline fix, every migration, every UPDATE you write must end with `datatrust_rncid` populated on `core.person_spine` for the affected records. If a session ends without RNCID on the spine, the session is incomplete — regardless of what else was accomplished.
+Every pipeline fix, every migration, every UPDATE you write must end with `voter_rncid` populated on `core.person_spine` for the affected records. If a session ends without RNCID on the spine, the session is incomplete — regardless of what else was accomplished.
+
+⚠️ **COLUMN NAME CORRECTION (verified March 23, 2026):**
+- The column on `core.person_spine` is **`voter_rncid`** — NOT `datatrust_rncid`
+- `datatrust_rncid` does NOT exist anywhere in the schema
+- Any prior documentation referencing `datatrust_rncid` is incorrect
 
 ---
 
@@ -98,12 +103,12 @@ UNION ALL SELECT 'core.contribution_map', COUNT(*) FROM core.contribution_map
 UNION ALL SELECT 'core.fec_donation_person_map', COUNT(*) FROM core.fec_donation_person_map
 UNION ALL SELECT 'core.golden_record_person_map', COUNT(*) FROM core.golden_record_person_map;
 
--- 2. RNCID population on spine
+-- 2. RNCID population on spine (column is voter_rncid, NOT datatrust_rncid)
 SELECT
   COUNT(*) as total_spine,
-  COUNT(datatrust_rncid) as has_rncid,
+  COUNT(voter_rncid) as has_rncid,
   COUNT(voter_ncid) as has_ncid,
-  ROUND(COUNT(datatrust_rncid)::numeric / COUNT(*) * 100, 1) as pct_rncid
+  ROUND(COUNT(voter_rncid)::numeric / COUNT(*) * 100, 1) as pct_rncid
 FROM core.person_spine;
 
 -- 3. BOE RNCID match rate
@@ -150,21 +155,21 @@ Any operation that creates or updates donor linkage MUST end with this verificat
 -- Confirm RNCID is propagating to spine
 SELECT
   COUNT(*) as spine_total,
-  COUNT(datatrust_rncid) as has_rncid,
-  COUNT(CASE WHEN datatrust_rncid IS NULL AND voter_ncid IS NOT NULL THEN 1 END) as ncid_but_no_rncid
+  COUNT(voter_rncid) as has_rncid,
+  COUNT(CASE WHEN voter_rncid IS NULL AND voter_ncid IS NOT NULL THEN 1 END) as ncid_but_no_rncid
 FROM core.person_spine;
 ```
 
 If `ncid_but_no_rncid > 0`, run the RNCID backfill before closing the session:
 
 ```sql
--- Backfill datatrust_rncid from rnc_voter_staging via voter_ncid
+-- Backfill voter_rncid from rnc_voter_staging via voter_ncid
 UPDATE core.person_spine ps
-SET datatrust_rncid = rvs.rncid::text
+SET voter_rncid = rvs.rncid::text
 FROM public.rnc_voter_staging rvs
 WHERE rvs.state_voter_id = ps.voter_ncid
   AND rvs.rncid IS NOT NULL
-  AND ps.datatrust_rncid IS NULL;
+  AND ps.voter_rncid IS NULL;
 ```
 
 This uses the exact-match join (`rnc_voter_staging.state_voter_id = person_spine.voter_ncid`) — no fuzzy logic, no ambiguity.
@@ -189,7 +194,7 @@ The unified donor record is built by consolidating all four pipelines into `core
 
 | Field | Source | Status |
 |-------|--------|--------|
-| `datatrust_rncid` | `rnc_voter_staging` via name+zip or voter_ncid | **Priority #1** |
+| `voter_rncid` | `rnc_voter_staging` via name+zip or voter_ncid | **Priority #1** |
 | `voter_ncid` | `nc_voters.ncid` direct match | 100% on spine |
 | `norm_last`, `norm_first`, `zip5` | Normalized from source | Required for matching |
 | `is_donor` | Set TRUE when any contribution linked | Check current rate |
@@ -255,6 +260,23 @@ Before ending any session, update `docs/SESSION-STATE.md` in GitHub with:
 
 ---
 
+## VERIFIED SCHEMA FACTS (as of March 23, 2026 live audit)
+
+| Fact | Value |
+|------|-------|
+| `core.person_spine` columns | 73 (+ `is_donor` added this session) |
+| `core.person_spine` rows | 337,053 (donor spine only — NOT the voter universe) |
+| `public.person_master` rows | 7,660,662 (voter+DataTrust spine — different table) |
+| RNCID column on spine | `voter_rncid` (text) — confirmed by information_schema |
+| RNCID coverage on spine | 189,527 / 337,053 = 56.2% |
+| `core.contribution_map` | 4,006,356 rows (FEC: 2.33M, FEC party: 1.39M, BOE: 288K) |
+| `core.fec_donation_person_map` | 1,612,466 rows |
+| `public.fec_committees` | 35,521 rows (promoted this session) |
+| BOE RNCID match rate | 338,720 / 625,897 = 54.1% |
+| Unresolved queue records | 81,265 (need fuzzy pass in batches of 20K) |
+
+---
+
 *This document is maintained by Perplexity AI on behalf of Ed Broyhill.*
-*Last updated: March 23, 2026*
+*Last updated: March 23, 2026 — v2 (corrected voter_rncid column name)*
 *Push location: `docs/CLAUDE_GUARDRAILS.md` in `broyhill/BroyhillGOP`*
