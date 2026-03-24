@@ -6,9 +6,11 @@ on:
       migration:
         description: 'Migration to run'
         required: true
-        default: '2024_12_enhancement_migration.sql'
+        default: '087_exec_and_remaining_fixes.sql'
         type: choice
         options:
+          - '087_exec_and_remaining_fixes.sql'
+          - '086_completion_fixes.sql'
           - '2024_12_enhancement_migration.sql'
           - 'CALCULATE_TRIPLE_GRADES.sql'
           - 'all'
@@ -21,63 +23,50 @@ jobs:
   deploy-migration:
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.confirm == 'deploy' }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
-      
+
       - name: Run Migration
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          echo "🚀 Deploying December 2024 Enhancement..."
+          echo "🚀 Deploying migration: ${{ github.event.inputs.migration }}"
           echo "=================================="
-          
+
           if [ "${{ github.event.inputs.migration }}" == "all" ]; then
             echo "Running all migrations..."
             psql "$DATABASE_URL" -f database/migrations/2024_12_enhancement_migration.sql
-            psql "$DATABASE_URL" -f database/schemas/CALCULATE_TRIPLE_GRADES.sql
+          elif [ "${{ github.event.inputs.migration }}" == "087_exec_and_remaining_fixes.sql" ]; then
+            echo "Running 087..."
+            psql "$DATABASE_URL" -f database/migrations/087_exec_and_remaining_fixes.sql
+          elif [ "${{ github.event.inputs.migration }}" == "086_completion_fixes.sql" ]; then
+            echo "Running 086..."
+            psql "$DATABASE_URL" -f database/migrations/086_completion_fixes.sql
           else
             echo "Running: ${{ github.event.inputs.migration }}"
-            if [ "${{ github.event.inputs.migration }}" == "2024_12_enhancement_migration.sql" ]; then
-              psql "$DATABASE_URL" -f database/migrations/2024_12_enhancement_migration.sql
-            else
-              psql "$DATABASE_URL" -f database/schemas/${{ github.event.inputs.migration }}
-            fi
+            psql "$DATABASE_URL" -f database/migrations/${{ github.event.inputs.migration }}
           fi
-          
+
           echo ""
           echo "✅ Migration complete!"
-      
+
       - name: Verify Tables
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          echo "📋 Verifying new tables..."
+          echo "=== Table counts ==="
           psql "$DATABASE_URL" -c "
-            SELECT table_name 
-            FROM information_schema.tables 
-            WHERE table_schema = 'public' 
-            AND table_name IN (
-              'nc_districts',
-              'nc_office_types', 
-              'donation_menu_levels',
-              'microsegment_performance',
-              'volunteer_grades',
-              'special_guest_types'
-            )
-            ORDER BY table_name;
+            SELECT 'core.person_spine' AS tbl, COUNT(*) FROM core.person_spine
+            UNION ALL SELECT 'core.contribution_map', COUNT(*) FROM core.contribution_map
+            UNION ALL SELECT 'public.nc_boe_donations_raw', COUNT(*) FROM public.nc_boe_donations_raw
+            UNION ALL SELECT 'public.golden_record_clusters', COUNT(*) FROM public.golden_record_clusters
+            UNION ALL SELECT 'public.winred_donors', COUNT(*) FROM public.winred_donors
+            ORDER BY tbl;
           "
-      
-      - name: Recalculate District Grades
-        if: ${{ github.event.inputs.migration == 'all' || github.event.inputs.migration == 'CALCULATE_TRIPLE_GRADES.sql' }}
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          echo "📊 Recalculating district grades..."
-          psql "$DATABASE_URL" -c "SELECT recalculate_district_grades();" || echo "Note: Run manually after district data is populated"
