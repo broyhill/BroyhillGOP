@@ -1,26 +1,30 @@
 """
-BroyhillGOP Relay — HTTP bridge between Perplexity (or any client) and the
-Claude / E20 Brain stack running on Hetzner.
-
-Port  : 8080  (set RELAY_PORT in .env to override)
+BroyhillGOP Relay v1.1 — HTTP bridge + inter-agent message channel
+Port  : 8080  (RELAY_PORT in .env)
 Auth  : X-API-Key header must match RELAY_API_KEY in .env
 
 Endpoints
 ─────────
-GET  /health           → liveness check, returns versions + uptime
-GET  /status           → Redis queue depths, brain container state
-POST /ask              → synchronous Claude query, returns decision JSON
-POST /event            → publish event to Redis (brain.py picks up async)
-GET  /decisions        → last N decisions from Supabase brain_decisions table
-POST /sql              → run a read-only SELECT against Supabase (Perplexity DB queries)
-GET  /queue/outbound   → peek / pop messages from bgop:outbound
+GET  /health                  → liveness, no auth
+GET  /status                  → Redis queue depths + subscriber counts
+POST /ask                     → synchronous Claude query → decision JSON
+POST /event                   → publish to bgop:events (brain.py async path)
+GET  /decisions               → last N rows from brain_decisions table
+POST /queue/outbound          → peek or pop bgop:outbound messages
+
+── Inter-agent channel (Perplexity ↔ Claude) ─────────────────────────────────
+POST /message                 → send a message to the other agent
+GET  /inbox                   → unread messages addressed to you (or 'both')
+POST /reply                   → post a reply (marks parent read)
+GET  /thread/{thread_id}      → full thread history
+PATCH /message/{id}/read      → mark a message read
 """
 
 import os
 import json
 import time
+import uuid
 import logging
-import hashlib
 import hmac
 from datetime import datetime, timezone
 from typing import Optional, Any
@@ -28,12 +32,13 @@ from typing import Optional, Any
 import anthropic
 import redis as redis_lib
 from supabase import create_client, Client
-from fastapi import FastAPI, HTTPException, Request, Depends, Header
+from fastapi import FastAPI, HTTPException, Request, Depends, Header, Path, Query
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 import uvicorn
 
 # ── Logging ───────────────────────────────────────────────────────────────────
+os.makedirs("/app/logs", exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [RELAY] %(levelname)s %(message)s",
@@ -62,85 +67,80 @@ r: redis_lib.Redis          = redis_lib.Redis(
 
 START_TIME = time.time()
 
-# ── FastAPI app ───────────────────────────────────────────────────────────────
+# ── App ───────────────────────────────────────────────────────────────────────
 app = FastAPI(
     title="BroyhillGOP Relay",
-    version="1.0.0",
+    version="1.1.0",
     description="HTTP bridge: Perplexity ↔ Claude ↔ Supabase ↔ Redis",
 )
 
-# ── Auth dependency ───────────────────────────────────────────────────────────
+# ── Auth ──────────────────────────────────────────────────────────────────────
 def require_key(x_api_key: str = Header(...)):
-    """Constant-time compare to prevent timing attacks."""
     if not hmac.compare_digest(x_api_key.encode(), RELAY_API_KEY.encode()):
-        log.warning(f"Bad API key attempt: {x_api_key[:8]}…")
+        log.warning(f"Bad API key: {x_api_key[:8]}…")
         raise HTTPException(status_code=401, detail="Invalid API key")
     return True
 
-
-# ── Pydantic models ───────────────────────────────────────────────────────────
+# ── Models ────────────────────────────────────────────────────────────────────
 class AskRequest(BaseModel):
-    prompt: str = Field(..., description="Free-form question or instruction for Claude")
-    system: Optional[str] = Field(
-        None,
-        description="Override system prompt. Defaults to the E20 Brain persona."
-    )
+    prompt: str
+    system: Optional[str] = None
     max_tokens: int = Field(1024, ge=64, le=4096)
-    context: Optional[dict] = Field(
-        None,
-        description="Optional structured context dict merged into the prompt"
-    )
-
+    context: Optional[dict] = None
 
 class EventRequest(BaseModel):
-    type: str = Field(..., description="Event type, e.g. 'donor_action', 'trigger'")
+    type: str
     donor_id: Optional[int] = None
     candidate_id: Optional[int] = None
     data: Optional[dict] = Field(default_factory=dict)
 
-
-class SqlRequest(BaseModel):
-    sql: str = Field(..., description="SELECT statement only — writes are rejected")
-
-
 class OutboundRequest(BaseModel):
-    peek: bool = Field(True, description="True=non-destructive peek, False=pop (consume)")
+    peek: bool = True
     count: int = Field(10, ge=1, le=100)
 
+class MessageRequest(BaseModel):
+    from_agent: str = Field(..., description="'perplexity' or 'claude'")
+    to_agent: str   = Field(..., description="'perplexity', 'claude', or 'both'")
+    subject: Optional[str] = None
+    body: str
+    payload: Optional[dict] = None
+    thread_id: Optional[str] = None
 
-# ── System prompt (same as brain.py so /ask is consistent) ───────────────────
+class ReplyRequest(BaseModel):
+    from_agent: str
+    body: str
+    payload: Optional[dict] = None
+    parent_id: Optional[int] = Field(None, description="ID of message being replied to")
+
+# ── Default system prompt ─────────────────────────────────────────────────────
 DEFAULT_SYSTEM = """
 You are the E20 Brain Hub for BroyhillGOP — a quantifiable reasoning engine that
 orchestrates campaign decisions for NC Republican candidates.
 
-Your job is to analyze events or questions and return a structured JSON decision.
-
-For event decisions, output ONLY valid JSON:
+For event decisions output ONLY valid JSON:
 {
   "action": "SEND_MESSAGE | PAUSE | ESCALATE | DO_NOTHING",
   "channel": "sms | email | phone | social | none",
-  "message": "The exact message to send (or null)",
+  "message": "exact message or null",
   "ask_amount": 0,
-  "reasoning": "Brief explanation",
+  "reasoning": "brief explanation",
   "expected_value": 0.0,
   "next_trigger_days": 0
 }
 
-For open-ended questions, answer clearly and concisely in plain text.
+For open questions, answer clearly in plain text.
 Rules:
-- NEVER treat donation records as duplicate contacts
 - If fatigue score > 0.7, action must be PAUSE
-- Expected value = (predicted_amount * conversion_rate) - fatigue_cost
 - Only SEND_MESSAGE if expected_value > 25
-- For major donors ($10K+), always recommend human review for asks > $500
+- For major donors ($10K+), human review required for asks > $500
 """.strip()
 
-
-# ── Endpoints ─────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# Core endpoints
+# ─────────────────────────────────────────────────────────────────────────────
 
 @app.get("/health")
 async def health():
-    """Liveness check — no auth required."""
     uptime = int(time.time() - START_TIME)
     redis_ok = False
     try:
@@ -150,59 +150,43 @@ async def health():
     return {
         "status": "ok",
         "uptime_seconds": uptime,
-        "relay_version": "1.0.0",
+        "relay_version": "1.1.0",
         "redis": "ok" if redis_ok else "unreachable",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
-
 @app.get("/status", dependencies=[Depends(require_key)])
 async def status():
-    """Queue depths and Redis channel subscribers."""
     try:
-        outbound_depth = r.llen("bgop:outbound")
-        events_depth   = r.llen("bgop:events")
-        subscribers    = r.pubsub_numsub("bgop:events", "bgop:triggers")
+        outbound = r.llen("bgop:outbound")
+        events   = r.llen("bgop:events")
+        subs     = r.pubsub_numsub("bgop:events", "bgop:triggers")
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"Redis unreachable: {e}")
-
     return {
-        "queues": {
-            "bgop:outbound": outbound_depth,
-            "bgop:events":   events_depth,
-        },
-        "subscribers": dict(zip(subscribers[::2], subscribers[1::2])),
+        "queues": {"bgop:outbound": outbound, "bgop:events": events},
+        "subscribers": dict(zip(subs[::2], subs[1::2])),
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
-
 @app.post("/ask", dependencies=[Depends(require_key)])
 async def ask(req: AskRequest):
-    """
-    Synchronous Claude query.  Perplexity sends a prompt, gets a response back
-    in the same HTTP call.  No Redis involved — direct API round-trip.
-    """
     system = req.system or DEFAULT_SYSTEM
-    user_content = req.prompt
+    content = req.prompt
     if req.context:
-        user_content = f"CONTEXT:\n{json.dumps(req.context, indent=2)}\n\n{req.prompt}"
-
+        content = f"CONTEXT:\n{json.dumps(req.context, indent=2)}\n\n{req.prompt}"
     t0 = time.time()
     try:
-        response = claude.messages.create(
+        resp = claude.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=req.max_tokens,
             system=system,
-            messages=[{"role": "user", "content": user_content}],
+            messages=[{"role": "user", "content": content}],
         )
     except anthropic.APIError as e:
-        log.error(f"/ask Claude error: {e}")
         raise HTTPException(status_code=502, detail=f"Claude API error: {e}")
-
-    raw = response.content[0].text.strip()
+    raw = resp.content[0].text.strip()
     elapsed = round(time.time() - t0, 2)
-
-    # Try to parse as JSON; if not, return as plain text
     parsed: Any = raw
     is_json = False
     try:
@@ -210,114 +194,44 @@ async def ask(req: AskRequest):
         is_json = True
     except json.JSONDecodeError:
         pass
-
-    log.info(f"/ask → {elapsed}s | json={is_json} | tokens={response.usage.output_tokens}")
+    log.info(f"/ask {elapsed}s json={is_json} tokens={resp.usage.output_tokens}")
     return {
         "response": parsed,
         "is_json": is_json,
         "elapsed_seconds": elapsed,
-        "input_tokens": response.usage.input_tokens,
-        "output_tokens": response.usage.output_tokens,
+        "input_tokens": resp.usage.input_tokens,
+        "output_tokens": resp.usage.output_tokens,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
-
 @app.post("/event", dependencies=[Depends(require_key)])
 async def publish_event(req: EventRequest):
-    """
-    Publish an event to bgop:events — brain.py picks it up asynchronously,
-    calls Claude, logs decision to Supabase, pushes to bgop:outbound.
-    Returns immediately (fire-and-forget).
-    """
     payload = {
-        "type":         req.type,
-        "donor_id":     req.donor_id,
-        "candidate_id": req.candidate_id,
-        "data":         req.data or {},
+        "type": req.type, "donor_id": req.donor_id,
+        "candidate_id": req.candidate_id, "data": req.data or {},
         "published_at": datetime.now(timezone.utc).isoformat(),
     }
     try:
         delivered = r.publish("bgop:events", json.dumps(payload))
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"Redis publish failed: {e}")
-
-    log.info(f"/event type={req.type} donor={req.donor_id} → {delivered} subscriber(s)")
-    return {
-        "published": True,
-        "subscribers_reached": delivered,
-        "payload": payload,
-    }
-
+    log.info(f"/event type={req.type} → {delivered} subscriber(s)")
+    return {"published": True, "subscribers_reached": delivered, "payload": payload}
 
 @app.get("/decisions", dependencies=[Depends(require_key)])
 async def decisions(limit: int = 20, action: Optional[str] = None):
-    """
-    Last N decisions from the Supabase brain_decisions table.
-    Optionally filter by action type (SEND_MESSAGE, PAUSE, etc.)
-    """
     try:
-        query = (
-            supabase.table("brain_decisions")
-            .select("*")
-            .order("created_at", desc=True)
-            .limit(limit)
-        )
+        q = supabase.table("brain_decisions").select("*").order("created_at", desc=True).limit(limit)
         if action:
-            query = query.eq("action", action.upper())
-        result = query.execute()
+            q = q.eq("action", action.upper())
+        result = q.execute()
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"Supabase error: {e}")
-
-    return {
-        "count": len(result.data),
-        "decisions": result.data,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-    }
-
-
-@app.post("/sql", dependencies=[Depends(require_key)])
-async def run_sql(req: SqlRequest):
-    """
-    Run a read-only SELECT against Supabase via the REST API.
-    Perplexity can use this to query the DB without needing psql.
-    WRITES ARE REJECTED — any statement containing INSERT/UPDATE/DELETE/DROP/TRUNCATE
-    will be refused before it reaches the database.
-    """
-    forbidden = ["insert", "update", "delete", "drop", "truncate", "alter", "create"]
-    stmt_lower = req.sql.lower().strip()
-    for kw in forbidden:
-        if kw in stmt_lower:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Write operation '{kw}' is not permitted via /sql. Use psql directly."
-            )
-    if not stmt_lower.startswith("select"):
-        raise HTTPException(status_code=400, detail="Only SELECT statements are allowed.")
-
-    try:
-        result = supabase.rpc("execute_sql", {"query": req.sql}).execute()
-        rows = result.data
-    except Exception as e:
-        # Supabase REST doesn't support arbitrary SQL — fall through to psql hint
-        log.warning(f"/sql Supabase RPC failed: {e}")
-        raise HTTPException(
-            status_code=501,
-            detail=(
-                "Supabase REST doesn't support arbitrary SQL. "
-                "Use /ask with your query as a prompt and Claude will run it via psql, "
-                "or run it directly in the ttyd terminal."
-            )
-        )
-
-    return {"rows": rows, "count": len(rows) if isinstance(rows, list) else None}
-
+    return {"count": len(result.data), "decisions": result.data,
+            "timestamp": datetime.now(timezone.utc).isoformat()}
 
 @app.post("/queue/outbound", dependencies=[Depends(require_key)])
 async def peek_outbound(req: OutboundRequest):
-    """
-    Peek or pop messages from bgop:outbound — the queue brain.py pushes
-    outbound SMS/email jobs to.
-    """
     messages = []
     try:
         if req.peek:
@@ -331,48 +245,217 @@ async def peek_outbound(req: OutboundRequest):
                 raw.append(item)
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"Redis error: {e}")
-
     for item in raw:
         try:
             messages.append(json.loads(item))
         except json.JSONDecodeError:
             messages.append({"raw": item})
+    return {"mode": "peek" if req.peek else "pop", "count": len(messages), "messages": messages}
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Inter-agent message channel
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _validate_agent(name: str, field: str):
+    valid = {"perplexity", "claude", "both", "system"}
+    if name not in valid:
+        raise HTTPException(status_code=400, detail=f"{field} must be one of {valid}")
+
+@app.post("/message", dependencies=[Depends(require_key)])
+async def send_message(req: MessageRequest):
+    """
+    Send a message from one agent to the other.
+    Stored in Supabase agent_messages AND published to Redis bgop:agent_channel
+    so the recipient can react in real time if they're polling.
+    """
+    _validate_agent(req.from_agent, "from_agent")
+    _validate_agent(req.to_agent,   "to_agent")
+
+    thread = req.thread_id or str(uuid.uuid4())[:8]
+
+    try:
+        result = supabase.table("agent_messages").insert({
+            "from_agent": req.from_agent,
+            "to_agent":   req.to_agent,
+            "subject":    req.subject,
+            "body":       req.body,
+            "payload":    req.payload,
+            "thread_id":  thread,
+        }).execute()
+        row = result.data[0]
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Supabase insert failed: {e}")
+
+    # Also publish to Redis so a live listener catches it instantly
+    try:
+        r.publish("bgop:agent_channel", json.dumps({
+            "id":         row["id"],
+            "from_agent": req.from_agent,
+            "to_agent":   req.to_agent,
+            "subject":    req.subject,
+            "body":       req.body,
+            "thread_id":  thread,
+            "created_at": row["created_at"],
+        }))
+    except Exception:
+        pass  # Redis failure doesn't block Supabase write
+
+    log.info(f"/message {req.from_agent}→{req.to_agent} thread={thread} id={row['id']}")
     return {
-        "mode": "peek" if req.peek else "pop",
-        "count": len(messages),
-        "messages": messages,
+        "sent": True,
+        "id": row["id"],
+        "thread_id": thread,
+        "timestamp": row["created_at"],
     }
 
 
-# ── 404 catch-all ─────────────────────────────────────────────────────────────
+@app.get("/inbox", dependencies=[Depends(require_key)])
+async def inbox(
+    agent: str = Query(..., description="'perplexity' or 'claude' — whose inbox to read"),
+    include_both: bool = Query(True, description="Include messages sent to 'both'"),
+    unread_only: bool  = Query(True),
+    limit: int         = Query(50, ge=1, le=200),
+):
+    """
+    Return unread messages for an agent.
+    Call this at the start of every session to catch messages left by the other agent.
+    """
+    _validate_agent(agent, "agent")
+    try:
+        q = (
+            supabase.table("agent_messages")
+            .select("*")
+            .order("created_at", desc=False)
+            .limit(limit)
+        )
+        if include_both:
+            # Supabase REST: filter to_agent IN ('agent', 'both')
+            q = q.in_("to_agent", [agent, "both"])
+        else:
+            q = q.eq("to_agent", agent)
+        if unread_only:
+            q = q.is_("read_at", "null")
+        result = q.execute()
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Supabase error: {e}")
+
+    return {
+        "agent": agent,
+        "unread_count": len(result.data),
+        "messages": result.data,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+@app.post("/reply", dependencies=[Depends(require_key)])
+async def reply(req: ReplyRequest):
+    """
+    Post a reply. If parent_id is provided, marks that message as read first.
+    Auto-detects thread_id from parent if not supplied.
+    """
+    _validate_agent(req.from_agent, "from_agent")
+
+    # Resolve thread_id and to_agent from parent
+    thread_id = None
+    to_agent  = "both"
+    if req.parent_id:
+        try:
+            parent = supabase.table("agent_messages").select("*").eq("id", req.parent_id).execute()
+            if parent.data:
+                p = parent.data[0]
+                thread_id = p.get("thread_id")
+                # Reply goes to whoever sent the parent
+                to_agent = p["from_agent"] if p["from_agent"] != req.from_agent else p["to_agent"]
+                # Mark parent read
+                supabase.table("agent_messages").update(
+                    {"read_at": datetime.now(timezone.utc).isoformat()}
+                ).eq("id", req.parent_id).execute()
+        except Exception as e:
+            log.warning(f"Could not resolve parent {req.parent_id}: {e}")
+
+    thread_id = thread_id or str(uuid.uuid4())[:8]
+
+    try:
+        result = supabase.table("agent_messages").insert({
+            "from_agent": req.from_agent,
+            "to_agent":   to_agent,
+            "subject":    None,
+            "body":       req.body,
+            "payload":    req.payload,
+            "thread_id":  thread_id,
+        }).execute()
+        row = result.data[0]
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Supabase insert failed: {e}")
+
+    try:
+        r.publish("bgop:agent_channel", json.dumps({
+            "id": row["id"], "from_agent": req.from_agent,
+            "to_agent": to_agent, "body": req.body,
+            "thread_id": thread_id, "created_at": row["created_at"],
+        }))
+    except Exception:
+        pass
+
+    log.info(f"/reply {req.from_agent}→{to_agent} thread={thread_id} id={row['id']}")
+    return {"sent": True, "id": row["id"], "thread_id": thread_id,
+            "to_agent": to_agent, "timestamp": row["created_at"]}
+
+
+@app.get("/thread/{thread_id}", dependencies=[Depends(require_key)])
+async def get_thread(thread_id: str = Path(...)):
+    """Full chronological thread — all messages sharing a thread_id."""
+    try:
+        result = (
+            supabase.table("agent_messages")
+            .select("*")
+            .eq("thread_id", thread_id)
+            .order("created_at", desc=False)
+            .execute()
+        )
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Supabase error: {e}")
+    return {
+        "thread_id": thread_id,
+        "message_count": len(result.data),
+        "messages": result.data,
+    }
+
+
+@app.patch("/message/{msg_id}/read", dependencies=[Depends(require_key)])
+async def mark_read(msg_id: int = Path(...)):
+    """Mark a single message as read."""
+    try:
+        supabase.table("agent_messages").update(
+            {"read_at": datetime.now(timezone.utc).isoformat()}
+        ).eq("id", msg_id).execute()
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Supabase error: {e}")
+    return {"marked_read": True, "id": msg_id}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 404
+# ─────────────────────────────────────────────────────────────────────────────
+
 @app.exception_handler(404)
 async def not_found(request: Request, exc):
-    return JSONResponse(
-        status_code=404,
-        content={
-            "error": "Not found",
-            "available_endpoints": [
-                "GET  /health",
-                "GET  /status",
-                "POST /ask",
-                "POST /event",
-                "GET  /decisions",
-                "POST /sql",
-                "POST /queue/outbound",
-            ],
-        },
-    )
+    return JSONResponse(status_code=404, content={
+        "error": "Not found",
+        "endpoints": [
+            "GET  /health", "GET  /status",
+            "POST /ask", "POST /event",
+            "GET  /decisions", "POST /queue/outbound",
+            "POST /message", "GET  /inbox?agent=perplexity|claude",
+            "POST /reply", "GET  /thread/{thread_id}",
+            "PATCH /message/{id}/read",
+        ],
+    })
 
 
-# ── Entry point ───────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    log.info(f"BroyhillGOP Relay starting on port {RELAY_PORT}")
-    uvicorn.run(
-        "relay:app",
-        host="0.0.0.0",
-        port=RELAY_PORT,
-        log_level="info",
-        access_log=True,
-        reload=False,
-    )
+    log.info(f"BroyhillGOP Relay v1.1 starting on port {RELAY_PORT}")
+    uvicorn.run("relay:app", host="0.0.0.0", port=RELAY_PORT,
+                log_level="info", access_log=True, reload=False)
