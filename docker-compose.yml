@@ -1,0 +1,47 @@
+services:
+
+  redis:
+    image: redis:7-alpine
+    container_name: bgop_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  brain:
+    image: python:3.11-slim
+    container_name: bgop_brain
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: bash -c "pip install anthropic supabase redis --quiet && python brain.py"
+    depends_on:
+      - redis
+
+  relay:
+    image: python:3.11-slim
+    container_name: bgop_relay
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - .:/app
+    working_dir: /app
+    ports:
+      - "8080:8080"
+    command: >
+      bash -c "pip install anthropic supabase redis fastapi uvicorn[standard] --quiet
+      && python app/relay.py"
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  redis_data:
