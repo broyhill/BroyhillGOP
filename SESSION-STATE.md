@@ -1,106 +1,118 @@
 # BroyhillGOP SESSION STATE
-# ─────────────────────────────────────────────────────────────────────────────
-# This file is the single source of truth for both agents (Perplexity + Claude).
-# UPDATE THIS FILE at the end of every session using the format below.
-# Both agents read it automatically at startup via GET /briefing.
-# ─────────────────────────────────────────────────────────────────────────────
+## Updated: 2026-03-24 22:35 EDT by Claude
 
-## PROJECT IDENTITY
-- **Platform:** BroyhillGOP — multi-tenant SaaS for NC Republican candidates
-- **Owner:** Eddie Broyhill (James Edgar Broyhill), CEO, Anvil Venture Group, Winston-Salem NC
-- **Ecosystems:** 58 planned (E01–E58), E20 Brain Hub active
-- **Database:** Supabase PostgreSQL — project isbgjpnbocdkeslofota
-- **Server:** Hetzner GEX44 at 5.9.99.109 (root, SSH key ~/.ssh/id_ed25519_hetzner)
-- **GitHub:** github.com/broyhill/BroyhillGOP (branch: main)
+---
 
-## INFRASTRUCTURE (live as of Mar 24 2026)
-| Service       | Location                        | Port  | Status  |
-|---------------|---------------------------------|-------|---------|
-| ttyd terminal | http://5.9.99.109:7681          | 7681  | ✅ live  |
-| Redis         | Docker bgop_redis               | 6379  | ✅ live  |
-| Brain (E20)   | Docker bgop_brain               | —     | ✅ live  |
-| Relay v1.1    | Docker bgop_relay               | 8080  | ✅ live  |
-| Supabase DB   | db.isbgjpnbocdkeslofota.supabase.co | 5432 | ✅ live |
+## INFRASTRUCTURE STATUS
+- Relay: v1.5.0 running on :8080 (healthy ✓, Redis OK, Docker healthcheck fixed)
+- Containers: bgop_relay (healthy), bgop_brain (up), bgop_redis (up)
+- Database: Supabase PostgreSQL (58GB, 1187 tables, 18 schemas)
+- Terminal: ttyd on :7681 with startup briefing hook
+- Agent messaging: agent_messages table + Redis pub/sub live
+- **Hetzner UPGRADED: 20 cores / Intel i5-13500 / 62GB RAM (128GB add-on ordered) / 1.7TB disk**
 
-**Relay API Key:** `bgop-relay-k9x2mP8vQnJwT4rL`
-**DB Password:** `Anamaria@2026@`
+## GOD FILE V7 — AI SEARCH ENGINE (NEW THIS SESSION)
+**Eddie's master file index. Every AI reads manifest at session start.**
 
-## DATABASE SCHEMA SUMMARY (19 schemas)
-- **public** — operational tables (nc_voters, nc_boe_donations_raw, rncid_resolution_queue, _lookup_datatrust_all, rnc_voter_staging, agent_messages, brain_decisions)
-- **archive** — backups (nc_boe_donations_raw_backup: 758,520 rows)
-- **core** — contribution_map: 4,006,356 rows (authoritative financial data)
-- **norm, staging, raw** — ETL pipeline layers
-- Full audit: docs/BROYHILLGOP_COMPLETE_SCHEMA_AUDIT_Mar24_2026.md
+### Endpoints (no auth required):
+- `GET http://5.9.99.109:8080/docs/v7`          → HTML browser (open in Safari/ttyd)
+- `GET http://5.9.99.109:8080/docs/manifest`     → AI startup briefing (read every session)
+- `GET http://5.9.99.109:8080/docs/search?q=X`   → keyword search (name+topics+ecosystems)
+- `GET http://5.9.99.109:8080/docs/search?type=sql`  → by file type
+- `GET http://5.9.99.109:8080/docs/search?eco=E01`   → by ecosystem ID
+- `GET http://5.9.99.109:8080/docs/search?session=1` → 171 session transcripts
+- `GET http://5.9.99.109:8080/docs/search?category=BroyhillGOP` → by folder
+- Combine: `?q=donor&type=sql&eco=E01&date_from=2026-01-01`
 
-## IDENTITY RESOLUTION — CURRENT STATE (as of Mar 24 2026)
-| Status     | Count   | Notes                                    |
-|------------|---------|------------------------------------------|
-| resolved   | 79,702  | High-confidence RNCID match              |
-| review     | 42,529  | Matched but needs human spot-check       |
-| unresolved | 28,524  | No match found — true hard cases         |
-| **TOTAL**  | **150,755** |                                      |
+### Stats:
+- 6,388 files indexed (filtered from 32,632 raw)
+- 171 session transcripts (full work history)
+- 670 SQL files | 1,457 Python files | 1,358 markdown | 756 Word docs
+- Every file: date modified, topic tags, ecosystem refs (E01-E58)
+- Action buttons: OPEN in app | REVEAL in Finder | COPY path | DRIVE link
 
-**Fuzzy Match v4 completed Mar 24 2026** — 3-pass SQL set-based:
-- Pass 1 (exact name+zip): +225 resolved in 9.3s
-- Pass 2 (last+zip+first initial): +14,407 review in 57.6s
-- Pass 3 (last+first+city): +5,108 review in 105s
+### Nightly rebuild: Auto at midnight via Cowork scheduled task.
+### Mac rebuild script: /Users/Broyhill/Desktop/BroyhillGOP-CURSOR/rebuild_god_file.sh
 
-## KNOWN ISSUES / DO NOT REPEAT
-1. `donormaster` table was DROPPED Mar 6 2026 — gone, do not reference
-2. 5 pg_cron jobs are broken — reference tables/functions that don't exist
-3. nc_boe_donations_raw is 132,623 rows SHORT vs archive backup — restoration pending Eddie approval
-4. person_spine mislink: person_id 235240 links to NCID CY36869 (Robert Landon Jordan, son, b.1991) instead of father Robert B. Jordan IV (~63) — needs fix before Block G write-back
-5. rnc_voter_core load is at 14.4% — not resumed yet
-6. Golden records are broken — Ed Broyhill appears as 7+ records, Art Pope as 0
-7. There is NO automated ingestion pipeline — all loads were manual
+## SESSION START PROTOCOL (BOTH AGENTS)
+```
+curl http://5.9.99.109:8080/docs/manifest       # full project orient
+curl http://5.9.99.109:8080/briefing             # SESSION-STATE.md
+curl 'http://5.9.99.109:8080/docs/search?session=1&limit=5'  # recent sessions
+curl http://5.9.99.109:8080/inbox               # unread messages
+```
+
+## LIVE NUMBERS (as of 2026-03-24)
+### rncid_resolution_queue
+- resolved: 79,702
+- review: 42,529
+- unresolved: 28,524
+- TOTAL: 150,755
+
+### donor_voter_links (pre-existing dataset)
+- total matches: 309,112
+- unique donors: 291,452
+- unique NCIDs: 205,747
+- unique RNCIDs: 209,871
+- avg confidence: 0.894
+- high confidence (>=0.9): 185,068 (59.8%)
+
+## PRIORITY TIERS
+
+### TIER 1 - BLOCKED (needs Eddie approval)
+- [ ] BLOCK G WRITE-BACK: stamp resolved RNCIDs back to nc_boe_donations_raw
+- [ ] Restore 132,623 missing rows in nc_boe_donations_raw from archive backup
+
+### TIER 2 - READY TO EXECUTE (no blockers)
+- [ ] Review queue decision: 42,529 rows in review — auto-promote >=0.90? Or spot-check?
+- [ ] Evaluate donor_voter_links overlap: 309K pre-existing matches — skip re-resolving?
+- [ ] Fix person_spine mislink: person_id 235240 → correct Robert B. Jordan IV NCID
+- [ ] Fix briefing queue count: shows 1000 due to RPC row limit — use COUNT(*)
+
+### TIER 3 - MAINTENANCE
+- [ ] Resume rnc_voter_core load: currently at 14.4%
+- [ ] Fix 5 broken pg_cron jobs: identify and either repair or drop
+- [ ] Rebuild person_spine: current links have errors (Jordan father/son confusion)
+
+### TIER 4 - FUTURE
+- [ ] Golden record rebuild: Ed Broyhill 7+ records, Art Pope 0
+- [ ] E20 outbound queue consumer: brain.py pushes to bgop:outbound but nothing consumes
+
+## KEY MAC FILES (Claude's tools)
+- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/ecosystem_search_engine.py` — file indexer (updated: now captures mtime, ecosystems, category, is_session)
+- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/enrich_json_v7.py` — enriches JSON with dates+eco refs (NEW)
+- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/build_god_file_v7.py` — builds V7 HTML (NEW)
+- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/write_god_file_manifest.py` — builds AI manifest (NEW)
+- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/rebuild_god_file.sh` — full nightly rebuild (UPDATED for V7)
+- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/ecosystem_search_results_v7.json` — enriched index (9MB)
+- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/god_file_search_index.json` — slim search index for relay
+- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/GOD_FILE_MANIFEST.json` — AI startup manifest
+
+## DISCOVERY ASSETS (from prior sessions)
+- donor_voter_links: 309K pre-matched donor-to-voter records at 0.894 avg confidence
+- Employer matching strategy: 3 digits address + first 3 letters last name + first 3 employer zip
+- Government files have NO misspelled names — exact matching valid
+- fuzzy_run_v4.py moved 19K rows from unresolved to review (3-pass SQL matching)
+
+## COORDINATION PROTOCOL
+- Perplexity: reads manifest + /briefing at every ttyd session start (.bashrc hook)
+- Claude: reads manifest + /briefing/announce at every session start (CLAUDE_RULES)
+- Both agents update this file at session end
+- Inter-agent messages via POST /message, GET /inbox on relay :8080
+- Relay API key: bgop-relay-k9x2mP8vQnJwT4rL
 
 ## AGENT ROLES
-**Perplexity** (ttyd terminal at :7681)
-- Leads all code development — designs algorithms, writes Python scripts
-- Tests SQL queries, checks row counts, spots schema issues in real time
-- Runs dry-runs and diagnostics directly in her terminal
-- Pushes findings and tasks to Claude via POST /message
+- Perplexity: browser automation, Supabase SQL, data exploration, audit queries, web research
+- Claude: server-side scripts, Python pipelines, file operations, Docker management, fuzzy matching
+- Eddie: approval authority for write-backs, deletes, and schema changes
 
-**Claude** (this chat session via Eddie's Mac)
-- Verifies and reviews all code Perplexity writes before production execution
-- Deploys scripts to /opt/broyhillgop/app/ via SSH/scp
-- Manages systemd, Docker, screen sessions, git commits
-- Reads inbox at session start — checks for Perplexity's pending messages
-- Pushes results and confirmations back via POST /reply
-
-**Both agents must:**
-- Read this file at session start (auto-delivered via relay /briefing endpoint)
-- Update this file at session end (broyhillgop:update-state skill)
-- Follow CLAUDE_RULES.md — no destructive ops without Eddie approval
-- Check agent_messages inbox before starting new work
-
-## LAST SESSION SUMMARY (Mar 24 2026)
-- Restored ttyd socket (systemd service confirmed running)
-- Wrote and pushed complete schema audit to GitHub (commit 2fc69c9)
-- Deep research: Robert B. Jordan IV ($541K NC donor, ~63yo, Mt. Gilead, timber/farming, WAJ Rustic Vacations). Son is Robert Landon Jordan (35yo, NCID CY36869)
-- Wendy Jordan (NCID CY24646): Dem voter, gives Republican — $50K to NC GOP Council of State, $5,400 Dan Forest, Mark Robinson x3, Ben Moss
-- Fuzzy Match v4 deployed and completed: 19,641 rows pulled from unresolved
-- Relay v1.0 built and deployed (port 8080, FastAPI, Docker)
-- Relay v1.1 upgraded: inter-agent message channel (agent_messages table + 5 endpoints)
-- agent_messages table created in Supabase, channel tested end-to-end ✅
-
-## AGREED TO-DO LIST (priority order)
-- [ ] **BLOCK G WRITE-BACK** — stamp resolved RNCIDs back to nc_boe_donations_raw — NEEDS EDDIE APPROVAL
-- [ ] **Fix person_spine mislink** — person_id 235240 → correct Robert B. Jordan IV NCID before write-back
-- [ ] **Restore 132,623 missing rows** in nc_boe_donations_raw from archive backup — NEEDS EDDIE APPROVAL
-- [ ] **Review queue decision** — 42,529 rows in 'review': auto-promote ≥0.90 confidence? Or spot-check?
-- [ ] **Resume rnc_voter_core load** — currently at 14.4%
-- [ ] **Fix 5 broken pg_cron jobs** — identify and either repair or drop
-- [ ] **Golden record rebuild** — Ed Broyhill 7+ records, Art Pope 0 — identity resolution never properly built
-- [ ] **Rebuild person_spine** — current links have errors (Jordan father/son confusion)
-- [ ] **E20 outbound queue consumer** — brain.py pushes to bgop:outbound but nothing consumes it yet
-
-## HOW TO UPDATE THIS FILE
-At end of session, run: `broyhillgop:update-state` skill in Claude, or manually edit and scp:
-```bash
-scp -i ~/.ssh/id_ed25519_hetzner SESSION-STATE.md root@5.9.99.109:/opt/broyhillgop/SESSION-STATE.md
-```
-Then commit to GitHub:
-```bash
-git add SESSION-STATE.md && git commit -m "Update session state" && git push
-```
+## THIS SESSION — WHAT CLAUDE DID (2026-03-24)
+1. Built GOD FILE V7 with dates, topics, ecosystem tags, advanced filters, action buttons
+2. Created AI search API (/docs/search) — JSON endpoint, no auth, combinable params
+3. Created AI manifest (/docs/manifest) — startup briefing for every agent session
+4. Updated ecosystem_search_engine.py to capture mtime, ecosystems, category, is_session natively
+5. Deployed V7 HTML + search index + manifest to Hetzner
+6. Fixed Docker healthcheck (curl → python3), relay now shows (healthy)
+7. Scheduled nightly rebuild at midnight via Cowork
+8. Briefed Perplexity on all new endpoints (agent_messages id 19)
+9. Noted Hetzner upgrade: 20 cores, 62GB RAM, 128GB add-on ordered
