@@ -26,6 +26,12 @@
 -- DIAGNOSTIC — Run first, verify all numbers before touching anything
 -- -----------------------------------------------------------------------
 
+-- 0. Verify audit snapshots are populated (safety net must exist before any writes)
+SELECT COUNT(*) AS spine_snapshot_rows FROM audit.core_person_spine_pre_fix;
+-- Expected: > 100,000 (Claude created ~128K rows)
+SELECT COUNT(*) AS map_snapshot_rows FROM audit.core_contribution_map_pre_fix;
+-- Expected: > 4,000,000
+
 -- 1. Verify staging.committee_party_map_v2 is ready
 SELECT party_flag, COUNT(*) AS committees
 FROM staging.committee_party_map_v2
@@ -49,11 +55,14 @@ SELECT
     MAX(total_contributed) AS max_single_donor
 FROM core.person_spine;
 
--- 4. Snapshot tables exist?
+-- 4. Snapshot tables exist AND are populated?
 SELECT table_schema, table_name FROM information_schema.tables
 WHERE table_name IN ('core_contribution_map_pre_fix','core_person_spine_pre_fix')
 ORDER BY table_name;
--- Expected: both exist in audit schema (Claude created these)
+-- Expected: both exist in audit schema
+-- STOP if either count returns 0 — the safety net is hollow
+SELECT COUNT(*) AS spine_pre_fix_rows FROM audit.core_person_spine_pre_fix;
+SELECT COUNT(*) AS map_pre_fix_rows FROM audit.core_contribution_map_pre_fix;
 
 -- -----------------------------------------------------------------------
 -- STEP 1: Swap committee_party_map (staging v2 → production)
@@ -63,7 +72,7 @@ ORDER BY table_name;
 -- Pre-flight: confirm v2 has more R than current production
 SELECT
     (SELECT COUNT(*) FROM staging.committee_party_map_v2 WHERE party_flag='R') AS v2_R,
-    (SELECT COUNT(*) FROM committee_party_map WHERE party_flag='R') AS prod_R;
+    (SELECT COUNT(*) FROM public.committee_party_map WHERE party_flag='R') AS prod_R;
 -- Expected: v2_R=8201, prod_R=2093 — v2 is 4x better
 
 BEGIN;
@@ -109,9 +118,11 @@ AND column_name='party_flag';
 
 SET statement_timeout = 0;
 
+-- NOTE: Step 1 already moved committee_party_map_v2 to public.committee_party_map
+-- This step references public.committee_party_map (post-swap name)
 UPDATE core.contribution_map cm
 SET party_flag = COALESCE(cpm.party_flag, 'UNKNOWN')
-FROM staging.committee_party_map_v2 cpm  -- use v2 directly in case Step 1 swap hasn't run
+FROM public.committee_party_map cpm
 WHERE cm.committee_id = cpm.committee_id
   AND cm.party_flag IS NULL;
 
@@ -129,6 +140,12 @@ GROUP BY party_flag ORDER BY dollars DESC;
 SELECT COUNT(*) AS still_null FROM core.contribution_map WHERE party_flag IS NULL;
 -- Expected: 0
 
+-- Explicit check for unmatched committee IDs (should be ~68,319)
+SELECT COUNT(*) AS unmatched_committee_rows
+FROM core.contribution_map
+WHERE committee_id NOT IN (SELECT committee_id FROM public.committee_party_map);
+-- Expected: ~68,319 — these were stamped UNKNOWN by the second UPDATE
+
 -- -----------------------------------------------------------------------
 -- STEP 4: Add total_contributed_other to person_spine
 -- Tracks D+UNKNOWN+OTHER money separately — never lost, just not in R total
@@ -137,7 +154,10 @@ SELECT COUNT(*) AS still_null FROM core.contribution_map WHERE party_flag IS NUL
 ALTER TABLE core.person_spine
     ADD COLUMN IF NOT EXISTS total_contributed_republican NUMERIC DEFAULT 0,
     ADD COLUMN IF NOT EXISTS total_contributed_other      NUMERIC DEFAULT 0,
-    ADD COLUMN IF NOT EXISTS contribution_count_republican INTEGER DEFAULT 0;
+    ADD COLUMN IF NOT EXISTS contribution_count_republican INTEGER DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS total_contribution_count     INTEGER DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS first_republican_contribution DATE,
+    ADD COLUMN IF NOT EXISTS last_republican_contribution  DATE;
 
 COMMENT ON COLUMN core.person_spine.total_contributed_republican IS
     'Sum of donations to Republican + PAC committees only. '
@@ -149,6 +169,12 @@ COMMENT ON COLUMN core.person_spine.total_contributed_other IS
 
 COMMENT ON COLUMN core.person_spine.contribution_count_republican IS
     'Count of Republican + PAC contributions only. fix_10 (2026-03-29).';
+COMMENT ON COLUMN core.person_spine.total_contribution_count IS
+    'Count of ALL contributions across all parties. Preserved for historical analysis. fix_10 (2026-03-29).';
+COMMENT ON COLUMN core.person_spine.first_republican_contribution IS
+    'Date of first Republican/PAC donation. Separate from first_contribution (all-party). fix_10 (2026-03-29).';
+COMMENT ON COLUMN core.person_spine.last_republican_contribution IS
+    'Date of most recent Republican/PAC donation. fix_10 (2026-03-29).';
 
 -- -----------------------------------------------------------------------
 -- STEP 5: Recompute spine totals — Republican-only
@@ -171,8 +197,16 @@ SET
     -- Overwrite total_contributed with Republican-only money
     total_contributed = COALESCE(agg.rep_total, 0),
     contribution_count = COALESCE(agg.rep_count, 0),
-    first_contribution = agg.rep_first,
-    last_contribution = agg.rep_last
+    -- New dedicated Republican columns
+    total_contributed_republican = COALESCE(agg.rep_total, 0),
+    contribution_count_republican = COALESCE(agg.rep_count, 0),
+    first_republican_contribution = agg.rep_first,
+    last_republican_contribution = agg.rep_last,
+    -- Preserve all-party totals
+    total_contributed_other = COALESCE(agg.other_total, 0),
+    total_contribution_count = COALESCE(agg.all_count, 0)
+    -- NOTE: first_contribution and last_contribution are NOT touched
+    -- They remain as all-party dates for historical analysis
 FROM (
     SELECT
         person_id,
@@ -180,7 +214,8 @@ FROM (
         COUNT(CASE WHEN party_flag IN ('R','PAC') THEN 1 END) AS rep_count,
         MIN(CASE WHEN party_flag IN ('R','PAC') THEN transaction_date END) AS rep_first,
         MAX(CASE WHEN party_flag IN ('R','PAC') THEN transaction_date END) AS rep_last,
-        SUM(CASE WHEN party_flag NOT IN ('R','PAC') THEN amount ELSE 0 END) AS other_total
+        SUM(CASE WHEN party_flag NOT IN ('R','PAC') THEN amount ELSE 0 END) AS other_total,
+        COUNT(*) AS all_count
     FROM core.contribution_map
     GROUP BY person_id
 ) agg
@@ -224,6 +259,7 @@ SELECT
 -- ROLLBACK (if Step 5 results look wrong)
 -- -----------------------------------------------------------------------
 -- BEGIN;
+-- -- Restore spine totals from pre-fix snapshot
 -- UPDATE core.person_spine ps
 -- SET
 --     total_contributed = pre.total_contributed,
@@ -232,4 +268,17 @@ SELECT
 --     last_contribution = pre.last_contribution
 -- FROM audit.core_person_spine_pre_fix pre
 -- WHERE ps.person_id = pre.person_id;
+--
+-- -- Reset new columns to NULL (they contain stale computed values)
+-- UPDATE core.person_spine SET
+--     total_contributed_republican = NULL,
+--     total_contributed_other = NULL,
+--     contribution_count_republican = NULL,
+--     total_contribution_count = NULL,
+--     first_republican_contribution = NULL,
+--     last_republican_contribution = NULL;
+--
+-- -- Reset party_flag stamps on contribution_map (if Step 3 was wrong)
+-- UPDATE core.contribution_map SET party_flag = NULL;
+-- -- Then re-run Step 3 after fixing the committee_party_map
 -- COMMIT;
