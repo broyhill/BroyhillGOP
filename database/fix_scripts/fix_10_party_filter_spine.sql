@@ -65,32 +65,26 @@ SELECT COUNT(*) AS spine_pre_fix_rows FROM audit.core_person_spine_pre_fix;
 SELECT COUNT(*) AS map_pre_fix_rows FROM audit.core_contribution_map_pre_fix;
 
 -- -----------------------------------------------------------------------
--- STEP 1: Swap committee_party_map (staging v2 → production)
--- Safe: additive classification improvement, no data deleted
+-- STEP 1: SKIPPED — production already has the correct table
 -- -----------------------------------------------------------------------
+-- Diagnostic confirmed 2026-03-29:
+--   public.committee_party_map already has R=8,201 (the good version)
+--   staging.committee_party_map_v2 only has R=2,277 (inferior — do not swap)
+-- staging.committee_party_map_v2 can be dropped after fix_10 completes.
+--
+-- Dollar breakdown using production table (verified):
+--   R:            2,894,736 transactions  $481,861,237
+--   D:              935,162 transactions  $119,418,639
+--   UNKNOWN:        209,460 transactions   $85,788,829
+--   UNCLASSIFIED:    71,838 transactions   $13,492,301 (no committee match)
+--   PAC:              5,831 transactions    $5,932,249
+--   OTHER:           20,522 transactions    $2,008,310
+--
+-- Republican + PAC = $487,793,486
+-- Democratic + UNKNOWN + OTHER + UNCLASSIFIED = $220,707,079 (to be set aside)
+-- Total contaminated spine: $726,630,745 (confirmed in diagnostic)
 
--- Pre-flight: confirm v2 has more R than current production
-SELECT
-    (SELECT COUNT(*) FROM staging.committee_party_map_v2 WHERE party_flag='R') AS v2_R,
-    (SELECT COUNT(*) FROM public.committee_party_map WHERE party_flag='R') AS prod_R;
--- Expected: v2_R=8201, prod_R=2093 — v2 is 4x better
-
-BEGIN;
-
--- Archive current production table
-ALTER TABLE public.committee_party_map RENAME TO committee_party_map_old;
-
--- Promote v2 to production
-ALTER TABLE staging.committee_party_map_v2 SET SCHEMA public;
-ALTER TABLE public.committee_party_map_v2 RENAME TO committee_party_map;
-
--- Validate
-SELECT party_flag, COUNT(*) FROM committee_party_map
-GROUP BY party_flag ORDER BY COUNT(*) DESC;
--- Expected: R=8201, D=6829, OTHER=2712, UNKNOWN=2217, PAC=23
-
-COMMIT;
--- ROLLBACK; -- if anything looks wrong
+SELECT 'Step 1 skipped — public.committee_party_map already correct' AS status;
 
 -- -----------------------------------------------------------------------
 -- STEP 2: Add party_flag column to core.contribution_map
