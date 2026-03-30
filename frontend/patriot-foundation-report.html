@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patriot Foundation — NC Foundation Prospect Intelligence Report 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;600&family=IBM+Plex+Mono:wght@400&display=swap');
+:root{--navy:#0D1F3C;--red:#B31B1B;--gold:#B8932A;--offwhite:#F7F5F0;--rule:#D4C9B0;--text:#1A1A1A;--muted:#5A5A5A;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--offwhite);color:var(--text);font-size:14px;line-height:1.75;}
+/* HEADER */
+.masthead{background:var(--navy);padding:48px 60px 40px;border-bottom:4px solid var(--gold);}
+.masthead-eyebrow{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
+.masthead h1{font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:#fff;line-height:1.1;margin-bottom:12px;}
+.masthead h1 em{color:var(--gold);font-style:normal;}
+.masthead-sub{font-size:15px;color:rgba(255,255,255,.65);max-width:680px;font-weight:300;line-height:1.6;margin-bottom:32px;}
+.masthead-meta{display:flex;gap:40px;flex-wrap:wrap;padding-top:24px;border-top:1px solid rgba(212,201,176,.25);}
+.meta-pair{display:flex;flex-direction:column;gap:2px;}
+.meta-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
+.meta-value{font-size:13px;color:#fff;font-weight:600;}
+/* BROYHILL CREDENTIAL BOX */
+.credential-bar{background:var(--red);color:#fff;padding:20px 60px;font-size:13px;line-height:1.6;border-bottom:3px solid #8B1010;}
+.credential-bar strong{font-weight:700;}
+/* URGENT */
+.urgent{background:#1A3A1A;color:#7FE07F;padding:12px 60px;font-size:12px;font-weight:600;letter-spacing:.05em;border-bottom:2px solid #4A8A4A;}
+/* CONTENT WRAPPER */
+.wrapper{max-width:1000px;margin:0 auto;padding:0 40px;}
+/* SECTION HEADS */
+.section-head{padding:40px 60px 0;margin-top:8px;}
+.section-head h2{font-family:'Playfair Display',serif;font-size:22px;color:var(--navy);border-bottom:2px solid var(--gold);padding-bottom:10px;margin-bottom:4px;}
+.section-head p{font-size:12px;color:var(--muted);padding-top:6px;}
+/* FOUNDATION ENTRIES */
+.f-entry{margin:0 60px 2px;border:1px solid var(--rule);border-top:4px solid var(--navy);background:#fff;}
+.f-entry.hot{border-top-color:var(--gold);}
+.f-entry.warm{border-top-color:var(--red);}
+.f-header{padding:20px 24px 14px;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;}
+.f-name{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--navy);margin-bottom:3px;}
+.f-location{font-size:12px;color:var(--muted);}
+.f-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
+.tag{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;}
+.tag-mil{background:var(--navy);color:var(--gold);}
+.tag-sch{background:var(--red);color:#fff;}
+.tag-open{background:#1A5C2A;color:#fff;}
+.tag-rel{background:#8B5E00;color:#fff;}
+.tag-hot{background:var(--gold);color:var(--navy);}
+.f-financials{text-align:right;flex-shrink:0;}
+.fin-row{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
+.fin-num{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--navy);}
+.fin-label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.fin-sub{font-size:11px;color:var(--muted);margin-top:6px;}
+.f-body{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.f-col{padding:18px 24px;border-right:1px solid var(--rule);}
+.f-col:last-child{border-right:none;}
+.f-col h4{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--rule);}
+.f-col p,.f-col li{font-size:13px;color:#2A2A2A;line-height:1.65;}
+.f-col ul{list-style:none;padding:0;}
+.f-col ul li{padding-left:12px;position:relative;}
+.f-col ul li::before{content:'—';position:absolute;left:0;color:var(--gold);font-size:10px;top:2px;}
+.f-col a{color:var(--navy);text-decoration:none;border-bottom:1px solid var(--gold);}
+.f-full{grid-column:1/-1;border-top:1px solid var(--rule);}
+/* BROYHILL ANGLE BOX */
+.broyhill-box{margin:0 24px 18px;padding:14px 18px;background:#F0F4FA;border-left:4px solid var(--navy);}
+.broyhill-box .bb-label{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--navy);margin-bottom:5px;}
+.broyhill-box p{font-size:13px;color:#1A2A3A;line-height:1.6;}
+/* ASK BOX */
+.ask-box{margin:0 24px 18px;padding:14px 18px;background:#FBF6EC;border-left:4px solid var(--gold);}
+.ask-box .ab-label{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.ask-box p{font-size:13px;color:#2A200A;line-height:1.6;}
+/* PRIORITY TABLE */
+.priority-section{margin:24px 60px;background:#fff;border:1px solid var(--rule);}
+.priority-section table{width:100%;border-collapse:collapse;}
+.priority-section th{background:var(--navy);color:var(--gold);text-align:left;padding:9px 12px;font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;}
+.priority-section td{padding:9px 12px;border-bottom:1px solid var(--rule);font-size:12px;vertical-align:top;}
+.priority-section tr:last-child td{border-bottom:none;}
+.priority-section tr:nth-child(even) td{background:#FAFAF7;}
+.p1{color:var(--red);font-weight:700;}
+.p2{color:#8B5E00;font-weight:700;}
+.p3{color:var(--navy);font-weight:600;}
+/* FOOTER */
+footer{background:var(--navy);color:rgba(255,255,255,.45);text-align:center;padding:28px 40px;font-size:11px;border-top:3px solid var(--gold);margin-top:40px;}
+footer strong{color:var(--gold);}
+@media(max-width:750px){
+  .masthead,.section-head,.f-entry,.priority-section,.urgent,.credential-bar{padding-left:20px;padding-right:20px;}
+  .f-entry{margin:0 0 2px;}
+  .f-body{grid-template-columns:1fr;}
+  .f-col{border-right:none;border-bottom:1px solid var(--rule);}
+  .f-header{grid-template-columns:1fr;}
+  .masthead h1{font-size:28px;}
+}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-eyebrow">Confidential Intelligence Report · March 30, 2026</div>
+  <h1>North Carolina Foundation<br>Prospect Report for<br><em>The Patriot Foundation</em></h1>
+  <p class="masthead-sub">Identifying NC family and individual foundations with military heritage, Republican alignment, and scholarship giving history — prioritized by the Broyhill relationship network and probability of commitment.</p>
+  <div class="masthead-meta">
+    <div class="meta-pair"><span class="meta-label">Prepared For</span><span class="meta-value">Kim Gilley, President & CEO</span></div>
+    <div class="meta-pair"><span class="meta-label">Strategic Asset</span><span class="meta-value">Ed Broyhill, NC RNC Committeeman</span></div>
+    <div class="meta-pair"><span class="meta-label">Foundations Profiled</span><span class="meta-value">14 Priority Prospects</span></div>
+    <div class="meta-pair"><span class="meta-label">Combined Assets</span><span class="meta-value">$4.2 Billion+</span></div>
+    <div class="meta-pair"><span class="meta-label">ARPA Funding Ends</span><span class="meta-value">December 2026</span></div>
+  </div>
+</div>
+
+<div class="credential-bar">
+  <strong>The Broyhill Credential:</strong> Ed Broyhill is NC Republican National Committeeman — the same role his grandfather James Edgar Broyhill held for 28 years on the RNC. His father, U.S. Senator/Congressman Jim Broyhill, served 23+ years in Congress, was appointed to the U.S. Senate by Governor Jim Martin in 1986, and campaigned with President Reagan. Ed personally met Reagan at 17 as a Young Republican. This is the most consequential Republican family in NC history. Every foundation in this report has ties to the NC Republican political ecosystem that Ed Broyhill operates at the center of. The Patriot Foundation's Chairman is not approaching these funders as a charity asking for money — he is approaching peers in a shared civic tradition.
+</div>
+
+<div class="urgent">⚠ ACTION REQUIRED: Moore County Community Foundation application window OPEN NOW — closes April 7, 2026. Apply at nccommunityfoundation.org today.</div>
+
+<!-- SECTION 1 -->
+<div class="section-head">
+  <h2>Section I — Tier 1: Direct Broyhill / Republican Relationship Foundations</h2>
+  <p>Foundations where Ed Broyhill has a direct peer-level relationship or family connection — highest probability, approach personally not through an application</p>
+</div>
+
+<!-- POPE FOUNDATION -->
+<div class="f-entry hot" style="margin-top:16px;">
+  <div class="f-header">
+    <div>
+      <div class="f-name">John William Pope Foundation</div>
+      <div class="f-location">100 S. Harrington Street · Raleigh, NC 27603 · Wake County · EIN: 58-1691765 · Phone: 919.828.1400</div>
+      <div class="f-tags">
+        <span class="tag tag-mil">National Defense Grantee</span>
+        <span class="tag tag-rel">Direct Ed Broyhill Relationship</span>
+        <span class="tag tag-sch">NC Education Focus</span>
+        <span class="tag tag-hot">Approach First</span>
+      </div>
+    </div>
+    <div class="f-financials">
+      <div class="fin-row">
+        <span class="fin-num">$128.7M</span>
+        <span class="fin-label">Total Assets</span>
+      </div>
+      <div class="fin-sub">$14.0M annual revenue · 4 employees<br>Website: popefoundation.org</div>
+    </div>
+  </div>
+  <div class="f-body">
+    <div class="f-col">
+      <h4>Foundation & Family History</h4>
+      <p>Established by John William Pope, founder of Variety Wholesalers — Big Lots, Roses, Maxway, Super 10 — operating 400+ stores in 16 southeastern states. Art Pope (son), current chairman, is the most powerful conservative donor in NC history — former NC State Budget Director under Gov. Pat McCrory, former state legislator, Americans for Prosperity board member alongside David Koch. The Pope Foundation has invested $40M+ into NC conservative causes over two decades including the John Locke Foundation ($19.7M), Pope Civitas Institute ($8M), NC Institute for Constitutional Law, and national defense policy organizations.</p>
+    </div>
+    <div class="f-col">
+      <h4>Officers & Contact</h4>
+      <ul>
+        <li><strong>Art Pope</strong> — Chairman & President · 919.828.1400</li>
+        <li><strong>John W. Pope III</strong> — Officer</li>
+        <li><strong>Sherry Hipp</strong> — Executive Director</li>
+        <li><strong>Address:</strong> 100 S. Harrington St., Raleigh, NC 27603</li>
+        <li><strong>Website:</strong> <a href="https://popefoundation.org">popefoundation.org</a></li>
+      </ul>
+      <br>
+      <h4>5-Year Grant History (Documented)</h4>
+      <ul>
+        <li>John Locke Foundation — $2M+/year, recurring</li>
+        <li>Pope Civitas Institute — $800K+/year, recurring</li>
+        <li>Americans for Prosperity NC — major recurring donor</li>
+        <li>NC Institute for Constitutional Law — recurring</li>
+        <li>National defense policy organizations (AEI, Heritage Foundation)</li>
+        <li>UNC system scholarships and academic programs</li>
+      </ul>
+    </div>
+    <div class="f-full">
+      <div class="broyhill-box" style="margin-top:16px;">
+        <div class="bb-label">Broyhill / Republican Connection — DIRECT PEER RELATIONSHIP</div>
+        <p>Art Pope and Ed Broyhill operate at the same level of NC Republican politics. Pope has invested $40M+ turning NC red. Broyhill is RNC National Committeeman — the state's top Republican party official at the federal level. His father Jim Broyhill and Art Pope's father John W. Pope were contemporaries in NC Republican politics. Ed Broyhill ran for Congress in 2004 in NC's 5th District. Art Pope funded NC legislative races in 2010 that flipped the General Assembly Republican for the first time since Reconstruction. These are not strangers — they are peers in a 60-year Republican tradition. Ed should call Art Pope directly, not submit an application.</p>
+      </div>
+      <div class="ask-box">
+        <div class="ab-label">Recommended Ask & Framing</div>
+        <p>$200,000–$500,000 over 3 years for Patriot Foundation's scholarship program. Framing: earned opportunity vs. government dependency. Gold Star families represent the ultimate expression of individual sacrifice and personal responsibility — the antithesis of entitlement. Veterans who earned their benefits through service don't need charity; they need the cost of education to not stand between them and a productive life. This is Art Pope's philosophical language. Ed makes a personal call to Art Pope — peer to peer — not a grant application.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CANNON FOUNDATION -->
+<div class="f-entry hot">
+  <div class="f-header">
+    <div>
+      <div class="f-name">The Cannon Foundation, Inc.</div>
+      <div class="f-location">Post Office Box 548 · Concord, NC 28026 · Cabarrus County · EIN: 56-6042532 · Phone: 704.786.8216</div>
+      <div class="f-tags">
+        <span class="tag tag-mil">Veterans Grantee Category</span>
+        <span class="tag tag-sch">Education & Healthcare</span>
+        <span class="tag tag-open">Accepts Unsolicited — 4 Cycles/Year</span>
+        <span class="tag tag-rel">West Point Advisory Link</span>
+      </div>
+    </div>
+    <div class="f-financials">
+      <div class="fin-row">
+        <span class="fin-num">$351.7M</span>
+        <span class="fin-label">Total Assets</span>
+      </div>
+      <div class="fin-sub">$14.6M grants in 2025 · 174 grants/year<br>Avg grant: $70,465 · Website: cannonfoundation.org</div>
+    </div>
+  </div>
+  <div class="f-body">
+    <div class="f-col">
+      <h4>Foundation & Family History</h4>
+      <p>Established 1943 by Charles A. Cannon, President and Chairman of Cannon Mills — one of the largest textile companies in American history, operating through WWII and Korea. Cannon died 1971; Charles Cannon personally outfitted American troops across two wars with Cannon textile products. The foundation is now one of NC's three largest private foundations. Primary focus: capital and equipment projects for NC healthcare, education, human services, and veterans organizations. Four grant cycles annually — January, April, July, October.</p>
+    </div>
+    <div class="f-col">
+      <h4>Officers, Directors & Contact</h4>
+      <ul>
+        <li><strong>William C. Cannon, Jr.</strong> — President</li>
+        <li><strong>Edward K. Prewitt, Jr.</strong> — Vice President</li>
+        <li><strong>George W. Liles, Jr.</strong> — Secretary</li>
+        <li><strong>William M. Connolly</strong> — Treasurer</li>
+        <li><strong>Janet Ward Black</strong> — Director</li>
+        <li><strong>Eugene W. Cochrane, Jr.</strong> — Director</li>
+        <li><strong>Kristin Baker</strong> — Advisory Member (West Point graduate; former BG, NC National Guard)</li>
+        <li>Directors Emeriti: William S. Fisher, Thomas M. Grady</li>
+      </ul>
+    </div>
+    <div class="f-col">
+      <h4>5-Year Grant History</h4>
+      <ul>
+        <li>2025: $14,576,978 · 174 grants</li>
+        <li>2024: ~$13.8M est. · 170+ grants</li>
+        <li>2023: ~$13.2M est.</li>
+        <li>2022: ~$12.8M est.</li>
+        <li>2021: ~$12.0M est.</li>
+        <li>Primary: Cabarrus Memorial Hospital; Rowan-Cabarrus Community College; Boys & Girls Clubs</li>
+        <li>Veterans: Documented as standalone grantee category</li>
+        <li>Typical range: $2,500 – $550,000</li>
+      </ul>
+    </div>
+    <div class="f-col">
+      <h4>Application Requirements</h4>
+      <ul>
+        <li>Organization must have 5+ years operations</li>
+        <li>Capital projects preferred over operational funding</li>
+        <li>Projects over $100K: need 60% already secured</li>
+        <li>No scholarships, start-up, or operating funds</li>
+        <li>Apply via cannonfoundation.org — open portal</li>
+        <li>Next cycle: April deadline (apply now)</li>
+        <li>4 cycles: Jan, Apr, Jul, Oct</li>
+      </ul>
+    </div>
+    <div class="f-full">
+      <div class="broyhill-box" style="margin-top:16px;">
+        <div class="bb-label">Broyhill / Republican Connection</div>
+        <p>Advisory Member Kristin Baker is a West Point graduate and former Brigadier General in the NC National Guard — she personally understands the Gold Star mission. The Cannon family's textile legacy ran through both World Wars; the patriotic tradition is built into the foundation's DNA. Cabarrus County has a significant Republican voting base. Ed Broyhill's NC RNC Committeeman status gives him standing to approach William C. Cannon Jr. directly as a civic peer, not as a charity applicant. The West Point connection through Kristin Baker is the warm introduction path.</p>
+      </div>
+      <div class="ask-box">
+        <div class="ab-label">Recommended Ask — Capital Frame Required</div>
+        <p>$75,000–$150,000 for a capital project: scholarship processing and student services infrastructure. Frame explicitly as a capital grant — not operating funds. The Patriot Foundation's physical scholarship administration office, equipment, or a named emergency student fund endowment qualifies. Kristin Baker (Advisory, West Point) is the warm door. Apply April cycle. Call 704.786.8216 to discuss before submitting.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROBERTSON -->
+<div class="f-entry hot">
+  <div class="f-header">
+    <div>
+      <div class="f-name">Blanche & Julian Robertson Family Foundation</div>
+      <div class="f-location">Salisbury, North Carolina · Rowan County · EIN: 56-2027907</div>
+      <div class="f-tags">
+        <span class="tag tag-mil">U.S. Navy Veteran Founder</span>
+        <span class="tag tag-sch">Robertson Scholars Legacy</span>
+        <span class="tag tag-rel">NC Republican Network Access</span>
+      </div>
+    </div>
+    <div class="f-financials">
+      <div class="fin-row">
+        <span class="fin-num">$59.0M</span>
+        <span class="fin-label">Total Assets</span>
+      </div>
+      <div class="fin-sub">$51.5M annual revenue<br>1 concentrated grant/year</div>
+    </div>
+  </div>
+  <div class="f-body">
+    <div class="f-col">
+      <h4>Foundation & Family</h4>
+      <p>Julian H. Robertson Jr. (1932–2022), Salisbury native, UNC-Chapel Hill 1955. Served as a U.S. Navy officer before founding Tiger Management hedge fund — which at its peak managed $22 billion, making Robertson one of the most consequential investors of the 20th century. Total NC philanthropy: $25M+ to UNC-CH alone including the Robertson Scholars Leadership Program (America's most competitive undergraduate scholarship outside Rhodes). His giving style: large, concentrated, named, legacy-oriented.</p>
+    </div>
+    <div class="f-col">
+      <h4>Trustees & Family</h4>
+      <ul>
+        <li><strong>Margaret H. Kluttz</strong> — Trustee</li>
+        <li><strong>B. Clay Lindsay Jr.</strong> — Trustee</li>
+        <li><strong>R. Scott Maddox</strong> — Trustee</li>
+        <li><strong>Spencer Robertson</strong> — Son (likely family stewardship)</li>
+        <li><strong>Alex Robertson</strong> — Son</li>
+        <li><strong>Josephine Linden</strong> — Daughter</li>
+        <li>Julian died August 23, 2022 · Foundation active</li>
+        <li>Access: relationship-based only; no cold applications</li>
+      </ul>
+    </div>
+    <div class="f-col">
+      <h4>Known Giving History</h4>
+      <ul>
+        <li>Robertson Scholars Program — UNC-CH (flagship; $25M+ total)</li>
+        <li>Environmental conservation in NC and New Zealand</li>
+        <li>Prep for Prep, NYC (leadership development)</li>
+        <li>Princeton University academic programs</li>
+        <li>Salisbury/Rowan County civic organizations</li>
+        <li>Style: 1 major concentrated grant per year; not scatter-shot</li>
+      </ul>
+    </div>
+    <div class="f-col">
+      <h4>Access Path</h4>
+      <ul>
+        <li>NC Republican network is primary entry point</li>
+        <li>Robertson family has deep NC GOP relationships</li>
+        <li>Salisbury/Rowan County civic community</li>
+        <li>Robertson Scholars alumni at UNC-CH (warm introductions)</li>
+        <li>Do NOT cold-apply — relationship meeting required first</li>
+        <li>Ed Broyhill NC RNC Committeeman status = peer-level standing</li>
+      </ul>
+    </div>
+    <div class="f-full">
+      <div class="broyhill-box" style="margin-top:16px;">
+        <div class="bb-label">Broyhill / Republican Connection — EXCEPTIONAL</div>
+        <p>Julian Robertson Jr. was a U.S. Navy officer — exactly the military tradition the Patriot Foundation honors. He was a Salisbury, NC native who graduated UNC-Chapel Hill (same as Ed Broyhill's family network), built extraordinary wealth, and gave it back to NC institutions. The Robertson family has been embedded in NC Republican civic culture for two generations. Jim Broyhill and Julian Robertson were generational peers in NC's business-political community. Ed Broyhill as RNC National Committeeman approaches the Robertson family not as a grant seeker but as a fellow steward of NC Republican civic tradition. The ask frames itself as honoring Julian's Navy service — a legacy gift, not a charitable contribution.</p>
+      </div>
+      <div class="ask-box">
+        <div class="ab-label">Recommended Ask — Named Endowment Only</div>
+        <p>"The Julian H. Robertson Military Family Scholarship Endowment" — $500,000 to $1,000,000 generating $25,000–$50,000/year in perpetuity for Gold Star students at NC universities. This is a legacy decision, not a grant application. Ed Broyhill requests a personal meeting through the NC Republican network. The Robertson family has already proven willingness to name landmark programs (Robertson Scholars). This is the next one. Do not mail a grant proposal — call first.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2 -->
+<div class="section-head">
+  <h2>Section II — Tier 2: Republican-Aligned Education Foundations</h2>
+  <p>Major NC foundations with military veteran founders, scholarship history, and strong Republican civic alignment</p>
+</div>
+
+<!-- BELK -->
+<div class="f-entry warm" style="margin-top:16px;">
+  <div class="f-header">
+    <div>
+      <div class="f-name">John M. Belk Endowment (JMBE)</div>
+      <div class="f-location">200 S. Tryon St., Suite 1550 · Charlotte, NC 28202 · EIN: 56-1954114 · Phone: 704.375.0565</div>
+      <div class="f-tags">
+        <span class="tag tag-mil">WWII U.S. Navy Officer Founder</span>
+        <span class="tag tag-sch">Community College Workforce</span>
+        <span class="tag tag-open">Application Based</span>
+      </div>
+    </div>
+    <div class="f-financials">
+      <div class="fin-row">
+        <span class="fin-num">$379.0M</span>
+        <span class="fin-label">Total Assets</span>
+      </div>
+      <div class="fin-sub">$39.5M annual revenue · 5 employees<br>Johanna Anderson, President & CEO<br>jmbendowment.org</div>
+    </div>
+  </div>
+  <div class="f-body">
+    <div class="f-col">
+      <h4>Founder History</h4>
+      <p>John M. Belk (1920–2007) — U.S. Navy Pacific theater officer, WWII. Chairman, Belk department stores (300+ locations, 16 southeastern states — the largest privately-held department store chain in the US). Charlotte Mayor 1969–1979. Son of William Henry Belk, who founded the company in 1888. The Belk family is Charlotte's most storied civic dynasty — three generations of patriotic civic service. John M.'s own Navy service in the Pacific directly preceded his civic leadership career.</p>
+    </div>
+    <div class="f-col">
+      <h4>Officers & Contact</h4>
+      <ul>
+        <li><strong>Johanna Anderson</strong> — President & CEO</li>
+        <li><strong>John R. Belk</strong> — Board member (John M.'s son)</li>
+        <li><strong>Address:</strong> 200 S. Tryon St., Ste 1550, Charlotte, NC 28202</li>
+        <li><strong>Phone:</strong> 704.375.0565</li>
+        <li><strong>Website:</strong> jmbendowment.org</li>
+        <li>Mission: NC postsecondary pathways for underrepresented students</li>
+        <li>Primary focus: NC community college workforce programs</li>
+      </ul>
+    </div>
+    <div class="f-col">
+      <h4>Grant History & Priorities</h4>
+      <ul>
+        <li>NC Community College System — primary partner</li>
+        <li>First-generation college student pathways</li>
+        <li>Workforce credential programs (not 4-year degrees only)</li>
+        <li>$39.5M annual revenue suggests active grantmaking at scale</li>
+        <li>Emphasis on completion, not just enrollment</li>
+        <li>Statewide NC focus exclusively</li>
+      </ul>
+    </div>
+    <div class="f-col">
+      <h4>Fit for Patriot Foundation</h4>
+      <ul>
+        <li>Disabled veterans at NC community colleges = exact JMBE target</li>
+        <li>Angie Oliva story (22-yr Army vet, 100% disabled, CCCC sustainable agriculture) is the perfect JMBE narrative</li>
+        <li>VA-rated disability (50%+) = documented underrepresented student</li>
+        <li>Community college workforce credential = JMBE's primary interest</li>
+        <li>NC-only focus matches Patriot Foundation's NC scholarship scope</li>
+      </ul>
+    </div>
+    <div class="f-full">
+      <div class="broyhill-box" style="margin-top:16px;">
+        <div class="bb-label">Broyhill / Republican Connection</div>
+        <p>John M. Belk served as Charlotte Mayor (1969–1979) during Jim Broyhill's congressional tenure — these were civic peers in NC Republican political life. The Belk family and Broyhill family have intersected in NC Republican politics for decades. Charlotte's Mecklenburg County is Kyshia Brassington's (RNC Committeewoman) home county — the Republican party leadership has direct Charlotte civic network access. John R. Belk (John M.'s son, current board member) is a Charlotte civic leader approachable through that network.</p>
+      </div>
+      <div class="ask-box">
+        <div class="ab-label">Recommended Ask</div>
+        <p>$150,000–$300,000 over 2 years for disabled veteran scholarships at NC community colleges — workforce pathway frame. Lead narrative: Angie Oliva, 22-year Army veteran, 100% VA-disabled, Central Carolina Community College, sustainable agriculture degree. Contact Johanna Anderson directly at 704.375.0565. Frame around John M. Belk's own Navy service and the natural extension of his workforce legacy to veteran families.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section-head">
+  <h2>Section III — Community Foundations: Military County Infrastructure</h2>
+  <p>Local community foundations serving NC's military-heavy counties — partnership infrastructure, not just grant sources</p>
+</div>
+
+<!-- CCF -->
+<div class="f-entry hot" style="margin-top:16px;">
+  <div class="f-header">
+    <div>
+      <div class="f-name">Cumberland Community Foundation (CCF)</div>
+      <div class="f-location">225 Green St., Suite 700 · Fayetteville, NC 28301 · Cumberland County · Phone: 910.483.4111</div>
+      <div class="f-tags">
+        <span class="tag tag-mil">Fort Liberty Home Base</span>
+        <span class="tag tag-open">Active Grantmaker</span>
+        <span class="tag tag-hot">Partnership Target</span>
+      </div>
+    </div>
+    <div class="f-financials">
+      <div class="fin-row">
+        <span class="fin-num">$55.5M</span>
+        <span class="fin-label">Total Assets</span>
+      </div>
+      <div class="fin-sub">$10.2M revenue · 24+ grants/year<br>cumberlandcf.org<br>120,000+ military retirees in county</div>
+    </div>
+  </div>
+  <div class="f-body">
+    <div class="f-col">
+      <h4>About CCF & Context</h4>
+      <p>The primary philanthropic infrastructure for Cumberland County — home of Fort Liberty (world's largest Army installation by population: 57,000+ active soldiers). 120,000+ military retirees and family members live in Cumberland County. This is not a tangential military connection — the military IS Cumberland County's economy, culture, and civic identity. Patriot Foundation scholarship recipients already include Fort Liberty-area families. CCF has documented grantmaking to veteran organizations for decades.</p>
+    </div>
+    <div class="f-col">
+      <h4>Contact & Strategy</h4>
+      <ul>
+        <li><strong>Phone:</strong> 910.483.4111</li>
+        <li><strong>Website:</strong> cumberlandcf.org</li>
+        <li><strong>Address:</strong> 225 Green St., Suite 700, Fayetteville, NC 28301</li>
+        <li>Staff: Small, accessible — President/CEO approachable directly</li>
+        <li>Thomas R. & Elizabeth E. McLean Foundation: top CCF funder in county</li>
+        <li>Strategy: partnership and co-branding, not just grant</li>
+      </ul>
+      <div class="broyhill-box" style="margin-top:12px;">
+        <div class="bb-label">Broyhill Connection</div>
+        <p>Ed Broyhill as NC RNC Committeeman has standing in every NC county Republican organization. Cumberland County Republican organization has deep ties to Fort Liberty officer community — active military and senior NCOs skew Republican. Ed's Patriot Foundation chairmanship gives him direct credibility here as both a Republican leader and a military advocate.</p>
+      </div>
+    </div>
+    <div class="f-full">
+      <div class="ask-box" style="margin-top:4px;">
+        <div class="ab-label">Recommended Strategy — Partnership Infrastructure</div>
+        <p>Co-brand a "Cumberland County Military Family Scholarship Fund" housed within CCF. CCF administers donor contributions (tax-deductible through CCF), Patriot Foundation awards scholarships. Connects Patriot Foundation directly to 120,000+ military retirees and their philanthropic networks in the county. Then use CCF relationship to get introduced to McLean Foundation trustees. Call 910.483.4111 this week.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOORE COUNTY -->
+<div class="f-entry hot">
+  <div class="f-header">
+    <div>
+      <div class="f-name">Moore County Community Foundation (MCCF)</div>
+      <div class="f-location">Pinehurst / Southern Pines, NC · via NC Community Foundation · Phone: 919.828.4387</div>
+      <div class="f-tags">
+        <span class="tag tag-mil">Patriot Foundation's Birthplace</span>
+        <span class="tag tag-open">APPLY NOW — Closes April 7</span>
+        <span class="tag tag-sch">Veterans Grants Documented</span>
+        <span class="tag tag-hot">Immediate Action</span>
+      </div>
+    </div>
+    <div class="f-financials">
+      <div class="fin-row">
+        <span class="fin-num">~$15M</span>
+        <span class="fin-label">Est. Assets</span>
+      </div>
+      <div class="fin-sub">$96K+ community grants/year<br>Application: March 6 – April 7, 2026<br>nccommunityfoundation.org</div>
+    </div>
+  </div>
+  <div class="f-body">
+    <div class="f-col">
+      <h4>About MCCF</h4>
+      <p>Founded 1991. Moore County (Pinehurst, Southern Pines, Carthage, Aberdeen) is the Patriot Foundation's hometown — the 2003 Spike Smith charity golf tournament that founded the organization was held here. MCCF has documented grants to Moore County Vietnam Veterans of America Chapter 966 and The Honor Foundation in Pinehurst (Special Operations veteran career transition). Moore County has the highest concentration of Special Forces veterans in NC outside of Cumberland County. Special Forces Association Chapter 62 is based in Southern Pines.</p>
+    </div>
+    <div class="f-col">
+      <h4>Application & Contact</h4>
+      <ul>
+        <li><strong>Window: March 6 – April 7, 2026 — OPEN NOW</strong></li>
+        <li>Apply via nccommunityfoundation.org portal</li>
+        <li>Phone (NCCF main): 919.828.4387</li>
+        <li>Typical awards: $500 – $25,000</li>
+        <li>Documented veterans grantees: VVA Ch. 966, Honor Foundation (Pinehurst SOF)</li>
+        <li>SFA Chapter 62 (Southern Pines) board connections available</li>
+      </ul>
+      <div class="broyhill-box" style="margin-top:12px;">
+        <div class="bb-label">Broyhill Connection</div>
+        <p>Ed Broyhill personally knows the Moore County Republican and civic community — this is Patriot Foundation's home ground. The Pinehurst area is heavily Republican-leaning with high-wealth military retirees. Ed's Patriot Foundation chairmanship is already recognized in Moore County (Trump-Reagan Dinner public record). This application should be submitted today.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: PRIORITY TABLE -->
+<div class="section-head">
+  <h2>Section IV — Priority Outreach Matrix</h2>
+  <p>All 14 prospects ranked by (Broyhill relationship strength × military alignment × grant capacity × access probability)</p>
+</div>
+
+<div class="priority-section" style="margin-top:16px;">
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Foundation</th>
+        <th>Assets</th>
+        <th>Broyhill Connection</th>
+        <th>Military ★★★★★</th>
+        <th>Priority</th>
+        <th>First Action</th>
+        <th>Ask Range</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1</strong></td>
+        <td><strong>Moore County Community Foundation</strong><br>Pinehurst, NC</td>
+        <td>~$15M</td>
+        <td>Hometown — Patriot Foundation birthplace</td>
+        <td>★★★★★</td>
+        <td class="p1">P1 URGENT</td>
+        <td>Apply at NCCF portal NOW — April 7 deadline</td>
+        <td>$5K–$25K</td>
+      </tr>
+      <tr>
+        <td><strong>2</strong></td>
+        <td><strong>John William Pope Foundation</strong><br>Raleigh, NC</td>
+        <td>$128.7M</td>
+        <td>Direct peer — NC GOP ecosystem; Jim Broyhill / Art Pope contemporaries</td>
+        <td>★★★★☆</td>
+        <td class="p1">P1 HIGH</td>
+        <td>Ed Broyhill calls Art Pope directly — peer conversation</td>
+        <td>$200K–$500K</td>
+      </tr>
+      <tr>
+        <td><strong>3</strong></td>
+        <td><strong>The Cannon Foundation</strong><br>Concord, NC</td>
+        <td>$351.7M</td>
+        <td>Kristin Baker (West Point, NCNG BG) on advisory board</td>
+        <td>★★★★☆</td>
+        <td class="p1">P1 HIGH</td>
+        <td>Call 704.786.8216; Kristin Baker warm intro; apply April cycle</td>
+        <td>$75K–$150K</td>
+      </tr>
+      <tr>
+        <td><strong>4</strong></td>
+        <td><strong>Cumberland Community Foundation</strong><br>Fayetteville, NC</td>
+        <td>$55.5M</td>
+        <td>NC GOP county network; Fort Liberty officer community is Republican</td>
+        <td>★★★★★</td>
+        <td class="p1">P1 HIGH</td>
+        <td>Call CEO 910.483.4111 this week — partnership conversation</td>
+        <td>$25K–$75K</td>
+      </tr>
+      <tr>
+        <td><strong>5</strong></td>
+        <td><strong>Robertson Family Foundation</strong><br>Salisbury, NC</td>
+        <td>$59.0M</td>
+        <td>Julian Robertson = NC Republican civic peer of Jim Broyhill's generation</td>
+        <td>★★★★★</td>
+        <td class="p2">P2 MEDIUM</td>
+        <td>NC Republican network → Robertson trustees; personal meeting request</td>
+        <td>$500K–$1M endowment</td>
+      </tr>
+      <tr>
+        <td><strong>6</strong></td>
+        <td><strong>John M. Belk Endowment</strong><br>Charlotte, NC</td>
+        <td>$379.0M</td>
+        <td>Belk and Broyhill were Charlotte/NC civic peers; Mecklenburg GOP access</td>
+        <td>★★★★☆</td>
+        <td class="p2">P2 MEDIUM</td>
+        <td>Call Johanna Anderson 704.375.0565; community college workforce frame</td>
+        <td>$150K–$300K</td>
+      </tr>
+      <tr>
+        <td><strong>7</strong></td>
+        <td><strong>Foundation For The Carolinas</strong><br>Charlotte, NC</td>
+        <td>$3.0B+</td>
+        <td>Charlotte Republican business community access via Mecklenburg GOP</td>
+        <td>★★★☆☆</td>
+        <td class="p2">P2 PARTNER</td>
+        <td>Call Brian Collier 704.973.4500 — Military Family Fund concept</td>
+        <td>Fund infrastructure</td>
+      </tr>
+      <tr>
+        <td><strong>8</strong></td>
+        <td><strong>McLean Foundation (Fayetteville)</strong><br>Fayetteville, NC</td>
+        <td>Significant</td>
+        <td>Cumberland County Republican network introduction via CCF</td>
+        <td>★★★★★</td>
+        <td class="p2">P2 CULTIVATE</td>
+        <td>CCF introduction after Step 4 relationship established</td>
+        <td>$75K–$200K</td>
+      </tr>
+      <tr>
+        <td><strong>9</strong></td>
+        <td><strong>Merancas Foundation</strong><br>Charlotte, NC</td>
+        <td>$152.4M</td>
+        <td>Charlotte civic network; disability services + scholarship alignment</td>
+        <td>★★★☆☆</td>
+        <td class="p2">P2 APPLY</td>
+        <td>Direct application; disability + scholarship dual frame</td>
+        <td>$50K–$100K</td>
+      </tr>
+      <tr>
+        <td><strong>10</strong></td>
+        <td><strong>W. Duke Kimbrell Foundation</strong><br>Gastonia, NC</td>
+        <td>$97.3M</td>
+        <td>WWII veteran founder; Gaston County Republican community access</td>
+        <td>★★★★☆</td>
+        <td class="p3">P3 RESEARCH</td>
+        <td>Gaston County civic entry; WWII founder heritage frame</td>
+        <td>$50K–$100K</td>
+      </tr>
+      <tr>
+        <td><strong>11</strong></td>
+        <td><strong>RB Terry Charitable Foundation</strong><br>High Point, NC</td>
+        <td>$202.5M</td>
+        <td>Triad Republican community; pull 990-PF first</td>
+        <td>★★★☆☆</td>
+        <td class="p3">P3 RESEARCH</td>
+        <td>Pull 990 EIN 56-2066238; Triad civic connections</td>
+        <td>TBD</td>
+      </tr>
+      <tr>
+        <td><strong>12</strong></td>
+        <td><strong>The Gambrell Foundation</strong><br>Charlotte, NC</td>
+        <td>$172.6M</td>
+        <td>Charlotte civic network; FFTC introduction path</td>
+        <td>★★★☆☆</td>
+        <td class="p3">P3 RESEARCH</td>
+        <td>Pull 990 EIN 56-2120679; FFTC introduction</td>
+        <td>$100K–$250K</td>
+      </tr>
+      <tr>
+        <td><strong>13</strong></td>
+        <td><strong>Morehead-Cain Foundation</strong><br>Chapel Hill, NC</td>
+        <td>$225.5M</td>
+        <td>UNC-CH network; Broyhill family has UNC ties</td>
+        <td>★★★★☆</td>
+        <td class="p3">P3 PARTNER</td>
+        <td>Student pipeline conversation; 919.962.1201</td>
+        <td>Partnership, not grant</td>
+      </tr>
+      <tr>
+        <td><strong>14</strong></td>
+        <td><strong>Mary Reynolds Babcock Foundation</strong><br>Winston-Salem, NC</td>
+        <td>$185.8M</td>
+        <td>Winston-Salem = Ed Broyhill's home base; Forsyth County access</td>
+        <td>★★☆☆☆</td>
+        <td class="p3">P3 LONG-TERM</td>
+        <td>Economic opportunity frame only; avoid partisan framing</td>
+        <td>$50K–$100K</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- GRANT NARRATIVE SECTION -->
+<div class="section-head">
+  <h2>Section V — The Broyhill Credential in Every Proposal</h2>
+  <p>How to lead with Ed Broyhill's biography as the primary credibility signal for each foundation type</p>
+</div>
+
+<div style="margin:16px 60px 0;background:#fff;border:1px solid var(--rule);padding:24px 28px;">
+  <p style="font-size:13px;line-height:1.8;color:#1A1A1A;margin-bottom:16px;">The single most underutilized asset in Patriot Foundation's fundraising is Ed Broyhill's biography. No other scholarship organization in NC has a Chairman with this profile:</p>
+  <ul style="list-style:none;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;">
+    <li style="font-size:13px;padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:var(--gold);">—</span><strong>3rd generation RNC member:</strong> Grandfather J.E. Broyhill served on RNC 28 years. Father Jim Broyhill served 23 years in Congress + U.S. Senate. Ed is current NC RNC National Committeeman.</li>
+    <li style="font-size:13px;padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:var(--gold);">—</span><strong>Presidential relationship:</strong> Ed met President Reagan personally at 17 as a Young Republican in Atlanta. His father campaigned with Reagan in Charlotte in 1986.</li>
+    <li style="font-size:13px;padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:var(--gold);">—</span><strong>Broyhill Furniture legacy:</strong> The Broyhill furniture empire (Lenoir Chair Company, 1926) employed thousands of NC workers for 60+ years — one of NC's most consequential manufacturing dynasties.</li>
+    <li style="font-size:13px;padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:var(--gold);">—</span><strong>RNC Rule 11 authority:</strong> Ed Broyhill, NCGOP Chairman Jason Simmons, and RNC Committeewoman Kyshia Brassington signed off on RNC Rule 11 for the 2026 NC Senate primary — demonstrating active operational authority at the national Republican level.</li>
+    <li style="font-size:13px;padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:var(--gold);">—</span><strong>Patriot Foundation Chairman:</strong> Publicly acknowledged at the 2025 Alexander County Trump-Reagan Dinner — Ed described his pride in serving as Chairman of an organization supporting "the educational goals of qualifying disabled Veterans and the family members of fallen or disabled Veterans."</li>
+    <li style="font-size:13px;padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:var(--gold);">—</span><strong>Home base:</strong> Winston-Salem, Forsyth County — the same county as Mary Reynolds Babcock Foundation; deep Winston-Salem civic roots.</li>
+  </ul>
+  <p style="font-size:13px;line-height:1.8;color:#1A1A1A;margin-top:16px;padding-top:16px;border-top:1px solid var(--rule);">Every cover letter should lead with: <em>"Ed Broyhill, Chairman of the Patriot Foundation and NC Republican National Committeeman, requests..."</em> — not "Dear Grants Committee." When Ed makes a personal call to Art Pope, William Cannon Jr., or Julian Robertson's family trustees, he is not calling as a charity — he is calling as a peer in a shared NC civic tradition that spans three generations and 100 years of Republican history.</p>
+</div>
+
+<footer>
+  <strong>Patriot Foundation — NC Foundation Prospect Intelligence Report · March 30, 2026</strong><br>
+  Confidential · For Patriot Foundation internal fundraising use only<br>
+  Data: IRS 990-PF filings (ProPublica), Cause IQ, Instrumentl, Candid, public foundation websites, NCGOP public records<br>
+  3,358 private foundations in NC hold $18.5B in assets — this report covers 14 priority prospects<br>
+  For full database access: Instrumentl ($179/mo) + Grantable ($75/mo) = $254/month · Start at instrumentl.com<br><br>
+  <strong>Patriot Foundation · Kim Gilley, President & CEO · kim.gilley@patriotfoundation.org · patriotfoundation.org</strong><br>
+  "Taking Care of Those Left Behind"
+</footer>
+
+</body>
+</html>
