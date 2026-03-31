@@ -1,133 +1,161 @@
-# SESSION-STATE.md
-## BroyhillGOP Database — Session March 23, 2026
-### Maintained by: Perplexity AI (lead architect)
+# SESSION-STATE.md — AUTHORITATIVE REFRESH
+## BroyhillGOP Database — March 31, 2026 1:41 PM EDT
+## Source: Live Cursor audit + Perplexity REST verification
+## Maintained by: Perplexity AI
 
 ---
 
-## VERIFIED STATE AS OF 9:44 PM EDT, March 23, 2026
+## VERIFIED LIVE ROW COUNTS (Cursor audit, March 31 2026)
 
-### Row Counts — Confirmed via live COUNT(*)
+### Voter / Identity Foundation
+| Table | Rows | Status |
+|-------|------|--------|
+| `public.person_master` | **7,728,689** | ✅ Full voter+DataTrust master |
+| `public.nc_datatrust` | **7,661,978** | ✅ Full DataTrust NC pull |
+| `public.rnc_voter_staging` | **7,708,268** | ✅ RNC voter file |
+| `public.rnc_scores_fresh` | **7,708,765** | ✅ RNC scores loaded |
+| `public.nc_voters` | **0** | ⚠️ Empty — deprecated or load failed |
+| `public.rnc_voter_core` | **0** | ⚠️ Empty — deprecated or load failed |
 
-| Table | Rows | Notes |
-|-------|------|-------|
-| `public.nc_boe_donations_raw` | 625,897 | Full load — all 3 March 8 files |
-| `public.nc_boe_donations_raw` (with rncid) | 338,720 | 54.1% matched — 287,177 still need fuzzy |
-| `public.fec_donations` | 2,597,935 | Full load intact |
-| `public.fec_donations` (non-memo, linked) | 1,612,466 | 89.8% linked to core.person_spine |
-| `public.winred_donors` | 194,279 | 123,317 have voter_ncid |
-| `public.fec_committees` | 35,521 | ✅ Promoted from staging this session |
-| `public.fec_committee_master_staging` | 35,521 | Staging intact |
-| `public.rnc_voter_staging` | 7,708,542 | Full RNC NC file, downloaded Mar 22 |
-| `public.rncid_resolution_queue` | 150,755 | 69,490 resolved; 81,265 still unresolved |
-| `public.donor_contribution_map` | 795,345 | BOE golden record map |
-| `public.donor_voter_links` | 309,112 | ncid+rncid linkage table |
-| `public.golden_record_clusters` | 3 | Clustering never ran — needs rebuild |
-| `public.nc_datatrust` | 7,655,593 | Full DataTrust NC pull — intact |
-| `core.person_spine` | 337,053 | Unified donor identity spine |
-| `core.person_spine` (voter_rncid populated) | 189,527 | 56.2% have RNCID |
-| `core.contribution_map` | 4,006,356 | FEC: 2.33M, FEC party: 1.39M, BOE: 288K |
-| `core.fec_donation_person_map` | 1,612,466 | Rebuilt this session |
-| `core.golden_record_person_map` | 60,866 | BOE→spine bridge |
-| `core.identity_clusters` | 32,156 | |
-| `staging.spine_merge_candidates` | 23,023 | |
-| `staging.spine_clusters` | 315,959 | |
+### Donor / Contact Layer
+| Table | Rows | Status |
+|-------|------|--------|
+| `public.contacts` | **310,867** | ✅ fix_08 complete — unified contact hub |
+| `public.person_source_links` | **2,055,703** | ✅ Source attribution links |
+| `public.donor_voter_links` | **220,964** | ✅ Donor→voter linkage |
+| `public.person_contacts` | **42,179** | ✅ Supplemental contact info |
+| `public.winred_donors` | **194,278** | ✅ WinRed loaded |
+| `public.rncid_resolution_queue` | **150,755** | Partially resolved |
 
----
+### Contribution / Finance Layer
+| Table | Rows | Status |
+|-------|------|--------|
+| `public.fec_party_committee_donations` | **1,746,126** | ✅ |
+| `public.donor_contribution_map` | **789,771** | ✅ |
+| `public.nc_boe_donations_raw` | **282,096** | 🔴 WRONG FILES — needs reload |
+| `public.nc_boe_pac_committee_raw` | **57,617** | ✅ |
+| `public.ncgop_god_contributions` | **23,026** | ✅ |
+| `public.fec_committee_transfers` | **107,485** | ✅ |
+| `public.fec_committees` | **35,521** | ✅ |
 
-## WHAT RAN THIS SESSION (Confirmed Successful)
-
-| Fix | What it did | Result |
-|-----|------------|--------|
-| Fix 1 | Promoted fec_committee_master_staging → fec_committees | 60 → **35,521** ✅ |
-| Fix 2 | Backfill voter_rncid on spine from rnc_voter_staging via voter_ncid | +1,205 new RNCIDs |
-| Fix 3 | Stamp voter_rncid from donor_voter_links via ncid | +48 new RNCIDs |
-| Fix 4 | Stamp voter_rncid from BOE via voter_ncid | no net new (already covered) |
-| Fix 5 | Exact name+zip match on rncid_resolution_queue | **69,490 of 150,755 resolved** |
-| Fix 6 | Write resolved queue → nc_boe_donations_raw | 0 new (source_id match issue — see below) |
-| Index | GiST trigram indexes on rnc_voter_staging.norm_last + norm_first | Built ✅ |
-| Fix 10 | Rebuilt core.fec_donation_person_map from fec_donations.person_id | **1,612,466 rows** ✅ |
-
----
-
-## WHAT IS QUEUED (Not Yet Executed — In migration 086)
-
-Run `database/migrations/086_completion_fixes.sql` in Supabase SQL editor, ONE BLOCK AT A TIME:
-
-| Block | What it does | Expected outcome |
-|-------|-------------|-----------------|
-| A | Add is_donor column + populate from contribution_map | ~200K spine records flagged |
-| B | Recalculate spine aggregates (total_contributed, count, dates) | All 200K spine donors get $$ totals |
-| C | Insert WinRed donors missing from spine | ~71K new spine rows (123K winred have ncid, ~52K already on spine) |
-| D | Add WinRed to core.contribution_map | ~123K new entries |
-| E | Stamp person_master.rnc_rncid from spine.voter_rncid | ~189K person_master rows updated |
-| F | Stamp person_master.is_donor from spine | ~200K person_master rows updated |
-| G | Write resolved queue RNCIDs → nc_boe_donations_raw | Expected ~69K new rncid values |
-| H | Stamp new BOE RNCIDs onto spine | Expected ~few thousand new spine RNCIDs |
-| I | Batched fuzzy pass (20K rows at a time, threshold 0.82) | Resolves portion of 81,265 remaining |
-| J | Final state audit | Report all final numbers |
+### Classification / Intelligence Layer
+| Table | Rows | Status |
+|-------|------|--------|
+| `public.committee_party_map` | **19,982** | ✅ fix_10 complete, 0 NULL flags |
+| `public.gop_fec_committee_whitelist` | **25** | ✅ fix_09 |
+| `public.gop_fec_candidate_whitelist` | **137** | ✅ fix_09 |
+| `public.ncsbe_candidates` | **55,985** | ✅ |
+| `public.donor_candidate_scores` | **142,288** | ✅ |
 
 ---
 
-## KNOWN ISSUES / WHAT'S STILL BROKEN
+## FIXES COMPLETED SINCE MARCH 28 (Cursor execution)
 
-### 1. rncid_resolution_queue write-back to BOE (Fix 6 returned 0 rows)
-**Root cause:** The queue's `source_id` values (BOE row IDs in the 6M range) didn't match unmatched BOE rows because those rows already had rncid populated from a different path. The 69,490 resolved queue entries need investigation — either they ARE the 338K already matched, or there's an ID mismatch. Block G in migration 086 will clarify.
-
-### 2. Fuzzy pass times out in Supabase SQL editor
-**Root cause:** Even with GiST indexes, the 81K × 7.7M similarity join exceeds the 2-minute UI timeout. Must run in batches of 20K or via direct psql connection.
-**Workaround:** Run Block I from migration 086 four times (each run processes 20K rows — 4 runs covers all 81K).
-
-### 3. golden_record_clusters has only 3 rows
-**Root cause:** Clustering was attempted (March 17 timestamp on the 3 rows), stopped after 3 records. The full clustering job needs to run using `match_key_v2` from core.person_spine.
-**Impact:** BOE donations linked via golden_record_id (290,931 rows) can't resolve to spine person_ids until clustering runs.
-
-### 4. core.person_spine is 337K rows, not the full 7.66M voter universe
-**Root cause:** core.person_spine was built from DONOR records only — it's not the voter file. public.person_master (7.66M) is the voter+DataTrust spine. core.person_spine is the DONOR identity spine. These are intentionally different.
-**Impact:** None — this is by design. Donors who are also voters link via voter_ncid.
-
-### 5. WinRed rncid column is empty (0 rows)
-**Root cause:** WinRed donors were matched to voters via voter_ncid but the rncid was never stamped back onto winred_donors from rnc_voter_staging.
-**Fix:** After Block H, run:
-```sql
-UPDATE public.winred_donors wd
-SET rncid = rvs.rncid::text
-FROM public.rnc_voter_staging rvs
-WHERE rvs.state_voter_id = wd.voter_ncid
-  AND wd.rncid IS NULL;
-```
+| Fix | What it did | Status |
+|-----|-------------|--------|
+| `fix_08` | Populated `public.contacts` + `person_source_links` (rncid, name+zip, address match) — 310,867 contacts | ✅ Complete |
+| `fix_08b` | Restricted `v_individual_donations` to R/PAC/UNKNOWN; archived D-candidate donors | ✅ Complete |
+| `fix_09` | Loaded GOP FEC committee + candidate whitelists; candidate attribution in `contribution_map` | ✅ Complete |
+| `fix_10` v3 | `party_flag` stamped on `contribution_map`; spine R totals = R+PAC; 0 NULL flags | ✅ Complete |
+| `fix_11` | (Per Claude's GUARDRAILS commit) — details TBD | ✅ Per commit |
+| `fix_12` | Queued per SESSION-STATE commit | ⏳ Queued |
 
 ---
 
-## SCHEMA CORRECTIONS vs. GUARDRAILS (Update CLAUDE_GUARDRAILS.md)
+## KNOWN GAPS / ACTIVE ISSUES
 
-The guardrails document has one error that must be corrected:
-- **WRONG:** `core.person_spine.datatrust_rncid` — this column does NOT exist
-- **CORRECT:** `core.person_spine.voter_rncid` — this is the actual RNCID column name on the spine
+### 🔴 CRITICAL
+1. **`nc_boe_donations_raw` has wrong files** (282,096 rows, mixed types)
+   - Should be: ~338,223 rows, Individual + General only
+   - Correct files: `2015-2019-ncboe.csv` (95,967 rows) + `2020-2026-ncboe.csv` (242,256 rows)
+   - IMPORTANT: Cursor notes these files contain committee/party/PAC rows — need staging classification before loading to donor tables
+   - Status: Awaiting Cursor classification decision before reload
 
-All references to `datatrust_rncid` in the guardrails should be `voter_rncid`.
+2. **`staging.nc_voters_fresh` may be 0 rows**
+   - 9M row `\copy` from Hetzner may not have completed
+   - Must verify: `SELECT COUNT(*) FROM staging.nc_voters_fresh;`
+   - `public.nc_voters` intentionally left untouched
+
+3. **`core.contact_spine_bridge`** — row count unknown (core schema, needs psql)
+
+### 🟠 HIGH
+4. **Email gap is universal** — `person_master.email` = 0 for ALL parties
+   - Only ~4,400 emails in `person_contacts` (supplemental)
+   - Fix: email append service needed (Acxiom already overlaid in DataTrust but not extracted)
+
+5. **5,069 orphaned long-form party codes** (DEM/UNA/REP/LIB)
+   - All from nc_voters, all have `datatrust_rncid = NULL`
+   - Most have `street = 'REMOVED'` — confidential/judicial voters
+   - Fix: normalize to single-letter codes, merge where possible
+
+6. **`contribution_map.candidate_id` partially filled**
+   - Large share still NULL — fill rate varies by source_system
+   - Rule: do NOT assign GOP UUIDs from bulk FEC rows including national Democrats
+
+### 🟡 MEDIUM
+7. **nc_voters = 0, rnc_voter_core = 0**
+   - Unclear if intentionally deprecated in favor of `person_master`
+   - Needs clarification before any work touching voter file
+
+8. **4,903 records with `street = 'REMOVED'`**
+   - Confidential voters (judicial officers, etc.) — no phone/email, unusable for outreach
+   - Should be flagged `is_confidential = true` and excluded from outreach lists
+
+9. **58 records with missing first names** — name parsing failures, needs manual review
 
 ---
 
-## NEXT SESSION — START HERE
+## PARTY DISTRIBUTION — person_master
 
-1. **Run migration 086 Blocks A through J** in Supabase SQL editor
-2. **Run Block I four times** to process all 81K fuzzy queue records
-3. **Run WinRed rncid backfill** (query above in Known Issues #5)
-4. **Rebuild golden_record_clusters** — this is the biggest remaining gap
-5. **Connect nc_datatrust to core.person_spine** via voter_rncid = nc_datatrust.rnc_regid
+| Party | Records | % |
+|-------|---------|---|
+| U (Unaffiliated) | 2,976,559 | 38.5% |
+| R (Republican) | 2,315,067 | 30.0% |
+| D (Democrat) | 2,312,991 | 29.9% |
+| T (?) | 46,608 | 0.6% |
+| G (Green) | 4,368 | 0.1% |
+| REP/UNA/DEM/LIB (orphaned) | 5,069 | <0.1% |
+
+**R + U reachable universe: ~5,291,626**
+
+---
+
+## ARCHITECTURE DECISIONS (confirmed)
+
+- `public.contacts` = unified contact hub (NOT person_master)
+- `core.person_spine` = donor identity spine (junction, not denormalized)
+- `core.contact_spine_bridge` = contacts ↔ person_spine junction
+- `public.nc_voters` = unchanged by design (sacred)
+- `public.person_master` = voter + DataTrust master (sacred)
+- NC BOE CSVs = NOT pure individual donor files — contain committee/party/PAC rows; must classify in staging first
+- Cursor lane: migrations + core junction tables (when authorized)
+- Claude lane: staging-only proposals unless Ed explicitly approves production writes
+- **Destructive DELETE/TRUNCATE requires explicit "I authorize this action" from Ed**
 
 ---
 
-## REFERENCE: KEY CONNECTION PATHS
+## THREE-AGENT ROLES (clarified March 31)
 
-```
-nc_boe_donations_raw.voter_ncid  →  core.person_spine.voter_ncid  (BOE donor → spine)
-nc_boe_donations_raw.rncid       →  nc_datatrust.rnc_regid         (BOE donor → DataTrust)
-core.person_spine.voter_rncid    →  nc_datatrust.rnc_regid         (spine → DataTrust)
-core.person_spine.voter_ncid     →  public.person_master.ncvoter_ncid (spine → voter master)
-public.person_master.ncvoter_ncid = public.nc_datatrust.statevoterid   (voter master → DataTrust)
-fec_donations.person_id          →  core.person_spine.person_id    (FEC → spine)
-```
+| Agent | Role | DB Access |
+|-------|------|-----------|
+| **Cursor** | Direct execution, Mac + Hetzner psql, local file access | Direct psql port 5432 |
+| **Claude** | Server-side scripts, Hetzner execution, long-running jobs | Via Hetzner psql |
+| **Perplexity** | Architecture, research, coordination, GitHub, relay | REST API only (times out on large tables) |
 
 ---
-*Updated by Perplexity AI — March 23, 2026 9:44 PM EDT*
+
+## NEXT STEPS — PRIORITY ORDER
+
+1. **Verify `staging.nc_voters_fresh`** — `SELECT COUNT(*) FROM staging.nc_voters_fresh;` via psql
+2. **Confirm `core.contact_spine_bridge`** row count via psql
+3. **Confirm `contribution_map.candidate_id`** fill rate by source_system via psql
+4. **NC BOE reload decision** — Cursor to classify CSV row types in staging before any reload
+5. **Email enrichment strategy** — DataTrust has Acxiom overlay but email not extracted to person_master
+6. **Normalize 5,069 orphaned party code records**
+7. **Begin Phase 1-7 implementation** (new architecture schemas from overnight session)
+
+---
+
+*Updated: Perplexity AI — March 31, 2026 1:41 PM EDT*
+*Source: Cursor live audit + Perplexity REST verification*
+*Supersedes all prior SESSION-STATE entries*
