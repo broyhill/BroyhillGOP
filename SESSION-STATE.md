@@ -1,118 +1,162 @@
 # BroyhillGOP SESSION STATE
-## Updated: 2026-03-24 22:35 EDT by Claude
+## Updated: 2026-03-31 11:31 EDT by Perplexity
 
 ---
 
-## INFRASTRUCTURE STATUS
-- Relay: v1.5.0 running on :8080 (healthy ✓, Redis OK, Docker healthcheck fixed)
-- Containers: bgop_relay (healthy), bgop_brain (up), bgop_redis (up)
-- Database: Supabase PostgreSQL (58GB, 1187 tables, 18 schemas)
-- Terminal: ttyd on :7681 with startup briefing hook
-- Agent messaging: agent_messages table + Redis pub/sub live
-- **Hetzner UPGRADED: 20 cores / Intel i5-13500 / 62GB RAM (128GB add-on ordered) / 1.7TB disk**
+## CRITICAL: READ THIS BEFORE DOING ANYTHING
 
-## GOD FILE V7 — AI SEARCH ENGINE (NEW THIS SESSION)
-**Eddie's master file index. Every AI reads manifest at session start.**
+The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and task lists from that version. This is the authoritative current state.
 
-### Endpoints (no auth required):
-- `GET http://5.9.99.109:8080/docs/v7`          → HTML browser (open in Safari/ttyd)
-- `GET http://5.9.99.109:8080/docs/manifest`     → AI startup briefing (read every session)
-- `GET http://5.9.99.109:8080/docs/search?q=X`   → keyword search (name+topics+ecosystems)
-- `GET http://5.9.99.109:8080/docs/search?type=sql`  → by file type
-- `GET http://5.9.99.109:8080/docs/search?eco=E01`   → by ecosystem ID
-- `GET http://5.9.99.109:8080/docs/search?session=1` → 171 session transcripts
-- `GET http://5.9.99.109:8080/docs/search?category=BroyhillGOP` → by folder
-- Combine: `?q=donor&type=sql&eco=E01&date_from=2026-01-01`
+---
 
-### Stats:
-- 6,388 files indexed (filtered from 32,632 raw)
-- 171 session transcripts (full work history)
-- 670 SQL files | 1,457 Python files | 1,358 markdown | 756 Word docs
-- Every file: date modified, topic tags, ecosystem refs (E01-E58)
-- Action buttons: OPEN in app | REVEAL in Finder | COPY path | DRIVE link
+## DATABASE: TRUE CURRENT STATE (2026-03-31)
 
-### Nightly rebuild: Auto at midnight via Cowork scheduled task.
-### Mac rebuild script: /Users/Broyhill/Desktop/BroyhillGOP-CURSOR/rebuild_god_file.sh
+### Core Tables — Verified Row Counts (COUNT(*), not pg_stat estimates)
 
-## SESSION START PROTOCOL (BOTH AGENTS)
-```
-curl http://5.9.99.109:8080/docs/manifest       # full project orient
-curl http://5.9.99.109:8080/briefing             # SESSION-STATE.md
-curl 'http://5.9.99.109:8080/docs/search?session=1&limit=5'  # recent sessions
-curl http://5.9.99.109:8080/inbox               # unread messages
-```
+| Table | Rows | Status |
+|-------|------|--------|
+| public.contacts | 310,867 | ✅ Primary masterfile |
+| public.nc_datatrust | 7,661,978 | ✅ SACRED — do not touch |
+| public.fec_donations | 2,591,933 | ✅ NC individual donors, all cycles 2015-2026 |
+| public.nc_boe_donations_raw | 282,096 | ✅ Reloaded — individuals only, no PACs/committees |
+| public.winred_donors | ~194,278 | ✅ Clean |
+| public.nc_donor_summary | 195,317 | ✅ PRESERVED — Letha Davis/Mark file, address reference only |
+| public.person_source_links | 2,055,703 | ✅ |
+| core.person_spine | 200,383 | ✅ Republican-only ($495M) after fix_10 |
+| core.contribution_map | 4,137,549 | ✅ party_flag stamped, 733K rows attributed to candidates |
+| core.candidate_committee_map | 3,733 rows | ✅ 99.97% FEC committee coverage (fix_09) |
+| candidate_profiles | 3,630 | ✅ All Republican, faction scores |
+| staging.nc_voters_fresh | 0 | ⚠️ Table ready, COPY blocked — needs Hetzner SSH key auth |
 
-## LIVE NUMBERS (as of 2026-03-24)
-### rncid_resolution_queue
-- resolved: 79,702
-- review: 42,529
-- unresolved: 28,524
-- TOTAL: 150,755
+### SACRED TABLES — DO NOT TOUCH UNDER ANY CIRCUMSTANCES
+- `nc_voters`
+- `nc_datatrust`
+- `rnc_voter_staging`
+- `person_source_links` (pre-existing rows)
 
-### donor_voter_links (pre-existing dataset)
-- total matches: 309,112
-- unique donors: 291,452
-- unique NCIDs: 205,747
-- unique RNCIDs: 209,871
-- avg confidence: 0.894
-- high confidence (>=0.9): 185,068 (59.8%)
+---
 
-## PRIORITY TIERS
+## CONTACTS TABLE — ADDRESS COVERAGE (True Current State)
 
-### TIER 1 - BLOCKED (needs Eddie approval)
-- [ ] BLOCK G WRITE-BACK: stamp resolved RNCIDs back to nc_boe_donations_raw
-- [ ] Restore 132,623 missing rows in nc_boe_donations_raw from archive backup
+| Source | Total | Has Address | Missing |
+|--------|-------|-------------|---------|
+| nc_datatrust | 132,613 | 132,612 | 1 ✅ |
+| winred_donors | 38,060 | 38,057 | 3 ✅ |
+| fec_donations | 39,024 | 38,285 | 739 ✅ (blank at FEC source) |
+| nc_boe_donations_raw | 16,844 | 16,697 | 147 ✅ (blank at BOE source) |
+| nc_donor_summary | 84,326 | 0 | 84,326 ❌ ACTIVE WORK ITEM |
 
-### TIER 2 - READY TO EXECUTE (no blockers)
-- [ ] Review queue decision: 42,529 rows in review — auto-promote >=0.90? Or spot-check?
-- [ ] Evaluate donor_voter_links overlap: 309K pre-existing matches — skip re-resolving?
-- [ ] Fix person_spine mislink: person_id 235240 → correct Robert B. Jordan IV NCID
-- [ ] Fix briefing queue count: shows 1000 due to RPC row limit — use COUNT(*)
+**Total missing address_line1: 85,216**
+**Root cause: nc_donor_summary was a summary rollup file (from Letha Davis, Oct 2024) with no streets**
+**Fix: Match to nc_datatrust by name+zip → pull registration address → staged UPDATE**
 
-### TIER 3 - MAINTENANCE
-- [ ] Resume rnc_voter_core load: currently at 14.4%
-- [ ] Fix 5 broken pg_cron jobs: identify and either repair or drop
-- [ ] Rebuild person_spine: current links have errors (Jordan father/son confusion)
+---
 
-### TIER 4 - FUTURE
-- [ ] Golden record rebuild: Ed Broyhill 7+ records, Art Pope 0
-- [ ] E20 outbound queue consumer: brain.py pushes to bgop:outbound but nothing consumes
+## CONTACTS TABLE — VOTER_ID (RNCID) COVERAGE
 
-## KEY MAC FILES (Claude's tools)
-- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/ecosystem_search_engine.py` — file indexer (updated: now captures mtime, ecosystems, category, is_session)
-- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/enrich_json_v7.py` — enriches JSON with dates+eco refs (NEW)
-- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/build_god_file_v7.py` — builds V7 HTML (NEW)
-- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/write_god_file_manifest.py` — builds AI manifest (NEW)
-- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/rebuild_god_file.sh` — full nightly rebuild (UPDATED for V7)
-- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/ecosystem_search_results_v7.json` — enriched index (9MB)
-- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/god_file_search_index.json` — slim search index for relay
-- `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/GOD_FILE_MANIFEST.json` — AI startup manifest
+| Source | Total | Has voter_id (RNCID) | Missing |
+|--------|-------|----------------------|---------|
+| nc_datatrust | 132,613 | 132,613 | 0 ✅ |
+| nc_donor_summary | 84,326 | 0 | 84,326 |
+| fec_donations | 39,024 | 0 | 39,024 |
+| winred_donors | 38,060 | 0 | 38,060 |
+| nc_boe_donations_raw | 16,844 | 0 | 16,844 |
 
-## DISCOVERY ASSETS (from prior sessions)
-- donor_voter_links: 309K pre-matched donor-to-voter records at 0.894 avg confidence
-- Employer matching strategy: 3 digits address + first 3 letters last name + first 3 employer zip
-- Government files have NO misspelled names — exact matching valid
-- fuzzy_run_v4.py moved 19K rows from unresolved to review (3-pass SQL matching)
+**Note:** `contacts.voter_id` stores RNCID (e.g. 24234683774), NOT NC SBOE statevoterid (e.g. AN130350).
+`nc_datatrust.statevoterid` contains the NC SBOE voter registration number for every record.
 
-## COORDINATION PROTOCOL
-- Perplexity: reads manifest + /briefing at every ttyd session start (.bashrc hook)
-- Claude: reads manifest + /briefing/announce at every session start (CLAUDE_RULES)
-- Both agents update this file at session end
-- Inter-agent messages via POST /message, GET /inbox on relay :8080
-- Relay API key: bgop-relay-k9x2mP8vQnJwT4rL
+---
 
-## AGENT ROLES
-- Perplexity: browser automation, Supabase SQL, data exploration, audit queries, web research
-- Claude: server-side scripts, Python pipelines, file operations, Docker management, fuzzy matching
-- Eddie: approval authority for write-backs, deletes, and schema changes
+## FIXES COMPLETED (fix_01 through fix_11)
 
-## THIS SESSION — WHAT CLAUDE DID (2026-03-24)
-1. Built GOD FILE V7 with dates, topics, ecosystem tags, advanced filters, action buttons
-2. Created AI search API (/docs/search) — JSON endpoint, no auth, combinable params
-3. Created AI manifest (/docs/manifest) — startup briefing for every agent session
-4. Updated ecosystem_search_engine.py to capture mtime, ecosystems, category, is_session natively
-5. Deployed V7 HTML + search index + manifest to Hetzner
-6. Fixed Docker healthcheck (curl → python3), relay now shows (healthy)
-7. Scheduled nightly rebuild at midnight via Cowork
-8. Briefed Perplexity on all new endpoints (agent_messages id 19)
-9. Noted Hetzner upgrade: 20 cores, 62GB RAM, 128GB add-on ordered
+| Fix | Description | Status |
+|-----|-------------|--------|
+| fix_01 | FEC committees party column | ✅ |
+| fix_02 | Donor-voter links orphans | ✅ |
+| fix_03 | RNC volunteer score backfill | ✅ |
+| fix_04 | FEC corrupt dates | ✅ |
+| fix_05 | nc_donor_summary dates | ✅ |
+| fix_06 | WinRed large amounts | ✅ |
+| fix_07 | FEC party committee date cast + table rename | ✅ |
+| fix_08 | Contacts masterfile build (310,867 rows) | ✅ |
+| fix_09 | Committee-candidate linkage (3,733 rows, 99.97%) | ✅ |
+| fix_10 | Republican-only spine totals ($495M) | ✅ |
+| fix_11 | FEC address backfill (38,285 contacts fixed) | ✅ |
+
+---
+
+## ACTIVE WORK ITEMS
+
+### fix_12 — Address Enrichment for nc_donor_summary contacts (PENDING)
+- 84,326 contacts with zero addresses
+- Plan: JOIN contacts (source=nc_donor_summary) → nc_datatrust on norm_last + norm_first + norm_zip5
+- Use registration address (registrationaddr1) or mailing address (mailingaddr1)
+- **MUST stage first** → show Ed counts → UPDATE only after "I authorize this action"
+- Staging table to create: `staging.staging_claude_fix12_ncd_match`
+
+### nc_voters_fresh load (BLOCKED)
+- 9,083,727 rows downloaded to /tmp/ncvoter_fresh/ on Hetzner server 5.9.99.109
+- staging.nc_voters_fresh table ready (0 rows)
+- BLOCKED: SSH password auth fails from cloud environments — needs key-based auth
+- Command ready to run (see prior session notes)
+
+### Phase 1-7 Architecture Build (QUEUED for Claude)
+- 20+ new tables designed in March 31 master architecture session
+- Full spec in: sessions/2026-03-31_MASTER_ARCHITECTURE_SESSION.md
+- Has NOT been executed yet — design only
+- Start with Phase 1: person_district_map, volunteer_profiles, community_profiles
+
+---
+
+## KEY FACTS / GUARDRAILS
+
+### Authorization Protocol
+- Any UPDATE/DELETE on core tables requires exact phrase: **"I authorize this action"**
+- TWO PHASE protocol always: DRY RUN showing counts → EXECUTION after authorization
+- Fix_07: TWO MANUAL PASSES ONLY rule still applies
+
+### Data Rules
+- Ed = ED BROYHILL in all systems — never map to Edward
+- No out-of-state candidate donations in individual donor files
+- nc_donor_summary: PRESERVE as-is — address reference file, do not delete
+- Democratic donations: in archive.democratic_candidate_donor_records (906,609 rows) — preserved
+
+### MAY NOT (Claude guardrails)
+- DROP/ALTER tables in core/public/archive/norm/raw/staging/audit schemas
+- UPDATE/DELETE from core.person_spine, core.contribution_map, public.contacts,
+  public.person_source_links, public.nc_datatrust, public.nc_boe_donations_raw
+- Touch views starting with v_individual_donations or v_transactions_with_candidate
+- Touch auth tables or RLS
+
+### MAY (Claude guardrails)
+- CREATE TEMP TABLEs
+- CREATE in staging schema only (names starting staging_claude_)
+- INSERT into staging
+- SELECT anywhere
+
+---
+
+## INFRASTRUCTURE
+
+| Resource | Value |
+|----------|-------|
+| Supabase Project | BroyhillGOP-Claude |
+| Project ID | isbgjpnbocdkeslofota |
+| Region | us-east-1 |
+| Postgres | 17.6 |
+| Hetzner server 1 | 5.9.99.109 |
+| Hetzner server 2 | 144.76.219.24 (needs DataTrust IP whitelist) |
+| GitHub | broyhill/BroyhillGOP |
+
+---
+
+## KEY FINANCIAL FIGURES
+- Republican spine total: $495,429,453
+- Archived Democratic + Unknown: $220,708,080
+- Old contaminated total (before fix_10): $726,630,745
+
+---
+
+## PENDING WITH DATATRUST (Danny Gustafson — dgustafson@gop.com)
+- Email sent requesting: fresh voter file SAS token, RNCID in API responses,
+  IP whitelist for 144.76.219.24, composite key guidance for identity matching
