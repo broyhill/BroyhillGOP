@@ -169,3 +169,101 @@ CREATE INDEX IF NOT EXISTS idx_committee_registry_tier
 
 *Prepared by Perplexity AI — March 31, 2026*
 *For implementation by Claude on committee_registry table*
+
+---
+
+## PARTISAN LEAN FLAG — partisan_lean column
+
+Every committee in committee_registry gets tagged:
+
+| Value | Meaning |
+|-------|---------|
+| `R` | Gives predominantly to Republicans (>70% of donations) |
+| `D` | Gives predominantly to Democrats (>70% of donations) |
+| `N` | Neutral — gives to both parties (trade assocs, some industry PACs) |
+| `U` | Unknown — insufficient data to classify yet |
+
+### Add to committee_registry:
+```sql
+ALTER TABLE public.committee_registry
+  ADD COLUMN IF NOT EXISTS partisan_lean char(1)
+    CHECK (partisan_lean IN ('R','D','N','U'))
+    DEFAULT 'U';
+
+CREATE INDEX IF NOT EXISTS idx_committee_registry_partisan
+  ON public.committee_registry (partisan_lean);
+```
+
+### Known partisan leans for major NC PACs:
+
+#### Reliably R
+- NC Chamber of Commerce PAC → R
+- NC Home Builders PAC → R
+- NC Farm Bureau PAC → R (historically R lean)
+- NC Restaurant & Lodging PAC → R
+- NC Truckers PAC → R
+- NC Bankers PAC → N (gives both but leans R)
+- NC Association of Realtors PAC → N (gives both)
+- NC Medical Society PAC → N (gives both)
+- NC Dental Society PAC → N (gives both)
+- Club for Growth PAC → R
+- NCGOP House Caucus → R
+- NCGOP Senate Caucus → R
+- NC Judicial Victory Fund → R
+- All NCGOP auxiliary funds → R
+- All county Republican parties → R
+- NRA-PVF → R
+- NC Values Coalition → R
+- Ducks Unlimited PAC → R lean
+- Sportsmen's Alliance → R lean
+
+#### Reliably D
+- NC Association of Educators PAC (NCAE) → D
+- NC AFL-CIO → D
+- NC Justice Center → D
+- Planned Parenthood NC PAC → D
+- Sierra Club NC PAC → D
+- Trial Lawyers PAC → D
+- SEIU NC → D
+- NC Nurses Association → D lean
+
+#### Neutral (N) — gives to both, follow the majority
+- NC Association of Realtors PAC → N (tracks majority party in power)
+- NC Medical Society PAC → N
+- NC Dental Society PAC → N
+- NC Hospital Association PAC → N
+- NC Bankers Association PAC → N
+- NC Bar Association → N
+- Duke Energy PAC → N
+- Dominion Energy PAC → N
+- AT&T PAC → N
+- Spectrum/Charter PAC → N
+- Retail Merchants Association → N
+
+### Calculation method (automated):
+```sql
+-- Auto-classify based on actual SBOE giving patterns
+-- Run after committee_issues and contribution_map are fully populated
+UPDATE public.committee_registry cr
+SET partisan_lean = CASE
+  WHEN r_pct >= 0.70 THEN 'R'
+  WHEN d_pct >= 0.70 THEN 'D'
+  WHEN r_pct BETWEEN 0.30 AND 0.70 THEN 'N'
+  ELSE 'U'
+END
+FROM (
+  SELECT
+    cm.committee_id,
+    ROUND(SUM(CASE WHEN c.party = 'R' THEN cm.amount ELSE 0 END) /
+      NULLIF(SUM(cm.amount),0), 2) AS r_pct,
+    ROUND(SUM(CASE WHEN c.party = 'D' THEN cm.amount ELSE 0 END) /
+      NULLIF(SUM(cm.amount),0), 2) AS d_pct
+  FROM core.contribution_map cm
+  JOIN public.candidates c ON c.id = cm.candidate_id
+  WHERE cm.committee_id IS NOT NULL
+  GROUP BY cm.committee_id
+  HAVING SUM(cm.amount) > 5000  -- min threshold for classification
+) stats
+WHERE cr.committee_id = stats.committee_id;
+```
+
