@@ -1,5 +1,5 @@
 # BroyhillGOP SESSION STATE
-## Updated: 2026-03-31 14:22 EDT by Perplexity
+## Updated: 2026-03-31 16:14 EDT by Perplexity
 
 ---
 
@@ -15,12 +15,12 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 
 | Table | Rows | Status |
 |-------|------|--------|
-| public.contacts | 310,867 | ✅ Primary masterfile |
+| public.contacts | 226,541 | ✅ Primary masterfile — nc_donor_summary purged |
 | public.nc_datatrust | 7,661,978 | ✅ SACRED — do not touch |
 | public.fec_donations | 2,591,933 | ✅ NC individual donors, all cycles 2015-2026 |
-| public.nc_boe_donations_raw | 282,096 | 🚨 WRONG FILES — awaiting reload authorization |
+| public.nc_boe_donations_raw | 282,096 | 🚨 WRONG FILES — reload authorized, pre-flight complete, awaiting execution |
 | public.winred_donors | ~194,278 | ✅ Clean |
-| public.nc_donor_summary | 195,317 | ✅ PRESERVED — Letha Davis/Mark file, address reference only |
+| public.nc_donor_summary | 195,317 | 🗑️ PURGED from contacts — Letha Davis file, not canonical data |
 | public.person_source_links | 2,055,703 | ✅ |
 | core.person_spine | 200,383 | ✅ Republican-only ($495M) after fix_10 |
 | core.contribution_map | 4,137,549 | ✅ party_flag stamped, 733K rows attributed to candidates |
@@ -33,6 +33,24 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 - `nc_datatrust`
 - `rnc_voter_staging`
 - `person_source_links` (pre-existing rows)
+
+---
+
+## nc_donor_summary PURGE — COMPLETE (March 31, 4:14 PM EDT)
+
+- **84,326 contacts deleted** from `public.contacts` WHERE source = 'nc_donor_summary'
+- **6,497 orphan rows** also removed from `core.contact_spine_bridge`
+- **Archive:** `staging.ncboe_archive_nc_donor_summary` (84,326 rows — restore path if ever needed)
+- **New contacts total: 226,541**
+
+| source | count |
+|--------|------:|
+| nc_datatrust | 132,613 |
+| fec_donations | 39,024 |
+| winred_donors | 38,060 |
+| nc_boe_donations_raw | 16,844 |
+
+**Rationale:** nc_donor_summary was an external summary rollup (Letha Davis, Oct 2024) — not canonical BroyhillGOP data. No streets, not our production, not part of the spine.
 
 ---
 
@@ -116,13 +134,6 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 - See NCBOE RELOAD section above
 - Files confirmed clean by Cursor, March 31 2:22 PM EDT
 
-### fix_12 — Address Enrichment for nc_donor_summary contacts (PENDING)
-- 84,326 contacts with zero addresses
-- Plan: JOIN contacts (source=nc_donor_summary) → nc_datatrust on norm_last + norm_first + norm_zip5
-- Use registration address (registrationaddr1) or mailing address (mailingaddr1)
-- **MUST stage first** → show Ed counts → UPDATE only after "I authorize this action"
-- Staging table to create: `staging.staging_claude_fix12_ncd_match`
-
 ### nc_voters_fresh load (BLOCKED)
 - 9,083,727 rows downloaded to /tmp/ncvoter_fresh/ on Hetzner server 5.9.99.109
 - staging.nc_voters_fresh table ready (0 rows)
@@ -152,9 +163,11 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 ### Data Rules
 - Ed = ED BROYHILL in all systems — never map to Edward
 - No out-of-state candidate donations in individual donor files
-- nc_donor_summary: PRESERVE as-is — address reference file, do not delete
+- nc_donor_summary: PURGED — do not re-import, do not reference, archive only
 - Democratic donations: in archive.democratic_candidate_donor_records (906,609 rows) — preserved
 - NCBOE raw column header typo: `Transction Type` (not `Transaction Type`) — single 'a'
+- nc_donor_summary is PURGED — not canonical, do not re-import, do not reference
+- Letha Davis file = external summary rollup, never had streets, not our data
 
 ### MAY NOT (Claude guardrails)
 - DROP/ALTER tables in core/public/archive/norm/raw/staging/audit schemas
