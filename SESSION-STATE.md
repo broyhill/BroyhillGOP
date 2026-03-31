@@ -1,5 +1,5 @@
 # BroyhillGOP SESSION STATE
-## Updated: 2026-03-31 11:31 EDT by Perplexity
+## Updated: 2026-03-31 14:22 EDT by Perplexity
 
 ---
 
@@ -18,7 +18,7 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 | public.contacts | 310,867 | ✅ Primary masterfile |
 | public.nc_datatrust | 7,661,978 | ✅ SACRED — do not touch |
 | public.fec_donations | 2,591,933 | ✅ NC individual donors, all cycles 2015-2026 |
-| public.nc_boe_donations_raw | 282,096 | ✅ Reloaded — individuals only, no PACs/committees |
+| public.nc_boe_donations_raw | 282,096 | 🚨 WRONG FILES — awaiting reload authorization |
 | public.winred_donors | ~194,278 | ✅ Clean |
 | public.nc_donor_summary | 195,317 | ✅ PRESERVED — Letha Davis/Mark file, address reference only |
 | public.person_source_links | 2,055,703 | ✅ |
@@ -33,6 +33,31 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 - `nc_datatrust`
 - `rnc_voter_staging`
 - `person_source_links` (pre-existing rows)
+
+---
+
+## NCBOE RELOAD — VERIFIED AND READY (awaiting authorization)
+
+**Status:** HOLDING — do NOT truncate or reload without Ed saying **"I authorize this action."**
+
+**Cursor confirmed March 31, 2:22 PM EDT** — both files opened, full CSV parse, quoted fields:
+
+| File | Path (on Mac) | Data rows | Transaction Type |
+|------|---------------|-----------|-----------------|
+| 2015–2019 | `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/AAA DONOR CONTACT INFO/2015-2019-ncboe.csv` | **95,967** | ✅ 100% Individual — 0 exceptions |
+| 2020–2026 | same folder / `2020-2026-ncboe.csv` | **242,256** | ✅ 100% Individual — 0 exceptions |
+
+- Column name in raw files: **`Transction Type`** (SBOE typo in header — single 'a' in Transaction)
+- Combined: **338,223 rows** — matches reload target exactly
+- `corrupt-2015-2020-ncboe-unknown.csv` is NOT in this folder — do not search for it
+- `public.nc_boe_donations_raw` was NOT touched during verification
+
+**When Ed says "I authorize this action":**
+1. Optional: archive current 282,096 rows to `staging.ncboe_archive_wrong_files`
+2. TRUNCATE `public.nc_boe_donations_raw`
+3. Load `2015-2019-ncboe.csv` (95,967 rows)
+4. Load `2020-2026-ncboe.csv` (242,256 rows)
+5. Verify: COUNT(*) = 338,223, all `Transction Type` = 'Individual'
 
 ---
 
@@ -87,6 +112,10 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 
 ## ACTIVE WORK ITEMS
 
+### NCBOE Reload — READY, awaiting "I authorize this action"
+- See NCBOE RELOAD section above
+- Files confirmed clean by Cursor, March 31 2:22 PM EDT
+
 ### fix_12 — Address Enrichment for nc_donor_summary contacts (PENDING)
 - 84,326 contacts with zero addresses
 - Plan: JOIN contacts (source=nc_donor_summary) → nc_datatrust on norm_last + norm_first + norm_zip5
@@ -98,13 +127,18 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 - 9,083,727 rows downloaded to /tmp/ncvoter_fresh/ on Hetzner server 5.9.99.109
 - staging.nc_voters_fresh table ready (0 rows)
 - BLOCKED: SSH password auth fails from cloud environments — needs key-based auth
-- Command ready to run (see prior session notes)
 
 ### Phase 1-7 Architecture Build (QUEUED for Claude)
 - 20+ new tables designed in March 31 master architecture session
 - Full spec in: sessions/2026-03-31_MASTER_ARCHITECTURE_SESSION.md
 - Has NOT been executed yet — design only
 - Start with Phase 1: person_district_map, volunteer_profiles, community_profiles
+
+### Deep Audit v2 (QUEUED for Claude + Cursor)
+- `pipeline/deep_audit_v2.py` pushed to GitHub main at 1:01 PM EDT
+- Claude: relay message #207 queued
+- Cursor: run `git pull && python3 -m pipeline.deep_audit_v2`
+- Reports: party contamination, 21-point column quality, pipeline status, reload readiness
 
 ---
 
@@ -120,6 +154,7 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 - No out-of-state candidate donations in individual donor files
 - nc_donor_summary: PRESERVE as-is — address reference file, do not delete
 - Democratic donations: in archive.democratic_candidate_donor_records (906,609 rows) — preserved
+- NCBOE raw column header typo: `Transction Type` (not `Transaction Type`) — single 'a'
 
 ### MAY NOT (Claude guardrails)
 - DROP/ALTER tables in core/public/archive/norm/raw/staging/audit schemas
