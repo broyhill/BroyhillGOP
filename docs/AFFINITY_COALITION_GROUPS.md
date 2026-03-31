@@ -301,3 +301,241 @@ His affinity groups should be statewide, not district-specific:
 *Prepared by Perplexity AI — March 31, 2026*
 *Auto-built from donor spine + voter file + SIC codes + donation history*
 *Feeds directly into E30 (email), E31 (SMS), E19 (social), E34 (events), E41 (campaign builder)*
+
+---
+
+## ADDED GROUPS: TEACHERS, SHERIFFS, DAIRY FARMERS
+
+---
+
+### 👩‍🏫 TEACHERS FOR BROYHILL
+
+**Why this group matters:**
+NCAE (NC Association of Educators) is the teachers union — strongly D, gives millions to D candidates.
+BUT: 40-45% of NC teachers are registered Republicans or Unaffiliated who vote R.
+They are underserved, often feel silenced, and respond powerfully when a candidate
+reaches out to them specifically — breaking the NCAE monopoly on teacher identity.
+
+**Key message:** "Not all teachers agree with NCAE. We support school choice AND great public school teachers. 
+Teachers who believe in parental rights, safe classrooms, and academic excellence — 
+we see you. You are not your union."
+
+**Member qualification rules:**
+```sql
+-- Teachers for Broyhill
+WHERE (
+    ps.occupation ILIKE '%teacher%'
+    OR ps.occupation ILIKE '%educator%'
+    OR ps.occupation ILIKE '%principal%'
+    OR ps.occupation ILIKE '%instructor%'
+    OR ps.employer ILIKE '%public school%'
+    OR ps.employer ILIKE '%elementary%'
+    OR ps.employer ILIKE '%middle school%'
+    OR ps.employer ILIKE '%high school%'
+    OR ps.employer_sic = '8211'  -- elementary/secondary schools
+    OR ps.employer_sic = '8221'  -- colleges/universities
+)
+AND nv.party_cd IN ('REP','UNA')  -- R or Unaffiliated only
+```
+
+**Est. statewide members in spine:** 4,000-8,000 Republican/Unaffiliated teachers
+
+**Content themes:**
+- Classroom safety / discipline reform
+- Teacher pay raises (R-backed NCGA raises, not NCAE narrative)
+- Parental rights — teachers who support parents
+- Anti-DEI curriculum — "let teachers teach, not preach"
+- School choice — "good teachers thrive in any school system"
+- NCAE dues — "your union doesn't speak for all teachers"
+- Reading/math scores — celebrating NC academic improvements under R NCGA
+
+**Facebook Group:** "Teachers for Broyhill"
+- Cover: classroom + candidate image
+- Tone: welcoming, NOT anti-teacher — pro-teacher, anti-union-politics
+- Key distinction: position against NCAE political agenda, NOT against teachers
+
+**Hashtag:** #TeachersForBroyhill
+
+---
+
+### 🏠 SHERIFFS FOR BROYHILL
+
+**Why this group matters:**
+NC has 100 elected sheriffs — one per county. They are:
+- Most trusted elected officials in rural NC
+- NRA's most important local allies (can declare "2A sanctuary counties")
+- Control 287g immigration enforcement
+- Key validators for law-and-order candidates
+- Personally know EVERY major donor and civic leader in their county
+- Their endorsement unlocks that county's entire donor/voter network
+
+A "Sheriffs for Broyhill" coalition with even 40-50 sheriff endorsements is
+a massive statewide signal — each endorsement reaches that sheriff's entire
+personal network in their county.
+
+**Member qualification rules:**
+```sql
+-- Active and former NC sheriffs
+WHERE (
+    ps.current_office ILIKE '%sheriff%'
+    OR ps.elected_offices_held @> ARRAY['sheriff']
+    OR ps.occupation ILIKE '%sheriff%'
+    OR (ps.employer ILIKE '%sheriff%' AND ps.occupation ILIKE '%chief%director%')
+)
+-- Also include: undersheriffs, chief deputies (future sheriffs)
+OR (
+    ps.occupation ILIKE '%undersheriff%'
+    OR ps.occupation ILIKE '%chief deputy%'
+    OR (ps.employer ILIKE '%sheriff%' AND ps.occupation ILIKE '%captain%major%colonel%')
+)
+```
+
+**Est. statewide members in spine:** 100 sheriffs + ~500 senior command staff
+
+**This is NOT a mass group — it's an elite endorsement roster.**
+Strategy: personal outreach to each sheriff, ask for endorsement,
+then build "Sheriffs for Broyhill" as a prestige coalition.
+
+**Content themes:**
+- Law enforcement appreciation
+- Anti-bail reform (cash bail protection)
+- 287g / immigration enforcement support
+- Second Amendment sanctuary counties
+- Mental health + drug treatment (rural crime drivers)
+- Fentanyl / drug trafficking at the border
+- Anti-defund the police
+- Veterans in law enforcement
+
+**Rollout strategy:**
+1. Pull all 100 NC sheriffs from candidates/voter file
+2. Cross-reference — how many are R, how many are N (officially nonpartisan)
+3. Personal call/letter from Ed Broyhill to each R sheriff
+4. Build endorsement list publicly as sheriffs commit
+5. Use each endorsement as social media moment: "Sheriff [Name] of [County] endorses Broyhill"
+6. Final coalition announcement: press release with all endorsing sheriffs
+
+**Facebook:** "NC Sheriffs Supporting Ed Broyhill" (official endorsement page, not open group)
+**Hashtag:** #SheriffsForBroyhill
+
+---
+
+### 🐄 DAIRY FARMERS FOR BROYHILL
+
+**Why this group matters:**
+Dairy farming is distinct from general crop agriculture — it's:
+- Year-round, 365-day operation (no off-season)
+- Subject to federal milk pricing (USDA Federal Milk Marketing Orders)
+- Dependent on immigration (H-2A labor for milking operations)
+- Brutally competitive — NC dairy farms have been closing for decades
+- Concentrated geographically — mostly Piedmont and western NC
+- Strong family farm identity — multi-generational, deeply conservative
+- Active in Farm Bureau but feel underrepresented vs row crop farmers
+
+**NC dairy facts:**
+- ~250 dairy farms remaining in NC (down from 1,000+ in 1990s)
+- Concentrated in: Guilford, Alamance, Davidson, Cabarrus, Rowan, 
+  Iredell, Catawba, Burke, Caldwell, Lincoln, Gaston counties
+- Average NC dairy farm: 200-400 cows
+- Total NC milk production: ~1.3 billion lbs/year
+- Economic value: ~$350M/year farm gate
+
+**Key issues specific to dairy:**
+- Federal Milk Marketing Order reform (price they receive for milk)
+- Dairy margin protection programs (USDA safety net)
+- Animal agriculture nuisance suit protection (same as hog farms)
+- Immigration / H-2A for dairy labor (milking 2x/day needs workers)
+- Raw milk laws (sale of unpasteurized milk — active fight in NCGA)
+- Ag-gag laws (protect farms from activist infiltration)
+- Property tax on dairy facilities and equipment
+- Manure management regulations (similar to hog lagoon fight)
+- Chinese/foreign ownership of food processing facilities
+- Dairy checkoff program — mandatory USDA fee, contentious
+
+**Member qualification rules:**
+```sql
+-- Dairy Farmers for Broyhill
+WHERE (
+    ps.employer_sic = '0241'  -- dairy farms
+    OR ps.employer ILIKE '%dairy%'
+    OR ps.employer ILIKE '%creamery%'
+    OR ps.employer ILIKE '%milk%farm%'
+    OR ps.occupation ILIKE '%dairy%'
+    OR ps.occupation ILIKE '%dairyman%'
+)
+-- Also include: dairy processors, milk co-ops, feed/equipment suppliers
+OR ps.employer ILIKE ANY(ARRAY[
+    '%Dairy Farmers of America%',
+    '%Southeast Milk%',
+    '%Milkco%',
+    '%Homeland Creamery%',
+    '%Maple View Farm%',
+    '%Homeland%'
+])
+```
+
+**Est. statewide members in spine:** 500-1,500 (small, tight-knit community)
+
+**This is a HIGH-VALUE SMALL GROUP — every dairy farmer knows every other dairy farmer in their county.**
+One dairy farmer in Guilford County personally knows 20 other dairy families.
+
+**Content themes:**
+- Raw milk legalization in NC (currently illegal to sell retail — hot issue)
+- Dairy margin protection / milk price policy
+- Immigration / H-2A reform for dairy labor
+- Farm succession / estate tax
+- Celebrating NC dairy heritage
+- Anti-foreign ownership of food supply
+- USDA dairy policy reform
+- Supporting dairy science programs at NC State / NC A&T
+
+**Partner orgs to engage:**
+- NC Dairy Producers Association
+- NC Farm Bureau Dairy Committee  
+- Southeast United Dairy Industry Association (SUDIA)
+- Dairy Farmers of America (DFA) Southeast region
+- NC State Animal Science Dept (training next gen)
+
+**Facebook Group:** "Dairy Farmers for Broyhill"
+- Cover: dairy farm + cows + candidate
+- Small, personal, community feel
+- Monthly "farm spotlight" — feature a NC dairy farm family
+**Hashtag:** #DairyFarmersForBroyhill
+
+---
+
+## UPDATED PRIORITY LIST — ALL GROUPS FOR ED BROYHILL
+
+| Group | Est. Members | Type | Priority |
+|-------|-------------|------|---------|
+| Second Amendment Supporters for Broyhill | 25,000+ | Issue | 🔴 TOP |
+| Women for Broyhill | 40,000+ | Demographic | 🔴 TOP |
+| Seniors for Broyhill | 30,000+ | Demographic | 🔴 TOP |
+| Veterans for Broyhill | 18,000+ | Identity | 🔴 TOP |
+| Hunters for Broyhill | 20,000+ | Outdoor | 🔴 TOP |
+| Christians for Broyhill | 20,000+ | Faith | 🔴 TOP |
+| Small Business Owners for Broyhill | 15,000+ | Occupational | 🔴 TOP |
+| Law Enforcement for Broyhill | 8,000+ | Occupational | 🔴 TOP |
+| Farmers for Broyhill | 12,000+ | Industry | 🔴 TOP |
+| Sheriffs for Broyhill | 100 sheriffs | Elite endorsement | 🔴 TOP |
+| School Choice Advocates for Broyhill | 8,000+ | Issue | 🟡 HIGH |
+| Property Rights Advocates for Broyhill | 10,000+ | Issue | 🟡 HIGH |
+| Young Republicans for Broyhill | 5,000+ | Demographic | 🟡 HIGH |
+| Fishermen for Broyhill | 8,000+ | Outdoor | 🟡 HIGH |
+| Teachers for Broyhill | 6,000+ | Occupational | 🟡 HIGH |
+| Coastal Families for Broyhill | 8,000+ | Geography | 🟡 HIGH |
+| Dairy Farmers for Broyhill | 1,000 | Industry niche | 🟡 HIGH |
+| Mountain Families for Broyhill | 5,000+ | Geography | 🟢 MEDIUM |
+| Biochemists / Life Sciences for Broyhill | 3,000 | Occupational | 🟢 MEDIUM |
+| Duck Hunters for Broyhill | 3,000 | Outdoor niche | 🟢 MEDIUM |
+| Bear Hunters for Broyhill | 1,500 | Outdoor niche | 🟢 MEDIUM |
+| Pro-Life Advocates for Broyhill | 8,000+ | Issue | 🟢 MEDIUM |
+| Military Families for Broyhill | 6,000+ | Identity | 🟢 MEDIUM |
+| Fox Hunters for Broyhill | 500 | Outdoor niche | 🔵 LATER |
+| Pastors for Broyhill | 2,000+ | Faith | 🔵 LATER |
+
+---
+
+*Updated March 31, 2026 — Teachers, Sheriffs, Dairy Farmers added*
+*Sheriffs is elite endorsement strategy, not mass group*
+*Teachers breaks NCAE monopoly — strategic positioning*
+*Dairy Farmers is small but extremely high-value tight-knit community*
