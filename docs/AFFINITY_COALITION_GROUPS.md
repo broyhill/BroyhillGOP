@@ -539,3 +539,271 @@ One dairy farmer in Guilford County personally knows 20 other dairy families.
 *Sheriffs is elite endorsement strategy, not mass group*
 *Teachers breaks NCAE monopoly — strategic positioning*
 *Dairy Farmers is small but extremely high-value tight-knit community*
+
+---
+
+## ADDED GROUPS: DOCTORS, NURSES, SENIORS, SOCCER MOMS
+
+---
+
+### 👨‍⚕️ DOCTORS FOR BROYHILL
+
+**Why this group matters:**
+NC has ~30,000 licensed physicians. They are:
+- High-income donors — avg physician gives $2,500-$10,000/cycle
+- Conservative on regulation, liability, government interference in medicine
+- Fighting ACA mandates, vaccine mandates, prior authorization requirements
+- Deeply opposed to trial lawyers (malpractice suits)
+- Frustrated with hospital corporate consolidation eating their independence
+- Republican-leaning but feel taken for granted
+- Each physician knows 50-100 other high-net-worth professionals
+
+**Key message:** "Government bureaucrats and insurance companies should not practice medicine. 
+Doctors deserve the freedom to treat patients, not fill out forms. 
+We stand with NC physicians for a free practice of medicine."
+
+**Member qualification rules:**
+```sql
+WHERE (
+    ps.occupation ILIKE ANY(ARRAY['%physician%','%doctor%','% MD%','% DO%','%surgeon%','%radiologist%','%cardiologist%','%oncologist%','%pediatrician%','%psychiatrist%','%anesthesiologist%'])
+    OR ps.employer_sic IN ('8011','8049')  -- offices of physicians
+    OR ps.employer ILIKE '%medical center%'
+    AND (ps.occupation ILIKE '%M.D%' OR ps.occupation ILIKE '%physician%')
+)
+AND nv.party_cd IN ('REP','UNA')
+```
+
+**Est. statewide members in spine:** 3,000-6,000
+
+**Key issues:**
+- Certificate of Need (CON) reform — doctors can't open competing facilities
+- Prior authorization reform — insurance blocking treatment decisions
+- Malpractice / tort reform — trial lawyer liability
+- Medicaid reimbursement rates
+- ACA / government mandate repeal
+- Physician independence vs hospital employment
+- DEA licensing for controlled substances
+- Vaccine mandate opposition
+- Mental health parity
+
+**Partner orgs:** NC Medical Society, NC Physicians Alliance, NC Specialty societies (cardiology, oncology, orthopedics, surgery)
+
+**Facebook:** "Doctors for Broyhill" — professional tone, policy focused
+**Hashtag:** #DoctorsForBroyhill
+
+---
+
+### 👩‍⚕️ NURSES FOR BROYHILL
+
+**Why this group matters:**
+NC has ~120,000 registered nurses — the largest healthcare workforce segment.
+They are:
+- More politically diverse than doctors — split R/D
+- INCREASINGLY Republican due to: vaccine mandates, woke hospital policies, DEI requirements, being fired for religious exemptions, staff-to-patient ratio fights
+- 2020-2023 created a massive wave of politically activated conservative nurses
+- Strong on: religious freedom, medical freedom, anti-mandate, pro-patient-not-bureaucracy
+- High community trust — neighbors listen to nurses
+
+**Key message:** "NC nurses were called heroes — then fired for their beliefs.
+We stand with nurses who believe in medical freedom, religious liberty,
+patient-centered care, and the right to practice without government dictating
+what goes in your body or your patients' bodies."
+
+**Member qualification rules:**
+```sql
+WHERE (
+    ps.occupation ILIKE ANY(ARRAY['%nurse%','% RN%','% LPN%','% NP%','%nurse practitioner%','%nursing%','%CNA%'])
+    OR ps.employer_sic IN ('8011','8049','8051','8062','8063','8069')
+    AND ps.occupation ILIKE '%nurs%'
+)
+AND nv.party_cd IN ('REP','UNA')
+```
+
+**Est. statewide members in spine:** 8,000-15,000
+
+**Key issues:**
+- Vaccine mandate / religious exemption protection
+- Nurse-to-patient ratio legislation
+- Scope of practice expansion (NPs practicing independently)
+- Travel nurse regulation
+- DEI requirements in hospitals
+- Religious freedom in healthcare employment
+- Opioid prescribing liability protection
+- Nursing home staffing mandates
+
+**Subgroups possible:**
+- Travel Nurses for Broyhill (highly mobile, politically activated)
+- Veteran Nurses for Broyhill
+- Christian Nurses for Broyhill
+
+**Facebook:** "Nurses for Broyhill"
+**Hashtag:** #NursesForBroyhill
+
+---
+
+### 👴 SENIORS FOR BROYHILL
+
+**Why this group matters:**
+NC has 2.1M residents age 65+ — the highest-turnout voting bloc.
+They are:
+- Most reliable voters — 75%+ turnout every election
+- Historically Republican-leaning in NC
+- BUT increasingly contested — Dems target with Social Security / Medicare fear messaging
+- Respond strongly to: crime safety, Medicare protection, anti-socialism, grandchildren's future
+- Fixed income → deeply opposed to inflation, taxes, government spending
+- Many are veterans — dual identity
+- Heavy concentration: Brunswick County coast, western NC mountains, Pinehurst, Lake Norman
+
+**Key message:** "You worked your whole life for this. You earned your Social Security, 
+your Medicare, your savings, your home. We will protect what you've built — 
+from inflation, from crime, from a government that wants to take it away 
+and give it to people who didn't earn it."
+
+**Member qualification rules:**
+```sql
+WHERE
+    EXTRACT(YEAR FROM NOW()) - EXTRACT(YEAR FROM nv.birth_year) >= 65
+    AND nv.party_cd IN ('REP','UNA')
+    AND nv.voter_status_cd = 'A'  -- active voters only
+```
+
+**Est. statewide members in spine:** 30,000-50,000 (massive group)
+
+**Segment further by:**
+- 65-74 (Active Seniors) — different messaging than 75+
+- Military veterans 65+ — "Veterans & Seniors for Broyhill"
+- Rural seniors vs suburban seniors — different issues
+- Fixed-income seniors vs affluent retired — different donor capacity
+
+**Key issues:**
+- Social Security protection (no cuts)
+- Medicare preservation and drug pricing
+- Inflation / cost of living
+- Crime safety — seniors disproportionately fear crime
+- Grandchildren's future — debt, education, values
+- Property tax relief for seniors (homestead exemption)
+- Long-term care / Medicaid for nursing homes
+- Anti-socialism / protecting retirement savings
+- Voter ID — seniors have IDs, support it strongly
+- Veterans benefits (overlap)
+
+**Content calendar:**
+- Monthly: Medicare/Social Security policy updates
+- Seasonal: Property tax deadlines, senior discount programs
+- Ongoing: Crime statistics, anti-inflation messaging
+- Events: Senior center visits, "Coffee with Broyhill" events
+
+**Facebook Group:** "Seniors for Broyhill" — warm, family-values tone
+**Newsletter:** Monthly "Senior Voice" newsletter
+**Hashtag:** #SeniorsForBroyhill
+
+---
+
+### ⚽ SOCCER MOMS FOR BROYHILL
+
+**Why this group matters:**
+"Soccer Mom" is the most famous swing voter demographic in American politics.
+In 2025-2026 context they are:
+- Suburban women, 30-50, children in school
+- Moved LEFT in 2018-2020 on Trump/tone issues
+- Moving RIGHT in 2022-2026 on: school curriculum, crime, inflation, fentanyl
+- The Loudoun County effect — CRT/gender ideology in schools created conservative moms
+- Moms for Liberty, Parents Defending Education built from this energy
+- High community influence — PTA, youth sports, neighborhood networks
+- They talk to each other constantly — viral word of mouth
+- In NC: concentrated in suburban Wake, Mecklenburg, Guilford, Cabarrus, Union counties
+
+**Key message:** "You coach the team, you run the carpool, you know every kid 
+on the field by name. You just want safe schools, honest education, 
+and a community where your kids can grow up free. 
+We're with you — not the bureaucrats, not the union, not the activists. You."
+
+**Member qualification rules:**
+```sql
+WHERE
+    nv.gender_code = 'F'
+    AND EXTRACT(YEAR FROM NOW()) - EXTRACT(YEAR FROM nv.birth_year) BETWEEN 28 AND 55
+    AND nv.party_cd IN ('REP','UNA')
+    -- Suburban zip codes (pre-tagged by community_identity)
+    AND nv.zip_code IN (SELECT zip5 FROM community_profiles 
+                        WHERE 'suburban_growth' = ANY(identity_tags))
+    -- Bonus: has children in school age range (proxy: voter age 30-50, suburban)
+```
+
+**Est. statewide members in spine:** 15,000-25,000
+
+**Key issues — what ACTUALLY moved them right:**
+- School curriculum — no gender ideology, no CRT, no age-inappropriate content
+- Parental rights — right to know what's taught, right to opt out
+- School safety — real security, not metal detectors but culture
+- Fentanyl / drug crisis — their kids' friends are dying
+- Inflation — grocery prices, youth sports costs
+- Crime in their neighborhoods — carjackings, porch pirates
+- Social media harm to children — algorithmic regulation
+- College admissions / DEI — merit-based for their kids
+- Library book content — age-appropriate materials
+
+**Key differentiator from Moms for Liberty:**
+Soccer Moms for Broyhill is BROADER and SOFTER than Moms for Liberty.
+MFL has become politically polarizing. Soccer Moms is welcoming to:
+- UNA women who aren't ready to call themselves Republicans yet
+- Women who care about schools but aren't single-issue activists
+- Moms who want a community, not a political organization
+
+**Content strategy:**
+- Warm, visual, community-focused
+- Real NC moms featured (user-generated content)
+- School calendar aligned — back to school, testing season, prom, graduation
+- Youth sports imagery — fields, teams, scoreboard
+- NOT angry, NOT political war language — hopeful, protective, forward-looking
+
+**Events:** 
+- "Coffee with Moms" — candidate home visits in suburban neighborhoods
+- Youth sports sponsorships — "Broyhill for NC" sponsors local soccer league
+- School board meeting watch parties
+
+**Facebook Group:** "Soccer Moms for Broyhill" — warm, visual, community board
+**Instagram:** Primary platform for this group — visual storytelling
+**Hashtag:** #SoccerMomsForBroyhill
+**Pinterest:** Yes — this group uses Pinterest for family content
+
+---
+
+## UPDATED MASTER PRIORITY LIST
+
+| Group | Est. Members | Type | Priority |
+|-------|-------------|------|---------|
+| Second Amendment Supporters for Broyhill | 25,000+ | Issue | 🔴 TOP |
+| Women for Broyhill | 40,000+ | Demographic | 🔴 TOP |
+| **Seniors for Broyhill** | **35,000+** | **Demographic** | 🔴 **TOP** |
+| Veterans for Broyhill | 18,000+ | Identity | 🔴 TOP |
+| **Soccer Moms for Broyhill** | **20,000+** | **Swing voter** | 🔴 **TOP** |
+| Hunters for Broyhill | 20,000+ | Outdoor | 🔴 TOP |
+| Christians for Broyhill | 20,000+ | Faith | 🔴 TOP |
+| Small Business Owners for Broyhill | 15,000+ | Occupational | 🔴 TOP |
+| Law Enforcement for Broyhill | 8,000+ | Occupational | 🔴 TOP |
+| Farmers for Broyhill | 12,000+ | Industry | 🔴 TOP |
+| Sheriffs for Broyhill | 100 sheriffs | Elite endorsement | 🔴 TOP |
+| **Nurses for Broyhill** | **12,000+** | **Occupational** | 🟡 **HIGH** |
+| **Doctors for Broyhill** | **5,000+** | **Occupational** | 🟡 **HIGH** |
+| Teachers for Broyhill | 6,000+ | Occupational | 🟡 HIGH |
+| School Choice Advocates for Broyhill | 8,000+ | Issue | 🟡 HIGH |
+| Fishermen for Broyhill | 8,000+ | Outdoor | 🟡 HIGH |
+| Dairy Farmers for Broyhill | 1,000 | Industry niche | 🟡 HIGH |
+| Coastal Families for Broyhill | 8,000+ | Geography | 🟡 HIGH |
+| Young Republicans for Broyhill | 5,000+ | Demographic | 🟡 HIGH |
+| Military Families for Broyhill | 6,000+ | Identity | 🟢 MEDIUM |
+| Pro-Life Advocates for Broyhill | 8,000+ | Issue | 🟢 MEDIUM |
+| Mountain Families for Broyhill | 5,000+ | Geography | 🟢 MEDIUM |
+| Duck Hunters for Broyhill | 3,000 | Outdoor niche | 🟢 MEDIUM |
+| Bear Hunters for Broyhill | 1,500 | Outdoor niche | 🟢 MEDIUM |
+| Fox Hunters for Broyhill | 500 | Outdoor niche | 🔵 LATER |
+| Pastors for Broyhill | 2,000+ | Faith | 🔵 LATER |
+| Biochemists / Life Sciences for Broyhill | 3,000 | Occupational | 🔵 LATER |
+
+---
+
+*Updated March 31, 2026 — Doctors, Nurses, Seniors, Soccer Moms added*
+*Soccer Moms is the #1 swing voter group — softer positioning than Moms for Liberty*
+*Seniors is the largest high-turnout group — 35,000+ active voters*
+*Nurses group activated by mandate/religious freedom issues post-2020*
