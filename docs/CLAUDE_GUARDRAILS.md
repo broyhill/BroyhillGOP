@@ -1,3 +1,41 @@
+# 🛑 STOP. DO NOT TOUCH ANYTHING. READ THIS FIRST.
+
+## MANDATORY SESSION START — ZERO EXCEPTIONS
+
+Before you write a single line of SQL, code, or comment, you MUST complete ALL of these steps in order:
+
+### Step 1 — Read the session folder
+```
+gh api repos/broyhill/BroyhillGOP/contents/sessions --jq ".[].name" | sort | tail -5
+```
+Read the MOST RECENT session file in full. This tells you what was done, what files were loaded, what was authorized, and what is next. If you skip this, you WILL corrupt the database.
+
+### Step 2 — Read SESSION-STATE.md
+```
+curl https://raw.githubusercontent.com/broyhill/BroyhillGOP/main/SESSION-STATE.md
+```
+This is the single source of truth for current row counts, active work items, and authorization status.
+
+### Step 3 — Verify live DB counts
+Run the 4 health queries at the bottom of this document. Report numbers to Eddie before doing anything else.
+
+### Step 4 — Confirm with Eddie what he wants done TODAY
+Do NOT assume you know what is next. Ask. Ed plans hour to hour. What was queued last session may have changed.
+
+---
+
+## WHY THIS RULE EXISTS
+
+Agents have caused database corruption by:
+- Loading wrong files because they did not read what was loaded last session
+- Truncating tables without knowing they were already clean
+- Running fixes that were already complete
+- Acting on stale instructions from 3+ days ago
+
+The sessions/ folder is the authoritative work log. Every load, every delete, every authorized action is recorded there. Reading it takes 2 minutes. Not reading it has cost weeks of repair work.
+
+---
+
 # ⚠️ CLAUDE GUARDRAILS — READ THIS BEFORE EVERY SESSION
 ## BroyhillGOP Database Operations — Mandatory Protocol
 ### Issued by: Perplexity AI (Ed Broyhill's lead architect)
