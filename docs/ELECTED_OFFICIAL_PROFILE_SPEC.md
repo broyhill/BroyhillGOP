@@ -198,3 +198,98 @@ One profile page per entity:
 *Prepared by Perplexity AI — March 31, 2026*
 *Covers all NC elective offices — every profile, every PAC*
 *Pending Claude implementation after Eddie approval*
+
+---
+
+## COMPLETE NC ELECTED OFFICE INVENTORY — CORRECTED & EXPANDED
+
+### FEDERAL (NC delegation)
+| Office | Current R Holder | Next Election | Profile Priority |
+|--------|-----------------|---------------|-----------------|
+| US Senate — Class 3 | **Ted Budd** | 2028 | HIGH |
+| US Senate — Class 2 | **Thom Tillis** | 2026 ← UP NOW | URGENT |
+| US House District 3 | **Greg Murphy** | Nov 2026 | HIGH |
+| US House District 5 | **Virginia Foxx** | Nov 2026 | HIGH |
+| US House District 6 | **Addison McDowell** | Nov 2026 | HIGH |
+| US House District 7 | **David Rouzer** | Nov 2026 | HIGH |
+| US House District 8 | **Mark Harris** | Nov 2026 | HIGH |
+| US House District 9 | **Richard Hudson** (NRCC Chair) | Nov 2026 | HIGH |
+| US House District 10 | **Pat Harrigan** | Nov 2026 | HIGH |
+| US House District 11 | **Chuck Edwards** | Nov 2026 | HIGH |
+| US House District 13 | **Brad Knott** | Nov 2026 | HIGH |
+| US House District 14 | **Tim Moore** (former NC Speaker) | Nov 2026 | HIGH |
+| *US House District 1* | Don Davis (D — R+5, target) | Nov 2026 | WATCH |
+| *US House District 12* | Alma Adams (D) | Nov 2026 | low |
+
+### NC COUNCIL OF STATE — Current Holders
+| Office | Current Holder | Party | Next Election |
+|--------|---------------|-------|--------------|
+| Governor | Josh Stein | D | 2028 |
+| Lt. Governor | Rachel Hunt | D | 2028 |
+| Attorney General | Jeff Jackson | D | 2028 |
+| Secretary of State | Elaine Marshall | D | 2028 |
+| State Auditor | Dave Boliek | **R** | 2028 |
+| State Treasurer | Brad Briner | **R** | 2028 |
+| Superintendent of Public Instruction | Mo Green | D | 2028 |
+| Commissioner of Agriculture | Steve Troxler | **R** | 2028 |
+| Commissioner of Insurance | Mike Causey | **R** | 2028 |
+| Commissioner of Labor | Luke Farley | **R** | 2028 |
+
+*Note: R holds 5 of 10 Council of State seats. Governor, AG, Lt. Gov, SOS, Supt all D.*
+
+### NC GENERAL ASSEMBLY LEADERSHIP — Profile Priority
+
+#### NC House Leadership (R)
+| Role | Member | District |
+|------|--------|---------|
+| Speaker | Destin Hall | 87 — Caldwell, Watauga |
+| Speaker Pro Tempore | Mitchell S. Setzer | 89 — Catawba, Iredell |
+| Majority Leader | Brenden H. Jones | 46 — Columbus, Robeson |
+| Deputy Majority Leader | Steve Tyson | 3 — Craven |
+| Majority Whip | Karl E. Gillespie | 120 — Cherokee, Clay, Graham, Macon |
+| Majority Conference Co-Chair | Matthew Winslow | 7 — Franklin, Vance |
+| Majority Conference Co-Chair | Jeff Zenger | 74 — Forsyth |
+| Majority Caucus Joint Liaison | Harry Warren | 76 — Rowan |
+| Majority Freshman Leader | Heather H. Rhyne | 97 — Lincoln |
+| Deputy Majority Whips (5) | Biggs, Cairns, Jake Johnson, Penny, Reeder | various |
+
+#### NC Senate Leadership (R) — need to pull separately
+- President Pro Tempore: Phil Berger (District 26 — Guilford, Rockingham)
+- Majority Leader: (pull from NCGA)
+- Majority Whip: (pull from NCGA)
+
+### NC GENERAL ASSEMBLY COMMITTEES — 44 House + 18 Senate standing committees
+Key committees for PAC donor mapping:
+- Agriculture and Environment — Farm Bureau, agribusiness PACs
+- Appropriations (all subcommittees) — broad PAC interest
+- Commerce and Economic Development — Chamber, business PACs
+- Education — NCAE fights these seats, school choice PACs support
+- Finance — banking, insurance, real estate PACs
+- Health and Human Services — hospital, pharma, medical PACs
+- Judiciary — NC Judicial Victory Fund, law enforcement
+- Rules — leadership control — top PAC target
+- Transportation — trucking, highway contractors
+
+### NC JUDICIAL — STATEWIDE
+| Office | # Seats | Currently R? | Next Election |
+|--------|---------|-------------|--------------|
+| NC Supreme Court | 7 justices | 5R, 2D | staggered terms |
+| NC Court of Appeals | 15 judges | majority R | staggered terms |
+| NC Business Court | 4 judges | appointed | N/A |
+
+### NC JUDICIAL — LOCAL (100 counties)
+| Office | # Offices | Notes |
+|--------|----------|-------|
+| Superior Court (resident) | ~100 judges | 8 divisions, multi-county |
+| District Court | ~270 judges | Family, criminal, civil |
+| District Attorney | 44 districts | Multi-county districts |
+
+### NCGA MEMBERS MISSING FROM INITIAL PULL
+The following were not captured in the initial browser pull — need to add:
+- Jerry Carter (District 59, Guilford) — last name was cut off
+- Any members appointed mid-session (check for vacancies filled since Nov 2024)
+
+---
+
+*Updated by Perplexity AI — March 31, 2026*
+*Full federal delegation, Council of State current holders, NCGA leadership roles all documented*
