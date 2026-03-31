@@ -276,3 +276,164 @@ CREATE TABLE IF NOT EXISTS public.office_pac_affinity (
 *Prepared by Perplexity AI — March 31, 2026*
 *30 Senate R + 70 House R roster confirmed from NCGA website*
 *Pending Eddie approval before Claude implements*
+
+---
+
+## LOCAL JUDICIAL OFFICES
+*NCSBOE regulated. Officially nonpartisan elections but deeply contested.*
+
+### Superior Court Judges (resident superior court, county-based)
+| PAC / Funder | Lean | Notes |
+|-------------|------|-------|
+| County Republican Party | R | Primary organizational support |
+| NC Judicial Victory Fund | R | NCGOP arm — now funding down to superior court |
+| Local bar association | N | Lawyer ratings matter, not always partisan |
+| NC Trial Lawyers / NCAJ | D | Heavily funds D judicial candidates |
+| NC Chamber (tort reform) | R lean | Cares about business-friendly judges |
+| Local real estate / business bundlers | R lean | Civil litigation interest |
+| Law enforcement associations | R lean | Criminal sentencing philosophy |
+| Individual lawyer bundling | varies | Plaintiff's bar → D, defense bar → N/R |
+
+### District Court Judges (family court, criminal, civil — most counties)
+| PAC / Funder | Lean | Notes |
+|-------------|------|-------|
+| County Republican Party | R | Ground-level support |
+| Local bar association | N | Peer ratings influential |
+| NC Trial Lawyers / NCAJ | D | Family law / civil plaintiff interest |
+| Bail bondsmen associations | R lean | Oppose high cash bail reform |
+| Law enforcement / sheriffs | R lean | Criminal court philosophy |
+| Domestic violence / victim advocacy | varies | Issue-based, not always partisan |
+| Local family law attorneys | varies | Bundling by ideology |
+
+### District Attorney (elected, county or multi-county district — 44 districts)
+| PAC / Funder | Lean | Notes |
+|-------------|------|-------|
+| County Republican Party | R | |
+| NC Sheriffs' Association | N lean R | Law enforcement solidarity |
+| NC Chiefs of Police | N | |
+| Crime Victims' Rights groups | R lean | Tough-on-crime alignment |
+| Bail bondsmen PACs | R lean | Oppose cash bail elimination |
+| NRA / gun rights groups | R | 2A-friendly prosecution philosophy |
+| NC Trial Lawyers / NCAJ | D | Defense bar opposes tough DA candidates |
+| ACLU / reform groups | D | Criminal justice reform funding |
+
+### Clerk of Superior Court (elected, all 100 counties)
+| PAC / Funder | Lean | Notes |
+|-------------|------|-------|
+| County Republican Party | R | |
+| NC Bar Association | N | Procedural, not ideological |
+| Real estate industry | N | Deeds recording interest |
+| Title companies / attorneys | N | |
+
+---
+
+## COUNTY OFFICES — EXPANDED
+
+### Board of County Commissioners (elected, all 100 counties)
+| PAC / Funder | Lean | Notes |
+|-------------|------|-------|
+| County Republican Party | R | |
+| NC Association of County Commissioners | N | Nonpartisan officially |
+| Local Chamber of Commerce | R lean | Tax/regulation/zoning interest |
+| NC Home Builders Association | R lean | Zoning, land use, permits |
+| NC Association of Realtors | N→R | Property tax, land use |
+| NC Farm Bureau | R lean | Rural counties especially |
+| Local developer/contractor bundling | R lean | Permits, zoning |
+| Duke Energy / Dominion | N | Utility franchise, local permits |
+| NC Restaurant & Lodging | R lean | Tourism counties |
+| Local law enforcement PACs | R lean | Sheriff/commissioner overlap |
+| Waste management industry | N | Contracts, landfill siting |
+| Telecom / broadband | N | Infrastructure contracts |
+| Healthcare systems (rural hospitals) | N | Medicaid, indigent care |
+
+### Register of Deeds (elected, all 100 counties)
+| PAC / Funder | Lean | Notes |
+|-------------|------|-------|
+| County Republican Party | R | |
+| NC Association of Registers of Deeds | N | Professional assoc, nonpartisan |
+| Real estate / title industry | N | Recording fees, digital records |
+| Mortgage industry | N | |
+
+### County Sheriff (elected, all 100 counties)
+| PAC / Funder | Lean | Notes |
+|-------------|------|-------|
+| County Republican Party | R | |
+| NC Sheriffs' Association | N | Officially nonpartisan |
+| NRA-PVF | R | MOST IMPORTANT — sheriffs are key 2A allies |
+| Gun Owners of America | R | |
+| Law enforcement unions / FOP | varies | Some lean D in urban counties |
+| Bail bondsmen associations | R lean | Cash bail system protection |
+| Crime Victims' advocacy | R lean | |
+| NC Values Coalition | R | Supports conservative sheriffs |
+| Business community bundlers | R lean | Anti-crime, property protection |
+| Border security / immigration groups | R | 287g program participation |
+
+### County Board of Elections (appointed, not elected — but commissioners appoint)
+*Commissioners → appoint local BOE → controls election administration*
+- County Republican Party controls commissioner appointments → R pipeline
+
+---
+
+## MUNICIPAL OFFICES
+
+### Mayor (cities and towns — 500+ incorporated municipalities in NC)
+| PAC / Funder | Lean | Notes |
+|-------------|------|-------|
+| Local Republican Party | R | Smaller towns especially |
+| Local Chamber of Commerce | R lean | Economic development |
+| Local real estate/developer bundlers | R lean | Zoning, annexation |
+| NC League of Municipalities | N | Officially nonpartisan |
+| Local business owners | R lean | |
+| Police/fire associations | R lean | Pension, staffing |
+| Tourism industry (coastal/mountain) | R lean | |
+| Apartment/housing developers | N | Zoning interest |
+| Local hospital/health system | N | Public health funding |
+| Urban mayors (Charlotte, Raleigh, Durham, Greensboro) | D | Exception — major cities lean D |
+
+### City/Town Council
+| PAC / Funder | Lean | Notes |
+|-------------|------|-------|
+| Local Republican Party | R | |
+| Local Chamber of Commerce | R lean | |
+| Local Home Builders chapter | R lean | Zoning/permit interest |
+| Local Realtors chapter | N | |
+| Police/fire associations | R lean | Contract negotiations |
+| Small business associations | R lean | |
+| Neighborhood associations | varies | Issue-based |
+| Developer bundlers | N | Follow whoever grants permits |
+
+### Municipal Police Chief (appointed by mayor/council — not elected)
+*Flows through mayor/council elections — same PAC ecosystem*
+
+### City Utilities / Water Board (appointed or elected depending on municipality)
+| PAC / Funder | Lean | Notes |
+|-------------|------|-------|
+| Engineering firms | N | Infrastructure contract interest |
+| Water/wastewater industry | N | |
+| Environmental groups | D lean | Water quality regulations |
+| Development industry | R lean | Capacity/connection fees |
+
+---
+
+## COMPLETE OFFICE LEVEL SUMMARY
+
+| Office Level | # of Offices | Key R PAC Categories |
+|-------------|-------------|---------------------|
+| Federal — US Senate | 2 | Senate Leadership Fund, Club for Growth, national industry PACs |
+| Federal — US House | 10R seats | Congressional Leadership Fund, NRCC, national industry PACs |
+| State — Council of State | 8 | NCGOP, NC Chamber, NC industry PACs, judicial victory fund |
+| State — NC Senate | 30R seats | NCGOP Senate Caucus, NC Chamber, NC industry PACs |
+| State — NC House | 70R seats | NCGOP House Caucus, NC Chamber, NC industry PACs |
+| State — Judicial (Supreme/Appeals) | varies | NC Judicial Victory Fund, NC Chamber, Federalist Society |
+| Local — Superior/District Court | 100 counties | County GOP, NC Judicial Victory Fund, local bar |
+| Local — District Attorney | 44 districts | County GOP, law enforcement, bail bondsmen |
+| Local — Sheriff | 100 counties | NRA-PVF, County GOP, bail bondsmen |
+| Local — County Commissioner | 100 counties | County GOP, local Chamber, home builders, farm bureau |
+| Local — Clerk/Register | 100 counties | County GOP, bar association |
+| Municipal — Mayor/Council | 500+ towns | Local GOP, local Chamber, developers, police/fire |
+| School Board | 115 districts | Parents Defending Ed, Moms for Liberty, AFP, County GOP |
+
+---
+
+*Updated by Perplexity AI — March 31, 2026*
+*Covers all NC elective offices — federal through municipal*
