@@ -578,3 +578,125 @@ CREATE TABLE IF NOT EXISTS public.conflict_alerts (
 *AI is stance-aware and flag-aware — never promotes neutral/avoiding issues*
 *Legal hold and adversarial flags completely block AI contact*
 *Conflict detection system surfaces problems before they become crises*
+
+---
+
+## MANUAL PRIORITY OVERRIDE
+
+The AI calculates dominance scores from DataTrust data.
+The candidate can override any segment's rank manually — permanently or temporarily.
+
+### Why a candidate overrides:
+
+| Scenario | What they do |
+|----------|-------------|
+| "I just met a CPA who runs the county association — they're my #1 target now" | Promote CPAs to rank 1 manually |
+| "There's a big veterans event next month — boost veterans until then" | Temporary boost with timer |
+| "I had a bad experience with a local lawyer group — dial them back" | Demote lawyers manually |
+| "The Helene disaster is my signature issue right now" | Promote fiscal_conservative + disaster_recovery to top |
+| "We're in the homestretch — everything goes to fiscal conservative messaging only" | Demote all others, lock fiscal conservative at #1 |
+
+---
+
+### DB FIELDS — Add to campaign_segment_controls:
+
+```sql
+ALTER TABLE public.campaign_segment_controls ADD COLUMN IF NOT EXISTS
+    -- Manual rank override
+    manual_rank_override    integer,        -- null = use AI rank, 1-99 = candidate override
+    override_set_by         text,           -- 'candidate'|'manager'
+    override_set_at         timestamptz,
+    override_reason         text,           -- why they overrode (internal note)
+    override_expires_at     timestamptz,    -- null = permanent, else auto-reverts to AI rank
+    override_is_temporary   boolean DEFAULT false,
+
+    -- Boost/suppress controls
+    boost_multiplier        numeric DEFAULT 1.0,  -- 1.5 = 50% intensity boost, 0.5 = half intensity
+    is_pinned_top           boolean DEFAULT false, -- always appears first regardless of score
+    is_suppressed           boolean DEFAULT false; -- pushed to bottom regardless of score
+```
+
+### Control Panel Override UI:
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│ SEGMENT PRIORITY — Boliek / Watauga County          [AI] [MANUAL]   │
+├──────────────────────┬──────┬──────────┬───────────┬────────────────┤
+│ Segment              │ AI # │ Manual # │ Final #   │ Override       │
+├──────────────────────┼──────┼──────────┼───────────┼────────────────┤
+│ 📌 Fiscal Conserv.  │  2   │  1 (PIN) │  🥇 1     │ Pinned by cand │
+│ 📌 Helene Disaster  │  8   │  2 (TEMP)│  🥈 2     │ Boosted - 30d  │
+│    CPAs/Accountants  │  1   │  —       │  🥉 3     │ AI rank        │
+│    Small Business    │  3   │  —       │     4     │ AI rank        │
+│    Bankers/Finance   │  4   │  —       │     5     │ AI rank        │
+│ ⬇️  Lawyers         │  5   │  9 (↓)   │     9     │ Demoted by mgr │
+│    Seniors           │  6   │  —       │     6     │ AI rank        │
+│    Veterans          │  7   │  —       │     7     │ AI rank        │
+└──────────────────────┴──────┴──────────┴───────────┴────────────────┘
+
+[↑ Promote]  [↓ Demote]  [📌 Pin Top]  [⬇️ Suppress]
+[⏱ Temp Boost: +X days]  [↩ Reset to AI]  [↩ Reset All]
+```
+
+---
+
+### Override Logic in Query:
+
+```sql
+-- Final rank = manual override if set, else AI-calculated rank
+SELECT
+    segment_tag,
+    COALESCE(manual_rank_override, segment_rank_in_district) as final_rank,
+    CASE
+        WHEN is_pinned_top THEN 'PINNED'
+        WHEN manual_rank_override IS NOT NULL
+             AND (override_expires_at IS NULL OR override_expires_at > NOW())
+            THEN 'MANUAL (' || override_set_by || ')'
+        ELSE 'AI'
+    END as rank_source,
+    dominance_score * boost_multiplier as adjusted_score,
+    cta_intensity
+FROM public.campaign_segment_controls csc
+JOIN public.district_microsegment_rankings dmr
+    ON dmr.segment_tag = csc.segment_tag
+    AND dmr.district_id = 'WATAUGA'
+WHERE csc.campaign_id = [boliek_campaign_id]
+AND csc.is_active = true
+AND NOT csc.is_suppressed
+ORDER BY
+    is_pinned_top DESC,              -- pinned always first
+    COALESCE(manual_rank_override,
+             segment_rank_in_district) ASC;  -- then manual, then AI
+```
+
+---
+
+### Timer-Based Temporary Boosts:
+
+```sql
+-- "Boost veterans segment for 30 days around Veterans Day"
+INSERT INTO campaign_timers (timer_name, timer_type, target_id, fires_at, action, action_params) VALUES
+('Veterans Day Boost Start', 'segment_activate', 'veterans',
+ '2026-11-01 00:00:00', 'BOOST_SEGMENT',
+ '{"boost_multiplier": 2.0, "manual_rank_override": 1, "override_expires_at": "2026-11-15"}'),
+
+('Veterans Day Boost End', 'segment_activate', 'veterans',
+ '2026-11-15 00:00:00', 'RESET_SEGMENT_TO_AI', '{}');
+
+-- "Pin Helene disaster recovery to top for next 60 days"
+UPDATE campaign_segment_controls SET
+    is_pinned_top = true,
+    manual_rank_override = 1,
+    override_set_by = 'candidate',
+    override_reason = 'Helene recovery is my signature issue this quarter',
+    override_expires_at = NOW() + interval '60 days',
+    override_is_temporary = true
+WHERE campaign_id = [boliek_id] AND segment_tag = 'disaster_recovery';
+```
+
+---
+
+*Updated March 31, 2026 — Manual priority override added*
+*Candidate or manager can pin, boost, demote, or suppress any segment*
+*Temporary overrides auto-expire back to AI rank on schedule*
+*Final rank = PIN first, then manual override, then AI calculated*
