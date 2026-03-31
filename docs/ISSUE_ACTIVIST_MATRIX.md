@@ -128,3 +128,63 @@ ORDER BY school_choice_total DESC;
 
 *Prepared by Perplexity AI — March 31, 2026*
 *Pending Eddie approval before Claude implements*
+
+---
+
+## ISSUE #26 — OUTDOOR SPORTS, HUNTING, FISHING & WILDLIFE RIGHTS
+**issue_tag:** `outdoor_sports_wildlife`
+**Office levels:** Federal (✅ USFWS, Pittman-Robertson funding), State (✅ PRIMARY — NC Wildlife Resources Commission), County (✅ game wardens, land access), Local (✅ boat ramps, waterway rules)
+
+### The Regulatory Battlefield — NC Wildlife Resources Commission (NCWRC)
+State agency that sets hunting/fishing seasons, bag limits, licensing, game land rules, coastal fisheries. Commissioners are appointed by the Governor and NCGA leaders — directly political. Conservative sportsmen fight NCWRC over season restrictions, red wolf reintroduction, and coastal commercial fishing rules.
+
+### Sub-issues:
+| Sub-issue | sub_tag |
+|-----------|---------|
+| Waterfowl / Duck hunting | waterfowl_hunting |
+| Deer hunting | deer_hunting |
+| Bear hunting | bear_hunting |
+| Turkey hunting | turkey_hunting |
+| Fox hunting / Field sports | fox_hunting |
+| Freshwater fishing | freshwater_fishing |
+| Deep sea / Saltwater fishing | saltwater_fishing |
+| Trapping | trapping_rights |
+| Public lands access | public_lands_access |
+| Anti-predator / Red wolf | predator_policy |
+| Commercial vs recreational fishing | commercial_rec_conflict |
+| Right to Hunt & Fish (constitutional) | right_to_hunt_fish |
+
+### Pro-Sportsmen Organizations (NC & National)
+| Organization | Type | Focus |
+|-------------|------|-------|
+| Ducks Unlimited NC (22,772 NC members, 100+ county chapters) | 501c3 | Waterfowl habitat, wetlands |
+| NC Wildlife Federation (NCWF, est. 1945) | 501c3 | All wildlife, NCWRC advocacy |
+| Congressional Sportsmen's Foundation | 501c3 | Federal/state legislative hunting/fishing rights |
+| NC Legislative Sportsmen's Caucus | Legislative caucus | Pro-hunt/fish bills in NCGA |
+| Backcountry Hunters & Anglers NC | 501c3 | Public lands access |
+| Sportsmen's Alliance | 501c4 | Anti-animal rights, hunting defense |
+| Rocky Mountain Elk Foundation NC | 501c3 | Big game habitat |
+| National Wild Turkey Federation NC | 501c3 | Turkey habitat and hunting |
+| Quality Deer Management Assoc (QDMA) | 501c3 | Deer management |
+| NC Bowhunters Association | State org | Bowhunting rights |
+| NC Trappers Association | State org | Trapping rights |
+| NC Bear Hunters Association | State org | Bear hunting season defense |
+| NC Fox Hunters Association | State org | Fox hunting, field sports |
+| NC Waterfowl Association | State org | Duck/goose hunting |
+| CCA (Coastal Conservation Assoc) NC | 501c3 | Saltwater recreational fishing, shrimp trawl reform |
+| Recreational Fishing Alliance | 501c4 | Saltwater fishing rights vs NOAA |
+| Safari Club International NC | 501c4 | Big game hunting defense |
+| National Shooting Sports Foundation | 501c6 | Firearms/ammo industry, hunter base |
+| NC Guides & Outfitters Association | Trade | Commercial guide industry |
+| Izaak Walton League NC | 501c3 | Freshwater fishing conservation |
+
+### Opposition Groups (know your enemy):
+| Organization | What they fight |
+|-------------|----------------|
+| NC Sierra Club | Anti-hunting on public lands, predator reintroduction |
+| PETA | All hunting/trapping/fishing |
+| Humane Society Legislative Fund | Bear hunting ban, trapping ban |
+| Red Wolf Coalition | Red wolf reintroduction — conflicts with farmers/hunters |
+| NC Coastal Federation | Sometimes opposes recreational fishing interests |
+| NC Fisheries Association (commercial) | Opposes recreational bag limits, supports trawling |
+
