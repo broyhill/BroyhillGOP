@@ -428,26 +428,41 @@ WHERE emp_similarity > 0.5 AND match_count = 1;
 
 ## PASS 5 — COMMITTEE LOYALTY FINGERPRINT
 ## (Same committee cluster 3+ cycles = same donor regardless of name)
+## Uses: committee_registry (10,975 rows) + ncsbe_candidates (55,985 rows)
+## Full chain: nc_boe_donations_raw → committee_registry → ncsbe_candidates
+## Gives: committee_type, candidate_name, office, district, county per donation
 
 ```sql
 -- Build committee fingerprint per name+zip cluster
 CREATE TABLE staging.staging_pass5_fingerprint AS
 WITH fingerprints AS (
   SELECT
-    norm_last,
-    LEFT(norm_zip5, 5)                                         AS zip5,
-    committee_sboe_id,
-    count(DISTINCT EXTRACT(year FROM date_occurred))           AS cycles,
-    sum(amount_numeric)                                        AS total_given
-  FROM public.nc_boe_donations_raw
-  WHERE transaction_type = 'Individual'
-    AND norm_last IS NOT NULL
-    AND norm_zip5 IS NOT NULL
-    AND committee_sboe_id IS NOT NULL
-    AND date_occurred >= '2015-01-01'
-    AND date_occurred <= '2026-12-31'
-  GROUP BY 1, 2, 3
-  HAVING count(DISTINCT EXTRACT(year FROM date_occurred)) >= 3
+    r.norm_last,
+    LEFT(r.norm_zip5, 5)                                       AS zip5,
+    r.committee_sboe_id,
+    cr.committee_name,
+    cr.committee_type,
+    cr.candidate_name                                          AS committee_candidate,
+    nc.contest_name                                            AS office,
+    nc.county                                                  AS candidate_county,
+    count(DISTINCT EXTRACT(year FROM r.date_occurred))         AS cycles,
+    sum(r.amount_numeric)                                      AS total_given
+  FROM public.nc_boe_donations_raw r
+  -- Bridge to committee registry (sboe_id → committee type + candidate)
+  LEFT JOIN public.committee_registry cr
+    ON cr.sboe_id = r.committee_sboe_id
+  -- Bridge to candidate registry (candidate name → office + district + cycle)
+  LEFT JOIN public.ncsbe_candidates nc
+    ON upper(trim(nc.candidate_name)) = upper(trim(cr.candidate_name))
+    AND nc.party ILIKE '%REP%'
+  WHERE r.transaction_type = 'Individual'
+    AND r.norm_last IS NOT NULL
+    AND r.norm_zip5 IS NOT NULL
+    AND r.committee_sboe_id IS NOT NULL
+    AND r.date_occurred >= '2015-01-01'
+    AND r.date_occurred <= '2026-12-31'
+  GROUP BY 1, 2, 3, 4, 5, 6, 7, 8
+  HAVING count(DISTINCT EXTRACT(year FROM r.date_occurred)) >= 3
 ),
 shared AS (
   SELECT
