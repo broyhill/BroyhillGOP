@@ -25,6 +25,8 @@
 --   public.ncsbe_candidates        — 55,985 rows (candidate → office + district)
 -- ============================================================================
 
+SET statement_timeout = 0;
+
 -- ============================================================================
 -- STEP 0 — Baseline check
 -- ============================================================================
@@ -75,12 +77,12 @@ SELECT
   cr.fec_committee_id,              -- FEC bridge if federal
 
   -- Candidate fields (from ncsbe_candidates)
-  nc.candidate_name,
+  nc.name_on_ballot,
   nc.contest_name,                  -- "NC SENATE DISTRICT 30" etc.
-  nc.county                         AS candidate_county,
-  nc.party                          AS candidate_party,
-  nc.filing_date,
-  nc.election_date,
+  nc.county_name                         AS candidate_county,
+  nc.party_candidate                          AS candidate_party,
+  nc.filing_dt,
+  nc.election_dt,
 
   -- Derived fields
   CASE
@@ -124,8 +126,8 @@ SELECT
 
   -- Partisan lean flag
   CASE
-    WHEN upper(nc.party) LIKE '%REP%'                        THEN 'R'
-    WHEN upper(nc.party) LIKE '%DEM%'                        THEN 'D'
+    WHEN upper(nc.party_candidate) LIKE '%REP%'                        THEN 'R'
+    WHEN upper(nc.party_candidate) LIKE '%DEM%'                        THEN 'D'
     WHEN upper(cr.committee_type) IN ('COUNTY_REC','NCGOP_AUXILIARY','OFFICIAL_STATE_PARTY') THEN 'R'
     ELSE 'U'
   END                                                         AS partisan_flag
@@ -136,13 +138,13 @@ LEFT JOIN public.committee_registry cr
   ON cr.sboe_id = r.committee_sboe_id
 -- Join to candidate registry on candidate name
 LEFT JOIN LATERAL (
-  SELECT nc2.candidate_name, nc2.contest_name, nc2.county,
-         nc2.party, nc2.filing_date, nc2.election_date
+  SELECT nc2.name_on_ballot, nc2.contest_name, nc2.county_name,
+         nc2.party_candidate, nc2.filing_dt, nc2.election_dt
   FROM public.ncsbe_candidates nc2
-  WHERE upper(trim(nc2.candidate_name)) = upper(trim(cr.candidate_name))
+  WHERE upper(trim(nc2.name_on_ballot)) = upper(trim(cr.candidate_name))
     AND cr.candidate_name IS NOT NULL
     AND cr.candidate_name != ''
-  ORDER BY nc2.election_date DESC  -- most recent cycle first
+  ORDER BY nc2.election_dt DESC  -- most recent cycle first
   LIMIT 1
 ) nc ON true
 WHERE r.transaction_type = 'Individual'
@@ -243,15 +245,25 @@ SELECT
   )                                                           AS districts_funded,
   max(amount_numeric)                                         AS largest_single_gift,
 
-  -- Top candidate (by dollars given)
-  (SELECT candidate_name FROM staging.boe_donation_candidate_map sub
-   WHERE sub.norm_last = m.norm_last AND sub.norm_zip5 = m.norm_zip5
-     AND sub.candidate_name IS NOT NULL
-   GROUP BY candidate_name ORDER BY sum(amount_numeric) DESC LIMIT 1
-  )                                                           AS top_candidate
+  -- Top candidate populated via CTE (see below)
+  NULL::text                                                   AS top_candidate
 
 FROM staging.boe_donation_candidate_map m
 GROUP BY norm_last, norm_zip5;
+
+-- Populate top_candidate via CTE (avoids per-row subquery timeout)
+WITH top_cands AS (
+  SELECT DISTINCT ON (norm_last, norm_zip5)
+    norm_last, norm_zip5, candidate_name
+  FROM staging.boe_donation_candidate_map
+  WHERE candidate_name IS NOT NULL
+  GROUP BY norm_last, norm_zip5, candidate_name
+  ORDER BY norm_last, norm_zip5, sum(amount_numeric) OVER (PARTITION BY norm_last, norm_zip5, candidate_name) DESC
+)
+UPDATE staging.donor_political_footprint dpf
+SET top_candidate = tc.candidate_name
+FROM top_cands tc
+WHERE tc.norm_last = dpf.norm_last AND tc.norm_zip5 = dpf.zip5;
 
 -- Top 30 donors by total giving (pre-rollup)
 SELECT
