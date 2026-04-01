@@ -188,7 +188,9 @@ WHERE transaction_type = 'Individual'
   AND street_line_1 ~ '^\s*\d'
   AND norm_zip5 IS NOT NULL AND norm_zip5 != ''
   AND donor_name IS NOT NULL AND trim(donor_name) != ''
-  AND amount_numeric > 0;
+  AND amount_numeric > 0
+  AND date_occurred >= '2015-01-01'   -- clean file date range start
+  AND date_occurred <= '2026-12-31';  -- clean file date range end
 
 -- Verify name format detection on Ed Broyhill variants:
 SELECT donor_name, true_last, true_first, street_num, norm_zip5
@@ -403,6 +405,8 @@ JOIN public.fec_party_committee_donations f
     OR b.street_num = f.norm_street_num
   )
   AND ABS(b.date_occurred - f.transaction_date) < 730
+  AND b.date_occurred >= '2015-01-01'
+  AND b.date_occurred <= '2026-12-31'
   -- NC federal incumbent committees
   AND f.committee_name ILIKE ANY (ARRAY[
     '%TILLIS%','%BUDD%','%HUDSON%','%FOXX%','%FOX%','%BURR%',
@@ -438,6 +442,8 @@ WITH fingerprints AS (
     AND norm_last IS NOT NULL
     AND norm_zip5 IS NOT NULL
     AND committee_sboe_id IS NOT NULL
+    AND date_occurred >= '2015-01-01'
+    AND date_occurred <= '2026-12-31'
   GROUP BY 1, 2, 3
   HAVING count(DISTINCT EXTRACT(year FROM date_occurred)) >= 3
 ),
