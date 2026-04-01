@@ -1,5 +1,5 @@
 # BroyhillGOP SESSION STATE
-## Updated: 2026-03-31 16:14 EDT by Perplexity
+## Updated: 2026-03-31 21:09 EDT by Perplexity
 
 ---
 
@@ -54,29 +54,27 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 
 ---
 
-## NCBOE RELOAD — VERIFIED AND READY (awaiting authorization)
+## NCBOE RELOAD — COMPLETE ✅ (March 31, 9:08 PM EDT)
 
-**Status:** HOLDING — do NOT truncate or reload without Ed saying **"I authorize this action."**
+**Status:** DONE. 338,223 rows. 100% Individual. Validated by Cursor.
 
-**Cursor confirmed March 31, 2:22 PM EDT** — both files opened, full CSV parse, quoted fields:
+| File | Rows | Loaded at (UTC) |
+|------|------|-----------------|
+| 2015-2019-ncboe.csv | 95,967 | 2026-03-31 21:44 |
+| 2020-2026-ncboe.csv | 242,256 | 2026-04-01 00:44 |
 
-| File | Path (on Mac) | Data rows | Transaction Type |
-|------|---------------|-----------|-----------------|
-| 2015–2019 | `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/AAA DONOR CONTACT INFO/2015-2019-ncboe.csv` | **95,967** | ✅ 100% Individual — 0 exceptions |
-| 2020–2026 | same folder / `2020-2026-ncboe.csv` | **242,256** | ✅ 100% Individual — 0 exceptions |
+**Validation results:**
+- transaction_type: Individual = 338,223 (only value) ✅
+- date range: 2015-01-01 → 2026-02-17 ✅
+- norm_last/norm_first/norm_zip5: populated by trigger ✅
+- null/blank norm_zip5: 5,851 rows (1.7%) — known SBOE source gap, not reload issue
+- null/zero amount_numeric: 10 rows — minor, spot-check source data
+- Wrong-file archive: staging.ncboe_archive_wrong_files (282,096 rows preserved)
 
-- Column name in raw files: **`Transction Type`** (SBOE typo in header — single 'a' in Transaction)
-- Combined: **338,223 rows** — matches reload target exactly
-- `corrupt-2015-2020-ncboe-unknown.csv` is NOT in this folder — do not search for it
-- `public.nc_boe_donations_raw` was NOT touched during verification
-
-**When Ed says "I authorize this action":**
-1. Optional: archive current 282,096 rows to `staging.ncboe_archive_wrong_files`
-2. TRUNCATE `public.nc_boe_donations_raw`
-3. Load `2015-2019-ncboe.csv` (95,967 rows)
-4. Load `2020-2026-ncboe.csv` (242,256 rows)
-5. Verify: COUNT(*) = 338,223, all `Transction Type` = 'Individual'
-
+**NEXT: core.contribution_map NC_BOE rebuild — needs Ed authorization**
+- 351,129 stale NC_BOE rows in core.contribution_map (built from wrong files)
+- Requires: "I authorize this action"
+- Cursor executes: delete stale rows → re-insert from clean 338K → recompute spine aggregates
 ---
 
 ## CONTACTS TABLE — ADDRESS COVERAGE (True Current State)
@@ -130,9 +128,9 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 
 ## ACTIVE WORK ITEMS
 
-### NCBOE Reload — READY, awaiting "I authorize this action"
-- See NCBOE RELOAD section above
-- Files confirmed clean by Cursor, March 31 2:22 PM EDT
+### NCBOE Reload — ✅ COMPLETE (March 31, 9:08 PM EDT)
+- 338,223 rows loaded, 100% Individual
+- NEXT: core.contribution_map rebuild (needs Ed auth)
 
 ### nc_voters_fresh load (BLOCKED)
 - 9,083,727 rows downloaded to /tmp/ncvoter_fresh/ on Hetzner server 5.9.99.109
