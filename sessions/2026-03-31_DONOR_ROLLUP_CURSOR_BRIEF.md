@@ -136,6 +136,14 @@ WHERE canonical_employer = 'ANVIL VENTURE GROUP';
 
 ```sql
 -- Build temp table with extracted street numbers from nc_boe_donations_raw
+-- ⚠️  NAME FORMAT NOTE:
+-- NCBOE stores names in TWO formats in donor_name:
+--   Format A: "BROYHILL, ED"   (LAST, FIRST) → norm_last = BROYHILL ✅
+--   Format B: "ED BROYHILL"    (FIRST LAST)  → norm_last = ED BROYHILL ❌
+-- Format B causes norm_last to contain the full name, breaking all last-prefix joins.
+-- We extract true_last from donor_name directly using format detection.
+-- This is the canonical last name for ALL matching passes.
+
 CREATE TEMP TABLE tmp_boe_street AS
 SELECT
   id                                                           AS boe_id,
@@ -143,6 +151,28 @@ SELECT
   norm_last,
   norm_first,
   norm_zip5,
+  -- True last name: format-aware extraction
+  CASE
+    WHEN donor_name LIKE '%,%' THEN
+      -- "LAST, FIRST" format — everything left of first comma
+      upper(trim(split_part(donor_name, ',', 1)))
+    ELSE
+      -- "FIRST LAST" format — rightmost space-delimited token
+      upper(trim(
+        split_part(donor_name, ' ',
+          array_length(string_to_array(trim(donor_name), ' '), 1)
+        )
+      ))
+  END                                                          AS true_last,
+  -- True first name: format-aware extraction
+  CASE
+    WHEN donor_name LIKE '%,%' THEN
+      -- "LAST, FIRST" format — everything right of first comma, first token
+      upper(trim(split_part(split_part(donor_name, ',', 2), ' ', 2)))
+    ELSE
+      -- "FIRST LAST" format — first token
+      upper(trim(split_part(trim(donor_name), ' ', 1)))
+  END                                                          AS true_first,
   NULLIF(regexp_replace(
     regexp_replace(upper(street_line_1),
       '^\s*(APT|UNIT|SUITE|STE|#)\s*\S+[\s,]+', ''),
@@ -157,10 +187,19 @@ FROM public.nc_boe_donations_raw
 WHERE transaction_type = 'Individual'
   AND street_line_1 ~ '^\s*\d'
   AND norm_zip5 IS NOT NULL AND norm_zip5 != ''
-  AND norm_last  IS NOT NULL AND norm_last  != ''
+  AND donor_name IS NOT NULL AND trim(donor_name) != ''
   AND amount_numeric > 0;
 
-CREATE INDEX idx_tmp_boe_sn ON tmp_boe_street (street_num, norm_zip5, LEFT(norm_last,3));
+-- Verify name format detection on Ed Broyhill variants:
+SELECT donor_name, true_last, true_first, street_num, norm_zip5
+FROM tmp_boe_street
+WHERE norm_zip5 = '27104' AND street_num = '525'
+  AND (donor_name ILIKE '%BROYHILL%')
+ORDER BY donor_name;
+-- Every row should show true_last = 'BROYHILL' regardless of format
+-- true_first should vary: ED, EDGAR, JAMES, J, etc.
+
+CREATE INDEX idx_tmp_boe_sn ON tmp_boe_street (street_num, norm_zip5, LEFT(true_last,3));
 
 -- Build temp table with DataTrust street numbers
 CREATE TEMP TABLE tmp_dt_street AS
@@ -202,13 +241,13 @@ SELECT
   d.employer                                                   AS dt_employer,
   d.age                                                        AS dt_age,
   count(*) OVER (
-    PARTITION BY b.street_num, b.norm_zip5, LEFT(b.norm_last,3)
+    PARTITION BY b.street_num, b.norm_zip5, LEFT(b.true_last,3)
   )                                                            AS match_count
 FROM tmp_boe_street b
 JOIN tmp_dt_street d
   ON b.street_num              = d.street_num
   AND LEFT(b.norm_zip5, 5)     = LEFT(d.regzip5, 5)
-  AND LEFT(b.norm_last, 3)     = LEFT(d.lastname, 3)
+  AND LEFT(b.true_last, 3)     = LEFT(d.lastname, 3)
 -- Exclude already-matched rows
 WHERE NOT EXISTS (
   SELECT 1 FROM core.contribution_map cm
@@ -238,7 +277,7 @@ FROM staging.staging_pass1_street_match;
 SELECT boe_name, boe_street_num, boe_zip, dt_first, dt_last,
        statevoterid, rncid, match_count
 FROM staging.staging_pass1_street_match
-WHERE boe_zip = '27104' AND boe_street_num = '525'
+WHERE boe_street_num = '525' AND boe_zip IN ('27104','27012')
 ORDER BY boe_name;
 -- Expected: all ED/EDGAR/JAMES EDGAR variants → same statevoterid, same rncid
 -- If any variant maps to a different statevoterid: STOP and report
@@ -305,13 +344,13 @@ SELECT
   d.lastname                                                   AS dt_last,
   LEFT(d.regzip5,5)                                            AS dt_zip,
   count(*) OVER (
-    PARTITION BY ea.canonical_employer, LEFT(b.norm_last,3)
+    PARTITION BY ea.canonical_employer, LEFT(b.true_last,3)
   )                                                            AS match_count
 FROM tmp_boe_street b
 JOIN public.employer_aliases ea
   ON upper(trim(b.boe_employer)) = upper(trim(ea.alias_employer))
 JOIN public.nc_datatrust d
-  ON LEFT(d.lastname, 3) = LEFT(b.norm_last, 3)
+  ON LEFT(d.lastname, 3) = LEFT(b.true_last, 3)
   AND upper(trim(d.employer)) IN (
     SELECT upper(trim(alias_employer))
     FROM public.employer_aliases
@@ -352,11 +391,11 @@ SELECT
   similarity(upper(coalesce(b.boe_employer,'')),
              upper(coalesce(f.contributor_employer,'')))       AS emp_similarity,
   count(*) OVER (
-    PARTITION BY LEFT(b.norm_last,3), LEFT(f.contributor_zip,5)
+    PARTITION BY LEFT(b.true_last,3), LEFT(f.contributor_zip,5)
   )                                                            AS match_count
 FROM tmp_boe_street b
 JOIN public.fec_party_committee_donations f
-  ON LEFT(b.norm_last, 3)  = LEFT(f.norm_last, 3)
+  ON LEFT(b.true_last, 3)  = LEFT(f.norm_last, 3)
   AND LEFT(b.norm_zip5, 5) = LEFT(f.contributor_zip, 5)
   AND (
     similarity(upper(coalesce(b.boe_employer,'')),
@@ -521,7 +560,7 @@ SELECT boe_name, statevoterid, rncid, match_count, match_method
 FROM (
   SELECT boe_name, statevoterid, rncid, match_count, 'pass1_street' AS match_method
   FROM staging.staging_pass1_street_match
-  WHERE boe_zip = '27104' AND boe_street_num = '525'
+  WHERE boe_street_num = '525' AND boe_zip IN ('27104','27012')
   UNION ALL
   SELECT donor_name, statevoterid, rncid, 1, 'pass2_ncid'
   FROM staging.staging_pass2_ncid
