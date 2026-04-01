@@ -1,5 +1,5 @@
 # BroyhillGOP SESSION STATE
-## Updated: 2026-03-31 21:09 EDT by Perplexity
+## Updated: 2026-03-31 21:18 EDT by Perplexity
 
 ---
 
@@ -22,7 +22,7 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 | public.winred_donors | ~194,278 | ✅ Clean |
 | public.nc_donor_summary | 195,317 | 🗑️ PURGED from contacts — Letha Davis file, not canonical data |
 | public.person_source_links | 2,055,703 | ✅ |
-| core.person_spine | 200,383 | ✅ Republican-only ($495M) after fix_10 |
+| core.person_spine | 128,047 active | ✅ $426,949,676 total after NC_BOE rebuild |
 | core.contribution_map | 4,137,549 | ✅ party_flag stamped, 733K rows attributed to candidates |
 | core.candidate_committee_map | 3,733 rows | ✅ 99.97% FEC committee coverage (fix_09) |
 | candidate_profiles | 3,630 | ✅ All Republican, faction scores |
@@ -71,10 +71,33 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 - null/zero amount_numeric: 10 rows — minor, spot-check source data
 - Wrong-file archive: staging.ncboe_archive_wrong_files (282,096 rows preserved)
 
-**NEXT: core.contribution_map NC_BOE rebuild — needs Ed authorization**
-- 351,129 stale NC_BOE rows in core.contribution_map (built from wrong files)
-- Requires: "I authorize this action"
-- Cursor executes: delete stale rows → re-insert from clean 338K → recompute spine aggregates
+**core.contribution_map NC_BOE rebuild — COMPLETE ✅ (March 31, 9:18 PM EDT)**
+- Deleted 351,129 stale NC_BOE rows
+- Re-inserted 108,943 rows via name+zip match to person_spine
+- Spine aggregates recomputed from all sources
+- is_donor flag refreshed
+
+**Final spine metrics (active rows only):**
+| Metric | Value |
+|--------|-------|
+| Active spine rows | 128,047 |
+| Voter linked | 127,670 (99.7%) |
+| Has RNCID | 128,047 (100%) |
+| Has contribution > 0 | 127,945 (99.9%) |
+| Total dollars | $426,949,676 |
+
+**contribution_map breakdown:**
+| Source | Rows | Dollars |
+|--------|------|---------|
+| fec_donations | 2,330,166 | $298,509,526 |
+| fec_party | 1,387,942 | $198,006,706 |
+| NC_BOE | 108,943 | $64,105,742 |
+| winred | 57,793 | $10,731,459 |
+| ncgop_god | 10,519 | $1,172,879 |
+
+**Note:** 338,223 raw NC_BOE rows → 108,943 mapped to spine (32% match rate).
+Remaining ~229K rows have no active spine match (blank norm_zip5, name mismatch, or donor not yet in spine).
+This is expected — RNCID backfill will improve match rate in next session.
 ---
 
 ## CONTACTS TABLE — ADDRESS COVERAGE (True Current State)
@@ -128,9 +151,10 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 
 ## ACTIVE WORK ITEMS
 
-### NCBOE Reload — ✅ COMPLETE (March 31, 9:08 PM EDT)
+### NCBOE Reload + contribution_map rebuild — ✅ COMPLETE (March 31, 9:18 PM EDT)
 - 338,223 rows loaded, 100% Individual
-- NEXT: core.contribution_map rebuild (needs Ed auth)
+- 108,943 NC_BOE rows mapped to spine, $64M
+- Spine aggregates recomputed: $426.9M total
 
 ### nc_voters_fresh load (BLOCKED)
 - 9,083,727 rows downloaded to /tmp/ncvoter_fresh/ on Hetzner server 5.9.99.109
