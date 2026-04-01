@@ -167,3 +167,38 @@ COMMENT ON TABLE public.person_name_aliases IS
   'Authoritative alias registry for known donor name variants. '
   'Built from Ed_Broyhill_Donations.xlsx (357 txns, $1,016,573, 2015-2026). '
   'March 31, 2026.';
+
+-- ============================================================================
+-- ED BROYHILL — Father's name variants (checks written by Ed in father's name)
+-- Senator James T. Broyhill (deceased) — all donations attributed to Ed Broyhill
+-- Addresses: 1930 Virginia Road 27104, 3540 Clemmons Rd 27012, 1244 Arbor Rd 27104
+-- Total: $31,700 across 15 transactions, 2015-2022
+-- ============================================================================
+
+INSERT INTO public.person_name_aliases (person_id, alias_name, alias_type, source_system, confidence, notes)
+VALUES
+  (:ED_BROYHILL_PERSON_ID, 'JAMES T BROYHILL',             'proxy_filing', 'ncboe', 1.000, 'Check written by Ed in father''s name — Senator James T. Broyhill (deceased)'),
+  (:ED_BROYHILL_PERSON_ID, 'JAMES T. BROYHILL',            'proxy_filing', 'ncboe', 1.000, 'Check written by Ed in father''s name'),
+  (:ED_BROYHILL_PERSON_ID, 'JAMES THOMAS BROYHILL',        'proxy_filing', 'ncboe', 1.000, 'Check written by Ed in father''s name'),
+  (:ED_BROYHILL_PERSON_ID, 'BROYHILL, JAMES T',            'proxy_filing', 'fec',   1.000, 'Check written by Ed in father''s name'),
+  (:ED_BROYHILL_PERSON_ID, 'BROYHILL, JAMES T. SENATOR',   'proxy_filing', 'fec',   1.000, 'Check written by Ed — honorific SENATOR belongs to father'),
+  (:ED_BROYHILL_PERSON_ID, 'BROYHILL, JAMES T SEN.',       'proxy_filing', 'fec',   1.000, 'Check written by Ed — SEN. abbreviation'),
+  (:ED_BROYHILL_PERSON_ID, 'BROYHILL, JAMES THOMAS',       'proxy_filing', 'fec',   1.000, 'Check written by Ed in father''s full name')
+ON CONFLICT (person_id, alias_name) DO NOTHING;
+
+-- ADDRESS NOTES for proxy filings:
+-- 1930 VIRGINIA ROAD 27104  — father's former residence (used on proxy filings)
+-- 3540 CLEMMONS RD 27012    — Ed's office address (used on proxy filings)
+-- 1244 ARBOR RD 27104       — father's later address (used on proxy filings)
+-- All three addresses belong to Ed's person_id for contribution attribution purposes
+
+-- Add proxy_filing to the alias_type CHECK constraint if not already present
+-- ALTER TABLE public.person_name_aliases
+--   DROP CONSTRAINT IF EXISTS person_name_aliases_alias_type_check;
+-- ALTER TABLE public.person_name_aliases
+--   ADD CONSTRAINT person_name_aliases_alias_type_check
+--   CHECK (alias_type IN (
+--     'legal','goes_by','middle_as_first','initial','abbreviated',
+--     'nickname_quoted','paren_variant','typo','fec_format','fec_honorific',
+--     'mixed_case','proxy_filing'
+--   ));
