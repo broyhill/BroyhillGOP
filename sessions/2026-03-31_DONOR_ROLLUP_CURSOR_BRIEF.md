@@ -314,6 +314,8 @@ JOIN core.person_spine sp
 WHERE r.transaction_type = 'Individual'
   AND r.voter_ncid IS NOT NULL AND r.voter_ncid != ''
   AND r.amount_numeric > 0
+  AND r.date_occurred >= '2015-01-01'
+  AND r.date_occurred <= '2026-12-31'
   AND NOT EXISTS (
     SELECT 1 FROM core.contribution_map cm
     WHERE cm.source_system = 'NC_BOE' AND cm.source_id = r.id
