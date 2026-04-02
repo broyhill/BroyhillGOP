@@ -115,12 +115,31 @@ SELECT DISTINCT ON (s.person_id)
 FROM core.person_spine s
 JOIN public.ncsbe_candidates c
   ON UPPER(c.last_name) = s.norm_last
-  AND UPPER(c.first_name) = s.norm_first
+  -- FIX (Cursor P0): Use legal_first_name (from nc_voters) instead of norm_first
+  -- norm_first is filing name (ED), legal_first_name is voter reg name (JAMES)
+  -- ncsbe_candidates.first_name is legal name — must match legal to legal
+  AND UPPER(c.first_name) = COALESCE(s.legal_first_name, s.norm_first)
   AND LEFT(c.zip, 5) = s.zip5
 JOIN staging.contest_title_map ctm
   ON c.contest_name LIKE ctm.contest_pattern
 WHERE s.is_active = true
 ORDER BY s.person_id, ctm.title_rank ASC, c.election_dt DESC;
+-- tie-break: highest office first (lowest rank number), then most recent election
+
+-- T2b: Diagnostic — ambiguity check (run before T4)
+-- How many spine records match MORE THAN ONE distinct candidate?
+SELECT COUNT(*) as ambiguous_matches
+FROM (
+  SELECT s.person_id, COUNT(DISTINCT c.last_name || c.first_name || c.contest_name) as match_count
+  FROM core.person_spine s
+  JOIN public.ncsbe_candidates c
+    ON UPPER(c.last_name) = s.norm_last
+    AND UPPER(c.first_name) = COALESCE(s.legal_first_name, s.norm_first)
+    AND LEFT(c.zip, 5) = s.zip5
+  WHERE s.is_active = true
+  GROUP BY s.person_id
+  HAVING COUNT(DISTINCT c.last_name || c.first_name || c.contest_name) > 1
+) multi;
 -- tie-break: highest office first (lowest rank number), then most recent election
 
 
