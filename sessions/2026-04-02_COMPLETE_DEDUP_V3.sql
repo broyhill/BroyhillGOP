@@ -1,5 +1,5 @@
 -- ============================================================================
--- BROYHILLGOP COMPLETE DEDUP — V3
+-- BROYHILLGOP COMPLETE DEDUP — V3.1 (Cursor-reviewed, P0 fixes applied)
 -- Incorporates Ed's full dedup philosophy from April 1-2, 2026 session
 -- ============================================================================
 -- AUTHOR: Perplexity (CEO, AI team)
@@ -25,6 +25,18 @@
 --   8. Second home addresses are sales leads, not duplicates
 --   9. Honorary titles (military, judicial, political) must be preserved
 --  10. Never merge on a guess — unmatched is better than wrong
+--
+-- V3.1 FIXES (from Cursor critique 2026-04-02):
+--   P0-1: golden_record_id → person_id in Phases 3-4 (core.contribution_map uses person_id)
+--   P0-2: Reordered Phase 3 (employer) BEFORE Phase 2 (quality classification)
+--   P0-3: Rewrote preferred name query — old version had broken aggregate
+--   P0-4: Pass 7 now requires full norm_first match, not just first initial (spouse safety)
+--   P1: Confirmed nc_voters.ncid is unique (9,082,810 = 9,082,810 distinct) — no JOIN ambiguity
+--   P1: Documented Phase 1I compound SET as intentional exception
+--   P2: Extended employer exclusion list (UNEMPLOYED, STUDENT, HOUSEWIFE, VOLUNTEER, etc.)
+--   P2: Pass 5 employer prefix increased from 10 to 15 chars
+--   P2: Pass 3 adds same-last-name guard for JAMES EARL / EARL JAMES false positive
+--   P2: Pass 6 uses DISTINCT ON to handle multiple prev_rncid matches
 -- ============================================================================
 
 
@@ -194,6 +206,9 @@ WHERE s.voter_rncid = dt.rncid
   AND dt.householdid IS NOT NULL AND dt.householdid != '';
 
 -- ---- 1I: addr_number and addr_type parsed from street ----
+-- NOTE: Intentional compound SET — addr_number and addr_type are always
+-- derived from the same source field (street) and must be set together.
+-- This is the ONE documented exception to the single-column-per-UPDATE rule.
 -- REQUIRES ED AUTHORIZATION
 UPDATE core.person_spine
 SET addr_number = regexp_replace(UPPER(TRIM(street)), '^\s*(\d+).*', '\1'),
@@ -216,11 +231,56 @@ WHERE is_active = true
 
 
 -- ============================================================================
--- PHASE 2: RECORD QUALITY CLASSIFICATION — Pretty vs Ugly
+-- PHASE 2: BEST EMPLOYER — Backward scan from 2026
 -- ============================================================================
+-- MOVED BEFORE quality classification (was Phase 3 in V3).
+-- Cursor P0: best_employer must be populated BEFORE PRETTY/UGLY classification
+-- uses it as a signal. Otherwise employer-only donors are wrongly classified UGLY.
+--
+-- For each spine person, find their most recent NON-RETIRED employer
+-- from donation records. This is the employer anchor for major donor dedup.
+
+-- 2A: From NC BOE donations (has date_occurred)
+-- FIX: golden_record_id → person_id (core.contribution_map uses person_id)
+-- FIX: Extended employer exclusion list per Cursor P2
+-- FIX: Added FILTER (WHERE date_occurred IS NOT NULL) for deterministic sort
+-- REQUIRES ED AUTHORIZATION
+UPDATE core.person_spine s
+SET best_employer = sub.best_emp
+FROM (
+  SELECT
+    cm.person_id,
+    (array_agg(
+      d.employer_name ORDER BY d.date_occurred DESC NULLS LAST
+    ) FILTER (WHERE d.date_occurred IS NOT NULL))[1] as best_emp
+  FROM core.contribution_map cm
+  JOIN public.nc_boe_donations_raw d ON cm.source_id = d.id AND cm.source_system = 'NC_BOE'
+  WHERE d.employer_name IS NOT NULL
+    AND d.employer_name != ''
+    AND UPPER(TRIM(d.employer_name)) NOT IN (
+      'RETIRED','SELF-EMPLOYED','SELF EMPLOYED','SELF','NONE','N/A','NA',
+      'NOT EMPLOYED','HOMEMAKER','INFORMATION REQUESTED',
+      'INFORMATION REQUESTED PER BEST EFFORTS',
+      'NOT EMPLOYED/NOT EMPLOYED','RETIRED/RETIRED',
+      'UNEMPLOYED','STUDENT','HOUSEWIFE','VOLUNTEER',
+      'DISABLED','NOT WORKING','UNKNOWN','REFUSE',
+      'REQUESTED','INFO REQUESTED','NONE GIVEN'
+    )
+  GROUP BY cm.person_id
+) sub
+WHERE s.person_id = sub.person_id
+  AND s.is_active = true
+  AND (s.best_employer IS NULL OR s.best_employer = '');
+
+
+-- ============================================================================
+-- PHASE 3: RECORD QUALITY CLASSIFICATION — Pretty vs Ugly
+-- ============================================================================
+-- MOVED AFTER best_employer (was Phase 2 in V3).
 -- A record is PRETTY if it has: norm_first + norm_last + zip5 + addr_number
---   + at least ONE of: voter_ncid, employer, email, phone
+--   + at least ONE of: voter_ncid, best_employer, email
 -- Everything else is UGLY and goes to the holding pen — never merged on a guess.
+-- NOTE: phone excluded per Ed's design — add if he later wants it.
 
 -- REQUIRES ED AUTHORIZATION
 UPDATE core.person_spine
@@ -231,7 +291,7 @@ SET record_quality = CASE
     AND addr_number IS NOT NULL AND addr_number != ''
     AND (
       (voter_ncid IS NOT NULL AND voter_ncid != '')
-      OR (best_employer IS NOT NULL AND best_employer != '' AND best_employer NOT IN ('RETIRED','SELF-EMPLOYED','SELF EMPLOYED','NONE','N/A','NA','NOT EMPLOYED','HOMEMAKER','INFORMATION REQUESTED'))
+      OR (best_employer IS NOT NULL AND best_employer != '')
       OR (email IS NOT NULL AND email != '')
     )
   THEN 'PRETTY'
@@ -241,63 +301,31 @@ WHERE is_active = true;
 
 
 -- ============================================================================
--- PHASE 3: BEST EMPLOYER — Backward scan from 2026
--- ============================================================================
--- For each spine person, find their most recent NON-RETIRED employer
--- from donation records. This is the employer anchor for major donor dedup.
-
--- 3A: From NC BOE donations (has date_occurred)
--- REQUIRES ED AUTHORIZATION
-UPDATE core.person_spine s
-SET best_employer = sub.best_emp
-FROM (
-  SELECT
-    cm.golden_record_id as person_id,
-    (array_agg(
-      d.employer_name ORDER BY d.date_occurred DESC NULLS LAST
-    ))[1] as best_emp
-  FROM core.contribution_map cm
-  JOIN public.nc_boe_donations_raw d ON cm.source_id = d.id AND cm.source_system = 'NC_BOE'
-  WHERE d.employer_name IS NOT NULL
-    AND d.employer_name != ''
-    AND UPPER(d.employer_name) NOT IN (
-      'RETIRED','SELF-EMPLOYED','SELF EMPLOYED','NONE','N/A','NA',
-      'NOT EMPLOYED','HOMEMAKER','INFORMATION REQUESTED',
-      'INFORMATION REQUESTED PER BEST EFFORTS','SELF',
-      'NOT EMPLOYED/NOT EMPLOYED','RETIRED/RETIRED'
-    )
-  GROUP BY cm.golden_record_id
-) sub
-WHERE s.person_id = sub.person_id
-  AND s.is_active = true
-  AND (s.best_employer IS NULL OR s.best_employer = '');
-
-
--- ============================================================================
 -- PHASE 4: PREFERRED NAME — Most frequent filing name
 -- ============================================================================
+-- FIX (Cursor P0): Completely rewritten. Old version had broken aggregate
+-- that re-joined contribution_map and lost the count ordering.
+-- New version uses DISTINCT ON for deterministic "most frequent name" pick.
+-- FIX: golden_record_id → person_id
 -- REQUIRES ED AUTHORIZATION
 UPDATE core.person_spine s
-SET preferred_name = sub.pref
+SET preferred_name = sub.pref_name
 FROM (
-  SELECT
-    cm.golden_record_id as person_id,
-    (array_agg(
-      d.norm_first ORDER BY cnt DESC
-    ))[1] as pref
+  SELECT DISTINCT ON (person_id)
+    person_id,
+    norm_first as pref_name
   FROM (
     SELECT
-      cm2.golden_record_id,
-      d2.norm_first,
-      COUNT(*) as cnt
-    FROM core.contribution_map cm2
-    JOIN public.nc_boe_donations_raw d2 ON cm2.source_id = d2.id AND cm2.source_system = 'NC_BOE'
-    WHERE d2.norm_first IS NOT NULL AND d2.norm_first != ''
-    GROUP BY cm2.golden_record_id, d2.norm_first
-  ) sub2
-  JOIN core.contribution_map cm ON cm.golden_record_id = sub2.golden_record_id
-  JOIN public.nc_boe_donations_raw d ON cm.source_id = d.id AND cm.source_system = 'NC_BOE'
-  GROUP BY cm.golden_record_id
+      cm.person_id,
+      d.norm_first,
+      COUNT(*) as usage_count
+    FROM core.contribution_map cm
+    JOIN public.nc_boe_donations_raw d
+      ON cm.source_id = d.id AND cm.source_system = 'NC_BOE'
+    WHERE d.norm_first IS NOT NULL AND d.norm_first != ''
+    GROUP BY cm.person_id, d.norm_first
+  ) name_counts
+  ORDER BY person_id, usage_count DESC, norm_first  -- deterministic tiebreak: alphabetical
 ) sub
 WHERE s.person_id = sub.person_id
   AND s.is_active = true
@@ -508,6 +536,15 @@ WHERE a.is_active = true AND b.is_active = true
     OR
     (b.middle_name IS NOT NULL AND UPPER(TRIM(b.middle_name)) = UPPER(TRIM(a.norm_first)))
   )
+  -- FIX (Cursor P2): Guard against JAMES EARL / EARL JAMES false positive.
+  -- If BOTH records have middle names, and A.first=B.middle, then A.middle
+  -- must NOT equal B.first (that would be a first/middle swap, not a nickname).
+  AND NOT (
+    a.middle_name IS NOT NULL AND a.middle_name != ''
+    AND b.middle_name IS NOT NULL AND b.middle_name != ''
+    AND UPPER(TRIM(a.norm_first)) = UPPER(TRIM(b.middle_name))
+    AND UPPER(TRIM(b.norm_first)) = UPPER(TRIM(a.middle_name))
+  )
   AND NOT staging.is_blocked(a.person_id, b.person_id)
 ON CONFLICT DO NOTHING;
 
@@ -576,7 +613,8 @@ FROM core.person_spine a
 JOIN core.person_spine b
   ON a.norm_last = b.norm_last
   AND LEFT(a.norm_first, 1) = LEFT(b.norm_first, 1)
-  AND UPPER(LEFT(a.best_employer, 10)) = UPPER(LEFT(b.best_employer, 10))
+  -- FIX (Cursor P2): Increased from 10 to 15 chars to reduce false collisions
+  AND UPPER(LEFT(a.best_employer, 15)) = UPPER(LEFT(b.best_employer, 15))
   AND a.person_id < b.person_id
 WHERE a.is_active = true AND b.is_active = true
   AND a.record_quality = 'PRETTY' AND b.record_quality = 'PRETTY'
@@ -590,6 +628,7 @@ ON CONFLICT DO NOTHING;
 
 -- ---- PASS 6: DataTrust prev_rncid chain ----
 -- Person re-registered and got new RNCID. DT links old→new.
+-- FIX (Cursor P2): Use DISTINCT ON to handle multiple dt rows sharing prev_rncid.
 -- Confidence: 0.97
 INSERT INTO staging.v3_merge_candidates
   (keeper_person_id, merge_person_id, match_method, confidence, evidence)
@@ -605,7 +644,13 @@ SELECT
     'b_name', b.norm_first || ' ' || b.norm_last
   )
 FROM core.person_spine a
-JOIN public.nc_datatrust dt ON a.voter_rncid = dt.prev_rncid
+JOIN (
+  -- Deduplicate: one successor per prev_rncid
+  SELECT DISTINCT ON (prev_rncid) prev_rncid, rncid
+  FROM public.nc_datatrust
+  WHERE prev_rncid IS NOT NULL AND prev_rncid != ''
+  ORDER BY prev_rncid, rncid
+) dt ON a.voter_rncid = dt.prev_rncid
 JOIN core.person_spine b ON dt.rncid = b.voter_rncid
 WHERE a.is_active = true AND b.is_active = true
   AND a.record_quality = 'PRETTY' AND b.record_quality = 'PRETTY'
@@ -614,9 +659,13 @@ WHERE a.is_active = true AND b.is_active = true
 ON CONFLICT DO NOTHING;
 
 
--- ---- PASS 7: DataTrust household + same name ----
--- Same RNC householdid + same last + same first initial = same person
+-- ---- PASS 7: DataTrust household + same full name ----
+-- Same RNC householdid + same last + same FULL first name = same person
 -- (Not household members — same person with two records)
+-- FIX (Cursor P0): Changed from first INITIAL to full norm_first match.
+-- First initial matched spouses (JAMES + JANE = both J) — DANGEROUS.
+-- Full norm_first prevents spouse merges while still catching
+-- duplicate records for the same person across household re-assignments.
 -- Confidence: 0.92
 INSERT INTO staging.v3_merge_candidates
   (keeper_person_id, merge_person_id, match_method, confidence, evidence)
@@ -634,7 +683,7 @@ FROM core.person_spine a
 JOIN core.person_spine b
   ON a.household_id = b.household_id
   AND a.norm_last = b.norm_last
-  AND LEFT(a.norm_first, 1) = LEFT(b.norm_first, 1)
+  AND a.norm_first = b.norm_first  -- FIX: full name, not just initial
   AND a.person_id < b.person_id
 WHERE a.is_active = true AND b.is_active = true
   AND a.record_quality = 'PRETTY' AND b.record_quality = 'PRETTY'
