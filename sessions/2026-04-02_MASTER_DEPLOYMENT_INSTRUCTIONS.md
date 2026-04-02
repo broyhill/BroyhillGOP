@@ -24,7 +24,7 @@ Before ANY SQL runs:
 
 ### STAGE 1: Schema Additions (Phase 0 from V3.1)
 
-**Source:** `sessions/2026-04-02_COMPLETE_DEDUP_V3.sql` — lines 1-106 (Phase 0)
+**Source:** `sessions/2026-04-02_COMPLETE_DEDUP_V3.sql` — **PHASE 0** (all `DO $$ BEGIN ... END $$` blocks)
 
 **What it does:** Adds 12 new columns to `core.person_spine`:
 - `birth_year`, `canonical_first_name`, `preferred_name`, `legal_first_name`
@@ -50,7 +50,7 @@ ORDER BY column_name;
 
 ### STAGE 2: Enrichment (Phase 1 from V3.1)
 
-**Source:** `sessions/2026-04-02_COMPLETE_DEDUP_V3.sql` — lines 108-230 (Phase 1)
+**Source:** `sessions/2026-04-02_COMPLETE_DEDUP_V3.sql` — **PHASE 1** (all `UPDATE core.person_spine` statements 1A through 1I)
 
 **What it does:** Fills empty columns from nc_voters (primary) and nc_datatrust (fallback). Each UPDATE touches ONE column only. Every UPDATE has `WHERE column IS NULL` guard — cannot overwrite existing data.
 
@@ -82,7 +82,7 @@ FROM core.person_spine WHERE person_id = 26451;
 
 ### STAGE 3: Best Employer Backward Scan (Phase 2 from V3.1)
 
-**Source:** `sessions/2026-04-02_COMPLETE_DEDUP_V3.sql` — lines 232-273 (Phase 2)
+**Source:** `sessions/2026-04-02_COMPLETE_DEDUP_V3.sql` — **PHASE 2** (best employer backward scan)
 
 **What it does:** For each spine person with NC BOE donations, finds the most recent NON-RETIRED employer by scanning backward from 2026.
 
@@ -109,7 +109,7 @@ GROUP BY best_employer ORDER BY COUNT(*) DESC LIMIT 20;
 
 ### STAGE 4: Record Quality Classification (Phase 3 from V3.1)
 
-**Source:** `sessions/2026-04-02_COMPLETE_DEDUP_V3.sql` — lines 276-300 (Phase 3)
+**Source:** `sessions/2026-04-02_COMPLETE_DEDUP_V3.sql` — **PHASE 3** (record quality classification)
 
 **What it does:** Classifies every active spine record as PRETTY or UGLY. PRETTY = has name + zip + address number + at least one of (voter_ncid, best_employer, email). UGLY = everything else.
 
@@ -128,7 +128,7 @@ WHERE is_active = true GROUP BY record_quality;
 
 ### STAGE 5: Preferred Name (Phase 4 from V3.1)
 
-**Source:** `sessions/2026-04-02_COMPLETE_DEDUP_V3.sql` — lines 303-332 (Phase 4)
+**Source:** `sessions/2026-04-02_COMPLETE_DEDUP_V3.sql` — **PHASE 4** (preferred name derivation)
 
 **What it does:** For each spine person, finds the most frequently used first name across all NC BOE donation filings. That becomes `preferred_name`.
 
@@ -168,7 +168,7 @@ FROM core.person_spine WHERE person_id = 26451;
 
 ### STAGE 7: Blocklists + Merge Passes (Phases 5-7 from V3.1)
 
-**Source:** `sessions/2026-04-02_COMPLETE_DEDUP_V3.sql` — lines 334-end
+**Source:** `sessions/2026-04-02_COMPLETE_DEDUP_V3.sql` — **PHASES 5, 6, and 7** (staging tables, blocklists, merge passes)
 
 **What it does:**
 1. Creates staging tables (`staging.v3_merge_blocklist`, `staging.v3_merge_candidates`)
@@ -224,7 +224,7 @@ GROUP BY 1 ORDER BY 2 DESC;
 
 **These scripts already handle the 1,105 missing candidate_name rows** (420 registry-has-no-name + 685 not-in-registry). The candidate names are extracted from committee name strings using patterns already coded in the fuzzy match and clean patch.
 
-**Run AFTER Stages 1-7 because the enriched spine (middle names, birth years, preferred names) improves matching accuracy.**
+**Ordering note:** These scripts work from `nc_boe_donations_raw` + `committee_registry` + `ncsbe_candidates` — they do NOT read from `core.person_spine`. Stage 8 is independent of Stages 1-7 and can run in any order. Placed last here because it rebuilds staging tables and the merge passes in Stage 7 should complete first to avoid staging table conflicts.
 
 ---
 
