@@ -30,6 +30,19 @@ You coordinate via a relay at `http://5.9.99.109:8080`:
 
 ---
 
+
+## MUST-READ SESSION FILES (April 3, 2026)
+
+Before asking Ed anything, read ALL of these:
+
+1. `sessions/2026-04-03_CURSOR_SESSION_AUDIT.md` — Cursor's full technical audit of tonight's work. Contains the DataTrust bridge explanation, schema mismatch details, FEC pipeline decision needed, and Phase A-E tomorrow plan.
+
+2. `sessions/CONTACTS_COLUMN_MIGRATION.sql` — Claude's migration script. Adds 14 columns to public.contacts, backfills from custom_fields.datatrust_2026. Needs Ed authorization before running.
+
+3. Root `SESSION-STATE.md` — authoritative numbers. NOTE: nc_boe_donations_raw top-table entry may still show 282,096 (stale) — live COUNT(*) is 338,223. Patch this first thing.
+
+4. `sessions/DEDUP_REVIEW_APRIL2.md` — Perplexity's merge candidate review. Explains why 163 of 167 candidates were false positives and what V3.2 guards prevent.
+
 ## CRITICAL — READ THESE BEFORE EVERY SESSION
 
 **Step 1 — Read the relay inbox:**
