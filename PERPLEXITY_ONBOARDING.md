@@ -324,8 +324,8 @@ Try: JOIN on norm_last + norm_first + nc_datatrust.mailzip5 = contacts.zip5
 Expected yield: additional 3,000-8,000.
 
 **Pass 3 — Address number match (catches address typos and format differences)**
-nc_datatrust has addr_number. fec_donations has addr_number (extracted from contributor_street_1).
-Extract the house number from addr_number (extracted from contributor_street_1) using REGEXP.
+nc_datatrust has addr_number. fec_donations has addr_number (extracted from addr_number (extracted from contributor_street_1)).
+Extract the house number from addr_number (extracted from addr_number (extracted from contributor_street_1)) using REGEXP.
 JOIN on norm_last + norm_first + addr_number = extracted_house_num.
 This catches donors whose zip differs but live at the same address.
 Expected yield: additional 1,000-3,000.
