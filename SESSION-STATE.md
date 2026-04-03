@@ -18,7 +18,7 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 | public.contacts | 226,541 | ✅ Primary masterfile — nc_donor_summary purged |
 | public.nc_datatrust | 7,661,978 | ✅ SACRED — do not touch |
 | public.fec_donations | 2,591,933 | ✅ NC individual donors, all cycles 2015-2026 |
-| public.nc_boe_donations_raw | 282,096 | 🚨 WRONG FILES — reload authorized, pre-flight complete, awaiting execution |
+| public.nc_boe_donations_raw | 338,223 | ✅ Reload complete (Mar 31, 2026) — Individual only; prior wrong-file batch **282,096** rows in `staging.ncboe_archive_wrong_files` |
 | public.winred_donors | ~194,278 | ✅ Clean |
 | public.nc_donor_summary | 195,317 | 🗑️ PURGED from contacts — Letha Davis file, not canonical data |
 | public.person_source_links | 2,055,703 | ✅ |
