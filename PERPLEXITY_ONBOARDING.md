@@ -292,7 +292,7 @@ The database took months to build. One unauthorized TRUNCATE ends the project.**
 
 ### What We Have
 2,591,933 FEC Schedule A transactions — NC individual donors only, all cycles 2015-2026.
-99.9% have full street addresses. These are API exports filtered by contributor_state = NC.
+99.9% have full address numberes. These are API exports filtered by contributor_state = NC.
 They are NOT bulk downloads. Do not re-download or replace them.
 
 ### The Core Problem
@@ -306,7 +306,7 @@ says 28374. He moved. Name+zip will never match him. This is structural, not a d
 ### Current FEC Contact State
 - 39,024 FEC-source contacts in public.contacts
 - 0 have voter_id stamped (none matched to nc_datatrust or nc_voters_fresh yet)
-- All 39,024 have full street addresses (backfilled from fec_donations in fix_11)
+- All 39,024 have full address numberes (backfilled from fec_donations in fix_11)
 - 38,285 have address_line1 populated
 
 ### The Correct Matching Strategy (in order)
@@ -323,10 +323,10 @@ their FEC zip matches their current MAILING address, not their registration addr
 Try: JOIN on norm_last + norm_first + nc_datatrust.mailzip5 = contacts.zip5
 Expected yield: additional 3,000-8,000.
 
-**Pass 3 — Street number match (catches address typos and format differences)**
-nc_datatrust has norm_street_num. fec_donations has contributor_street_1.
-Extract the house number from contributor_street_1 using REGEXP.
-JOIN on norm_last + norm_first + norm_street_num = extracted_house_num.
+**Pass 3 — Address number match (catches address typos and format differences)**
+nc_datatrust has addr_number. fec_donations has addr_number (extracted from contributor_street_1).
+Extract the house number from addr_number (extracted from contributor_street_1) using REGEXP.
+JOIN on norm_last + norm_first + addr_number = extracted_house_num.
 This catches donors whose zip differs but live at the same address.
 Expected yield: additional 1,000-3,000.
 
