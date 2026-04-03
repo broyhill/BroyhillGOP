@@ -168,7 +168,7 @@ def main() -> int:
                      profession_job_title, employer_name, transaction_type, committee_name, committee_sboe_id,
                      date_occured_raw, amount_raw, amount_numeric, date_occurred, form_of_payment, purpose,
                      source_file, loaded_at)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now())
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now())
                     """,
                     (
                         donor_name or None,
