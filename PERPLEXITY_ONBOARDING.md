@@ -213,7 +213,7 @@ SQL
 | SSH key | /Users/Broyhill/.ssh/id_ed25519_hetzner |
 | Relay API key | bgop-relay-k9x2mP8vQnJwT4rL |
 | GitHub repo | broyhill/BroyhillGOP |
-| GitHub PAT | [stored in /opt/broyhillgop/.env on Hetzner] |
+| GitHub PAT | [PAT-stored-in-env] |
 | DataTrust contact | Danny Gustafson dgustafson@gop.com 517-281-8018 |
 | RNC address | 310 First Street SE, Washington DC 20003 |
 
