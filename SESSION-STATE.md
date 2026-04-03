@@ -1,5 +1,5 @@
 # BroyhillGOP SESSION STATE
-## Updated: 2026-04-03 (late night) EDT — Cursor execution + Perplexity sign-off
+## Updated: 2026-04-03 (overnight) EDT — Claude name+zip match + column migration design
 
 ---
 
@@ -126,10 +126,14 @@ This is expected — RNCID backfill will improve match rate in next session.
 | Metric | Value |
 |--------|------:|
 | Total contacts | 226,541 |
-| Has cell phone (`phone_mobile` non-empty) | 122,394 (54%) |
+| Has phone (any) | 142,012 (63%) |
+| Has cell phone (`phone_mobile` non-empty) | 123,120 (54%) |
+| Has email | 32,777 (14%) |
 | Has Republican score (`custom_fields.datatrust_2026.republican_score`) | 127,817 (56%) |
+| Has turnout score | 127,817 (56%) |
 | Has congressional district (non-empty) | 132,613 (59%) |
 | Has coalition data (`datatrust_2026.coalition_veteran` present) | 132,036 (58%) |
+| Missing voter_id (unmatched contacts) | 93,928 (41%) |
 
 **Rows enriched this session:** 132,036 (all matched via `nc_datatrust` bridge). **`public.nc_voters` was not modified.**
 
@@ -198,8 +202,20 @@ This is expected — RNCID backfill will improve match rate in next session.
 ### DataTrust staging + contact enrichment — ✅ COMPLETE (April 3, 2026)
 - See section **DATATRUST MARCH 2026 — STAGING + CONTACT ENRICHMENT** above.
 
-### Contacts column migration — ⏳ Claude (MSG #224)
-- `ALTER` + `UPDATE` from `custom_fields.datatrust_2026` → proper columns — **awaiting Claude script + Ed/Perplexity review**.
+### Name+Zip Voter Match (93K unmatched contacts) — ⏳ Staged, awaiting Perplexity approval (April 3 overnight)
+- **Dry run complete:** 9,799 distinct contacts matched via `last_name + first_name + LEFT(zip_code,5)` to `staging.nc_voters_fresh` (lastname, firstname, regzip5)
+- **11,203 total join rows** before DISTINCT ON (some contacts match multiple voters)
+- **Breakdown:** WinRed=8,773 | NC_BOE=983 | FEC=43
+- **Staging table:** `staging.staging_claude_namez_match` (9,799 rows) — includes nv_rncid, nv_ncid, nv_party, nv_sex, districts, phone data, scores, income
+- **Relay message #226** sent to Perplexity with counts — **NO UPDATE executed yet**
+- **Remaining unmatched after this pass:** ~84,129 contacts (93,928 - 9,799)
+
+### Contacts column migration — ✅ DESIGNED, awaiting review (April 3 overnight)
+- Migration SQL committed to GitHub: `sessions/CONTACTS_COLUMN_MIGRATION.sql`
+- **14 new columns** to add: ethnicity, religion, education_level, household_party, household_id_datatrust, cell_source, landline_source, dt_cell_dnc, dt_cell_source, dt_cell_reliability, dt_landline_dnc, dt_landline_source, dt_landline_reliability, dt_enriched_at
+- **Existing columns** updated via COALESCE (scores, vote history, coalition flags, dt_rncid)
+- **132,036 contacts** affected (all with datatrust_2026 JSON)
+- **DESIGN ONLY — not executed.** Awaiting Ed/Perplexity review.
 
 ### WinRed phone/email backfill — ⏳ NEXT after migration review
 - Target ~**94K** contacts still without mobile after DataTrust pass.
