@@ -3,8 +3,9 @@
 Phase 5c — Populate norm.fec_individual from raw.fec_donations
 
 **Policy:** FEC data in raw.fec_donations must not be loaded from FEC bulk Schedule A
-downloads (see SESSION-STATE / fec_raw_import.py). This step assumes raw rows came
-from an Ed-approved source.
+downloads (see SESSION-STATE / fec_raw_import.py). Do not mix party-committee-only
+exports (RNC, NRCC, NRSC) or non-individual-to-candidate-committee sources into this path.
+Only categories processed: PRESIDENTIAL, US_HOUSE, US_SENATE.
 
 Applies:
   - get_canonical_first_name() from DB nickname map (ED→EDWARD, ART→ARTHUR, etc.)
@@ -29,7 +30,7 @@ from pipeline.db import get_connection, init_pool
 logger = logging.getLogger(__name__)
 
 # Process in batches by fec_category to keep statements manageable
-CATEGORIES = ['PRESIDENTIAL', 'US_HOUSE', 'US_SENATE', 'RNC', 'NRCC', 'NRSC']
+CATEGORIES = ['PRESIDENTIAL', 'US_HOUSE', 'US_SENATE']
 
 INSERT_SQL = """
 INSERT INTO norm.fec_individual (

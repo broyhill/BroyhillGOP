@@ -35,10 +35,10 @@ logger = logging.getLogger(__name__)
 DOWNLOADS = Path.home() / "Downloads"
 
 # Ed's "6 + 6 + 6" layout (March 2026 pull) — REFERENCE ONLY; module is policy-blocked.
-# - 6 Presidential + 6 US House + 6 US Senate = 18 files, one per ~two-year election slice.
-# - Downloaded sequentially: suspected FEC site row caps / truncated output on huge exports;
-#   Trump-cycle volume made splitting by office (pres / house / senate) and period safer.
-# - Plus 5 party-committee files (RNC×2, NRCC×1, NRSC×2) → 23 paths below.
+# - 18 files only: 6 Presidential + 6 US House + 6 US Senate (individual Schedule A → candidate committees).
+# - Do NOT include RNC / NRCC / NRSC party-committee bulk files or any source that is not
+#   individual donor records reflecting donations to candidate committees (Ed policy).
+# - Downloaded sequentially: suspected FEC site row caps; Trump-cycle volume per slice.
 
 FEC_FILES: list[tuple[str, str]] = [
     # Presidential (6)
@@ -62,12 +62,6 @@ FEC_FILES: list[tuple[str, str]] = [
     ("senate-2021-2022-schedule_a-2026-03-11T23_12_37.csv",        "US_SENATE"),
     ("senate-2023-2024-schedule_a-2026-03-11T23_14_42.csv",        "US_SENATE"),
     ("senate-2025-2026-schedule_a-2026-03-11T23_16_23.csv",        "US_SENATE"),
-    # RNC / NRCC / NRSC (5)
-    ("RNC-2015-2023-schedule_a-2026-03-11T23_24_16.csv",           "RNC"),
-    ("RNC-2024-2026-schedule_a-2026-03-11T23_26_28.csv",           "RNC"),
-    ("NRCC-2015-2026-schedule_a-2026-03-11T23_29_07.csv",          "NRCC"),
-    ("NRSC-2015-2020-schedule_a-2026-03-11T23_34_04.csv",          "NRSC"),
-    ("NRSC-2021-2026-schedule_a-2026-03-11T23_36_31.csv",          "NRSC"),
 ]
 
 # All 78 source column names (from FEC API export format)
@@ -190,7 +184,7 @@ CREATE TABLE IF NOT EXISTS raw.fec_donations (
     contributor_last_norm           TEXT,          -- upper(trim(contributor_last_name))
     contributor_first_norm          TEXT,          -- upper(trim(contributor_first_name))
     employer_normalized             TEXT,          -- stripped LLC/Inc/etc
-    fec_category                    TEXT NOT NULL, -- PRESIDENTIAL / US_HOUSE / US_SENATE / RNC / NRCC / NRSC
+    fec_category                    TEXT NOT NULL, -- PRESIDENTIAL / US_HOUSE / US_SENATE (party-committee exports excluded)
     source_file                     TEXT NOT NULL,
     loaded_at                       TIMESTAMPTZ DEFAULT now()
 );
