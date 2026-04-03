@@ -285,3 +285,89 @@ The database was nearly corrupted by:
 
 **The STOP rule exists for a reason. Read everything first. Ask Ed before acting.
 The database took months to build. One unauthorized TRUNCATE ends the project.**
+
+---
+
+## FEC FILE — MATCHING STRATEGY (Read Before Touching fec_donations)
+
+### What We Have
+2,591,933 FEC Schedule A transactions — NC individual donors only, all cycles 2015-2026.
+99.9% have full street addresses. These are API exports filtered by contributor_state = NC.
+They are NOT bulk downloads. Do not re-download or replace them.
+
+### The Core Problem
+The FEC donation address is where the donor WROTE ON THE CHECK — not where they are
+registered to vote. Donors move. They give from vacation homes. They use work addresses.
+This is why zip-code matching against nc_datatrust fails for many FEC donors.
+
+Example: DOUGLAS AITKEN is in nc_datatrust at zip 27527 but his FEC contact record
+says 28374. He moved. Name+zip will never match him. This is structural, not a data error.
+
+### Current FEC Contact State
+- 39,024 FEC-source contacts in public.contacts
+- 0 have voter_id stamped (none matched to nc_datatrust or nc_voters_fresh yet)
+- All 39,024 have full street addresses (backfilled from fec_donations in fix_11)
+- 38,285 have address_line1 populated
+
+### The Correct Matching Strategy (in order)
+
+**Pass 1 — RNCID direct (fastest, most accurate)**
+Some FEC donors also appear in nc_datatrust because DataTrust has FEC donor flag.
+Try: JOIN contacts → nc_datatrust ON norm_last + norm_first + LEFT(zip,5)
+Use nc_datatrust norm columns and mailzip5 (not reg zip).
+Expected yield: 5,000-15,000 matches.
+
+**Pass 2 — Mailing zip vs reg zip (catches movers)**
+nc_datatrust has BOTH regzip5 AND mailzip5. Many donors have moved —
+their FEC zip matches their current MAILING address, not their registration address.
+Try: JOIN on norm_last + norm_first + nc_datatrust.mailzip5 = contacts.zip5
+Expected yield: additional 3,000-8,000.
+
+**Pass 3 — Street number match (catches address typos and format differences)**
+nc_datatrust has norm_street_num. fec_donations has contributor_street_1.
+Extract the house number from contributor_street_1 using REGEXP.
+JOIN on norm_last + norm_first + norm_street_num = extracted_house_num.
+This catches donors whose zip differs but live at the same address.
+Expected yield: additional 1,000-3,000.
+
+**Pass 4 — Email match (highest confidence, needs Danny's reply)**
+Danny Gustafson (dgustafson@gop.com) was asked to add email_dt to the DataTrust file.
+Once email_dt is in nc_voters_fresh, JOIN contacts.email = nc_voters_fresh.email_dt.
+This bypasses all name/address ambiguity entirely.
+Expected yield: potentially 10,000-20,000 once email_dt is available.
+
+**Pass 5 — Fuzzy name match (last resort)**
+gin_trgm index exists on nc_datatrust for fuzzy matching.
+Use similarity() function: WHERE similarity(norm_last, c.last_name) > 0.85
+Only run this AFTER all exact passes are exhausted.
+WARNING: High false positive rate. Every result needs review before UPDATE.
+Expected yield: 500-2,000 but requires manual spot-checking.
+
+### What NOT to Do
+- Do NOT bulk re-download FEC files from FEC.gov — the files are complete and clean
+- Do NOT try to match FEC donors to out-of-state records — Ed only wants NC donors
+- Do NOT delete unmatched FEC contacts — they are real donors, just hard to match
+- Do NOT use the old nc_voter table for matching — use staging.nc_voters_fresh (March 2026)
+- Do NOT run any UPDATE without a dry run count and Ed's authorization first
+
+### Syncing fec_donations with contacts
+The contacts table was built FROM fec_donations in fix_08. They are already in sync.
+The job is not to reload fec_donations — it is to ENRICH the existing FEC contacts
+with voter_id (RNCID) and then pull scores, phones, vote history from nc_voters_fresh.
+
+### Key Indexes Already Built
+- nc_datatrust: idx_nc_datatrust_norm_match (norm_last, norm_first, norm_zip5)
+- nc_datatrust: idx_nc_datatrust_mailzip5 (norm_last, norm_first, mailzip5)
+- nc_voters_fresh: idx_nvf_rncid, idx_nvf_statevoterid, idx_nvf_name_zip
+- Always SET statement_timeout = 0 before any join against these 7M+ row tables
+
+### Files on Ed's Drive (GOD FILE folder)
+Ed has all 6 election cycles as CSVs in Google Drive folder AAA FEC-HOUSE_SENATE_PRES:
+- house-2025-2026, senate-2025-2026, pres-2025-2026
+- house-2023-2024, senate-2023-2024, pres-2023-2024
+- house-2021-2022, senate-2021-2022, pres-2021-2022
+- house-2019-2020, senate-2019-2020, pres-2019-2020
+- house-2017-2018, senate-2017-2018
+- house-2015-2016, senate-2015-2016, pres-2015-2016
+These are NC-filtered Schedule A exports — individual donors only, full addresses.
+The database already has all of them loaded. Do NOT reload unless instructed by Ed.
