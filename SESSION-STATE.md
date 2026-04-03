@@ -243,6 +243,7 @@ This is expected — RNCID backfill will improve match rate in next session.
 
 ### Data Rules
 - **FEC bulk downloads — DO NOT USE:** Do not select, download, or ingest **FEC bulk Schedule A / “bulk export”** files for BroyhillGOP. **Not approved:** contributor physical-address requirements for this program are **not** satisfied via that path. Use other approved FEC sources (e.g. curated pipelines with full address validation) only per Ed/Perplexity spec — never `pipeline/fec_raw_import.py` unless Ed sets **`BROYHILL_ALLOW_FEC_BULK_IMPORT=1`** for a documented exception.
+- **FEC “6 + 6 + 6” bundle (Ed — reference only):** The **primary** Schedule A slices Ed organized are **6 Presidential + 6 US House + 6 US Senate** files (18), each covering a **two-year election period** through 2015–2026 in the March 2026 export set. He downloaded them **in sequence** because the FEC site may impose **row limits or cut off** very large downloads; splitting by **office** (pres / house / senate) and **period** also manages **Trump-era** donation volume. **Plus** **5** party-committee exports (**RNC** ×2, **NRCC** ×1, **NRSC** ×2) → **23 files** total, listed as `FEC_FILES` in `pipeline/fec_raw_import.py`. This documents **what that package was**; it does **not** override the bulk-ingest ban above.
 - Ed = ED BROYHILL in all systems — never map to Edward
 - No out-of-state candidate donations in individual donor files
 - nc_donor_summary: PURGED — do not re-import, do not reference, archive only

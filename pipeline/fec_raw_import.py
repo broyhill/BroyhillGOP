@@ -34,30 +34,35 @@ logger = logging.getLogger(__name__)
 
 DOWNLOADS = Path.home() / "Downloads"
 
-# All 23 source files with their category labels
+# Ed's "6 + 6 + 6" layout (March 2026 pull) — REFERENCE ONLY; module is policy-blocked.
+# - 6 Presidential + 6 US House + 6 US Senate = 18 files, one per ~two-year election slice.
+# - Downloaded sequentially: suspected FEC site row caps / truncated output on huge exports;
+#   Trump-cycle volume made splitting by office (pres / house / senate) and period safer.
+# - Plus 5 party-committee files (RNC×2, NRCC×1, NRSC×2) → 23 paths below.
+
 FEC_FILES: list[tuple[str, str]] = [
-    # Presidential
+    # Presidential (6)
     ("pres-2015-16-schedule_a-2026-03-11T22_18_56.csv",           "PRESIDENTIAL"),
     ("pres-2017-2018-schedule_a-2026-03-11T22_21_57.csv",          "PRESIDENTIAL"),
     ("pres-2019-2020schedule_a-2026-03-11T22_29_00.csv",           "PRESIDENTIAL"),
     ("pres-2021-2022-schedule_a-2026-03-11T22_32_16.csv",          "PRESIDENTIAL"),
     ("pres-2023-2024-schedule_a-2026-03-11T22_34_32.csv",          "PRESIDENTIAL"),
     ("pres-2025-2026-schedule_a-2026-03-11T22_36_12.csv",          "PRESIDENTIAL"),
-    # US House
+    # US House (6)
     ("House-2015-2016-schedule_a-2026-03-11T22_38_59.csv",         "US_HOUSE"),
     ("house-2017-2018-schedule_a-2026-03-11T22_40_13.csv",         "US_HOUSE"),
     ("house-2019-2020-schedule_a-2026-03-11T22_42_56.csv",         "US_HOUSE"),
     ("house 2021-2022-schedule_a-2026-03-11T22_46_12.csv",         "US_HOUSE"),
     ("house-2023-2024-schedule_a-2026-03-11T22_48_39.csv",         "US_HOUSE"),
     ("house-2025-2026-schedule_a-2026-03-11T22_50_12.csv",         "US_HOUSE"),
-    # US Senate
+    # US Senate (6)
     ("senate-2015-2016-schedule_a-2026-03-11T22_52_17.csv",        "US_SENATE"),
     ("senate-2017-2018-schedule_a-2026-03-11T22_53_51.csv",        "US_SENATE"),
     ("senate-2019-2020-schedule_a-2026-03-11T23_00_50.csv",        "US_SENATE"),
     ("senate-2021-2022-schedule_a-2026-03-11T23_12_37.csv",        "US_SENATE"),
     ("senate-2023-2024-schedule_a-2026-03-11T23_14_42.csv",        "US_SENATE"),
     ("senate-2025-2026-schedule_a-2026-03-11T23_16_23.csv",        "US_SENATE"),
-    # RNC / NRCC / NRSC
+    # RNC / NRCC / NRSC (5)
     ("RNC-2015-2023-schedule_a-2026-03-11T23_24_16.csv",           "RNC"),
     ("RNC-2024-2026-schedule_a-2026-03-11T23_26_28.csv",           "RNC"),
     ("NRCC-2015-2026-schedule_a-2026-03-11T23_29_07.csv",          "NRCC"),
