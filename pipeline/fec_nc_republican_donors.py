@@ -140,6 +140,9 @@ def get_nc_hs_p_committees() -> list[dict[str, Any]]:
             ct = (c.get("committee_type") or "").upper()
             if ct not in ALLOWED_COMMITTEE_TYPES:
                 continue
+            # Principal campaign committee only (not party PACs / joint orgs with other designations)
+            if (c.get("designation") or "").upper() != "P":
+                continue
             out.append(
                 {
                     "committee_id": c["committee_id"],
