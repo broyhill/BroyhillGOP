@@ -336,12 +336,13 @@ Once email_dt is in nc_voters_fresh, JOIN contacts.email = nc_voters_fresh.email
 This bypasses all name/address ambiguity entirely.
 Expected yield: potentially 10,000-20,000 once email_dt is available.
 
-**Pass 5 — Fuzzy name match (last resort)**
-gin_trgm index exists on nc_datatrust for fuzzy matching.
-Use similarity() function: WHERE similarity(norm_last, c.last_name) > 0.85
-Only run this AFTER all exact passes are exhausted.
-WARNING: High false positive rate. Every result needs review before UPDATE.
-Expected yield: 500-2,000 but requires manual spot-checking.
+**Pass 5 — DO NOT USE FUZZY MATCHING**
+With Anchors 1-4 plus the email match, fuzzy adds only 500-800 marginal results
+with HIGH false positive rates. The remaining ~50K truly unmatched contacts are
+genuinely out-of-state, deceased, or have left NC. No fuzzy strategy recovers them
+accurately. Fuzzy matching introduces noise that damages data quality.
+RULE: If the 4 exact passes plus email cannot match a contact, flag them as
+historical_unmatched and move on. Do not corrupt good data chasing bad matches.
 
 ### What NOT to Do
 - Do NOT bulk re-download FEC files from FEC.gov — the files are complete and clean
