@@ -1,5 +1,5 @@
 # BroyhillGOP SESSION STATE
-## Updated: 2026-03-31 21:18 EDT by Perplexity
+## Updated: 2026-04-03 (late night) EDT — Cursor execution + Perplexity sign-off
 
 ---
 
@@ -9,7 +9,7 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 
 ---
 
-## DATABASE: TRUE CURRENT STATE (2026-03-31)
+## DATABASE: TRUE CURRENT STATE (2026-04-03)
 
 ### Core Tables — Verified Row Counts (COUNT(*), not pg_stat estimates)
 
@@ -22,11 +22,11 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 | public.winred_donors | ~194,278 | ✅ Clean |
 | public.nc_donor_summary | 195,317 | 🗑️ PURGED from contacts — Letha Davis file, not canonical data |
 | public.person_source_links | 2,055,703 | ✅ |
-| core.person_spine | 128,047 active | ✅ $426,949,676 total after NC_BOE rebuild |
+| core.person_spine | 128,043 active | ✅ Merge executor ran 2026-04-03 — 4 genuine duplicates merged; $426,949,676 total (unchanged ballpark) |
 | core.contribution_map | 4,137,549 | ✅ party_flag stamped, 733K rows attributed to candidates |
 | core.candidate_committee_map | 3,733 rows | ✅ 99.97% FEC committee coverage (fix_09) |
 | candidate_profiles | 3,630 | ✅ All Republican, faction scores |
-| staging.nc_voters_fresh | 0 | ⚠️ Table ready, COPY blocked — needs Hetzner SSH key auth |
+| staging.nc_voters_fresh | 7,708,542 | ✅ March 2026 DataTrust NC full file loaded via Hetzner relay; indexes: `idx_nvf_rncid`, `idx_nvf_statevoterid`, `idx_nvf_name_zip` |
 
 ### SACRED TABLES — DO NOT TOUCH UNDER ANY CIRCUMSTANCES
 - `nc_voters`
@@ -80,9 +80,9 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 **Final spine metrics (active rows only):**
 | Metric | Value |
 |--------|-------|
-| Active spine rows | 128,047 |
-| Voter linked | 127,670 (99.7%) |
-| Has RNCID | 128,047 (100%) |
+| Active spine rows | 128,043 |
+| Voter linked | 127,670 (99.7%) — spot-verify after merge |
+| Has RNCID | 128,043 (100%) |
 | Has contribution > 0 | 127,945 (99.9%) |
 | Total dollars | $426,949,676 |
 
@@ -108,11 +108,48 @@ This is expected — RNCID backfill will improve match rate in next session.
 | winred_donors | 38,060 | 38,057 | 3 ✅ |
 | fec_donations | 39,024 | 38,285 | 739 ✅ (blank at FEC source) |
 | nc_boe_donations_raw | 16,844 | 16,697 | 147 ✅ (blank at BOE source) |
-| nc_donor_summary | 84,326 | 0 | 84,326 ❌ ACTIVE WORK ITEM |
 
-**Total missing address_line1: 85,216**
-**Root cause: nc_donor_summary was a summary rollup file (from Letha Davis, Oct 2024) with no streets**
-**Fix: Match to nc_datatrust by name+zip → pull registration address → staged UPDATE**
+**nc_donor_summary contacts were purged (March 31)** — no longer in `public.contacts`.
+
+---
+
+## DATATRUST MARCH 2026 — STAGING + CONTACT ENRICHMENT (2026-04-03) ✅
+
+- **7,708,542** DataTrust voter rows downloaded and `\copy` loaded into **`staging.nc_voters_fresh`** (pipe-delimited `NC_VoterFile_FULL_20260312.csv` on Hetzner relay).
+- **Three indexes** on staging: `rncid`, `statevoterid`, `(lastname, firstname, regzip5)`.
+- **Bridge:** `contacts.voter_id` (legacy RNCID) → `public.nc_datatrust.rncid` → `staging.nc_voters_fresh.statevoterid` → new March 2026 `rncid`.
+- **Staging table:** `staging.staging_claude_contact_enrichment` (132,036 rows) — Perplexity reviewed; **`UPDATE public.contacts` executed** from enrichment.
+- **Storage model (temporary):** Scores, coalition flags, vote history, phone metadata, and sources live under **`custom_fields.datatrust_2026`**; **mapped columns** updated where they exist (`voter_id`, `phone_mobile`, `phone`, districts, `precinct`, `gender`, `date_of_birth` from year, `estimated_income_range`). Full top-level column parity awaits **Claude’s migration script** (see below).
+
+### Contacts — metrics after enrichment (table-wide)
+
+| Metric | Value |
+|--------|------:|
+| Total contacts | 226,541 |
+| Has cell phone (`phone_mobile` non-empty) | 122,394 (54%) |
+| Has Republican score (`custom_fields.datatrust_2026.republican_score`) | 127,817 (56%) |
+| Has congressional district (non-empty) | 132,613 (59%) |
+| Has coalition data (`datatrust_2026.coalition_veteran` present) | 132,036 (58%) |
+
+**Rows enriched this session:** 132,036 (all matched via `nc_datatrust` bridge). **`public.nc_voters` was not modified.**
+
+### Merge + dedup (same night)
+
+- **Merge executor** ran — **4** genuine duplicates merged; spine **128,043** active.
+- **Dedup V3** bundle with false-positive guards **committed to GitHub** (e.g. `sessions/2026-04-02_COMPLETE_DEDUP_V3.sql`, deploy runbooks under `sessions/`).
+
+---
+
+## CLAUDE — COLUMN MIGRATION ASSIGNMENT (relay **MSG #224**)
+
+**Goal:** Promote DataTrust enrichment from JSON to first-class `public.contacts` columns (design + migration SQL).
+
+1. **Design** `ALTER TABLE public.contacts ADD COLUMN …` (or equivalent) for: modeled scores, coalition flags, cell/landline source columns, religion, education, etc., aligned with how **`custom_fields.datatrust_2026`** is structured today.
+2. **`UPDATE`** backfill from `custom_fields->'datatrust_2026'` into new columns (idempotent, batched if needed; `statement_timeout = 0` on Supabase).
+3. **Document** nullable defaults, type choices (`numeric` vs `text` for scores), and whether JSON remains a mirror or is trimmed after backfill.
+4. **Handoff:** Ed/Perplexity review migration **before** production `ALTER` + mass `UPDATE`.
+
+**Next session (authorized after review):** run Claude’s migration; then **WinRed phone/email backfill** for the remaining ~**94K** contacts without mobile coverage.
 
 ---
 
@@ -128,6 +165,8 @@ This is expected — RNCID backfill will improve match rate in next session.
 
 **Note:** `contacts.voter_id` stores RNCID (e.g. 24234683774), NOT NC SBOE statevoterid (e.g. AN130350).
 `nc_datatrust.statevoterid` contains the NC SBOE voter registration number for every record.
+
+**2026-04-03:** 132,036 nc_datatrust-sourced contacts now have **`voter_id` = March 2026 file `rncid`** (via bridge above).
 
 ---
 
@@ -156,10 +195,14 @@ This is expected — RNCID backfill will improve match rate in next session.
 - 108,943 NC_BOE rows mapped to spine, $64M
 - Spine aggregates recomputed: $426.9M total
 
-### nc_voters_fresh load (BLOCKED)
-- 9,083,727 rows downloaded to /tmp/ncvoter_fresh/ on Hetzner server 5.9.99.109
-- staging.nc_voters_fresh table ready (0 rows)
-- BLOCKED: SSH password auth fails from cloud environments — needs key-based auth
+### DataTrust staging + contact enrichment — ✅ COMPLETE (April 3, 2026)
+- See section **DATATRUST MARCH 2026 — STAGING + CONTACT ENRICHMENT** above.
+
+### Contacts column migration — ⏳ Claude (MSG #224)
+- `ALTER` + `UPDATE` from `custom_fields.datatrust_2026` → proper columns — **awaiting Claude script + Ed/Perplexity review**.
+
+### WinRed phone/email backfill — ⏳ NEXT after migration review
+- Target ~**94K** contacts still without mobile after DataTrust pass.
 
 ### Phase 1-7 Architecture Build (QUEUED for Claude)
 - 20+ new tables designed in March 31 master architecture session
