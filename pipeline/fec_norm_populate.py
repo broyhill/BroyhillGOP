@@ -2,6 +2,10 @@
 """
 Phase 5c — Populate norm.fec_individual from raw.fec_donations
 
+**Policy:** FEC data in raw.fec_donations must not be loaded from FEC bulk Schedule A
+downloads (see SESSION-STATE / fec_raw_import.py). This step assumes raw rows came
+from an Ed-approved source.
+
 Applies:
   - get_canonical_first_name() from DB nickname map (ED→EDWARD, ART→ARTHUR, etc.)
   - normalize_address() for street normalization

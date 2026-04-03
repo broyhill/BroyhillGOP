@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-Phase 4 — FEC Raw Import into raw.fec_donations
+DEPRECATED / POLICY-BLOCKED — FEC bulk Schedule A import
 
-Imports all 23 March 11, 2026 FEC schedule_a exports into raw.fec_donations.
-- All 78 source columns preserved (no data discarded)
-- Adds: id (serial), source_file, fec_category, contributor_zip5,
-        contributor_last_norm, contributor_first_norm, employer_normalized, loaded_at
-- Deduplicates on sub_id (unique FEC transaction ID) to survive re-runs
-- Runs on Eddie's Mac directly against Supabase — no VM
+**Project rule (Ed): Do not select or ingest FEC bulk download files.**
+Bulk Schedule A extracts are not an approved source for BroyhillGOP ingestion
+(physical-address and data-quality requirements are not met by this path).
 
-Usage:
-  cd /Users/Broyhill/Desktop/BroyhillGOP-CURSOR
-  python3 -m pipeline.fec_raw_import [--dry-run] [--file <filename>]
+This module is retained only as historical reference. By default it **refuses to run**.
+To override in an extreme recovery scenario only, set:
+  export BROYHILL_ALLOW_FEC_BULK_IMPORT=1
+
+Original behavior when allowed: import March 2026 FEC schedule_a CSVs from
+~/Downloads into raw.fec_donations, dedupe on sub_id.
 """
 
 from __future__ import annotations
@@ -307,6 +307,15 @@ def ensure_schema(conn) -> None:
 
 
 def run(dry_run: bool = False, single_file: str | None = None) -> None:
+    if os.environ.get("BROYHILL_ALLOW_FEC_BULK_IMPORT", "").strip() != "1":
+        print(
+            "ABORT: FEC bulk download ingestion is disabled by project policy.\n"
+            "Do not select or ingest FEC bulk Schedule A files (no approved physical-address path).\n"
+            "Override only if Ed explicitly authorizes: BROYHILL_ALLOW_FEC_BULK_IMPORT=1",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+
     init_pool()
 
     files = FEC_FILES
@@ -349,7 +358,9 @@ def run(dry_run: bool = False, single_file: str | None = None) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Phase 4 — FEC raw import into raw.fec_donations")
+    parser = argparse.ArgumentParser(
+        description="POLICY-BLOCKED: FEC bulk import (see module docstring). Requires BROYHILL_ALLOW_FEC_BULK_IMPORT=1."
+    )
     parser.add_argument("--dry-run", action="store_true", help="Count rows without writing")
     parser.add_argument("--file", help="Load only the file matching this substring")
     parser.add_argument("-v", "--verbose", action="store_true")

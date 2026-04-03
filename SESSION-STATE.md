@@ -242,6 +242,7 @@ This is expected — RNCID backfill will improve match rate in next session.
 - Fix_07: TWO MANUAL PASSES ONLY rule still applies
 
 ### Data Rules
+- **FEC bulk downloads — DO NOT USE:** Do not select, download, or ingest **FEC bulk Schedule A / “bulk export”** files for BroyhillGOP. **Not approved:** contributor physical-address requirements for this program are **not** satisfied via that path. Use other approved FEC sources (e.g. curated pipelines with full address validation) only per Ed/Perplexity spec — never `pipeline/fec_raw_import.py` unless Ed sets **`BROYHILL_ALLOW_FEC_BULK_IMPORT=1`** for a documented exception.
 - Ed = ED BROYHILL in all systems — never map to Edward
 - No out-of-state candidate donations in individual donor files
 - nc_donor_summary: PURGED — do not re-import, do not reference, archive only
@@ -251,6 +252,7 @@ This is expected — RNCID backfill will improve match rate in next session.
 - Letha Davis file = external summary rollup, never had streets, not our data
 
 ### MAY NOT (Claude guardrails)
+- **Ingest FEC bulk download / bulk Schedule A files** (see Data Rules — blocked)
 - DROP/ALTER tables in core/public/archive/norm/raw/staging/audit schemas
 - UPDATE/DELETE from core.person_spine, core.contribution_map, public.contacts,
   public.person_source_links, public.nc_datatrust, public.nc_boe_donations_raw
