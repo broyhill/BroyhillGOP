@@ -220,6 +220,9 @@ This is expected — RNCID backfill will improve match rate in next session.
 ### WinRed phone/email backfill — ⏳ NEXT after migration review
 - Target ~**94K** contacts still without mobile after DataTrust pass.
 
+### FEC party committees + state committees — ⏳ DEFERRED (future session)
+- **Ed:** Come back later to focus on **FEC party-committee** data (RNC, NRCC, NRSC, and related) and **state committee** records — valuable, but **not** mixed with the **18-file individual → candidate-committee** pipeline. Requires **separate** ingest design, tables or categories, matching to spine/`contribution_map`, and explicit **authorize** before load.
+
 ### Phase 1-7 Architecture Build (QUEUED for Claude)
 - 20+ new tables designed in March 31 master architecture session
 - Full spec in: sessions/2026-03-31_MASTER_ARCHITECTURE_SESSION.md
