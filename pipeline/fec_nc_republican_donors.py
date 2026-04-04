@@ -339,6 +339,7 @@ def flatten_record(
 
     return {
         "FEC_TransactionID": result.get("sub_id"),
+        "FEC_ContributorID": result.get("contributor_id"),
         "FEC_CommitteeID": result.get("committee_id"),
         "FEC_CandidateID": candidate_id,
         "FEC_FilingTxnID": result.get("transaction_id"),
