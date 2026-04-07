@@ -10,6 +10,9 @@ SHA-256 idempotency per file.
 Usage:
   python scripts/import_ncboe_raw.py NCBOE-2015-2019.csv
   python scripts/import_ncboe_raw.py --dry-run NCBOE-2020-2026-part1.csv
+
+Env:
+  NCBOE_BATCH_SIZE — rows per commit during insert (default 2000, min 500).
 """
 
 from __future__ import annotations
@@ -18,6 +21,7 @@ import argparse
 import csv
 import hashlib
 import logging
+import os
 import sys
 from pathlib import Path
 
@@ -132,7 +136,10 @@ def main() -> int:
     contrib_col = next((h for h in headers if "contributor" in h.lower() or h.strip() == "Name"), "Contributor Name")
     txn_type_col = next((h for h in headers if "transction" in h.lower() or "transaction" in h.lower()), "Transction Type")
 
-    BATCH_SIZE = 2000
+    try:
+        BATCH_SIZE = max(500, int(os.environ.get("NCBOE_BATCH_SIZE", "2000")))
+    except ValueError:
+        BATCH_SIZE = 2000
     inserted = 0
     with open(args.file, newline="", encoding="utf-8-sig", errors="replace") as f:
         reader = csv.DictReader(f)

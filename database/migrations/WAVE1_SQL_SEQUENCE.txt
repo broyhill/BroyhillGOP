@@ -8,7 +8,9 @@ Wave 1 reference SQL — apply in order on a fresh clone (or rely on Supabase mi
 093_REF_NC_VOTERS_ACTIVE_VIEW.sql          — ref.v_nc_voters_active
 094_REF_PERSON_SPINE_SBE_ENRICHED_VIEW.sql — spine vs SBE reconciliation
 095_REF_PIPELINE_NCBOE_LOADS_VIEW.sql      — ref.v_pipeline_ncboe_loads
+096_REF_CONTRIBUTION_MAP_PARTY_SUMMARY.sql — ref.v_contribution_map_party_summary
 
 Also: 066_PHASE1_SPINE_DEDUP.sql uses BIGINT merge ids (run before heavy dedup).
+Optional: NCBOE_BATCH_SIZE env (default 2000) for import_ncboe_raw.py commit frequency.
 
 Shell: scripts/wave1_pipeline.sh (ingest + normalize; --dry-run supported).
