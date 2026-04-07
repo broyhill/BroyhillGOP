@@ -256,3 +256,37 @@ running any NCBOE-related work. The 4 scripts are idempotent (DROP IF EXISTS bef
 *Written by Perplexity-Claude | April 6, 2026 ~10 PM EDT*
 *Ed Broyhill pushed back 6+ times tonight to prevent wrong actions.*
 *Every pushback was correct. The lesson: read everything before recommending anything.*
+
+---
+
+## CRITICAL FINDING — Added 10:06 PM EDT
+
+### ~90,545 NCBOE Donors Are Staged But NOT in THE PEARL
+
+**This was discovered at end of session. Not a deletion — a rollup gap.**
+
+| Source | Status |
+|--------|--------|
+| `norm.nc_boe_donations` | 581,741 rows — 100% linked to person_id ✅ |
+| `core.contribution_map` NC_BOE rows | 108,943 rows — only 19,981 distinct persons |
+| Gap | ~90,545 NCBOE donors staged but never rolled up into contribution_map |
+
+The identity matching IS done — `norm.nc_boe_donations` has person_id on every row.
+The INSERT into `core.contribution_map` was never completed.
+
+**Fix:** `sessions/2026-04-01_rollup_to_core.sql` — Stage 8 of master deployment plan.
+This is the LOWEST RISK, HIGHEST VALUE next move. No new matching needed.
+
+### Revised True Donor Universe Estimate
+- NCBOE rolled up: 18,752 persons
+- NCBOE staged (ready to roll up): ~90,545 persons  
+- FEC (needs identity matching first): ~150,000-200,000 new persons estimated
+- **TRUE ADDRESSABLE UNIVERSE: likely 150,000-200,000+ unique NC Republican donors**
+
+Current spine of 74,407 active persons is a fraction of what it will be when complete.
+
+### Revised Priority Order for Next Session
+1. NCBOE rollup → contribution_map (`2026-04-01_rollup_to_core.sql`) — already identity-resolved, just needs INSERT
+2. 7-pass DataTrust rollup — dedup spine before FEC matching
+3. FEC identity matching — phases D, E, F of identity_resolution.py
+4. FEC candidate/committee pipeline — new script needed
