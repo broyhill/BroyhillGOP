@@ -317,3 +317,37 @@ This was a false alarm caused by:
 
 ### DO NOT attempt to roll norm.nc_boe_donations into contribution_map.
 It would create duplicates of data already in contribution_map from nc_boe_donations_raw.
+
+---
+
+## 🔴 RED FLAG — NCBOE FILE INTEGRITY UNKNOWN (10:16 PM EDT)
+## DO NOT PROCEED WITH ANY ROLLUP UNTIL THIS IS RESOLVED
+
+### What Was Discovered
+1. **Zero voter_ncid on both current sacred files** — `nc_boe_donations_raw` shows has_ncid=0 for BOTH `2015-2019-ncboe.csv` and `2020-2026-ncboe.csv`. The 3-day voter file sync either happened on different files or did not survive the reload into nc_boe_donations_raw.
+
+2. **Archive has 700,908 rows vs current 338,223** — nearly double. Archive files:
+   - `ncboe-individual-2020-2026` — 508,165 rows
+   - `ncboe-individual-2015-2019` — 192,743 rows
+   These may be the more complete original files.
+
+3. **Date query returned corrupted results** — min/max dates came back as dollar amounts. Something may be wrong with column alignment in nc_boe_donations_raw.
+
+4. **Three earlier loads exist** in pipeline.loaded_ncboe_files before the sacred files:
+   - 2015-2020-ncboe-general-funds.csv — 124,015 rows (March 31)
+   - 2020-2026-ncboe-donors-general-fund.csv — 59,901 rows (March 31)
+   - GOP-ncboe-2022.csv — 40,180 rows (March 31)
+
+### Questions That Must Be Answered Before Next Session Proceeds
+1. Which NCBOE files had the 3-day voter file + DataTrust sync done on them?
+2. Are `ncboe-individual-2020-2026` and `ncboe-individual-2015-2019` in the archive the correct complete files?
+3. Why is voter_ncid = 0 on both current files?
+4. What files are currently on Ed's Mac that represent the authoritative NCBOE pulls?
+
+### Rule for Next Session
+**Do not authorize any rollup, any FEC work, or any pipeline work until the NCBOE file integrity question is resolved.** Ask Ed to identify the correct source files at session start.
+
+### What Was NOT Done Tonight
+- nc_boe_donations_raw was NOT touched
+- No rows were deleted or modified
+- This is an open question only — no damage done
