@@ -82,7 +82,8 @@ def main() -> int:
         logger.error("File not found: %s", args.file)
         return 1
 
-    with open(args.file, newline="", encoding="utf-8", errors="replace") as f:
+    # utf-8-sig strips BOM from Excel-exported CSVs
+    with open(args.file, newline="", encoding="utf-8-sig", errors="replace") as f:
         reader = csv.DictReader(f)
         headers = reader.fieldnames or []
         if not _detect_ncboe(headers):
@@ -94,7 +95,7 @@ def main() -> int:
 
     if args.dry_run:
         rows = 0
-        with open(args.file, newline="", encoding="utf-8", errors="replace") as f:
+        with open(args.file, newline="", encoding="utf-8-sig", errors="replace") as f:
             for _ in csv.DictReader(f):
                 rows += 1
         logger.info("DRY RUN: %s rows, NCBOE schema OK, file=%s", rows, args.file.name)
@@ -123,7 +124,7 @@ def main() -> int:
             return 0
 
     # Column name variants (NCBOE files may differ)
-    with open(args.file, newline="", encoding="utf-8", errors="replace") as f:
+    with open(args.file, newline="", encoding="utf-8-sig", errors="replace") as f:
         reader = csv.DictReader(f)
         headers = list(reader.fieldnames or [])
     date_col = next((h for h in headers if "date occured" in h.lower() or "date occurred" in h.lower()), "Date Occured")
@@ -133,7 +134,7 @@ def main() -> int:
 
     BATCH_SIZE = 2000
     inserted = 0
-    with open(args.file, newline="", encoding="utf-8", errors="replace") as f:
+    with open(args.file, newline="", encoding="utf-8-sig", errors="replace") as f:
         reader = csv.DictReader(f)
         with conn.cursor() as cur:
             for row in reader:
