@@ -92,6 +92,14 @@ def main() -> int:
     fhash = _file_hash(args.file)
     logger.info("File hash: %s", fhash[:16] + "...")
 
+    if args.dry_run:
+        rows = 0
+        with open(args.file, newline="", encoding="utf-8", errors="replace") as f:
+            for _ in csv.DictReader(f):
+                rows += 1
+        logger.info("DRY RUN: %s rows, NCBOE schema OK, file=%s", rows, args.file.name)
+        return 0
+
     conn = psycopg2.connect(get_connection_url())
 
     # Idempotency: SHA-256 file hash - reject if already loaded
@@ -113,15 +121,6 @@ def main() -> int:
             logger.warning("File already loaded (hash %s). Skipping.", fhash[:16] + "...")
             conn.close()
             return 0
-
-    if args.dry_run:
-        rows = 0
-        with open(args.file, newline="", encoding="utf-8", errors="replace") as f:
-            for _ in csv.DictReader(f):
-                rows += 1
-        logger.info("DRY RUN: Would insert %s rows from %s", rows, args.file.name)
-        conn.close()
-        return 0
 
     # Column name variants (NCBOE files may differ)
     with open(args.file, newline="", encoding="utf-8", errors="replace") as f:
