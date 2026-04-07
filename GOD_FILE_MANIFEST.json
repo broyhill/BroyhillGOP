@@ -1,0 +1,324 @@
+{
+  "_readme": "GOD FILE MANIFEST v3 \u2014 BroyhillGOP project file index. Includes date (modified), created, is_latest (newest version flag), date_inferred (date estimated from sibling files). Results sorted newest-first. Use latest=1 to get only the newest version of each file.",
+  "_ai_instructions": {
+    "how_to_search": [
+      "GET http://5.9.99.109:8080/docs/search?q=KEYWORD              \u2014 keyword search",
+      "GET http://5.9.99.109:8080/docs/search?type=sql               \u2014 filter by type",
+      "GET http://5.9.99.109:8080/docs/search?eco=E01                \u2014 filter by ecosystem",
+      "GET http://5.9.99.109:8080/docs/search?session=1              \u2014 session transcripts",
+      "GET http://5.9.99.109:8080/docs/search?latest=1               \u2014 newest version only (skip old dupes)",
+      "GET http://5.9.99.109:8080/docs/search?date_from=2026-01-01   \u2014 files modified after date",
+      "GET http://5.9.99.109:8080/docs/search?date_to=2025-12-31     \u2014 files modified before date",
+      "GET http://5.9.99.109:8080/docs/search?date_from=2025-10-01&date_to=2025-12-31  \u2014 date range",
+      "GET http://5.9.99.109:8080/docs/search?q=schema&latest=1      \u2014 newest schema files only",
+      "GET http://5.9.99.109:8080/docs/manifest                      \u2014 this manifest"
+    ],
+    "response_fields": {
+      "date": "YYYY-MM-DD \u2014 last modified date",
+      "created": "YYYY-MM-DD \u2014 file created date",
+      "is_latest": "true = newest version; false = older dupe (newer version exists)",
+      "date_inferred": "true = date was estimated from sibling files in same folder"
+    },
+    "version_selection": "When two files have the same name, is_latest=true marks the newest. Add ?latest=1 to only see newest versions. Example: two schema files \u2014 Oct 2025 is_latest=false, Feb 2026 is_latest=true."
+  },
+  "generated": "2026-04-06T22:06:15.402739",
+  "stats": {
+    "total_files_indexed": 7046,
+    "latest_versions": 3694,
+    "older_dupes": 3352,
+    "dates_inferred": 0,
+    "session_transcripts": 202,
+    "ecosystem_tagged_files": 1,
+    "by_type": {
+      "py": 1516,
+      "md": 1412,
+      "sql": 798,
+      "docx": 791,
+      "json": 732,
+      "csv": 685,
+      "txt": 549,
+      "xlsx": 297,
+      "ts": 205,
+      "sh": 44,
+      "numbers": 15,
+      "jsx": 2
+    },
+    "by_category": {
+      "Downloads": 5290,
+      "BroyhillGOP": 952,
+      "Documents": 804
+    },
+    "by_ecosystem": {
+      "E35": 1
+    }
+  },
+  "key_files": {
+    "recent_files": [
+      {
+        "name": "ecosystem_search_results.json",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/ecosystem_search_results.json",
+        "modified": "2026-04-06",
+        "created": "2026-04-04",
+        "type": "json",
+        "is_latest": true
+      },
+      {
+        "name": "ecosystem_search_results_v7.json",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/ecosystem_search_results_v7.json",
+        "modified": "2026-04-06",
+        "created": "2026-03-24",
+        "type": "json",
+        "is_latest": true
+      },
+      {
+        "name": "MASTER_DIRECTORY_INDEX.md",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/MASTER_DIRECTORY_INDEX.md",
+        "modified": "2026-04-06",
+        "created": "2026-04-04",
+        "type": "md",
+        "is_latest": true
+      },
+      {
+        "name": "ECOSYSTEM_GAP_ANALYSIS.md",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/ECOSYSTEM_GAP_ANALYSIS.md",
+        "modified": "2026-04-06",
+        "created": "2026-04-04",
+        "type": "md",
+        "is_latest": true
+      },
+      {
+        "name": "065_IDENTITY_RESOLUTION_OVERHAUL_PHASE0.sql",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/database/migrations/065_IDENTITY_RESOLUTION_OVERHAUL_PHASE0.sql",
+        "modified": "2026-04-06",
+        "created": "2026-03-18",
+        "type": "sql",
+        "is_latest": true
+      },
+      {
+        "name": "060_DATATRUST_DONOR_CANDIDATE_AFFINITY.sql",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/database/migrations/060_DATATRUST_DONOR_CANDIDATE_AFFINITY.sql",
+        "modified": "2026-04-06",
+        "created": "2026-03-18",
+        "type": "sql",
+        "is_latest": true
+      },
+      {
+        "name": "055_DONATION_SEARCH_VIEW.sql",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/database/migrations/055_DONATION_SEARCH_VIEW.sql",
+        "modified": "2026-04-06",
+        "created": "2026-03-18",
+        "type": "sql",
+        "is_latest": true
+      },
+      {
+        "name": "062_DATATRUST_FULL_2500_AFFINITY.sql",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/database/migrations/062_DATATRUST_FULL_2500_AFFINITY.sql",
+        "modified": "2026-04-06",
+        "created": "2026-03-18",
+        "type": "sql",
+        "is_latest": true
+      },
+      {
+        "name": "064_NCBOE_GENERAL_TYPE_RENORMALIZE.sql",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/database/migrations/064_NCBOE_GENERAL_TYPE_RENORMALIZE.sql",
+        "modified": "2026-04-06",
+        "created": "2026-03-18",
+        "type": "sql",
+        "is_latest": true
+      },
+      {
+        "name": "059_FEC_SEPARATE_COMMITTEES.sql",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/database/migrations/059_FEC_SEPARATE_COMMITTEES.sql",
+        "modified": "2026-04-06",
+        "created": "2026-03-18",
+        "type": "sql",
+        "is_latest": true
+      },
+      {
+        "name": "058_FEC_VOTER_MATCHES.sql",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/database/migrations/058_FEC_VOTER_MATCHES.sql",
+        "modified": "2026-04-06",
+        "created": "2026-03-18",
+        "type": "sql",
+        "is_latest": true
+      },
+      {
+        "name": "057_DONOR_ANALYSIS_VIEW.sql",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/database/migrations/057_DONOR_ANALYSIS_VIEW.sql",
+        "modified": "2026-04-06",
+        "created": "2026-03-18",
+        "type": "sql",
+        "is_latest": true
+      },
+      {
+        "name": "061_DATATRUST_AFFINITY_EXTENDED.sql",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/database/migrations/061_DATATRUST_AFFINITY_EXTENDED.sql",
+        "modified": "2026-04-06",
+        "created": "2026-03-18",
+        "type": "sql",
+        "is_latest": true
+      },
+      {
+        "name": "056_VOTER_PROFILE_DATATRUST.sql",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/database/migrations/056_VOTER_PROFILE_DATATRUST.sql",
+        "modified": "2026-04-06",
+        "created": "2026-03-18",
+        "type": "sql",
+        "is_latest": true
+      },
+      {
+        "name": "063_NCBOE_GENERAL_FUND_INGESTION.sql",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/database/migrations/063_NCBOE_GENERAL_FUND_INGESTION.sql",
+        "modified": "2026-04-06",
+        "created": "2026-03-18",
+        "type": "sql",
+        "is_latest": true
+      },
+      {
+        "name": "fec_raw_import.py",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/pipeline/fec_raw_import.py",
+        "modified": "2026-04-06",
+        "created": "2026-04-04",
+        "type": "py",
+        "is_latest": true
+      },
+      {
+        "name": "identity_resolution.py",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/pipeline/identity_resolution.py",
+        "modified": "2026-04-06",
+        "created": "2026-03-12",
+        "type": "py",
+        "is_latest": true
+      },
+      {
+        "name": "nc_boe_ddl.sql",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/pipeline/nc_boe_ddl.sql",
+        "modified": "2026-04-06",
+        "created": "2026-03-07",
+        "type": "sql",
+        "is_latest": true
+      },
+      {
+        "name": "seed_nc_boe.sql",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/pipeline/seed_nc_boe.sql",
+        "modified": "2026-04-06",
+        "created": "2026-03-07",
+        "type": "sql",
+        "is_latest": true
+      },
+      {
+        "name": "norm_etl_ncboe.py",
+        "path": "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/pipeline/norm_etl_ncboe.py",
+        "modified": "2026-04-06",
+        "created": "2026-03-07",
+        "type": "py",
+        "is_latest": true
+      }
+    ],
+    "session_transcripts": [
+      "COMET_REPAIR_GUIDE_JAN11_2026.md",
+      "CANDIDATE_ECOSYSTEM_SUPABASE_GAP_ANALYSIS.md",
+      "MATCHING_LOGIC_AUDIT_COMPLETE.md",
+      "perplexity-mar-6-5:30 pm-session.md",
+      "Perplexity_Brain_Architecture_Session_Complete 2.md",
+      "MATCHING_LOGIC_AUDIT_COMPLETE 2.md",
+      "MASTER_DIRECTORY_INDEX.md",
+      "ECOSYSTEM_GAP_ANALYSIS.md",
+      "CANDIDATE_ECOSYSTEM_SUPABASE_GAP_ANALYSIS 2.md",
+      "perplexity-mar-6-5:30 pm-session 2.md",
+      "Perplexity_Brain_Architecture_Session_Complete.md",
+      "ECOSYSTEM_GAP_ANALYSIS 2.md",
+      "where-is-this-in-a-transcript-The-Brains-Core.md",
+      "main_perplexity-Session-GOD.txt",
+      "BROYHILLGOP_DATABASE_INCIDENT_TRANSCRIPT 2.docx",
+      "QUICK_START_FOR_NEW_SESSION.md",
+      "BROYHILLGOP_DATABASE_INCIDENT_TRANSCRIPT.docx",
+      "00_MASTER_HANDOFF_COMPLETE.md",
+      "CURSOR_BRIEFING_IDENTITY_RESOLUTION_V2_2026-03-15.docx",
+      "CURSOR_BRIEFING_BOE_RELINK_2026-03-15.docx",
+      "MASTER_DIRECTORY_INDEX.md",
+      "CLAUDE_BRIEFING_TO_CURSOR_donor_intelligence_2026-03-15.docx",
+      "JUDICIAL_PATCH_SESSION_TRANSCRIPT_Mar15_original.md",
+      "JUDICIAL_PATCH_SESSION_TRANSCRIPT_Mar15.md",
+      "2026-04-04_CLAUDE_COWORK_SESSION.md",
+      "activism-scoring-databse-archetct desgn-session.md",
+      "Perplexity-Session-Final-Agreements 2.md",
+      "SESSION_TRANSCRIPT_JAN22_DONORS_NEW_1 2.md",
+      "COMPLETE_SESSION_TRANSCRIPT 2.md",
+      "library Executive Summary 2.md"
+    ],
+    "ecosystem_tagged": [
+      "Perplexity-E35-RVM-Blueprint-Prompt.md.md"
+    ],
+    "python_files": [
+      "build_god_file_v5.py",
+      "ecosystem_search_engine 2.py",
+      "write_god_file_manifest.py",
+      "ecosystem_search_engine.py",
+      "PERPLEXITY_SESSION_ALL_CODE_BLOCKS 2.py",
+      "PERPLEXITY_SESSION_ALL_CODE_BLOCKS.py",
+      "god_file_server.py",
+      "enrich_json_v7.py",
+      "build_god_file_v7.py",
+      "summarize_god_files.py",
+      "quick_nav_update.py",
+      "JEFF_ZENGER_VOICE_CLONE.py",
+      "update_navigation.py",
+      "update_all_navigation.py",
+      "BUILD_ALL_PAGES.py",
+      "JEFF_VOICE_MACBOOK.py",
+      "process_nc_delegates.py",
+      "process_ncsbe_donors.py",
+      "process_fec_donors.py",
+      "broyhillgop_office_heatmap_models.py",
+      "broyhillgop_judicial_patch.py",
+      "db 2.py",
+      "nc_boe_pre_handoff_check.py",
+      "db.py",
+      "fec_raw_import.py",
+      "ingest.py",
+      "identity_resolution.py",
+      "run_seed 2.py",
+      "run_seed.py",
+      "import_ncboe_committee_registry.py"
+    ],
+    "sql_files": [
+      "fix_02_donor_voter_links_orphans.sql",
+      "PERSON_MASTER_SCHEMA 2.sql",
+      "PERSON_MASTER_SCHEMA.sql",
+      "fix_04_fec_corrupt_dates.sql",
+      "fix_01_fec_committees_party_column.sql",
+      "fix_05_nc_donor_summary_dates.sql",
+      "pipeline_ddl.sql",
+      "fix_06_winred_large_amounts.sql",
+      "pipeline_ddl 2.sql",
+      "fix_07_fec_party_committee_date_cast.sql",
+      "fix_03_rnc_volunteer_score_backfill.sql",
+      "e19_integration_schema.sql",
+      "contact_enrichment_to_golden_matching.sql",
+      "083_match_fec_to_spine_v2 2.sql",
+      "067_PHASE1B_EXECUTE_MERGES.sql",
+      "051_NEXUS_SOCIAL_EXTENSION.sql",
+      "065_IDENTITY_RESOLUTION_OVERHAUL_PHASE0.sql",
+      "070_PHASE4_BRIDGE_AND_AGGREGATES.sql",
+      "080c_rebuild_fec_from_raw.sql",
+      "080b_repair_golden_bridges.sql",
+      "075_fec_donor_person_matching.sql",
+      "080c_rebuild_fec_from_raw 2.sql",
+      "ncga_committee_industry_naics.sql",
+      "076_golden_record_spine_bridge.sql",
+      "donor_sic_classification_engine.sql",
+      "081_normalize_fec_donations.sql",
+      "077_populate_contribution_map.sql",
+      "079_pass2_identity_resolution.sql",
+      "083_match_fec_to_spine.sql",
+      "085_rebuild_contribution_map 2.sql"
+    ]
+  },
+  "endpoints": {
+    "html_browser": "http://5.9.99.109:8080/docs",
+    "search_api": "http://5.9.99.109:8080/docs/search",
+    "manifest": "http://5.9.99.109:8080/docs/manifest",
+    "relay_health": "http://5.9.99.109:8080/health"
+  }
+}
