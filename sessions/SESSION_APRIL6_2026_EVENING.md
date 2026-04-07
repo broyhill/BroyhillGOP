@@ -290,3 +290,30 @@ Current spine of 74,407 active persons is a fraction of what it will be when com
 2. 7-pass DataTrust rollup — dedup spine before FEC matching
 3. FEC identity matching — phases D, E, F of identity_resolution.py
 4. FEC candidate/committee pipeline — new script needed
+
+---
+
+## NCBOE FILE CLARIFICATION — LOCKED (10:13 PM EDT)
+
+### The Two NCBOE Universes Are the SAME Data
+
+**norm.nc_boe_donations** source files:
+- `NCBOE-2015-2019.csv` = same data as `2015-2019-ncboe.csv`
+- `NCBOE-2020-2026-part1.csv` + `NCBOE-2020-2026-part2.csv` = same data as `2020-2026-ncboe.csv` split into two files because GitHub has a 100MB file size limit
+
+**There are NO missing NCBOE donors.** The 131,217 persons in norm.nc_boe_donations are the same people as in nc_boe_donations_raw — loaded earlier through a prior pipeline version under different filenames.
+
+### What This Means
+- `public.nc_boe_donations_raw` (338,223 rows) = THE authoritative sacred NCBOE dataset
+- `norm.nc_boe_donations` (581,741 rows) = prior pipeline load of the same data — legacy, do not use as source of truth
+- `core.contribution_map` NC_BOE rows (108,943) = correctly rolled up from nc_boe_donations_raw
+- **The NCBOE dataset is complete. No rollup gap exists.**
+
+### The Apparent "90,545 Missing Donors" — RESOLVED
+This was a false alarm caused by:
+1. norm.nc_boe_donations uses a different id sequence than nc_boe_donations_raw
+2. The rollup went raw→CM, not norm→CM (correct path)
+3. The norm table is legacy — same data, different pipeline era
+
+### DO NOT attempt to roll norm.nc_boe_donations into contribution_map.
+It would create duplicates of data already in contribution_map from nc_boe_donations_raw.
