@@ -34,6 +34,8 @@ for f in "${files[@]}"; do
   "$PY" "$ROOT/scripts/import_ncboe_raw.py" "$f"
 done
 
-echo "Done. Record snapshot in pipeline.wave1_source_snapshots if desired:"
-echo "  INSERT INTO pipeline.wave1_source_snapshots (source_name, snapshot_label, notes)"
-echo "  VALUES ('ncboe_gold_desktop', '$(date +%Y-%m-%d)', 'wave1_ingest_gold_ncboe.sh');"
+echo "Done. Optional next steps:"
+echo "  1) Record load: INSERT INTO pipeline.wave1_source_snapshots (source_name, snapshot_label, notes)"
+echo "     VALUES ('ncboe_gold_desktop', '$(date +%Y-%m-%d)', 'wave1_ingest_gold_ncboe.sh');"
+echo "  2) Normalize raw → norm:  $PY $ROOT/scripts/normalize_ncboe.py"
+echo "     (after raw load; uses .env / SUPABASE_DB_URL)"
