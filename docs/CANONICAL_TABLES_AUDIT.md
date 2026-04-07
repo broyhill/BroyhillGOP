@@ -21,7 +21,7 @@
 
 - **datatrust_profiles:** 100% redundant subset of nc_datatrust (73 cols vs 251 cols, same 7.6M rows matched by `rncid`).
 - **person_master:** Mostly empty — only `ncvoter_ncid` populated; `rnc_rncid` 100% NULL; `golden_record_id` only 0.4% filled.
-- **datatrust_matching_procedures.sql:** 20+ references to `datatrust_profiles` — must be rewritten before dropping.
+- **datatrust_matching_procedures.sql:** **Rewritten** — all logic reads `public.nc_datatrust` and links via `integration.datatrust_contact_link` (migrations `097_*`, `098_*`; apply `scripts/apply_datatrust_matching_stack.sh`). Safe relative to dropping `datatrust_profiles` once API sync uses `nc_datatrust`.
 
 ---
 
@@ -71,12 +71,12 @@
 | `docs/NEXUS_BRAIN_INTEGRATION_SPEC_VOL1 - Google Docs.html` | person_master, acxiom, datatrust | Use nc_datatrust, core.person_spine |
 | `pipeline/identity_resolution.py` | person_master (negative ref: "do NOT seed from") | No change — correctly warns against person_master |
 
-### Schema / SQL procedures — need migration to nc_datatrust
+### Schema / SQL procedures — nc_datatrust alignment
 
 | File | References | Fix |
 |------|------------|-----|
 | `database/schemas/datatrust_complete_schema.sql` | CREATE TABLE datatrust_profiles | Do not run; nc_datatrust is canonical. If new schema needed, extend nc_datatrust. |
-| `database/schemas/datatrust_matching_procedures.sql` | 20+ references to datatrust_profiles | Rewrite JOINs to use nc_datatrust; map rnc_id → rncid, state_voter_id → statevoterid. |
+| `database/schemas/datatrust_matching_procedures.sql` | **Done** — `nc_datatrust` + `integration.datatrust_contact_link` | Deploy order: `097_INTEGRATION_DATATRUST_CONTACT_LINK.sql` → `098_UNIFIED_CONTACTS_STUB_AND_DATATRUST_BACKFILL.sql` → this file (or `scripts/apply_datatrust_matching_stack.sh`). |
 
 ---
 
@@ -110,7 +110,7 @@
 |-----------------|----------------|
 | `cursor-ingestion-complete copy.md`, `cursor-ingestion-complete copy 2.md`, `cursor-ingestion-complete copy 3.md` | Duplicate docs; may drift. Consolidate or delete copies. |
 | `Perplexity-E11-Print-Ecosystem-Prompt copy.md` | Duplicate of Perplexity prompt; references person_master. |
-| `database/schemas/datatrust_matching_procedures.sql` | Heavy datatrust_profiles usage; procedures will break if table is dropped. |
+| `database/schemas/datatrust_matching_procedures.sql` | ~~Was datatrust_profiles-only~~ — now targets `nc_datatrust`; dropping `datatrust_profiles` still requires `datatrust_api_client.py` and any other writers to move first. |
 | `brain_control` schema (220 tables, 183 empty) | AI-scaffolded, never populated. Consider archiving or dropping empty tables. |
 | `social_intelligence` schema (96 tables, 80 empty) | Same situation. |
 | `scripts/match_ncgop_to_voters.py` | Uses `statevoterid` on staging.ncgop_winred — different table, but naming may confuse. |

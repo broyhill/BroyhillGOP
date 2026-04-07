@@ -2,6 +2,8 @@
 **BroyhillGOP | Last updated: April 6, 2026**
 **Authority: Ed Broyhill**
 
+**Pre–GOLD-load audit priorities (P0/P1/P2):** see **`sessions/NCBOE_GOLD_PRE_INGEST_PLAN.md`** (recovered from the April 2026 spine-audit discussion; lives in-repo so it is not chat-only).
+
 ---
 
 ## PURPOSE OF THESE FILES

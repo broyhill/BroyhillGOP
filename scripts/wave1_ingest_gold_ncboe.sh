@@ -31,9 +31,7 @@ done
 GOLD_DIR="${GOLD_DIR:-$HOME/Desktop/NCBOE DONORS GOLD}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PY="${PYTHON:-python3}"
-EXTRA=()
 if [[ "$DRY_RUN" -eq 1 ]]; then
-  EXTRA=(--dry-run)
   echo "DRY RUN: no database writes; validating NCBOE CSVs only."
 fi
 
@@ -52,7 +50,11 @@ fi
 
 for f in "${files[@]}"; do
   echo "---- $(basename "$f") ----"
-  "$PY" "$ROOT/scripts/import_ncboe_raw.py" "${EXTRA[@]}" "$f"
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    "$PY" "$ROOT/scripts/import_ncboe_raw.py" --dry-run "$f"
+  else
+    "$PY" "$ROOT/scripts/import_ncboe_raw.py" "$f"
+  fi
 done
 
 echo "Done. Optional next steps:"
