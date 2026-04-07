@@ -149,3 +149,61 @@ When building a BroyhillGOP ecosystem, use these Inspinia pages:
 6. Never simplify, remove, or "modernize" any Inspinia component — reproduce exactly
 7. Deploy with: vercel --prod --yes --token=$VERCEL_TOKEN
 8. All pages must connect to Supabase for live data — no static/sample data in production
+
+## ============================================================
+## DATABASE WORK — READ THIS BEFORE ANY SQL, PIPELINE, OR MERGE
+## ============================================================
+## Updated: April 6, 2026 | Authority: Ed Broyhill
+
+## MANDATORY FIRST STEP
+Before ANY database work, run:
+  git pull origin main
+  cat sessions/SESSION_START_READ_ME_FIRST.md
+State in your first reply which file you read. If you cannot see the repo — say so and ask for a paste. Do NOT improvise.
+
+## THE PEARL
+core.person_spine = THE PEARL. Master unified identity. 74,407 active rows.
+Never DROP, ALTER, or bulk UPDATE/DELETE without "I authorize this action" from Ed.
+
+## SACRED TABLES — DO NOT TOUCH
+- public.nc_boe_donations_raw (338,223 rows — installed, synced, 3 days of work)
+- norm.nc_boe_donations (581,741 rows — normalized layer, 100% linked)
+- public.nc_datatrust (7,661,978 rows — PRIMARY identity anchor)
+- public.nc_voters — SACRED
+- public.rnc_voter_staging — SACRED
+- public.person_source_links — SACRED
+- core.ncboe_donations_processed — SACRED
+- staging.boe_donation_candidate_map — SACRED
+
+## BANNED FILES — NEVER LOAD INTO fec_donations
+Any file with 2026-03-11 in the name. These were deleted April 6, 2026.
+They contained Biden, Harris, Hillary, Bernie. They are gone. Do not bring them back.
+If you see source_file ILIKE '%2026-03-11%' in fec_donations — delete it and alert Ed.
+
+## TWO PHASE PROTOCOL
+DRY RUN first (SELECT/COUNT only). Show Ed results.
+EXECUTION only after Ed says exactly: "I authorize this action"
+No exceptions. No "just a small fix." No "it's safe."
+
+## THE ROLLUP — MOST IMPORTANT PROCESS
+The 7-pass donor identity rollup uses DataTrust as primary anchor.
+DO NOT run 083_match_fec_to_spine.sql as the rollup solution.
+The correct process is pipeline/identity_resolution.py phases A-G2
+AND sessions/2026-03-31_DONOR_ROLLUP_IDENTITY_SPEC.md (7-pass spec).
+DataTrust registrationaddr1 street number is the Pass 2 anchor.
+Ed Broyhill (8 name variants at 525 N Hawthorne 27104) is the canary.
+All 8 variants must resolve to ONE person_id before any merge executes.
+
+## DB CONNECTION
+Pooler port 6543 (always use pooler, not 5432)
+Always run: SET statement_timeout = 0;
+URL: postgresql://postgres:Anamaria%402026%40@db.isbgjpnbocdkeslofota.supabase.co:6543/postgres?sslmode=require
+
+## CURRENT fec_donations STATE (April 6, 2026)
+779,182 rows — 14 approved source files only. This is locked and complete.
+Verify: SELECT COUNT(*) FROM public.fec_donations; → must be 779,182
+
+## STAGING ONLY
+Cursor MAY create tables in staging schema (prefix: staging_claude_)
+Cursor MAY SELECT anywhere
+Cursor MAY NOT drop/alter tables in core/public/archive/norm/raw/audit schemas

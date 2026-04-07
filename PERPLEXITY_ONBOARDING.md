@@ -398,3 +398,35 @@ Ed has all 6 election cycles as CSVs in Google Drive folder AAA FEC-HOUSE_SENATE
 - house-2015-2016, senate-2015-2016, pres-2015-2016
 These are NC-filtered Schedule A exports — individual donors only, full addresses.
 The database already has all of them loaded. Do NOT reload unless instructed by Ed.
+
+---
+
+## GOD FILE V7 — Full Mac File Index
+
+**URL:** http://5.9.99.109:8080/docs/v7
+**What it is:** A searchable HTML index of 8,549+ files on Ed's Mac, deployed to Hetzner.
+**Deployed:** April 3, 2026 — fully synced to GitHub and Hetzner
+
+**Use this before asking Ed where a file is.** Search by filename, topic, or keyword.
+The index includes CSVs, PDFs, SQL files, Python scripts, Excel workbooks — everything.
+
+**Key files found in V7:**
+- `dashlane-google-emails.csv` — `/Users/Broyhill/Downloads/Dashlane CSV/` — Google email list
+- `credentials.csv` — 73KB — full Dashlane export
+- `NCGOP_WinRed_03:10:2026.csv` — March 10 2026 WinRed export (newer than DB)
+- `North_Carolina_Republican_PartyNCGOP_FinancialSearch_0362026_1400.xlsx` — NCGOP financial with emails
+- `datatrust_matching_procedures.sql` — `/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/database/schemas/`
+- `identity_resolution.py` — full matching framework
+- `fec_nc_republican_donors.py` — FEC API pull script (in pipeline/ on GitHub)
+
+**Search via relay:**
+```bash
+curl -s "http://5.9.99.109:8080/docs/search?q=KEYWORD&limit=20"
+```
+
+**FEC pulls running overnight (April 3-4, 2026):**
+- House PID 23401 → ~/Downloads/FEC_NC_House.csv
+- Presidential PID 22490 → ~/Downloads/FEC_NC_Presidential.csv
+- Senate PID 22342 → ~/Downloads/FEC_NC_Senate.csv
+- Check: `wc -l ~/Downloads/FEC_NC_*.csv`
+- Done when log shows COMPLETE and Records:
