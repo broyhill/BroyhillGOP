@@ -4,6 +4,10 @@
 
 ---
 
+## READ THESE THREE FILES BEFORE ANYTHING ELSE
+`sessions/MASTER_FILE_MANIFEST.md` — exact file inventory, what to load, what not to touch
+`sessions/SESSION_APRIL6_2026_EVENING.md` — tonights lessons and gaps
+
 ## LATEST SESSION — READ THIS TOO
 `sessions/SESSION_APRIL6_2026_EVENING.md` — April 6, 2026 evening session. Contains 8 critical lessons learned, complete database state, the 3 critical gaps, and the correct 10-step execution order. **Read this alongside this file.**
 
