@@ -40,3 +40,6 @@ node_modules/
 *.bak
 *.corrupted_backup_*
 
+
+# Google Docs exported assets (contain embedded API keys that trigger secret scanning)
+docs/NEXUS_BRAIN_INTEGRATION_SPEC_VOL1 - Google Docs_files/
