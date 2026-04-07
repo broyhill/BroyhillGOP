@@ -1,0 +1,14 @@
+Wave 1 reference SQL — apply in order on a fresh clone (or rely on Supabase migration history).
+
+088_WAVE1_VOTER_DATATRUST_FOUNDATION.sql   — ref views, staging BIGINT, wave1_source_snapshots
+089_WAVE1_REFRESH_SPINE_VOTER_FLAGS.sql    — is_registered_voter from nc_voters
+090_WAVE1_DONOR_VOTER_LINKS_ORPHAN_TAG.sql — donor_voter_links audit columns + orphan tag
+091_REF_DONOR_VOTER_LINKS_TRUSTED_VIEW.sql — ref.v_donor_voter_links_trusted
+092_DONOR_VOTER_LINKS_TRUSTED_INDEX.sql    — partial index on trusted ncid
+093_REF_NC_VOTERS_ACTIVE_VIEW.sql          — ref.v_nc_voters_active
+094_REF_PERSON_SPINE_SBE_ENRICHED_VIEW.sql — spine vs SBE reconciliation
+095_REF_PIPELINE_NCBOE_LOADS_VIEW.sql      — ref.v_pipeline_ncboe_loads
+
+Also: 066_PHASE1_SPINE_DEDUP.sql uses BIGINT merge ids (run before heavy dedup).
+
+Shell: scripts/wave1_pipeline.sh (ingest + normalize; --dry-run supported).
