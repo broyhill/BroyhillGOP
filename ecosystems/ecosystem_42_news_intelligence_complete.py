@@ -34,6 +34,8 @@ from dataclasses import dataclass
 from enum import Enum
 import re
 import hashlib
+import traceback
+from functools import wraps
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('ecosystem42.news')
@@ -818,81 +820,48 @@ def deploy_news_intelligence():
         return False
 
 
+
+
+# ============================================================================
+# EXCEPTION CLASSES
+# ============================================================================
+
+class NewsIntelligenceError(Exception):
+    """Base exception for News Intelligence ecosystem"""
+    pass
+
+class NewsIntelligenceValidationError(NewsIntelligenceError):
+    """Validation error in News Intelligence"""
+    pass
+
+class NewsIntelligenceDatabaseError(NewsIntelligenceError):
+    """Database error in News Intelligence"""
+    pass
+
+class NewsIntelligenceAPIError(NewsIntelligenceError):
+    """API error in News Intelligence"""
+    pass
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+
+
+# ============================================================================
+# ENTRY POINT
+# ============================================================================
+
 if __name__ == "__main__":
     import sys
-
-# === ERROR HANDLING (Auto-added by repair tool) ===
-import traceback
-from functools import wraps
-
-# === ERROR HANDLING (Auto-added by repair tool) ===
-import traceback
-from functools import wraps
-
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 42NewsIntelligenceCompleteError(Exception):
-    """Base exception for this ecosystem"""
-    pass
-
-class 42NewsIntelligenceCompleteValidationError(42NewsIntelligenceCompleteError):
-    """Validation error in this ecosystem"""
-    pass
-
-class 42NewsIntelligenceCompleteDatabaseError(42NewsIntelligenceCompleteError):
-    """Database error in this ecosystem"""
-    pass
-
-class 42NewsIntelligenceCompleteAPIError(42NewsIntelligenceCompleteError):
-    """API error in this ecosystem"""
-    pass
-# === END CUSTOM EXCEPTIONS ===
-
-
-def handle_errors(func):
-    """Decorator for standardized error handling"""
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            logger.error(f"Error in {func.__name__}: {str(e)}")
-            logger.debug(traceback.format_exc())
-            raise
-    return wrapper
-# === END ERROR HANDLING ===
-
-
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 42NewsIntelligenceCompleteError(Exception):
-    """Base exception for this ecosystem"""
-    pass
-
-class 42NewsIntelligenceCompleteValidationError(42NewsIntelligenceCompleteError):
-    """Validation error in this ecosystem"""
-    pass
-
-class 42NewsIntelligenceCompleteDatabaseError(42NewsIntelligenceCompleteError):
-    """Database error in this ecosystem"""
-    pass
-
-class 42NewsIntelligenceCompleteAPIError(42NewsIntelligenceCompleteError):
-    """API error in this ecosystem"""
-    pass
-# === END CUSTOM EXCEPTIONS ===
-
-
-def handle_errors(func):
-    """Decorator for standardized error handling"""
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            logger.error(f"Error in {func.__name__}: {str(e)}")
-            logger.debug(traceback.format_exc())
-            raise
-    return wrapper
-# === END ERROR HANDLING ===
 
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_news_intelligence()

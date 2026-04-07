@@ -49,8 +49,8 @@ SELECT count(*) AS active_spine_records FROM staging.spine_canonical;
 -- =============================================================================
 DROP TABLE IF EXISTS staging.spine_merge_candidates;
 CREATE TABLE staging.spine_merge_candidates (
-  keep_id   INTEGER NOT NULL,
-  merge_id  INTEGER NOT NULL,
+  keep_id   BIGINT NOT NULL,
+  merge_id  BIGINT NOT NULL,
   match_method TEXT NOT NULL,
   confidence NUMERIC(3,2) NOT NULL
 );
