@@ -267,7 +267,7 @@ This table is **installed, normalized, synced to voter file and DataTrust**. Do 
 | Relay API key | bgop-relay-k9x2mP8vQnJwT4rL |
 | DataTrust contact | **Zack Imel** — RNC Digital Director (Danny Gustafson no longer there) |
 | DataTrust full dump | Zack Imel agreed to provide full 2,200-variable DataTrust file — schema must be ready (jsonb/split tables, NOT 2,200 scalar columns) |
-| DataTrust token expires | April 10, 2026 — renew with Zack Imel |
+| DataTrust token expires | April 10, 2026 — note: connection is maintained via a permanent secret key; the expiry affects data refresh authorization, not the live connection. Mention to Zack Imel when coordinating the 2,200-variable dump delivery. |
 
 ---
 
