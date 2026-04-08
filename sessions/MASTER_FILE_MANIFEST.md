@@ -50,7 +50,7 @@ NOT individual donors. Use: `python3 scripts/import_ncboe_raw.py --to-committee-
 | File | Size | Routing | Notes |
 |------|------|---------|-------|
 | General-Contrib-GOP-Party-2015-2026.csv | 142 KB | ⛔ → ncboe_committee_transfers | Party general fund — committee-level, not individuals |
-| GOP-PARTY-Donors-2015-2026.csv | 1.2 MB | ⚠️ REVIEW FIRST | Run inspect_ncboe_top_donor_names.py — if org/committee names → transfers; if person names → raw |
+| GOP-PARTY-Donors-2015-2026.csv | 1.2 MB | ⛔ → ncboe_committee_transfers | Inspected Apr 7 — 5,304 rows, 818 distinct names, all County RW / NCGOP / clubs. Organizational money, NOT individuals. Use: import_ncboe_raw.py --to-committee-transfers |
 | OTHER-GOP-2015-2026.csv | 230 KB | ✅ LOAD → nc_boe_donations_raw | Inspected Apr 7 — additional NC Senate candidate, individual donors |
 
 Inspect command: `python3 scripts/inspect_ncboe_top_donor_names.py "/path/GOP-PARTY-Donors-2015-2026.csv" "/path/OTHER-GOP-2015-2026.csv"`
