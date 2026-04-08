@@ -57,6 +57,13 @@ Details: `sessions/MUNICIPAL_GOP_NCBOE_BATCH_ROUTING.md`
 
 ---
 
+## FEC FILES — NEW (Phase 4 — load after NCBOE spine stable)
+**Desktop folder:** `/Users/Broyhill/Desktop/AAA FEC Federal Pres Senate House/`
+Load via Cursor only. Individual donors to Republican candidates only. No committee-to-committee transfers.
+Do NOT load until Phase 3 (NCBOE spine) exits criteria.
+
+---
+
 ## FEC FILES — Already loaded into public.fec_donations (779,182 rows LOCKED)
 
 | File | Rows | Category |
