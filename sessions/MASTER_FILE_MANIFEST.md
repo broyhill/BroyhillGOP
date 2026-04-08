@@ -40,7 +40,7 @@ Row totals: confirm with `import_ncboe_raw.py --dry-run` or post-load `COUNT(*)`
 | File | Route |
 |------|-------|
 | NC-Realtors-McCrory-good-2015-2026.csv | Split: `import_ncboe_split_raw_committee.py` → individuals → `nc_boe_donations_raw`, PAC / non-individual → `staging.ncboe_committee_transfers` |
-| General-Contrib-GOP-Party-2015-2026.csv | Party donations: `import_ncboe_raw.py --to-committee-transfers` → `staging.ncboe_committee_transfers` only |
+| General-Contrib-GOP-Party-2015-2026.csv | Mixed bag — run `inspect_ncboe_top_donor_names.py` first. If individuals present → Split: `import_ncboe_split_raw_committee.py` (individuals → `nc_boe_donations_raw`, orgs/PACs → `staging.ncboe_committee_transfers`). If all orgs → `import_ncboe_raw.py --to-committee-transfers` only. **Inspect before load.** |
 | OTHER-GOP-2015-2026.csv | LOCKED — individuals (NC Senate-adjacent individual donors): `nc_boe_donations_raw` only — same loader: `import_ncboe_raw.py` |
 | GOP-PARTY-Donors-2015-2026.csv | Inspected (`inspect_ncboe_top_donor_names.py`): 5,304 rows, 818 distinct Name values; top counts are county RW / NCGOP / clubs (orgs), not person names → `import_ncboe_raw.py --to-committee-transfers` → `staging.ncboe_committee_transfers` (**confirm with Ed before load**) |
 
