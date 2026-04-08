@@ -1,15 +1,18 @@
 # SESSION START — READ THIS ENTIRE FILE BEFORE DOING ANYTHING
-**BroyhillGOP-Claude | Last updated: April 6, 2026 9:44 PM EDT**
+**BroyhillGOP-Claude | Last updated: April 7, 2026 10:20 PM EDT**
 **Authority: Ed Broyhill | NC National Committeeman**
 
 ---
 
-## READ THESE THREE FILES BEFORE ANYTHING ELSE
-`sessions/MASTER_FILE_MANIFEST.md` — exact file inventory, what to load, what not to touch
-`sessions/SESSION_APRIL6_2026_EVENING.md` — tonights lessons and gaps
+## READ THESE FILES BEFORE ANYTHING ELSE (in order)
+1. `sessions/MASTER_FILE_MANIFEST.md` — exact file inventory, NCBOE = 18 GOLD files, what not to touch
+2. `sessions/PERPLEXITY_HIGHLIGHTS.md` — key architectural rules and agent guardrails
+3. `sessions/WAVE1_CONSOLIDATED_PLAN_STATUS.md` — current phase plan (**note: has stray `**` markdown typos — interpret carefully**)
+4. `sessions/SESSION_APRIL7_2026_EVENING.md` — tonight's session: GOLD load in progress, DataTrust news, what went wrong this morning
+5. `sessions/SESSION_APRIL6_2026_EVENING.md` — prior session baseline
 
-## LATEST SESSION — READ THIS TOO
-`sessions/SESSION_APRIL6_2026_EVENING.md` — April 6, 2026 evening session. Contains 8 critical lessons learned, complete database state, the 3 critical gaps, and the correct 10-step execution order. **Read this alongside this file.**
+## LATEST SESSION
+`sessions/SESSION_APRIL7_2026_EVENING.md` — April 7, 2026 evening. NCBOE GOLD load in progress (4/18 files), Zack Imel agreed to full 2,200-variable DataTrust dump, norm.nc_boe_donations is STALE until renormalized.
 
 ---
 
@@ -55,9 +58,10 @@ We have burned 6+ hours in single sessions because an agent skipped this step an
 
 | Table | Rows | Why Sacred |
 |-------|------|------------|
-| `public.nc_boe_donations_raw` | 338,223 | 3 days of installation, synced to voter file and DataTrust. Installed. Not raw. |
+| `public.nc_boe_donations_raw` | GROWING | GOLD LOAD IN PROGRESS — 18 files from Desktop. Do not touch. |
+| `norm.nc_boe_donations` | 581,741 | ⚠️ STALE — built from old 2-file load. Not consistent with new GOLD raw. Do not use for reporting until renormalized. |
 | `core.ncboe_donations_processed` | — | NC BOE processed layer |
-| `norm.nc_boe_donations` | 581,741 | All linked to person_id — normalized BOE layer |
+| `norm.nc_boe_donations` | 581,741 | ⚠️ STALE — built from old 2-file load, not yet renormalized against GOLD files |
 | `staging.boe_donation_candidate_map` | 338,213 | Candidate-matched staging |
 | `public.nc_datatrust` | 7,661,978 | RNC DataTrust file — primary identity anchor |
 | `public.nc_voters` | ~7.7M | NC State voter file |
@@ -84,8 +88,8 @@ Any `source_file` in `fec_donations` containing `2026-03-11` = contamination. De
 | `core.person_spine` inactive | 125,976 | ✅ |
 | `core.contribution_map` | 2,960,201 | ✅ Zero D-flag rows |
 | `public.fec_donations` | 779,182 | ✅ 14 clean files only |
-| `public.nc_boe_donations_raw` | 338,223 | ✅ SACRED |
-| `norm.nc_boe_donations` | 581,741 | ✅ 100% linked to person_id |
+| `public.nc_boe_donations_raw` | ~221,437+ (growing) | 🔄 GOLD LOAD IN PROGRESS — 4/18 files as of 10:19 PM Apr 7 |
+| `norm.nc_boe_donations` | 581,741 | ⚠️ STALE — do not trust until renormalized post-GOLD load |
 | `norm.fec_individual` | 2,597,125 | ✅ 99.9997% linked |
 | `public.nc_datatrust` | 7,661,978 | ✅ SACRED |
 | `archive.democratic_candidate_donor_records` | 906,609 | ✅ D donations archived |
@@ -261,10 +265,11 @@ This table is **installed, normalized, synced to voter file and DataTrust**. Do 
 | GitHub repo | broyhill/BroyhillGOP |
 | Hetzner Server | 5.9.99.109 (relay port 8080) |
 | Relay API key | bgop-relay-k9x2mP8vQnJwT4rL |
-| DataTrust contact | Danny Gustafson dgustafson@gop.com |
-| DataTrust token expires | April 10, 2026 |
+| DataTrust contact | **Zack Imel** — RNC Digital Director (Danny Gustafson no longer there) |
+| DataTrust full dump | Zack Imel agreed to provide full 2,200-variable DataTrust file — schema must be ready (jsonb/split tables, NOT 2,200 scalar columns) |
+| DataTrust token expires | April 10, 2026 — renew with Zack Imel |
 
 ---
 
-*Updated by Perplexity-Claude | April 6, 2026 9:44 PM EDT*
+*Updated by Perplexity-Claude | April 7, 2026 10:20 PM EDT*
 *Ed Broyhill — NC National Committeeman | ed.broyhill@gmail.com*
