@@ -1,71 +1,64 @@
 # MASTER FILE MANIFEST — BroyhillGOP Workspace
-**Last updated: April 6, 2026 10:49 PM EDT**
+**Last updated: April 8, 2026** (OTHER-GOP → raw; GOP-PARTY-Donors inspect summary; filenames corrected)
 **Authority: Ed Broyhill**
+
 **DO NOT LOAD ANY FILE NOT ON THIS LIST**
 
 ---
 
 ## NCBOE FILES — Load into public.nc_boe_donations_raw
-**Ed downloaded these April 3-4, 2026. One full day of work. All NC Republican candidates.**
+Authoritative allow-list: the 18 CSVs Ed approved in NCBOE DONORS GOLD (Finder / Desktop — Apr 2026).
+Older 19-row tables in docs were superseded by this list.
+Row totals: confirm with `import_ncboe_raw.py --dry-run` or post-load `COUNT(*)`.
 
-| File | Rows | Load |
-|------|------|------|
-| NC-House-Gop-2015-2026.csv | 407,499 | ✅ YES |
-| NC-Senate-Gop-2015-2026-2.csv | 321,585 | ✅ YES |
-| County-Municipal-100-counties-GOP-2015-2026.csv | 451,483 | ✅ YES |
-| shiff-only-gop-100-counties.csv | 272,481 | ✅ YES |
-| Judicial-gop-100-counties-2015-2026.csv | 170,002 | ✅ YES |
-| 2ndary-counties-muni-cty-gop-2015-2026.csv | 96,273 | ✅ YES |
-| governor-2015-2026.csv | 96,093 | ✅ YES |
-| 2ndary-sheriff-gop-2015-2026.csv | 75,550 | ✅ YES |
-| District-ct-judge-gop-100-counties-2015-2026.csv | 64,708 | ✅ YES |
-| Council-commissioners-gop-2015-2026.csv | 55,965 | ✅ YES |
-| council-city-town-gop-2015-2026.csv | 51,425 | ✅ YES |
-| District-Att-gop-100-counties-2015-2026.csv | 46,069 | ✅ YES |
-| school-board-gop-2015-2026.csv | 25,834 | ✅ YES |
-| Test-county-commissioners.csv | 7,484 | ✅ YES |
-| clerk-court-gop-2015-2026.csv | 5,651 | ✅ YES |
-| suprem-court-superior-court-ct-of-appeals-2015-2026-gop.csv | 1,133 | ✅ YES |
-| Attorney-General-gop-2015-2026.csv | 188 | ✅ YES |
-| treasurer-auditor-agriculture-labor-2015-2026-gop.csv | 314 | ✅ YES |
-| alderman-gop-100-counties-2015-2026.csv | 78 | ✅ YES |
-| **TOTAL** | **1,875,603** | |
-
-## NCBOE MUNICIPAL — Load into public.nc_boe_donations_raw (individual donors)
-Downloaded April 7, 2026 in 4 category batches — mayors, city council, school board, GOP 2015–2026.
-Use: `bash scripts/wave1_ingest_municipal_gop_batches.sh` (set MUNI_DIR first)
-
-| File | Size | Status |
-|------|------|--------|
-| Mayors-council-school-GOP-category-1-2015-2026.csv | 113 KB | ✅ LOAD → nc_boe_donations_raw |
-| Mayors-council-school-gop-category-2-2015-2026.csv | 239 KB | ✅ LOAD → nc_boe_donations_raw |
-| mayors-council-school-gop-cat-3-2015-2026.csv | 234 KB | ✅ LOAD → nc_boe_donations_raw |
-| mayors-council-school-cat-4-gop-2015-2026.csv | 61 KB | ✅ LOAD → nc_boe_donations_raw |
+| File | Load |
+|------|------|
+| 2ndary-counties-muni-cty-gop-2015-2026.csv | ✅ APPROVED |
+| 2ndary-sheriff-gop-2015-2026.csv | ✅ APPROVED |
+| 2015-2025-lt-governor.csv | ✅ APPROVED |
+| 2015-2026-Mayors.csv | ✅ APPROVED |
+| 2015-2026-NC-Council-of-state.csv | ✅ APPROVED |
+| 2015-2026-supreme-court-appeals-.csv | ✅ APPROVED |
+| clerk-court-gop-2015-2026.csv | ✅ APPROVED |
+| council-city-town-gop-2015-2026.csv | ✅ APPROVED |
+| Council-commissioners-gop-2015-2026.csv | ✅ APPROVED |
+| County-Municipal-100-counties-GOP-2015-2026.csv | ✅ APPROVED |
+| District-Att-gop-100 counties-2015-2026.csv | ✅ APPROVED (note: space after 100 — exact filename) |
+| District-ct-judge-gop-100-counties-2015-2026.csv | ✅ APPROVED |
+| governor-2015-2026.csv | ✅ APPROVED |
+| Judicial-gop-100-counties-2015-2026.csv | ✅ APPROVED |
+| NC-House-Gop++-2015-2026.csv | ✅ APPROVED |
+| NC-Senate-Gop-2015-2026.csv | ✅ APPROVED |
+| school-board-gop-2015-2026.csv | ✅ APPROVED |
+| sheriff-only-gop-100-counties.csv | ✅ APPROVED |
+| **COUNT** | **18 files** |
 
 ---
 
-## NCBOE PARTY / OTHER — Route to staging.ncboe_committee_transfers
-NOT individual donors. Use: `python3 scripts/import_ncboe_raw.py --to-committee-transfers [file]`
+## NCBOE — Supplemental batches (Ed-approved, separate from GOLD 18)
 
-| File | Size | Routing | Notes |
-|------|------|---------|-------|
-| General-Contrib-GOP-Party-2015-2026.csv | 142 KB | ⛔ → ncboe_committee_transfers | Party general fund — committee-level, not individuals |
-| GOP-PARTY-Donors-2015-2026.csv | 1.2 MB | ⛔ → ncboe_committee_transfers | Inspected Apr 7 — 5,304 rows, 818 distinct names, all County RW / NCGOP / clubs. Organizational money, NOT individuals. Use: import_ncboe_raw.py --to-committee-transfers |
-| OTHER-GOP-2015-2026.csv | 230 KB | ✅ LOAD → nc_boe_donations_raw | Inspected Apr 7 — additional NC Senate candidate, individual donors |
+| File | Route |
+|------|-------|
+| NC-Realtors-McCrory-good-2015-2026.csv | Split: `import_ncboe_split_raw_committee.py` → individuals → `nc_boe_donations_raw`, PAC / non-individual → `staging.ncboe_committee_transfers` |
+| General-Contrib-GOP-Party-2015-2026.csv | Party donations: `import_ncboe_raw.py --to-committee-transfers` → `staging.ncboe_committee_transfers` only |
+| OTHER-GOP-2015-2026.csv | LOCKED — individuals (NC Senate-adjacent individual donors): `nc_boe_donations_raw` only — same loader: `import_ncboe_raw.py` |
+| GOP-PARTY-Donors-2015-2026.csv | Inspected (`inspect_ncboe_top_donor_names.py`): 5,304 rows, 818 distinct Name values; top counts are county RW / NCGOP / clubs (orgs), not person names → `import_ncboe_raw.py --to-committee-transfers` → `staging.ncboe_committee_transfers` (**confirm with Ed before load**) |
 
-Inspect command: `python3 scripts/inspect_ncboe_top_donor_names.py "/path/GOP-PARTY-Donors-2015-2026.csv" "/path/OTHER-GOP-2015-2026.csv"`
-Runbook: `sessions/MUNICIPAL_GOP_NCBOE_BATCH_ROUTING.md`
+Details: `sessions/MUNICIPAL_GOP_NCBOE_BATCH_ROUTING.md`
 
 ---
 
 ## NCBOE — DO NOT LOAD
+
 | File | Reason |
 |------|--------|
-| Governor-gop-2015-2026.csv | OLD small file (4,287 rows) — superseded by governor-2015-2026.csv |
+| Governor-gop-2015-2026.csv | OLD small file — superseded by governor-2015-2026.csv |
+| Any CSV not in the 18-row GOLD or Supplemental tables above | Not approved without Ed |
 
 ---
 
 ## FEC FILES — Already loaded into public.fec_donations (779,182 rows LOCKED)
+
 | File | Rows | Category |
 |------|------|----------|
 | 2022-2026-Trump-nc-individ-only.csv | 377,779 | TRUMP |
@@ -87,6 +80,7 @@ Runbook: `sessions/MUNICIPAL_GOP_NCBOE_BATCH_ROUTING.md`
 ---
 
 ## UNKNOWN / NEEDS ED DECISION
+
 | File | Rows | Issue |
 |------|------|-------|
 | FEC_NC_House.csv | 65,883 | FEC format (has FEC transaction IDs) but found among NCBOE files. 100% REP, NC House candidates. Ed must decide: add to fec_donations or discard? |
@@ -95,6 +89,7 @@ Runbook: `sessions/MUNICIPAL_GOP_NCBOE_BATCH_ROUTING.md`
 ---
 
 ## REFERENCE (do not load)
+
 | File | Purpose |
 |------|---------|
 | gop_presidential_committees_2016_2024.csv | Reference lookup |
@@ -102,11 +97,17 @@ Runbook: `sessions/MUNICIPAL_GOP_NCBOE_BATCH_ROUTING.md`
 
 ---
 
-## FIRST TASK NEXT SESSION
-Load the 19 NCBOE files into nc_boe_donations_raw.
-Current nc_boe_donations_raw has 338,223 rows with ZERO voter_ncid.
-These 19 files will replace it with 1,875,603 rows.
-Requires "I authorize this action" from Ed.
+## LOAD STATUS (April 7–8, 2026)
+GOLD 18-file load IN PROGRESS. Files registered in pipeline.loaded_ncboe_files as of 10:19 PM Apr 7:
+- 2015-2025-lt-governor.csv ✅
+- 2015-2026-Mayors.csv ✅
+- 2015-2026-NC-Council-of-state.csv ✅
+- 2015-2026-supreme-court-appeals-.csv 🔄 loading
+- Remaining 14 files: pending
+
+Supplemental files: municipal batches (4 files) + OTHER-GOP ready to load. GOP-PARTY-Donors + General-Contrib → committee transfers pending Ed confirmation.
 
 ---
-*Perplexity-Claude | April 6, 2026 10:49 PM EDT*
+
+*Perplexity-Claude | April 8, 2026 — filenames corrected from Cursor authoritative version*
+*Ed Broyhill — NC National Committeeman | ed.broyhill@gmail.com*
