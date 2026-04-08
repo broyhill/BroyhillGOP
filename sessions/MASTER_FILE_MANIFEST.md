@@ -31,6 +31,33 @@
 | alderman-gop-100-counties-2015-2026.csv | 78 | ✅ YES |
 | **TOTAL** | **1,875,603** | |
 
+## NCBOE MUNICIPAL — Load into public.nc_boe_donations_raw (individual donors)
+Downloaded April 7, 2026 in 4 category batches — mayors, city council, school board, GOP 2015–2026.
+Use: `bash scripts/wave1_ingest_municipal_gop_batches.sh` (set MUNI_DIR first)
+
+| File | Size | Status |
+|------|------|--------|
+| Mayors-council-school-GOP-category-1-2015-2026.csv | 113 KB | ✅ LOAD → nc_boe_donations_raw |
+| Mayors-council-school-gop-category-2-2015-2026.csv | 239 KB | ✅ LOAD → nc_boe_donations_raw |
+| mayors-council-school-gop-cat-3-2015-2026.csv | 234 KB | ✅ LOAD → nc_boe_donations_raw |
+| mayors-council-school-cat-4-gop-2015-2026.csv | 61 KB | ✅ LOAD → nc_boe_donations_raw |
+
+---
+
+## NCBOE PARTY / OTHER — Route to staging.ncboe_committee_transfers
+NOT individual donors. Use: `python3 scripts/import_ncboe_raw.py --to-committee-transfers [file]`
+
+| File | Size | Routing | Notes |
+|------|------|---------|-------|
+| General-Contrib-GOP-Party-2015-2026.csv | 142 KB | ⛔ → ncboe_committee_transfers | Party general fund — committee-level, not individuals |
+| GOP-PARTY-Donors-2015-2026.csv | 1.2 MB | ⚠️ REVIEW FIRST | Run inspect_ncboe_top_donor_names.py — if org/committee names → transfers; if person names → raw |
+| OTHER-GOP-2015-2026.csv | 230 KB | ⚠️ REVIEW FIRST | Run inspect_ncboe_top_donor_names.py — PAC/nonprofit vs individual decision pending |
+
+Inspect command: `python3 scripts/inspect_ncboe_top_donor_names.py "/path/GOP-PARTY-Donors-2015-2026.csv" "/path/OTHER-GOP-2015-2026.csv"`
+Runbook: `sessions/MUNICIPAL_GOP_NCBOE_BATCH_ROUTING.md`
+
+---
+
 ## NCBOE — DO NOT LOAD
 | File | Reason |
 |------|--------|
