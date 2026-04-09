@@ -1,40 +1,54 @@
 # SESSION START — READ THIS ENTIRE FILE BEFORE DOING ANYTHING
-**BroyhillGOP | Last updated: April 9, 2026 12:15 AM EDT**
+**BroyhillGOP | Last updated: April 9, 2026 6:10 PM EDT**
 **Authority: Ed Broyhill | NC National Committeeman**
 
 ---
 
-## ⛔ CRITICAL APRIL 9, 2026 — FULL DATABASE RESET IN EFFECT
+## 🚨 INCIDENT #13 — April 9, 2026 Evening — nc_boe_donations_raw CONTAMINATED AGAIN
 
-**DECISION MADE TONIGHT:** All FEC and NCBOE donor files in Supabase are contaminated and worthless. The Supabase database was restored to the April 9, 2026 7:00 AM snapshot. **Do not reference any FEC or NCBOE data loaded before this reset.**
+**For the 13th time, an agent loaded rows into nc_boe_donations_raw without executing the mandatory TRUNCATE-first protocol.**
 
-### What Was Discovered (April 9, 2026)
-1. **All previous FEC files** contained Democratic candidates, Independent candidates, and out-of-state donations. They were built on throttled FEC bulk downloads that mixed party data indiscriminately.
-2. **All previous NCBOE files** contained Democratic and Independent candidate donations — the BOE download portal throttles results when downloaded in bulk, meaning the prior 2-file approach gave a partial, politically mixed dataset.
-3. **The fix for throttling:** Break downloads into counties, cities, and smaller candidate selections — this tripled output volume and allows clean Republican-only filtering at the source before upload.
-4. **Fresh files are on Ed's laptop**, organized and secured. These are the ONLY authorized source files going forward.
+The 18 GOLD files were appended on top of existing rows. `nc_boe_donations_raw` now contains **~2,269,053 rows** — a toxic hybrid of enriched sacred rows + raw unenriched new rows.
+
+| Row Set | Count | Enrichment Status |
+|---------|-------|------------------|
+| Original sacred rows | 338,223 | ✅ voter_ncid, RNCID, DataTrust enriched |
+| New GOLD file rows (appended) | ~1,930,000 | ❌ Raw — zero voter_ncid, no RNCID, no DataTrust linkage |
+| **TOTAL (contaminated)** | **~2,269,053** | 🔴 DO NOT USE |
+
+**THE PEARL is intact:**
+- `core.person_spine` — untouched ✅
+- `core.contribution_map` — untouched ✅
+- `public.fec_donations` — locked ✅
+- All SACRED tables — untouched ✅
+
+**Recovery required before ANY nc_boe_donations_raw work:**
+1. Ed says **"I authorize this action"**
+2. `TRUNCATE public.nc_boe_donations_raw;`
+3. Reload the 338,223 sacred rows from backup snapshot `audit.nc_boe_donations_raw_pre_reload_20260330`
+4. Verify `SELECT COUNT(*) FROM public.nc_boe_donations_raw;` = **338,223 exactly**
+5. Only then — plan GOLD file ingestion with the full 9-step enrichment pipeline
+
+---
+
+## ⛔ CRITICAL APRIL 9, 2026 — FULL DATABASE RESET IN EFFECT (from 12:15 AM session)
+
+**EARLIER DECISION:** All prior FEC and NCBOE donor files in Supabase were contaminated (Democratic candidates, out-of-state donors, throttled bulk downloads). The Supabase database was restored to the April 9, 2026 7:00 AM snapshot. **Do not reference any FEC or NCBOE data loaded before this reset.**
 
 ### What Was Preserved (Sacred — Do Not Touch)
 - `public.nc_datatrust` — 7,661,978 rows ✅ SACRED
-- `public.nc_voters` / `staging.nc_voters_fresh` — ~7.7M rows ✅ SACRED
+- `public.nc_voters` — 9,079,672 rows ✅ SACRED
 - `public.rnc_voter_staging` — 7,708,268 rows ✅ SACRED
-
-### What Was Reset (Replaced / Rebuilt from fresh files)
-- All `public.nc_boe_donations_raw` rows from old NCBOE files — **GONE, being replaced**
-- All `public.fec_donations` rows from old FEC files — **GONE, being replaced**
-- `norm.nc_boe_donations` — **STALE, rebuild after fresh NCBOE load**
-- `norm.fec_individual` — **STALE, rebuild after fresh FEC load**
-- `core.contribution_map` — **Rebuild after both source loads complete**
-- `core.person_spine` donor enrichment — **Rebuild after contribution_map is clean**
+- `staging.nc_voters_fresh` — 7,707,910 rows ✅ SACRED
 
 ---
 
 ## READ THESE FILES BEFORE ANYTHING ELSE (in order)
 1. `sessions/SESSION_START_READ_ME_FIRST.md` — THIS FILE — read completely first
-2. `sessions/MASTER_FILE_MANIFEST.md` — exact file inventory and what not to touch
-3. `sessions/PERPLEXITY_HIGHLIGHTS.md` — key architectural rules and agent guardrails
-4. `sessions/SESSION_APRIL9_2026.md` — tonight's session: contamination discovery, reset decision, new file strategy
-5. `sessions/SESSION_APRIL7_2026_EVENING.md` — prior session baseline (pre-reset context)
+2. `sessions/SESSION_APRIL9_2026_EVENING.md` — tonight's session: incident #13, live counts, recovery plan
+3. `sessions/MASTER_FILE_MANIFEST.md` — exact file inventory and what not to touch
+4. `sessions/PERPLEXITY_HIGHLIGHTS.md` — key architectural rules and agent guardrails
+5. `sessions/SESSION_APRIL7_2026_EVENING.md` — prior session baseline
 
 ---
 
@@ -42,13 +56,31 @@
 
 Before you write a single line of SQL, make a single recommendation, or touch anything:
 
-1. Read this file completely
-2. State which files you read in your first reply
+1. **Read this file completely**
+2. **State which files you read in your first reply**
 3. If you cannot see the repo — say so explicitly and ask for a paste
 4. **DO NOT guess process, pipeline, or architecture from memory or code inspection alone**
 5. **DO NOT load any FEC or NCBOE file without explicit authorization from Ed stating the filename and source**
+6. **DO NOT INSERT or COPY into nc_boe_donations_raw without first running TRUNCATE and getting "I authorize this action" from Ed**
 
-We have burned 6+ hours in single sessions because an agent skipped this step and improvised. Do not repeat that.
+We have burned 6+ hours in single sessions because an agent skipped this step and improvised. This is the 13th contamination incident. Do not repeat it.
+
+---
+
+## LIVE DATABASE STATE (April 9, 2026 — 6:10 PM EDT — Perplexity verified)
+
+| Table | Live Rows | Status |
+|-------|-----------|--------|
+| `public.nc_datatrust` | 7,661,978 | ✅ SACRED — untouched |
+| `public.nc_voters` | 9,079,672 | ✅ SACRED — untouched |
+| `public.rnc_voter_staging` | 7,708,268 | ✅ SACRED — untouched |
+| `staging.nc_voters_fresh` | 7,707,910 | ✅ SACRED — untouched |
+| `public.person_master` | 7,728,689 | ✅ untouched |
+| `public.nc_boe_donations_raw` | **~2,269,053** | 🔴 CONTAMINATED — needs TRUNCATE + reload to 338,223 |
+| `public.fec_donations` | 783,887 | ✅ locked |
+| `public.contacts` | 226,821 | ✅ untouched |
+| `core.person_spine` | ~200,383 | ✅ PEARL — untouched |
+| `core.contribution_map` | 2,953,533 | ✅ untouched |
 
 ---
 
@@ -64,11 +96,6 @@ We have burned 6+ hours in single sessions because an agent skipped this step an
 
 `core.person_spine` is THE master unified identity table. Every person in this database — donor, voter, volunteer — has one and only one active row here. It is called THE PEARL.
 
-**Current state (April 9, 2026 — post-reset):**
-- Active persons: TBD after fresh donor load completes
-- Donor enrichment columns are stale until fresh FEC + NCBOE files are loaded and rollup is run
-- `public.nc_datatrust` and `public.nc_voters` remain intact as identity anchors
-
 **Rules for THE PEARL:**
 - Claude/Perplexity MAY: SELECT anywhere, CREATE TEMP TABLEs, CREATE in staging schema, INSERT into staging
 - Claude/Perplexity MAY NOT: DROP/ALTER any table in core/public/archive/norm/raw/staging/audit; UPDATE/DELETE from core.person_spine directly without explicit authorization
@@ -81,8 +108,9 @@ We have burned 6+ hours in single sessions because an agent skipped this step an
 | Table | Rows | Why Sacred |
 |-------|------|------------|
 | `public.nc_datatrust` | 7,661,978 | RNC DataTrust file — primary identity anchor |
-| `public.nc_voters` | ~7.7M | NC State voter file |
+| `public.nc_voters` | 9,079,672 | NC State voter file |
 | `public.rnc_voter_staging` | 7,708,268 | RNC voter staging |
+| `staging.nc_voters_fresh` | 7,707,910 | DataTrust-enriched voter file |
 | `public.person_source_links` | — | Spine bridge table |
 
 **If you are about to touch any of these — STOP. Re-read this file. Then ask Ed.**
@@ -91,7 +119,7 @@ We have burned 6+ hours in single sessions because an agent skipped this step an
 
 ## KEY POLICY DECISIONS (Ed's Rules — Non-Negotiable)
 
-1. **Republican candidates ONLY** — no Democratic, Independent, Green, or Libertarian candidates in any donor table. Ever. This caused the contamination that required the April 9 reset.
+1. **Republican candidates ONLY** — no Democratic, Independent, Green, or Libertarian candidates in any donor table. Ever.
 2. **Democrat and Independent crossover donors ARE kept** — DEM/UNA registered voters who donate to Republican candidates belong in the spine. The donor's party registration is irrelevant; the candidate's party is what matters.
 3. **NC donors only** — no out-of-state donors in NCBOE files
 4. **Individual donors only** — no corporations, PACs, associations, LLCs
@@ -102,9 +130,23 @@ We have burned 6+ hours in single sessions because an agent skipped this step an
 
 ---
 
-## NEW FILE SOURCING RULES (April 9 — Required Going Forward)
+## nc_boe_donations_raw — LOAD PROTOCOL (NON-NEGOTIABLE)
 
-**WHY THE OLD FILES FAILED:** FEC and NCBOE both throttle bulk downloads. Downloading by full state or broad date ranges returns mixed-party, incomplete data. The fix:
+**Before ANY load into nc_boe_donations_raw:**
+1. Run `SELECT COUNT(*) FROM public.nc_boe_donations_raw;` — confirm current count
+2. Present the count to Ed
+3. Run `SELECT COUNT(*) FROM [source_file_staging_table];` — confirm incoming count
+4. Get Ed to say: **"I authorize this action"** (exact phrase — no substitutes)
+5. Run TRUNCATE first: `TRUNCATE public.nc_boe_donations_raw;`
+6. Confirm 0 rows after TRUNCATE
+7. Load from backup or fresh files
+8. Verify final count matches expected
+
+**Skipping any step = repeating incident #13. There is no exception.**
+
+---
+
+## NEW FILE SOURCING RULES (April 9 — Required Going Forward)
 
 ### FEC Downloads
 - Break searches by: county → city → individual candidate
@@ -140,8 +182,6 @@ All 8 name variants (ED, EDGAR, JAMES, J EDGAR, JAMES EDGAR, etc.) at 525 N Hawt
 
 ## THE ROLLUP PIPELINE
 
-**This is the identity resolution process that links donors across name variants to a single person_id.**
-
 ### The 7-Pass Rollup (DataTrust is the primary anchor)
 
 | Pass | Anchor | DataTrust Role | Confidence |
@@ -161,55 +201,34 @@ All 8 name variants (ED, EDGAR, JAMES, J EDGAR, JAMES EDGAR, etc.) at 525 N Hawt
 - **Pass 3 (First=Middle) is DISABLED** — produces near-zero true positives, high household false positives
 - All merges logged to `public.donor_merge_audit` with method, confidence, and timestamp
 
-### Rollup Script Location
-`pipeline/identity_resolution.py` — phases A through G2
-`sessions/2026-03-31_DONOR_ROLLUP_IDENTITY_SPEC.md` — the authoritative spec
-
 ---
 
-## CURRENT DATABASE STATE (April 9, 2026 — post-reset)
+## PENDING WORK (Post-Incident Priority Order)
 
-| Table | Rows | Status |
-|-------|------|--------|
-| `public.nc_datatrust` | 7,661,978 | ✅ SACRED — untouched |
-| `public.nc_voters` | ~7.7M | ✅ SACRED — untouched |
-| `public.rnc_voter_staging` | 7,708,268 | ✅ SACRED — untouched |
-| `public.fec_donations` | TBD | 🔄 Awaiting fresh files from Ed's laptop |
-| `public.nc_boe_donations_raw` | TBD | 🔄 Awaiting fresh files from Ed's laptop |
-| `norm.nc_boe_donations` | — | ⚠️ Rebuild after fresh NCBOE load |
-| `norm.fec_individual` | — | ⚠️ Rebuild after fresh FEC load |
-| `core.contribution_map` | — | ⚠️ Rebuild after both source loads |
-| `core.person_spine` active | TBD | 🔄 Donor enrichment pending |
-| `archive.democratic_candidate_donor_records` | 906,609 | ✅ D donations archived |
+### IMMEDIATE — nc_boe_donations_raw Recovery
+1. Ed authorizes: **"I authorize this action"**
+2. TRUNCATE `public.nc_boe_donations_raw`
+3. Reload 338,223 sacred rows from `audit.nc_boe_donations_raw_pre_reload_20260330`
+4. Verify COUNT = 338,223 exactly
 
----
+### Phase 1 — Fresh File Load (After table is clean)
+5. Ed transfers fresh county-broken NCBOE files from laptop (GOLD 18 + approved supplementals)
+6. Load NCBOE files ONE AT A TIME with Ed's authorization per file, TRUNCATE-first protocol enforced
+7. Run enrichment pipeline after each batch before loading next
 
-## PENDING WORK (Post-Reset Priority Order)
-
-### Phase 1 — Fresh File Load (Before anything else)
-1. Ed transfers fresh county-broken NCBOE files from laptop
-2. Verify each file: Republican candidates only, NC donors only
-3. Load NCBOE files one at a time with Ed's explicit authorization per file
-4. Ed transfers fresh FEC files from laptop
-5. Verify each FEC file: Republican candidates only, NC individual donors only
-6. Load FEC files one at a time with Ed's explicit authorization per file
-
-### Phase 2 — Normalization (After all files loaded)
-7. Rebuild `norm.nc_boe_donations` from fresh raw
-8. Rebuild `norm.fec_individual` from fresh FEC
+### Phase 2 — Normalization
+8. Rebuild `norm.nc_boe_donations` from fresh raw
 9. Rebuild `core.contribution_map`
 
 ### Phase 3 — Identity Resolution
 10. Run 7-Pass Donor Rollup per `DONOR_ROLLUP_IDENTITY_SPEC.md`
 11. Ed Broyhill canary must pass before any merge executes
-12. Build `donor_political_footprint` after rollup completes
 
-### Infrastructure (Ongoing)
-- **DataTrust token expires April 10, 2026** — renew with Zack Imel (RNC Digital Director)
+### Infrastructure (Ongoing — URGENT)
+- **DataTrust token expires April 10, 2026** — renew with Zack Imel (RNC Digital Director) TODAY
 - **DataTrust full 2,200-variable dump** — Zack Imel agreed; schema must be jsonb-ready before delivery
-- **Twilio 10DLC campaign** — needs privacy policy + T&C pages before resubmission
-- **FEC API key** — rotate at api.data.gov (old key compromised)
 - **DB password** — rotate at Supabase dashboard (compromised)
+- **FEC API key** — rotate at api.data.gov (compromised)
 
 ---
 
@@ -251,10 +270,11 @@ All 8 name variants (ED, EDGAR, JAMES, J EDGAR, JAMES EDGAR, etc.) at 525 N Hawt
 | Hetzner Server | 5.9.99.109 (relay port 8080) |
 | Relay API key | bgop-relay-k9x2mP8vQnJwT4rL |
 | DataTrust contact | **Zack Imel** — RNC Digital Director |
-| DataTrust full dump | Zack Imel agreed to provide full 2,200-variable DataTrust file — schema must be ready (jsonb/split tables, NOT 2,200 scalar columns) |
-| DataTrust token expires | April 10, 2026 — mention to Zack Imel when coordinating the 2,200-variable dump delivery |
+| DataTrust full dump | Zack Imel agreed; schema must be jsonb-ready before delivery |
+| DataTrust token expires | **April 10, 2026** — URGENT — contact Zack Imel today |
 
 ---
 
-*Updated by Perplexity | April 9, 2026 12:15 AM EDT*
+*Updated by Perplexity | April 9, 2026 6:10 PM EDT*
+*Incident #13 documented. nc_boe_donations_raw contaminated (~2.27M rows). Recovery pending Ed authorization.*
 *Ed Broyhill — NC National Committeeman | ed.broyhill@gmail.com*
