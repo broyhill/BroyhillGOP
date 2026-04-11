@@ -1,6 +1,7 @@
 # COMPLETE DATABASE BUILD — MASTER TODO LIST
 ## BroyhillGOP Platform
 **Created: April 10, 2026 10:50 PM EDT**
+**Revised: April 11, 2026 2:30 PM EDT — incorporated Cursor critique**
 **Authority: Ed Broyhill | NC National Committeeman**
 **Author: Perplexity (CEO)**
 
@@ -16,74 +17,36 @@ This is the complete task list for building the BroyhillGOP political data platf
 3. sessions/DONOR_DEDUP_PIPELINE_V2.md
 4. sessions/SESSION_APRIL10_2026_EVENING.md
 
----
+## CONNECTION RULES (revised per Cursor critique April 11)
 
-# PHASE 0 — EXPORT PORTABLE DATA FROM SUPABASE
-
-Before building anything new, extract the reusable reference data from the current Supabase database. These tables contain weeks of manual classification work that must not be lost. Export as flat CSVs — no foreign key dependencies, no person_id references.
-
-## 0.1 Export committee classifications
-- [ ] `\COPY (SELECT * FROM core.committee_party_map) TO '/tmp/committee_party_map.csv' WITH CSV HEADER`
-- [ ] Transfer CSV to new server: `/data/backups/committee_party_map.csv`
-- [ ] Verify row count matches source
-
-## 0.2 Export candidate profiles
-- [ ] `\COPY (SELECT * FROM core.candidate_profiles) TO '/tmp/candidate_profiles.csv' WITH CSV HEADER`
-- [ ] Transfer to new server: `/data/backups/candidate_profiles.csv`
-- [ ] Verify row count
-
-## 0.3 Export employer SIC master
-- [ ] `\COPY (SELECT * FROM donor_intelligence.employer_sic_master) TO '/tmp/employer_sic_master.csv' WITH CSV HEADER`
-- [ ] Transfer to new server: `/data/backups/employer_sic_master.csv`
-- [ ] Verify row count — expect ~62,100
-
-## 0.4 Export SBOE committee master
-- [ ] `\COPY (SELECT * FROM staging.sboe_committee_master) TO '/tmp/sboe_committee_master.csv' WITH CSV HEADER`
-- [ ] Transfer to new server: `/data/backups/sboe_committee_master.csv`
-
-## 0.5 Export committee-candidate bridge
-- [ ] `\COPY (SELECT * FROM staging.committee_candidate_bridge) TO '/tmp/committee_candidate_bridge.csv' WITH CSV HEADER`
-- [ ] Transfer to new server: `/data/backups/committee_candidate_bridge.csv`
-
-## 0.6 Export BOE donation candidate map
-- [ ] `\COPY (SELECT * FROM staging.boe_donation_candidate_map) TO '/tmp/boe_donation_candidate_map.csv' WITH CSV HEADER`
-- [ ] Transfer to new server: `/data/backups/boe_donation_candidate_map.csv`
-
-## 0.7 Export CSV candidate committee master
-- [ ] `\COPY (SELECT * FROM staging.csv_candidate_committee_master) TO '/tmp/csv_candidate_committee_master.csv' WITH CSV HEADER`
-- [ ] Transfer to new server: `/data/backups/csv_candidate_committee_master.csv`
-
-## 0.8 Export federal candidate list and presidential committees
-- [ ] Export nc_republican_federal_candidates_2015_2026 if loaded
-- [ ] Export gop_presidential_committees_2016_2024 if loaded
-- [ ] Transfer both to `/data/backups/`
-
-## 0.9 Export ALL custom index definitions
-- [ ] Run on Supabase:
-```sql
-SELECT schemaname, tablename, indexname, indexdef
-FROM pg_indexes
-WHERE schemaname NOT IN ('pg_catalog', 'information_schema')
-ORDER BY schemaname, tablename;
+**Supabase connections:** Always use pooler port **6543** with `sslmode=require`. Never port 5432 for Supabase.
 ```
-- [ ] Save output to `/data/backups/all_indexes.sql`
-- [ ] These will be reviewed and selectively recreated on the new server
-
-## 0.10 Export ALL custom function definitions
-- [ ] Run on Supabase:
-```sql
-SELECT pg_get_functiondef(p.oid)
-FROM pg_proc p
-JOIN pg_namespace n ON p.pronamespace = n.oid
-WHERE n.nspname NOT IN ('pg_catalog', 'information_schema', 'extensions')
-ORDER BY n.nspname, p.proname;
+postgresql://postgres:[PASSWORD]@db.isbgjpnbocdkeslofota.supabase.co:6543/postgres?sslmode=require
 ```
-- [ ] Save output to `/data/backups/all_functions.sql`
 
-## 0.11 Verify all exports on new server
-- [ ] List all files in `/data/backups/` with sizes
-- [ ] Spot-check: open each CSV, verify headers and sample rows
-- [ ] Report to Ed: file list with row counts
+**New Hetzner server (37.27.169.232):** Use local port **5432** directly. No pooler needed.
+```
+postgresql://postgres:[PASSWORD]@localhost:5432/postgres
+```
+
+**Credentials:** NEVER hardcode passwords in scripts, docs, or SQL files. Use `.env` files (gitignored) or environment variables only. GitHub secret scanning will block commits containing credentials.
+
+## ROW COUNT POLICY (revised per Cursor critique April 11)
+
+All row counts cited in this document are **illustrative as of the date written**. Before executing any phase, verify live counts:
+```sql
+SELECT 'table_name' as tbl, COUNT(*) FROM schema.table_name;
+```
+Do not rely on documented counts — they drift. Verify before every operation.
+
+## DEPRECATED DOCS (April 11 update)
+
+The following older docs are superseded by this plan and DONOR_DEDUP_PIPELINE_V2.md:
+- `IDENTITY_RESOLUTION_OVERHAUL_EXECUTION_PLAN.md` — old architecture, references person_id keys
+- `PERPLEXITY_DONOR_ANALYSIS_INSTALL_PLAN.md` — uses port 5432, old table structures
+- Migration scripts 065-070 — reference old schema, do not run on new server
+
+These docs remain in the repo for historical reference but are NOT the current plan.
 
 ---
 
@@ -140,6 +103,8 @@ The DataTrust 252-column voter file is the FOUNDATION of everything. It is a SUP
 - [ ] Sample 5 rows and inspect key behavioral columns: AP000595 (political writing), AP000649 (rally attendance), AP000655 (party work), AP001722 (fundraising), AP004359 (conservative views), AP006784 (Republican score 1-100)
 
 ## B2. Design the Acxiom table
+
+**NOTE (revised per Cursor critique April 11):** The Acxiom parquet file (7.8GB, 1,925 columns) lives on the new Hetzner server, NOT in Supabase. Any views or queries that reference Acxiom columns must gracefully handle NULL when Acxiom data hasn't been joined yet. Design views to NULL-extend rather than fail when Acxiom columns are absent.
 - [ ] With 1,925 columns, consider JSONB approach: one row per person, JSONB columns for each data layer
 - [ ] Option A: `rnc_regid UUID PK, state TEXT, market_indices JSONB, ibe JSONB, ap_models JSONB`
 - [ ] Option B: Wide table with all 1,925 columns as individual fields
@@ -553,6 +518,8 @@ contribution_receipt_amount, receipt_type, memo_text, etc.
 ---
 
 # PHASE J — MICROSEGMENTATION
+
+**PREREQUISITE (revised per Cursor critique April 11):** Do NOT run microsegmentation, ML clustering, or donor analytics until the person_spine_v2 is STABLE on `rnc_regid` and the dedup pipeline has completed Phases D, E, and F. Running analytics on an unstable spine bakes duplicate persons into segments. The spine must be verified (canary passing, major donors spot-checked) before any analytical layer is built on top.
 
 ## J1. Apply SIC/NAICS codes from employer history
 - [ ] Every employer variant across 11 years → SIC/NAICS lookup
