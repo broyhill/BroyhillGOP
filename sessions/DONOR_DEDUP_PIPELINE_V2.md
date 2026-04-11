@@ -67,10 +67,29 @@ For each cluster, collect ALL employers across all 11 years. This solves the RET
 - 2024: RETIRED / RETIRED (now retired)
 Both map to the same cluster. The career-era employer is preserved for SIC/NAICS segmentation even after retirement.
 
+### Stage 1G — Multi-address / Second home collection
+For each cluster, collect ALL complete addresses (not just numbers) across all transactions.
+Donors may file from:
+- **Primary home** (voter registration address)
+- **Business/office** (75% of major donors)
+- **Second home** — beach (Wrightsville, Figure Eight, Bald Head), mountains (Blowing Rock, Banner Elk, Highlands), lake houses
+- **Florida second home** — common for wealthy NC donors wintering in FL
+- **PO Boxes**
+- **Vacation properties**
+
+Store ALL addresses as a multi-value field. Never discard a non-primary address.
+These are politically valuable:
+- Mountain home in Avery County = donor can be activated for Avery district candidates
+- Beach home in New Hanover = donor can be activated for coastal candidates
+- Florida address = may indicate permanent move (check voter status) or seasonal residence
+
+A donor with homes in 3 NC counties is a resource for candidates in ALL 3 districts.
+
 ### OUTPUT of Stage 1:
 Each unique donor cluster has:
 - All name variants (first names used)
 - All address numbers (from any address field)
+- **All complete addresses** (primary, business, second homes, PO boxes — never discard any)
 - All employers (across 11 years)
 - All cities
 - All zip codes
