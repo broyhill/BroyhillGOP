@@ -18,6 +18,75 @@ This is the complete task list for building the BroyhillGOP political data platf
 
 ---
 
+# PHASE 0 — EXPORT PORTABLE DATA FROM SUPABASE
+
+Before building anything new, extract the reusable reference data from the current Supabase database. These tables contain weeks of manual classification work that must not be lost. Export as flat CSVs — no foreign key dependencies, no person_id references.
+
+## 0.1 Export committee classifications
+- [ ] `\COPY (SELECT * FROM core.committee_party_map) TO '/tmp/committee_party_map.csv' WITH CSV HEADER`
+- [ ] Transfer CSV to new server: `/data/backups/committee_party_map.csv`
+- [ ] Verify row count matches source
+
+## 0.2 Export candidate profiles
+- [ ] `\COPY (SELECT * FROM core.candidate_profiles) TO '/tmp/candidate_profiles.csv' WITH CSV HEADER`
+- [ ] Transfer to new server: `/data/backups/candidate_profiles.csv`
+- [ ] Verify row count
+
+## 0.3 Export employer SIC master
+- [ ] `\COPY (SELECT * FROM donor_intelligence.employer_sic_master) TO '/tmp/employer_sic_master.csv' WITH CSV HEADER`
+- [ ] Transfer to new server: `/data/backups/employer_sic_master.csv`
+- [ ] Verify row count — expect ~62,100
+
+## 0.4 Export SBOE committee master
+- [ ] `\COPY (SELECT * FROM staging.sboe_committee_master) TO '/tmp/sboe_committee_master.csv' WITH CSV HEADER`
+- [ ] Transfer to new server: `/data/backups/sboe_committee_master.csv`
+
+## 0.5 Export committee-candidate bridge
+- [ ] `\COPY (SELECT * FROM staging.committee_candidate_bridge) TO '/tmp/committee_candidate_bridge.csv' WITH CSV HEADER`
+- [ ] Transfer to new server: `/data/backups/committee_candidate_bridge.csv`
+
+## 0.6 Export BOE donation candidate map
+- [ ] `\COPY (SELECT * FROM staging.boe_donation_candidate_map) TO '/tmp/boe_donation_candidate_map.csv' WITH CSV HEADER`
+- [ ] Transfer to new server: `/data/backups/boe_donation_candidate_map.csv`
+
+## 0.7 Export CSV candidate committee master
+- [ ] `\COPY (SELECT * FROM staging.csv_candidate_committee_master) TO '/tmp/csv_candidate_committee_master.csv' WITH CSV HEADER`
+- [ ] Transfer to new server: `/data/backups/csv_candidate_committee_master.csv`
+
+## 0.8 Export federal candidate list and presidential committees
+- [ ] Export nc_republican_federal_candidates_2015_2026 if loaded
+- [ ] Export gop_presidential_committees_2016_2024 if loaded
+- [ ] Transfer both to `/data/backups/`
+
+## 0.9 Export ALL custom index definitions
+- [ ] Run on Supabase:
+```sql
+SELECT schemaname, tablename, indexname, indexdef
+FROM pg_indexes
+WHERE schemaname NOT IN ('pg_catalog', 'information_schema')
+ORDER BY schemaname, tablename;
+```
+- [ ] Save output to `/data/backups/all_indexes.sql`
+- [ ] These will be reviewed and selectively recreated on the new server
+
+## 0.10 Export ALL custom function definitions
+- [ ] Run on Supabase:
+```sql
+SELECT pg_get_functiondef(p.oid)
+FROM pg_proc p
+JOIN pg_namespace n ON p.pronamespace = n.oid
+WHERE n.nspname NOT IN ('pg_catalog', 'information_schema', 'extensions')
+ORDER BY n.nspname, p.proname;
+```
+- [ ] Save output to `/data/backups/all_functions.sql`
+
+## 0.11 Verify all exports on new server
+- [ ] List all files in `/data/backups/` with sizes
+- [ ] Spot-check: open each CSV, verify headers and sample rows
+- [ ] Report to Ed: file list with row counts
+
+---
+
 # PHASE A — FOUNDATION: DataTrust Voter File
 
 The DataTrust 252-column voter file is the FOUNDATION of everything. It is a SUPERSET of the NC SBOE voter file. Do NOT download a separate SBOE voter file — DataTrust already contains everything SBOE has plus 185 additional columns. Loading SBOE separately and trying to bridge to DataTrust was tried before and caused confusion. Don't repeat that mistake.
