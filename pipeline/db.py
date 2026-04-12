@@ -1,7 +1,7 @@
 """
 Shared database connection and connection pooling for the BroyhillGOP pipeline.
 
-Uses psycopg2 with ThreadedConnectionPool. Reads SUPABASE_DB_URL from environment.
+Uses psycopg2 with ThreadedConnectionPool. URL priority: HETZNER_DB_URL, DATABASE_URL, SUPABASE_DB_URL.
 All database access should go through get_connection() or the pool.
 """
 

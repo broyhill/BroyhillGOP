@@ -96,6 +96,10 @@ def parse_ncboe_gold_name(raw: str | None) -> ParsedNCBOEName:
     return ParsedNCBOEName(prefix, first, middle, nickname, last, suffix, False)
 
 
+# Alias for operator smoke tests and docs that use the shorter name
+parse_ncboe_name = parse_ncboe_gold_name
+
+
 def _self_tests() -> None:
     def check(raw: str, exp: ParsedNCBOEName) -> None:
         got = parse_ncboe_gold_name(raw)

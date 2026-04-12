@@ -15,7 +15,7 @@ Ed has 18 GOLD NCBOE donor files on his laptop. Before he transfers them, we nee
 
 ### TASK 1 — Build the NCBOE raw staging table
 
-**Authoritative DDL:** `database/migrations/071_raw_ncboe_donations_gold_hetzner.sql` (replaces the inline SQL below).
+**Authoritative DDL:** `database/migrations/099_raw_ncboe_donations_gold_hetzner.sql` (replaces the inline SQL below).
 
 NCBOE GOLD CSV headers include **intentional typos** — do not “fix” them in the file. Database columns preserve typos as `transction_type` and `date_occured`. See `sessions/SESSION_APRIL12_2026.md` and `pipeline/ncboe_gold_csv_headers.py`.
 
@@ -32,7 +32,7 @@ Purpose, Candidate/Referendum Name, Declaration
 
 Apply on Hetzner:
 ```bash
-psql "$HETZNER_DB_URL" -v ON_ERROR_STOP=1 -f database/migrations/071_raw_ncboe_donations_gold_hetzner.sql
+psql "$HETZNER_DB_URL" -v ON_ERROR_STOP=1 -f database/migrations/099_raw_ncboe_donations_gold_hetzner.sql
 ```
 
 Creates `raw.ncboe_donations` (BIGSERIAL, typo columns, `employer_sic_code` / `employer_naics_code`, `cluster_profile` JSONB, `is_unitemized`, indexes) and an empty `donor_intelligence.employer_sic_master` shell for local SIC loads (pg_dump from Supabase when authorized).
