@@ -35,11 +35,15 @@ _MAX_CONNECTIONS = 5
 
 def _get_connection_url() -> str:
     """Return database URL from environment. Raises if not set."""
-    url = os.environ.get("SUPABASE_DB_URL") or os.environ.get("DATABASE_URL")
+    url = (
+        os.environ.get("HETZNER_DB_URL")
+        or os.environ.get("DATABASE_URL")
+        or os.environ.get("SUPABASE_DB_URL")
+    )
     if not url or not url.strip():
         raise ValueError(
-            "SUPABASE_DB_URL or DATABASE_URL must be set in environment. "
-            "Copy .env.example to .env and add your connection string."
+            "HETZNER_DB_URL, DATABASE_URL, or SUPABASE_DB_URL must be set in environment. "
+            "For the AX162 server use HETZNER_DB_URL (PostgreSQL 16 on 37.27.169.232)."
         )
     return url.strip()
 
