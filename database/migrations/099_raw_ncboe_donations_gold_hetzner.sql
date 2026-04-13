@@ -89,3 +89,73 @@ CREATE TABLE IF NOT EXISTS donor_intelligence.employer_sic_master (
 
 CREATE INDEX IF NOT EXISTS idx_esm_norm ON donor_intelligence.employer_sic_master (employer_normalized);
 CREATE INDEX IF NOT EXISTS idx_esm_sic ON donor_intelligence.employer_sic_master (sic_code);
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- SIDELINED TABLE: committee-to-committee transfers and org donors
+-- Same 24-column schema as raw.ncboe_donations.
+-- Populated by ncboe_normalize_pipeline.py --apply when a row is detected
+-- as a committee/org donor rather than an individual.
+-- Nothing is deleted — these rows are preserved here for future review.
+-- ─────────────────────────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS raw.ncboe_donations_sidelined (
+    id BIGSERIAL PRIMARY KEY,
+    source_file TEXT NOT NULL,
+    -- Original NCBOE columns (typos preserved)
+    name TEXT,
+    street_line_1 TEXT,
+    street_line_2 TEXT,
+    city TEXT,
+    state TEXT,
+    zip_code TEXT,
+    profession_job_title TEXT,
+    employer_name TEXT,
+    transction_type TEXT,       -- NCBOE typo intentional
+    committee_name TEXT,
+    committee_sboe_id TEXT,
+    committee_street_1 TEXT,
+    committee_street_2 TEXT,
+    committee_city TEXT,
+    committee_state TEXT,
+    committee_zip_code TEXT,
+    report_name TEXT,
+    date_occured TEXT,          -- NCBOE typo intentional
+    account_code TEXT,
+    amount TEXT,
+    form_of_payment TEXT,
+    purpose TEXT,
+    candidate_referendum_name TEXT,
+    declaration TEXT,
+    -- Normalization columns (same as main table)
+    norm_last TEXT,
+    norm_first TEXT,
+    norm_middle TEXT,
+    norm_suffix TEXT,
+    norm_prefix TEXT,
+    norm_nickname TEXT,
+    norm_zip5 TEXT,
+    norm_city TEXT,
+    norm_employer TEXT,
+    employer_sic_code TEXT,
+    employer_naics_code TEXT,
+    norm_amount NUMERIC(12, 2),
+    norm_date DATE,
+    address_numbers TEXT[],
+    all_addresses TEXT[],
+    year_donated INTEGER,
+    is_unitemized BOOLEAN DEFAULT FALSE,
+    -- Reason this row was sidelined
+    sidelined_reason TEXT,      -- e.g. 'committee_keyword_in_name', 'committee_transction_type'
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE raw.ncboe_donations_sidelined IS
+'Committee/org donor rows sidelined from NCBOE GOLD load. '
+'Same schema as raw.ncboe_donations. Preserved intact — not deleted. '
+'Review separately before any downstream use.';
+
+CREATE INDEX IF NOT EXISTS idx_ncboe_sl_name       ON raw.ncboe_donations_sidelined (norm_last, norm_first);
+CREATE INDEX IF NOT EXISTS idx_ncboe_sl_source      ON raw.ncboe_donations_sidelined (source_file);
+CREATE INDEX IF NOT EXISTS idx_ncboe_sl_committee   ON raw.ncboe_donations_sidelined (committee_sboe_id);
+CREATE INDEX IF NOT EXISTS idx_ncboe_sl_reason      ON raw.ncboe_donations_sidelined (sidelined_reason);
+CREATE INDEX IF NOT EXISTS idx_ncboe_sl_candidate   ON raw.ncboe_donations_sidelined (candidate_referendum_name);

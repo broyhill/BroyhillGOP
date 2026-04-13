@@ -65,6 +65,30 @@ EXPECTED_COL_COUNT = len(REQUIRED_COLUMNS)  # 24
 DEM_KEYWORDS = [
     " DEM ", " (D)", " (D) ", " DEMOCRAT", "DEMOCRATIC",
 ]
+
+# Committee-to-committee transfer / org donor detection
+# Mirrors _COMMITTEE_NAME_KEYWORDS in ncboe_normalize_pipeline.py — keep in sync.
+COMMITTEE_NAME_KEYWORDS = [
+    "COMMITTEE", "FRIENDS OF", "CITIZENS FOR",
+    "REPUBLICANS FOR", "CONSERVATIVES FOR", "VICTORY FUND",
+    " PAC", "POLITICAL ACTION", "LEADERSHIP FUND",
+    "REPUBLICAN PARTY", "DEMOCRATIC PARTY", "GOP", "NCGOP",
+    "CAMPAIGN FUND", "CAMPAIGN COMMITTEE", "EXPLORATORY",
+    "NORTH CAROLINA REPUBLICAN", "NC REPUBLICAN",
+    "FOR CONGRESS", "FOR SENATE", "FOR GOVERNOR", "FOR PRESIDENT",
+    "FOR COMMISSIONER", "FOR JUDGE", "FOR SHERIFF",
+    "VICTORY COMMITTEE", "TRUST", "FOUNDATION", "ASSOCIATION",
+    "CORPORATION", "CORP.", "INC.", " LLC", "LLC ",
+    "HOLDINGS", "ENTERPRISES", "INDUSTRIES", "PROPERTIES",
+]
+# Committee Transction Types that flag a row as non-individual
+COMMITTEE_TRANSCTION_TYPES = {
+    "Transfer In", "Transfer Out",
+    "Contribution by Candidate",
+    "Independent Expenditure",
+    "Expenditure",
+}
+
 # NC zip range (roughly — catches obvious out-of-state)
 NC_ZIP_PREFIXES = tuple(str(z) for z in range(270, 290))
 
@@ -241,6 +265,9 @@ def audit_file(filepath: Path, all_seen_rows: set) -> FileAudit:
     dem_candidate_rows: list[tuple] = []
 
     committee_sboe_ids: set = set()
+    committee_row_count: int = 0
+    committee_row_samples: list = []
+    committee_ttype_count: int = 0
     duplicate_rows: list[int] = []
     row_fingerprints: list[str] = []
 
@@ -272,6 +299,23 @@ def audit_file(filepath: Path, all_seen_rows: set) -> FileAudit:
             upper = name.upper()
             if "EDWARD" in upper and upper.startswith("ED "):
                 name_edward_bleeds.append(name)
+
+        # ── Committee / Org donor detection ──────────────────
+        ttype_for_check = (row.get("Transction Type") or "").strip()
+        is_committee_row = False
+        if name:
+            upper_name = name.upper()
+            for kw in COMMITTEE_NAME_KEYWORDS:
+                if kw.upper() in upper_name:
+                    is_committee_row = True
+                    break
+        if not is_committee_row and ttype_for_check in COMMITTEE_TRANSCTION_TYPES:
+            is_committee_row = True
+            committee_ttype_count += 1
+        if is_committee_row:
+            committee_row_count += 1
+            if len(committee_row_samples) < 10:
+                committee_row_samples.append((row_num, name, ttype_for_check))
 
         # ── State ─────────────────────────────────────────────
         state = (row.get("State") or "").strip().upper()
@@ -451,6 +495,26 @@ def audit_file(filepath: Path, all_seen_rows: set) -> FileAudit:
             f"{len(duplicate_rows)} rows appear to be duplicates from a previously audited file "
             f"(same name+date+amount+committee) — row numbers: {duplicate_rows[:10]}")
 
+    # Committee / org donor rows — sidelined on --apply, not rejected
+    audit.stats["committee_rows"]        = committee_row_count
+    audit.stats["committee_rows_pct"]    = round(committee_row_count / total_rows * 100, 2) if total_rows else 0
+    audit.stats["committee_ttype_rows"]  = committee_ttype_count
+    if committee_row_count > 0:
+        pct = audit.stats["committee_rows_pct"]
+        sample_str = [(r, n, t) for r, n, t in committee_row_samples[:5]]
+        if pct > 10.0:
+            audit.error("COMMITTEE_CONTAMINATION",
+                f"\U0001f6a8 {committee_row_count:,} rows ({pct}%) appear to be committee/org donors — "
+                f"exceeds 10% threshold. Verify file is individual contributions only. "
+                f"These will be SIDELINED on --apply. Samples: {sample_str}")
+        else:
+            audit.warn("COMMITTEE_ROWS_PRESENT",
+                f"{committee_row_count:,} rows ({pct}%) look like committee/org donors — "
+                f"will be routed to raw.ncboe_donations_sidelined on --apply. "
+                f"Samples: {sample_str}")
+    else:
+        audit.note("COMMITTEE_CHECK", "No committee/org donor rows detected")
+
     # ED → EDWARD bleed
     if name_edward_bleeds:
         audit.error("NAME_ED_EDWARD_BLEED",
@@ -559,6 +623,7 @@ def format_report(audits: list[FileAudit]) -> str:
         lines.append(f"  Rows:         {s.get('total_rows', 0):,}")
         lines.append(f"  Columns:      {s.get('header_count', '?')}")
         lines.append(f"  Unitemized:   {s.get('unitemized_rows', 0):,} ({s.get('unitemized_pct', 0)}%)")
+        lines.append(f"  Committee/org rows: {s.get('committee_rows', 0):,} ({s.get('committee_rows_pct', 0)}%) — will be sidelined")
         lines.append(f"  Committees:   {s.get('committees', 0):,} unique SBoE IDs")
         if 'amount_total' in s:
             lines.append(f"  Amount:       ${s['amount_total']:,.2f} total | "

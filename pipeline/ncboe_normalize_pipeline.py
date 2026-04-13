@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-NCBOE GOLD CSV → raw.ncboe_donations (normalization only).
+NCBOE GOLD CSV → raw.ncboe_donations (individual rows) + raw.ncboe_donations_sidelined (committee/org rows).
 
 Reads CSV from /data/ncboe/gold/ (or --file), maps EXACT NCBOE headers (including typos),
 populates norm_* columns. Default is --dry-run (no INSERT). Use --apply to write rows.
@@ -26,6 +26,41 @@ from pipeline.ncboe_gold_csv_headers import HEADER_TO_DB_COLUMN, NCBOE_GOLD_HEAD
 from pipeline.ncboe_name_parser import parse_ncboe_gold_name
 
 logger = logging.getLogger(__name__)
+
+# ── Committee / sidelining detection ──────────────────────────────────────────
+# Mirrors the same lists in ncboe_gold_audit.py — keep in sync.
+_COMMITTEE_NAME_KEYWORDS = [
+    "COMMITTEE", "FRIENDS OF", "CITIZENS FOR",
+    "REPUBLICANS FOR", "CONSERVATIVES FOR", "VICTORY FUND",
+    "PAC", "POLITICAL ACTION", "LEADERSHIP FUND",
+    "REPUBLICAN PARTY", "DEMOCRATIC PARTY", "GOP", "NCGOP",
+    "CAMPAIGN FUND", "CAMPAIGN COMMITTEE", "EXPLORATORY",
+    "NORTH CAROLINA REPUBLICAN", "NC REPUBLICAN",
+    "FOR CONGRESS", "FOR SENATE", "FOR GOVERNOR", "FOR PRESIDENT",
+    "FOR COMMISSIONER", "FOR JUDGE", "FOR SHERIFF",
+    "VICTORY COMMITTEE", "TRUST", "FOUNDATION", "ASSOCIATION",
+    "CORPORATION", "CORP.", "INC.", " LLC", "LLC ",
+    "HOLDINGS", "ENTERPRISES", "INDUSTRIES", "PROPERTIES",
+]
+_COMMITTEE_TRANSCTION_TYPES = {
+    "Transfer In", "Transfer Out",
+    "Contribution by Candidate",
+    "Independent Expenditure",
+    "Expenditure",
+}
+
+
+def _is_committee_row(dbrow: dict) -> tuple[bool, str]:
+    """Return (True, reason) if row looks like a committee/org donor, not an individual."""
+    name = (dbrow.get("name") or "").strip().upper()
+    ttype = (dbrow.get("transction_type") or "").strip()
+    if name:
+        for kw in _COMMITTEE_NAME_KEYWORDS:
+            if kw.upper() in name:
+                return True, f"committee_keyword_in_name:{kw.strip()}"
+    if ttype in _COMMITTEE_TRANSCTION_TYPES:
+        return True, f"committee_transction_type:{ttype}"
+    return False, ""
 
 _INSERT_COLS = [
     "source_file",
@@ -71,6 +106,68 @@ _INSERT_COLS = [
     "year_donated",
     "is_unitemized",
 ]
+
+
+_SIDELINED_COLS = _INSERT_COLS + ["sidelined_reason"]
+
+
+def _insert_sidelined_batch(conn, batch: list[dict]) -> None:
+    """Insert committee/org rows to raw.ncboe_donations_sidelined."""
+    cols = _SIDELINED_COLS
+    placeholders = ", ".join(["%s"] * len(cols))
+    sql = f"INSERT INTO raw.ncboe_donations_sidelined ({', '.join(cols)}) VALUES ({placeholders})"
+    tuples = []
+    for b in batch:
+        tuples.append(
+            (
+                b["source_file"],
+                b.get("name"),
+                b.get("street_line_1"),
+                b.get("street_line_2"),
+                b.get("city"),
+                b.get("state"),
+                b.get("zip_code"),
+                b.get("profession_job_title"),
+                b.get("employer_name"),
+                b.get("transction_type"),
+                b.get("committee_name"),
+                b.get("committee_sboe_id"),
+                b.get("committee_street_1"),
+                b.get("committee_street_2"),
+                b.get("committee_city"),
+                b.get("committee_state"),
+                b.get("committee_zip_code"),
+                b.get("report_name"),
+                b.get("date_occured"),
+                b.get("account_code"),
+                b.get("amount"),
+                b.get("form_of_payment"),
+                b.get("purpose"),
+                b.get("candidate_referendum_name"),
+                b.get("declaration"),
+                b.get("norm_last"),
+                b.get("norm_first"),
+                b.get("norm_middle"),
+                b.get("norm_suffix"),
+                b.get("norm_prefix"),
+                b.get("norm_nickname"),
+                b.get("norm_zip5"),
+                b.get("norm_city"),
+                b.get("norm_employer"),
+                b.get("employer_sic_code"),
+                b.get("employer_naics_code"),
+                b.get("norm_amount"),
+                b.get("norm_date"),
+                b.get("address_numbers") or None,
+                b.get("all_addresses") or None,
+                b.get("year_donated"),
+                b.get("is_unitemized"),
+                b.get("sidelined_reason"),
+            )
+        )
+    with conn.cursor() as cur:
+        cur.executemany(sql, tuples)
+    conn.commit()
 
 
 def _norm_zip5(z: str | None) -> str | None:
@@ -170,7 +267,9 @@ def _row_to_db(
     return base
 
 
-def process_csv(path: Path, conn, *, apply: bool, limit: int | None = None) -> int:
+def process_csv(path: Path, conn, *, apply: bool, limit: int | None = None) -> dict:
+    """Process one CSV. Returns dict with keys: individual, sidelined, total."""
+    counts = {"individual": 0, "sidelined": 0, "total": 0}
     with path.open(newline="", encoding="utf-8-sig", errors="replace") as f:
         reader = csv.DictReader(f)
         header_map = _build_header_map(reader.fieldnames)
@@ -181,22 +280,38 @@ def process_csv(path: Path, conn, *, apply: bool, limit: int | None = None) -> i
                 len(NCBOE_GOLD_HEADERS),
                 reader.fieldnames,
             )
-        n = 0
-        batch: list[dict] = []
+        ind_batch: list[dict] = []
+        sl_batch: list[dict] = []
         for row in reader:
-            if limit is not None and n >= limit:
+            if limit is not None and counts["total"] >= limit:
                 break
             dbrow = _row_to_db(row, header_map, str(path.name), conn)
-            batch.append(dbrow)
-            n += 1
-            if apply and len(batch) >= 500:
-                _insert_batch(conn, batch)
-                batch.clear()
-        if apply and batch:
-            _insert_batch(conn, batch)
-        elif not apply and n:
-            logger.info("Dry-run: parsed %s rows from %s (first name=%r)", n, path, batch[0].get("norm_first") if batch else None)
-    return n
+            counts["total"] += 1
+            is_committee, reason = _is_committee_row(dbrow)
+            if is_committee:
+                dbrow["sidelined_reason"] = reason
+                sl_batch.append(dbrow)
+                counts["sidelined"] += 1
+            else:
+                ind_batch.append(dbrow)
+                counts["individual"] += 1
+            if apply and len(ind_batch) >= 500:
+                _insert_batch(conn, ind_batch)
+                ind_batch.clear()
+            if apply and len(sl_batch) >= 500:
+                _insert_sidelined_batch(conn, sl_batch)
+                sl_batch.clear()
+        if apply:
+            if ind_batch:
+                _insert_batch(conn, ind_batch)
+            if sl_batch:
+                _insert_sidelined_batch(conn, sl_batch)
+        elif counts["total"]:
+            logger.info(
+                "Dry-run: %s rows from %s — %s individual, %s sidelined (committee/org)",
+                counts["total"], path, counts["individual"], counts["sidelined"],
+            )
+    return counts
 
 
 def _insert_batch(conn, batch: list[dict]) -> None:
@@ -278,10 +393,17 @@ def main() -> int:
         else:
             logger.error("No --file and directory %s does not exist", args.dir)
             return 1
+        total_ind = 0
+        total_sl = 0
         for fp in files:
             logger.info("Processing %s apply=%s", fp, args.apply)
-            total += process_csv(fp, conn, apply=args.apply, limit=args.limit)
-    logger.info("Done. Rows seen: %s", total)
+            counts = process_csv(fp, conn, apply=args.apply, limit=args.limit)
+            total_ind += counts["individual"]
+            total_sl  += counts["sidelined"]
+        logger.info(
+            "Done. Individual rows: %s | Sidelined (committee/org): %s | Total: %s",
+            total_ind, total_sl, total_ind + total_sl,
+        )
     return 0
 
 
