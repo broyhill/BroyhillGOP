@@ -450,6 +450,279 @@ SELECT
 FROM ms_segment_performance
 GROUP BY segment_tag
 ORDER BY total_donations DESC;
+
+
+-- ============================================================================
+-- POLITICAL CLOUT SCORING LAYER
+-- Quantifies the power of every special interest organization behind
+-- each microsegment. Scores 12 measurable dimensions → CLOUT_SCORE 0-100.
+-- Eddie Broyhill: "This goes in the affinity=microsegmenting ecosystem."
+-- ============================================================================
+
+-- -----------------------------------------------------------------------
+-- 10. INTEREST GROUP CLOUT SCORES
+-- One row per special interest organization.
+-- Linked to segment_tag so every microsegment knows the power of its
+-- backing organizations (Farm Bureau = farmers, NCMS = doctors, etc.)
+-- -----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS ms_interest_group_clout (
+    org_id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    segment_tag     VARCHAR(50) NOT NULL,           -- which microsegment this org backs
+    org_name        VARCHAR(255) NOT NULL UNIQUE,
+    org_type        VARCHAR(50),                    -- 'membership_assoc' | 'pac' | 'super_pac' |
+                                                    -- 'trade_assoc' | 'nonprofit_501c4' | 'union' | 'lobby_shop'
+    partisan_lean   VARCHAR(10) DEFAULT 'R',        -- R / D / N / U
+    fec_committee_id VARCHAR(20),                   -- FEC ID if they have a PAC
+    sboe_committee_id VARCHAR(20),                  -- NC SBOE ID
+    nc_sos_lobby_id  VARCHAR(20),                   -- NC SOS lobbyist registry ID
+    website_url     VARCHAR(500),
+    rss_feed_url    VARCHAR(500),                   -- feeds into E42 monitoring
+    facebook_url    VARCHAR(500),
+    twitter_handle  VARCHAR(100),
+    instagram_handle VARCHAR(100),
+    newsletter_name  VARCHAR(255),
+    newsletter_signup_url VARCHAR(500),
+    monitor_news    BOOLEAN DEFAULT false,          -- E42 auto-monitor flag
+    monitor_social  BOOLEAN DEFAULT false,          -- E19 auto-monitor flag
+
+    -- D1: Total Political Donations (20% weight)
+    d1_sboe_giving_cycle    NUMERIC DEFAULT 0,      -- $ given to NC candidates last cycle (SBOE)
+    d1_fec_giving_cycle     NUMERIC DEFAULT 0,      -- $ given to federal candidates last cycle
+    d1_score                SMALLINT DEFAULT 0,     -- 1-10
+
+    -- D2: Lobbying Spend (15% weight)
+    d2_lobby_spend_annual   NUMERIC DEFAULT 0,      -- $ spent at NCGA per year
+    d2_score                SMALLINT DEFAULT 0,
+
+    -- D3: Membership / Constituency Size (10% weight)
+    d3_member_count         INTEGER DEFAULT 0,      -- # of voters/members represented
+    d3_score                SMALLINT DEFAULT 0,
+
+    -- D4: Voter Turnout Rate (8% weight)
+    d4_turnout_rate         DECIMAL(4,3) DEFAULT 0, -- 0.000-1.000
+    d4_score                SMALLINT DEFAULT 0,
+
+    -- D5: Media / Earned Media Influence (7% weight)
+    d5_social_followers     INTEGER DEFAULT 0,      -- total social following
+    d5_press_coverage       VARCHAR(20),            -- 'high' | 'medium' | 'low'
+    d5_score                SMALLINT DEFAULT 0,
+
+    -- D6: Organized Infrastructure (7% weight)
+    d6_fulltime_staff       INTEGER DEFAULT 0,
+    d6_chapter_count        INTEGER DEFAULT 0,
+    d6_has_pac              BOOLEAN DEFAULT false,
+    d6_score                SMALLINT DEFAULT 0,
+
+    -- D7: Issue Salience (5% weight)
+    d7_single_issue         BOOLEAN DEFAULT false,  -- single-issue = higher intensity
+    d7_score                SMALLINT DEFAULT 0,
+
+    -- D8: Geographic Concentration (3% weight)
+    d8_top_counties         TEXT[],                 -- where they're strongest
+    d8_score                SMALLINT DEFAULT 0,
+
+    -- D9: Grants Received (8% weight)
+    d9_federal_grants_annual NUMERIC DEFAULT 0,     -- $ federal + state grants per year
+    d9_state_grants_annual   NUMERIC DEFAULT 0,
+    d9_score                SMALLINT DEFAULT 0,
+
+    -- D10: Charitable / 990 Revenue (5% weight)
+    d10_irs_990_revenue     NUMERIC DEFAULT 0,      -- annual 990 revenue
+    d10_score               SMALLINT DEFAULT 0,
+
+    -- D11: Economic Force / NC GDP (8% weight)
+    d11_nc_gdp_contribution NUMERIC DEFAULT 0,      -- $ annual NC GDP contribution
+    d11_score               SMALLINT DEFAULT 0,
+
+    -- D12: Employment Base (4% weight)
+    d12_nc_jobs             INTEGER DEFAULT 0,      -- # NC jobs in sector
+    d12_score               SMALLINT DEFAULT 0,
+
+    -- Composite CLOUT_SCORE
+    -- Formula: D1(0.20)+D2(0.15)+D3(0.10)+D4(0.08)+D5(0.07)+D6(0.07)
+    --         +D7(0.05)+D8(0.03)+D9(0.08)+D10(0.05)+D11(0.08)+D12(0.04)
+    -- Each D scored 1-10, multiply weighted sum × 10 = 0-100
+    clout_score             DECIMAL(5,2) DEFAULT 0, -- 0.00-100.00
+    clout_tier              VARCHAR(20),             -- 'dominant'(85+) | 'major'(70-84) |
+                                                     -- 'significant'(50-69) | 'moderate'(25-49) | 'minor'(<25)
+    clout_last_calculated   TIMESTAMP,
+    clout_notes             TEXT,                   -- narrative explanation of score
+
+    -- Relationship tracking
+    relationship_status     VARCHAR(20) DEFAULT 'cold', -- cold/warm/active/champion
+    assigned_relationship_mgr VARCHAR(255),
+    last_contact_date       DATE,
+    endorsement_status      VARCHAR(20),            -- 'endorsed' | 'neutral' | 'opposed' | 'unknown'
+    endorsement_cycle       INTEGER,                -- election year of endorsement
+
+    created_at              TIMESTAMP DEFAULT NOW(),
+    updated_at              TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ms_clout_segment ON ms_interest_group_clout(segment_tag);
+CREATE INDEX IF NOT EXISTS idx_ms_clout_score ON ms_interest_group_clout(clout_score DESC);
+CREATE INDEX IF NOT EXISTS idx_ms_clout_tier ON ms_interest_group_clout(clout_tier);
+CREATE INDEX IF NOT EXISTS idx_ms_clout_lean ON ms_interest_group_clout(partisan_lean);
+
+
+-- -----------------------------------------------------------------------
+-- 11. INTEREST GROUP PEOPLE
+-- Officers, decision-makers, and major donors at every special interest.
+-- The HUMAN LAYER behind the clout score.
+-- "The clout score tells you the organization's power.
+--  The human layer tells you WHO to cultivate a relationship with."
+--                                              — Ed Broyhill, March 31, 2026
+-- -----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS ms_interest_group_people (
+    person_id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    org_id          UUID REFERENCES ms_interest_group_clout(org_id),
+    segment_tag     VARCHAR(50) NOT NULL,
+
+    -- Identity
+    first_name      VARCHAR(100) NOT NULL,
+    last_name       VARCHAR(100) NOT NULL,
+    middle_name     VARCHAR(50),
+    suffix          VARCHAR(20),
+    preferred_name  VARCHAR(100),               -- "goes by Jim"
+    norm_first      VARCHAR(100),               -- normalized for spine matching
+    norm_last       VARCHAR(100),
+
+    -- Role
+    org_name        VARCHAR(255),               -- denormalized for quick display
+    role_title      VARCHAR(255),               -- "President", "Executive Director", "PAC Treasurer"
+    role_type       VARCHAR(50),                -- 'officer' | 'board' | 'major_donor' | 'lobbyist' | 'staff'
+    role_start_date DATE,
+    role_end_date   DATE,
+    is_current      BOOLEAN DEFAULT true,
+
+    -- Bio
+    hometown        VARCHAR(100),
+    current_city    VARCHAR(100),
+    current_county  VARCHAR(50),
+    education       JSONB DEFAULT '[]',         -- [{school, degree, year}]
+    occupation      VARCHAR(255),               -- day job if volunteer officer
+    employer        VARCHAR(255),
+    employer_industry VARCHAR(100),
+    military_service VARCHAR(255),
+    bio_summary     TEXT,                       -- 2-3 sentence AI-generated bio
+
+    -- Political profile
+    party_registration VARCHAR(5),             -- R / D / U / L
+    voter_ncid      VARCHAR(20),               -- link to nc_voters
+    voter_rncid     VARCHAR(50),               -- link to nc_datatrust / person_spine
+    known_political_views TEXT,
+    elected_offices_held TEXT[],               -- prior or current offices
+
+    -- Donation history (auto-populated from SBOE + FEC data)
+    total_donated_sboe  NUMERIC DEFAULT 0,     -- total to NC candidates (SBOE)
+    total_donated_fec   NUMERIC DEFAULT 0,     -- total to federal candidates (FEC)
+    total_donated_all   NUMERIC DEFAULT 0,     -- combined
+    top_recipient_1  VARCHAR(255),
+    top_recipient_2  VARCHAR(255),
+    top_recipient_3  VARCHAR(255),
+    donor_since_year INTEGER,
+    last_donation_year INTEGER,
+
+    -- Charitable giving
+    total_charitable NUMERIC DEFAULT 0,
+    top_charity_1   VARCHAR(255),
+    top_charity_2   VARCHAR(255),
+    top_charity_3   VARCHAR(255),
+
+    -- Contact
+    email           VARCHAR(255),
+    phone           VARCHAR(30),
+    address_line1   VARCHAR(255),
+    city            VARCHAR(100),
+    zip5            VARCHAR(10),
+    linkedin_url    VARCHAR(500),
+    twitter_handle  VARCHAR(100),
+    facebook_url    VARCHAR(500),
+    preferred_contact VARCHAR(20),             -- 'email' | 'text' | 'phone' | 'linkedin'
+
+    -- Relationship intelligence
+    known_relationships TEXT[],               -- other key people they know
+    known_issues    TEXT[],                   -- issue_tags they personally care about
+    influence_network TEXT,                   -- brief description of their network
+    talking_points  TEXT,                     -- what motivates this person
+    approach_notes  TEXT,                     -- how to cultivate this relationship
+    contact_rating  VARCHAR(5),              -- 'A' | 'B' | 'C' | 'D' — relationship quality
+
+    -- Cross-segment connector flag (the Charlie Sutton layer)
+    -- Person who bridges multiple microsegment worlds
+    is_cross_segment_connector BOOLEAN DEFAULT false,
+    connector_segments  TEXT[],              -- which segments they bridge
+    connector_notes     TEXT,               -- explain the bridge (e.g., "Doctor who hunts AND serves on arts board")
+
+    -- CRM linkage
+    last_contact_date DATE,
+    assigned_relationship_mgr VARCHAR(255),
+    on_email_list   BOOLEAN DEFAULT false,
+    on_sms_list     BOOLEAN DEFAULT false,
+
+    -- Spine linkage (populated when matched)
+    spine_person_id BIGINT,                  -- FK to core.person_spine when matched
+    contact_id      BIGINT,                  -- FK to contacts table
+
+    created_at      TIMESTAMP DEFAULT NOW(),
+    updated_at      TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ms_people_org ON ms_interest_group_people(org_id);
+CREATE INDEX IF NOT EXISTS idx_ms_people_segment ON ms_interest_group_people(segment_tag);
+CREATE INDEX IF NOT EXISTS idx_ms_people_last ON ms_interest_group_people(last_name);
+CREATE INDEX IF NOT EXISTS idx_ms_people_rncid ON ms_interest_group_people(voter_rncid);
+CREATE INDEX IF NOT EXISTS idx_ms_people_connector ON ms_interest_group_people(is_cross_segment_connector);
+CREATE INDEX IF NOT EXISTS idx_ms_people_current ON ms_interest_group_people(is_current);
+CREATE INDEX IF NOT EXISTS idx_ms_people_rating ON ms_interest_group_people(contact_rating);
+
+
+-- -----------------------------------------------------------------------
+-- VIEW: Cross-segment connectors — the Charlie Sutton layer
+-- People who bridge multiple microsegment worlds.
+-- "One person who sits in both worlds. That's a RELATIONSHIP microsegment."
+--                                              — Ed Broyhill, April 11, 2026
+-- -----------------------------------------------------------------------
+CREATE OR REPLACE VIEW v_ms_cross_segment_connectors AS
+SELECT
+    p.person_id,
+    p.first_name || ' ' || p.last_name AS full_name,
+    p.org_name,
+    p.role_title,
+    p.connector_segments,
+    p.connector_notes,
+    p.total_donated_all,
+    p.contact_rating,
+    p.talking_points,
+    p.approach_notes,
+    array_length(p.connector_segments, 1) AS segment_count
+FROM ms_interest_group_people p
+WHERE p.is_cross_segment_connector = true
+  AND p.is_current = true
+ORDER BY array_length(p.connector_segments, 1) DESC, p.total_donated_all DESC;
+
+
+-- -----------------------------------------------------------------------
+-- VIEW: Clout leaderboard by segment
+-- Which organizations have the most political muscle in each segment?
+-- -----------------------------------------------------------------------
+CREATE OR REPLACE VIEW v_ms_clout_by_segment AS
+SELECT
+    segment_tag,
+    org_name,
+    org_type,
+    partisan_lean,
+    clout_score,
+    clout_tier,
+    d1_sboe_giving_cycle + d1_fec_giving_cycle AS total_political_giving,
+    d2_lobby_spend_annual,
+    d3_member_count,
+    d11_nc_gdp_contribution,
+    d12_nc_jobs,
+    endorsement_status,
+    relationship_status
+FROM ms_interest_group_clout
+ORDER BY segment_tag, clout_score DESC;
 """
 
 
