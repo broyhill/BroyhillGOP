@@ -1,5 +1,34 @@
 # BroyhillGOP SESSION STATE
-## Updated: 2026-04-03 (overnight) EDT — Claude name+zip match + column migration design
+## Updated: 2026-04-11 EDT — D-flag cleanup complete; relay migrated to 37.27.169.232
+
+---
+
+## ✅ HETZNER ABUSE CASE — CLOSED (April 11, 2026)
+Statement accepted. Ticket closed. 5.9.99.109 can be decommissioned when relay migration confirmed complete.
+
+---
+
+## SESSION APRIL 10–11, 2026 — MASTER RESET + NEW SERVER
+
+### April 10 (Perplexity + Ed, 9.5 hours):
+- **New Hetzner server 37.27.169.232** fully set up: Ubuntu 24.04, PG16, 96 cores, 252GB RAM, 1.8TB RAID
+- **Acxiom data DOWNLOADED**: 7,655,593 rows, 1,925 cols → `/data/acxiom/acxiom_nc_full.parquet` on new server
+- **DataTrust VoterFile download STARTED overnight**: `/data/datatrust/nc_voterfile_full.jsonl` — expect ~7.6M rows
+- **Supabase PITR reset** to April 8, 2026 7:00 AM EDT (contamination cleanup)
+- **New Supabase password**: `Anamaria@2026@` (old `poSkon-hurpok-6wuzwo` no longer valid)
+- **nc_boe_donations_raw = 538,368 rows** — CONTAMINATED, needs TRUNCATE + reload from 18 GOLD files
+- **contribution_map = 2,960,201 rows** (post-PITR reset)
+- **person_spine**: 74,407 active, 125,976 inactive (D-flag cleanup was intentional — do not reverse)
+- **Master build plan committed**: sessions/MASTER_RESET_AND_BUILD_PLAN.md + COMPLETE_BUILD_TODO.md
+- **DONOR_DEDUP_PIPELINE_V2.md committed** — THE LAW for all donor matching, read before touching donor data
+- **Relay key**: bgop-relay-k9x2mP8vQnJwT4rL
+
+### April 11 (Morning — Claude):
+- **Relay v1.3.0** confirmed LIVE at **37.27.169.232:8080** (Redis: OK)
+- Relay inbox 185 unread messages — **DO NOT ACT ON OLD MESSAGES** (Eddie instruction)
+- Msg #236: Perplexity EMERGENCY HALT re: 53K deactivations — **DISREGARD** — intentional D-flag cleanup
+- **docker-compose.yml BUG**: runs `python app/relay.py` but relay.py is at repo root — fix before next redeploy
+- SESSION-STATE.md updated with new server IP and April 10 session data
 
 ---
 
@@ -22,7 +51,7 @@ The old SESSION-STATE.md (dated 2026-03-24) is obsolete. Ignore all numbers and 
 | public.winred_donors | ~194,278 | ✅ Clean |
 | public.nc_donor_summary | 195,317 | 🗑️ PURGED from contacts — Letha Davis file, not canonical data |
 | public.person_source_links | 2,055,703 | ✅ |
-| core.person_spine | 128,043 active | ✅ Merge executor ran 2026-04-03 — 4 genuine duplicates merged; $426,949,676 total (unchanged ballpark) |
+| core.person_spine | 74,407 active | ✅ D-flag cleanup 2026-04-06: 53,636 D-only persons intentionally deactivated (is_active=false). $432M R-only. |
 | core.contribution_map | 4,137,549 | ✅ party_flag stamped, 733K rows attributed to candidates |
 | core.candidate_committee_map | 3,733 rows | ✅ 99.97% FEC committee coverage (fix_09) |
 | candidate_profiles | 3,630 | ✅ All Republican, faction scores |
@@ -217,8 +246,27 @@ This is expected — RNCID backfill will improve match rate in next session.
 - **132,036 contacts** affected (all with datatrust_2026 JSON)
 - **DESIGN ONLY — not executed.** Awaiting Ed/Perplexity review.
 
-### WinRed phone/email backfill — ⏳ NEXT after migration review
-- Target ~**94K** contacts still without mobile after DataTrust pass.
+### WinRed phone/email backfill — ⏳ DEFERRED (superseded by master reset)
+- Superseded by April 10 PITR reset + new build plan. Resume after Phase F.
+
+### MASTER BUILD PLAN — 11 PHASES (April 10 — current priority)
+Read sessions/COMPLETE_BUILD_TODO.md for full task list. Phase order is STRICT:
+- **Phase A** — DataTrust VoterFile: verify download (~7.6M rows), design core.datatrust_voter_nc, load
+- **Phase B** — Acxiom: inspect parquet, design table, load + join to DataTrust by rnc_regid
+- **Phase C** — RNC Fact Tables: FactInitiativeContacts, Absentee, DimElection, Volunteers
+- **Phase D** — Clean NCBOE load: TRUNCATE nc_boe_donations_raw (538K contaminated), reload 18 GOLD files, normalize, cluster, match to DataTrust via DONOR_DEDUP_PIPELINE_V2.md
+- **Phase E** — FEC donor data: parse (LAST, FIRST format), cluster, cross-ref with NCBOE, match
+- **Phase F** — New person spine (core.person_spine_v2): RNC_RegID as PK, all 7.6M voters, donor aggregates, volunteer cols, honorifics
+- **Phase G** — Committee/candidate registry rebuild
+- **Phase H** — Volunteer ecosystem (party orgs, officer tracking, RNC contact history)
+- **Phase I** — Honorific system (titles for life, priority rules)
+- **Phase J** — Microsegmentation (SIC/NAICS from 11 years of employer history)
+- **Phase K** — Migrate to production, backup, decommission old servers
+
+### IMMEDIATE NEXT STEPS (today)
+1. ⚠️ Submit Hetzner abuse statement: https://abuse-network.hetzner.com/statement/0084eead-788b-41c6-9d71-2542842a218c
+2. Verify VoterFile download: SSH 37.27.169.232 → `wc -l /data/datatrust/nc_voterfile_full.jsonl`
+3. Begin Phase A: inspect first 5 records, count columns, spot-check Ed Broyhill record
 
 ### FEC party committees + state committees — ⏳ DEFERRED (future session)
 - **Ed:** Come back later to focus on **FEC party-committee** data (RNC, NRCC, NRSC, and related) and **state committee** records — valuable, but **not** mixed with the **18-file individual → candidate-committee** pipeline. Requires **separate** ingest design, tables or categories, matching to spine/`contribution_map`, and explicit **authorize** before load.
@@ -278,18 +326,34 @@ This is expected — RNCID backfill will improve match rate in next session.
 |----------|-------|
 | Supabase Project | BroyhillGOP-Claude |
 | Project ID | isbgjpnbocdkeslofota |
+| Supabase direct | db.isbgjpnbocdkeslofota.supabase.co port 5432 |
+| Supabase pooler | port 6543 |
+| **Supabase password** | **Anamaria@2026@** (reset April 10 — old password invalid) |
 | Region | us-east-1 |
 | Postgres | 17.6 |
-| Hetzner server 1 | 5.9.99.109 |
-| Hetzner server 2 | 144.76.219.24 (needs DataTrust IP whitelist) |
+| **Hetzner PRIMARY** | **37.27.169.232** — AX162-R, Finland, 96 cores, 252GB RAM, 1.8TB RAID |
+| Hetzner PRIMARY root pw | c7pgN4_fD63DnG |
+| Hetzner OLD (DEAD) | 5.9.99.109 — DDoS compromised, ABUSE DEADLINE Apr 11 11:50 PM UTC |
+| Hetzner GPU server | 144.76.219.24 (GEX44, RTX 4000) root: NvHvF3mrZGvP7W |
+| Relay | 37.27.169.232:8080 — v1.3.0 LIVE. Key: bgop-relay-k9x2mP8vQnJwT4rL |
+| RNC API auth | POST https://rncdhapi.azurewebsites.net/api/Authenticate |
+| RNC API data | GET https://rncdatahubapi.gop/api/{endpoint} |
+| RNC Client ID | 07264d72-5f06-4de1-81c0-26909ac136f2 |
+| RNC MSSQL | rncazdwsql.cloudapp.net:52954 (myodd_nc_statecomm) |
+| Zack Imel (RNC Data Dir) | ZImel@gop.com, 270-799-0923 |
+| Danny Peletski (RNC Data) | DPeletski@gop.com |
 | GitHub | broyhill/BroyhillGOP |
 
 ---
 
 ## KEY FINANCIAL FIGURES
-- Republican spine total: $495,429,453
+- Republican spine total: $495,429,453 (pre-PITR — post-reset figures TBD after Phase F)
 - Archived Democratic + Unknown: $220,708,080
-- Old contaminated total (before fix_10): $726,630,745
+- **Ed Broyhill canary**: $352,416 (missing NCBOE state donations — target $857K-$1M+ when GOLD files reloaded)
+- contribution_map post-PITR: 2,960,201 rows
+
+## CANARY SYSTEM
+Person_id 26451 = Ed Broyhill. Checked hourly. If total_contributed on spine ≠ sum in contribution_map, something broke. Current $352K means NCBOE state donations are missing — expected until Phase D completes.
 
 ---
 
