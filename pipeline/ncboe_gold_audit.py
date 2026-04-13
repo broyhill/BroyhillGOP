@@ -99,6 +99,7 @@ KNOWN_TRANSCTION_TYPES = {
     "Loan Received", "Returned Contribution",
     "Expenditure", "Independent Expenditure",
     "Contribution Received", "Transfer In",
+    "Individual",
     "Transfer Out", "Refund of Contribution",
     "",  # blank is ok — unitemized
 }
@@ -419,11 +420,27 @@ def audit_file(filepath: Path, all_seen_rows: set) -> FileAudit:
     # ── 6. Post-loop aggregate checks ───────────────────────
 
     # Null rates for required columns
-    HIGH_NULL_THRESHOLD = 0.05  # 5%
+    # These columns are structurally sparse — high nulls are expected and not errors
+    STRUCTURALLY_SPARSE_COLS = {
+        "Street Line 2",            # second address line — most donors don't have one
+        "Purpose",                  # only required for expenditures
+        "Declaration",              # only required for certain transaction types
+        "Account Code",             # internal NCBOE code, often blank
+        "Form of Payment",          # not always captured
+        "Profession/Job Title",     # optional
+        "Employer's Name/Specific Field",  # optional for small donors
+    }
+    HIGH_NULL_THRESHOLD = 0.05   # 5% — warn
+    HIGH_NULL_ERROR_THRESHOLD = 0.50  # 50% — error (only for required fields)
     for col in REQUIRED_COLUMNS:
         null_rate = (null_counts[col] + blank_counts[col]) / total_rows if total_rows else 0
-        if null_rate > HIGH_NULL_THRESHOLD:
-            severity = "error" if null_rate > 0.50 else "warn"
+        if col in STRUCTURALLY_SPARSE_COLS:
+            # Never error on sparse columns — just note if >95% blank
+            if null_rate > 0.95:
+                audit.warn("NULL_RATE_SPARSE_COL",
+                    f"Column '{col}' is {null_rate:.1%} null/blank — structurally sparse, expected")
+        elif null_rate > HIGH_NULL_THRESHOLD:
+            severity = "error" if null_rate > HIGH_NULL_ERROR_THRESHOLD else "warn"
             msg = f"Column '{col}' is {null_rate:.1%} null/blank ({null_counts[col]+blank_counts[col]:,} of {total_rows:,} rows)"
             if severity == "error":
                 audit.error("NULL_RATE_HIGH", msg)
@@ -489,11 +506,27 @@ def audit_file(filepath: Path, all_seen_rows: set) -> FileAudit:
             f"🚨 {len(dem_candidate_rows)} rows contain Democratic candidate names — "
             f"ENTIRE FILE MUST GO BACK. Samples: {[c for _, c in dem_candidate_rows[:3]]}")
 
-    # Cross-file duplicates
+    # Cross-file duplicates — same name+date+amount+committee_sboe_id across files
+    # Expected: NCBOE search-by-office strategy means some rows overlap between
+    # primary and secondary files (e.g. sheriff-only vs 2ndary-sheriff).
+    # A handful of overlaps is noise. A large number is a double-export problem.
     if duplicate_rows:
-        audit.error("CROSS_FILE_DUPLICATE",
-            f"{len(duplicate_rows)} rows appear to be duplicates from a previously audited file "
-            f"(same name+date+amount+committee) — row numbers: {duplicate_rows[:10]}")
+        dup_count = len(duplicate_rows)
+        dup_pct = round(dup_count / total_rows * 100, 2) if total_rows else 0
+        audit.stats["cross_file_duplicates"] = dup_count
+        audit.stats["cross_file_dup_pct"] = dup_pct
+        if dup_pct > 5.0:
+            audit.error("CROSS_FILE_DUPLICATE_HIGH",
+                f"{dup_count:,} rows ({dup_pct}%) are exact duplicates of rows in a previously "
+                f"audited file (name+date+amount+committee). >5% threshold — investigate before load.")
+        else:
+            audit.warn("CROSS_FILE_DUPLICATE",
+                f"{dup_count:,} rows ({dup_pct}%) match rows in a previously audited file "
+                f"(name+date+amount+committee). Within acceptable range — pipeline will deduplicate on load.")
+    else:
+        audit.stats["cross_file_duplicates"] = 0
+        audit.stats["cross_file_dup_pct"] = 0.0
+        audit.note("CROSS_FILE_DUPLICATE", "No cross-file duplicates detected")
 
     # Committee / org donor rows — sidelined on --apply, not rejected
     audit.stats["committee_rows"]        = committee_row_count
@@ -624,6 +657,7 @@ def format_report(audits: list[FileAudit]) -> str:
         lines.append(f"  Columns:      {s.get('header_count', '?')}")
         lines.append(f"  Unitemized:   {s.get('unitemized_rows', 0):,} ({s.get('unitemized_pct', 0)}%)")
         lines.append(f"  Committee/org rows: {s.get('committee_rows', 0):,} ({s.get('committee_rows_pct', 0)}%) — will be sidelined")
+        lines.append(f"  Cross-file dups:  {s.get('cross_file_duplicates', 0):,} ({s.get('cross_file_dup_pct', 0)}%) — expected overlap from office-type search strategy")
         lines.append(f"  Committees:   {s.get('committees', 0):,} unique SBoE IDs")
         if 'amount_total' in s:
             lines.append(f"  Amount:       ${s['amount_total']:,.2f} total | "
