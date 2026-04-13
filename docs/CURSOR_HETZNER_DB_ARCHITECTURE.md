@@ -14,12 +14,13 @@
 6. [New Data Layer Tables](#new-data-layer-tables)
 7. [Brain / Event Bus Layer](#brain--event-bus-layer)
 8. [Candidate Data Flow Layer](#candidate-data-flow-layer)
-9. [Audit Layer](#audit-layer)
-10. [Search / Profile Layer](#search--profile-layer)
-11. [Key Relationships](#key-relationships)
-12. [Critical Rules for Cursor](#critical-rules-for-cursor)
-13. [Operational Procedures](#operational-procedures)
-14. [GitHub / Migration Context](#github--migration-context)
+9. [Ecosystem Registry Layer](#ecosystem-registry-layer)
+10. [Audit Layer](#audit-layer)
+11. [Search / Profile Layer](#search--profile-layer)
+12. [Key Relationships](#key-relationships)
+13. [Critical Rules for Cursor](#critical-rules-for-cursor)
+14. [Operational Procedures](#operational-procedures)
+15. [GitHub / Migration Context](#github--migration-context)
 
 ---
 
@@ -64,7 +65,7 @@ psql -h 127.0.0.1 -U postgres -d postgres
 
 ## Schema Inventory
 
-The database contains **10 schemas**:
+The database contains **11 schemas**:
 
 | Schema | Purpose |
 |---|---|
@@ -73,13 +74,14 @@ The database contains **10 schemas**:
 | `donor_intelligence` | Golden records, junction maps, materialized views |
 | `pipeline` | ETL idempotency and job tracking; data source registry; real-time data ingest |
 | `brain` | Autonomous decision engine — event bus, triggers, budgets; per-candidate trigger assignments and KPI metrics |
+| `platform` | Ecosystem registry, universe grouping, feature tracking, per-candidate ecosystem activation, health monitoring |
 | `audit` | Immutable activity log (partitioned) |
 | `staging` | Temporary landing zone for in-flight loads |
 | `norm` | Normalization helpers and lookup data |
 | `archive` | Retired / historical data |
 | `volunteer` | Volunteer program data |
 
-**Table count:** 27 logical base tables (3 are partitioned parents), 2 materialized views, 272 indexes. Partition children for `brain.event_queue`, `audit.activity_log`, and `pipeline.inbound_data_queue` add 12 additional rows in `pg_stat_user_tables`.
+**Table count:** 35 logical base tables (3 are partitioned parents), 2 materialized views, 314 indexes. The `platform` schema adds 8 tables for ecosystem management. Partition children for `brain.event_queue`, `audit.activity_log`, and `pipeline.inbound_data_queue` add 12 additional rows in `pg_stat_user_tables`.
 
 ---
 
@@ -1041,6 +1043,239 @@ CREATE UNIQUE INDEX uidx_cm_candidate_period
 
 ---
 
+## Ecosystem Registry Layer
+
+Eight tables in the `platform` schema deployed in migration `HETZNER_ECOSYSTEM_REGISTRY.sql` (2026-04-13). Manages ecosystem definitions, universe grouping, feature evolution, per-candidate activation, and health monitoring.
+
+---
+
+### Layer A — Universe Definitions
+
+---
+
+#### `platform.universes`
+
+**Top-level grouping of ecosystems.** Supports the 60→5-7 consolidation. `universe_code` is the canonical identifier used in `brain.event_queue.source_universe` and `audit.activity_log.universe`.
+
+| Column | Type | Notes |
+|---|---|---|
+| `universe_id` | UUID | PK |
+| `universe_code` | TEXT | UNIQUE — `'DATA'`, `'COMMS'`, `'MEDIA'`, `'OPS'`, `'INTEL'`, `'PORTAL'`, `'INFRA'` |
+| `universe_name` | TEXT | NOT NULL |
+| `description` | TEXT | |
+| `display_order` | INTEGER | Sort order for UI |
+| `color_hex` | TEXT | UI color |
+| `status` | TEXT | CHECK: `active` / `planning` / `deprecated` / `archived` |
+| `is_default` | BOOLEAN | Default universe for unassigned ecosystems |
+| `config` | JSONB | `{ "max_ecosystems", "resource_pool", "budget_allocation_pct", "priority_level" }` |
+
+**Seed data (7 universes):**
+
+| Code | Name | Ecosystems |
+|---|---|---|
+| `DATA` | Data & Intelligence | 9 (E00-E04, E06, E15, E21, E52) |
+| `COMMS` | Communications & Outreach | 9 (E17, E30-E33, E35-E36, E48, E57) |
+| `MEDIA` | Media & Content | 12 (E08-E09, E14, E16, E18-E19, E23, E45-E47, E49, E53) |
+| `OPS` | Campaign Operations | 9 (E05, E12, E34, E37-E39, E41, E43, E54) |
+| `INTEL` | Intelligence & Brain | 9 (E07, E10, E13, E20, E22, E42, E56, E59, E60) |
+| `PORTAL` | Portals & Dashboards | 6 (E24-E29) |
+| `INFRA` | Infrastructure & Platform | 6 (E11, E40, E44, E50-E51, E55) |
+
+---
+
+### Layer B — Ecosystem Registry
+
+---
+
+#### `platform.ecosystems`
+
+**Master registry of all E## ecosystems. One row per ecosystem.** 60 ecosystems seeded (E00-E60). Links to `platform.universes` for consolidation. Tracks version history, AI capabilities, resource needs, and dependencies.
+
+| Column | Type | Notes |
+|---|---|---|
+| `ecosystem_id` | UUID | PK |
+| `ecosystem_code` | TEXT | UNIQUE — `'E00'`, `'E01'`, ..., `'E60'` |
+| `ecosystem_name` | TEXT | NOT NULL — "Donor Intelligence", "Social Media", etc. |
+| `short_name` | TEXT | Abbreviated name |
+| `universe_id` | UUID | FK → `platform.universes` |
+| `tier` | INTEGER | 1-10, from inventory (1=Core Data, 8=GPU/AI) |
+| `tier_name` | TEXT | e.g. "Core Data", "Content & AI" |
+| `category` | TEXT | data / content / media / portal / communication / operations / analytics / automation / video / infrastructure / special |
+| `status` | TEXT | CHECK: `concept` / `development` / `testing` / `active` / `maintenance` / `deprecated` / `archived` / `merged` |
+| `is_core` | BOOLEAN | TRUE for foundational ecosystems (E00, E01, E06, E10, E13, E20, E51, E55) |
+| `current_version` | TEXT | Semantic version: `'1.0.0'` |
+| `version_date` | DATE | |
+| `next_version` | TEXT | Planned next version |
+| `next_version_eta` | DATE | |
+| `estimated_value` | NUMERIC(12,2) | From inventory valuation |
+| `python_module` | TEXT | Primary Python file |
+| `python_variants` | TEXT[] | Variant/enhanced Python files |
+| `api_endpoint` | TEXT | Base API path |
+| `has_frontend` | BOOLEAN | |
+| `has_api` | BOOLEAN | |
+| `has_background_jobs` | BOOLEAN | |
+| `ai_model_required` | TEXT | Which AI model needed |
+| `ai_capabilities` | JSONB | Array of AI capabilities |
+| `resource_profile` | JSONB | CPU, memory, GPU, storage, QPS estimates |
+| `depends_on` | TEXT[] | Ecosystem codes this one requires |
+| `default_config` | JSONB | Default config for all candidates |
+| `feature_flags` | JSONB | Runtime feature toggles |
+
+**Indexes (6):** `(universe_id)`, `(status)`, `(tier)`, `(category)`, `(ecosystem_code)` WHERE `is_core`, GIN on `feature_flags`
+
+---
+
+#### `platform.ecosystem_dependencies`
+
+**Inter-ecosystem dependency graph.** Explicit links between ecosystems.
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | UUID | PK |
+| `ecosystem_id` | UUID | FK → `platform.ecosystems`, CASCADE |
+| `depends_on_id` | UUID | FK → `platform.ecosystems`, RESTRICT |
+| `dependency_type` | TEXT | CHECK: `required` / `optional` / `data_feed` / `event_source` / `ui_embed` |
+| `description` | TEXT | |
+| `is_active` | BOOLEAN | |
+
+Unique: `(ecosystem_id, depends_on_id)`
+
+---
+
+### Layer C — Feature Tracking
+
+---
+
+#### `platform.ecosystem_features`
+
+**Individual features within each ecosystem.** The unit of evolution — features are added, revised, deprecated over time.
+
+| Column | Type | Notes |
+|---|---|---|
+| `feature_id` | UUID | PK |
+| `ecosystem_id` | UUID | FK → `platform.ecosystems`, CASCADE |
+| `feature_code` | TEXT | NOT NULL — short code: `'dual_grading'`, `'ai_content_gen'` |
+| `feature_name` | TEXT | NOT NULL |
+| `feature_type` | TEXT | CHECK: `core` / `enhancement` / `integration` / `ai_powered` / `experimental` / `deprecated` |
+| `category` | TEXT | data_processing / ui / api / reporting / automation / scoring / communication / analytics / compliance / content / field_ops |
+| `status` | TEXT | CHECK: `planned` / `development` / `testing` / `active` / `paused` / `deprecated` / `removed` |
+| `introduced_version` | TEXT | Which ecosystem version added this |
+| `deprecated_version` | TEXT | Which version deprecated it |
+| `priority` | INTEGER | 1–100 (100 = critical) |
+| `default_enabled` | BOOLEAN | Whether new candidates get this by default |
+| `config_schema` | JSONB | JSON Schema defining configuration options |
+| `default_config` | JSONB | Default configuration values |
+| `resource_impact` | TEXT | CHECK: `minimal` / `low` / `medium` / `high` / `critical` |
+| `requires_gpu` | BOOLEAN | |
+| `estimated_cost_monthly` | NUMERIC(10,2) | Per-candidate monthly cost |
+| `depends_on_features` | UUID[] | Other features required |
+| `conflicts_with` | UUID[] | Features that can't coexist |
+
+Unique: `(ecosystem_id, feature_code)`
+
+**Indexes (5):** `(ecosystem_id)`, `(status)`, `(feature_type)`, `(ecosystem_id, feature_code)` WHERE active, GIN on `config_schema`
+
+---
+
+#### `platform.ecosystem_versions`
+
+**Version history for each ecosystem.** Records every revision with a changelog and feature snapshot.
+
+| Column | Type | Notes |
+|---|---|---|
+| `version_id` | UUID | PK |
+| `ecosystem_id` | UUID | FK → `platform.ecosystems`, CASCADE |
+| `version` | TEXT | Semantic version |
+| `version_type` | TEXT | CHECK: `major` / `minor` / `patch` / `hotfix` |
+| `release_date` | DATE | |
+| `summary` | TEXT | |
+| `changelog` | JSONB | `[{ "type": "added", "feature": "...", "description": "..." }]` |
+| `features_snapshot` | JSONB | `{ "active": [...], "deprecated": [...], "total_features": 12 }` |
+| `migration_file` | TEXT | Path to migration SQL |
+| `requires_restart` | BOOLEAN | |
+| `breaking_changes` | BOOLEAN | |
+| `approved_by` | TEXT | |
+
+Unique: `(ecosystem_id, version)`
+
+---
+
+### Layer D — Per-Candidate Ecosystem Activation
+
+---
+
+#### `platform.candidate_ecosystems`
+
+**Per-candidate ecosystem activation.** Controls which ecosystems are active for each candidate with config overrides and feature toggles.
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | UUID | PK |
+| `candidate_id` | UUID | FK → `core.candidates`, CASCADE |
+| `ecosystem_id` | UUID | FK → `platform.ecosystems`, RESTRICT |
+| `campaign_id` | UUID | FK → `core.campaigns`, nullable |
+| `is_active` | BOOLEAN | NOT NULL |
+| `activated_at` | TIMESTAMPTZ | |
+| `deactivated_at` | TIMESTAMPTZ | |
+| `config_override` | JSONB | Per-candidate config merged with ecosystem default |
+| `feature_overrides` | JSONB | `{ "dual_grading": true, "beta_ui": false }` — overrides feature defaults |
+| `tier_override` | TEXT | Per-ecosystem subscription tier override |
+| `events_processed` | BIGINT | Cached count |
+| `last_event_at` | TIMESTAMPTZ | |
+| `error_count` | INTEGER | |
+
+Unique: `(candidate_id, ecosystem_id)`
+
+**Indexes (5):** `(candidate_id)`, `(ecosystem_id)`, `(campaign_id)` WHERE NOT NULL, `(candidate_id)` WHERE active, GIN on `feature_overrides`
+
+---
+
+#### `platform.candidate_feature_config`
+
+**Granular per-candidate, per-feature configuration.** For features needing detailed settings beyond enable/disable.
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | UUID | PK |
+| `candidate_id` | UUID | FK → `core.candidates`, CASCADE |
+| `feature_id` | UUID | FK → `platform.ecosystem_features`, CASCADE |
+| `campaign_id` | UUID | nullable |
+| `is_enabled` | BOOLEAN | |
+| `config` | JSONB | Per-candidate feature config (validated against `feature.config_schema`) |
+| `schedule` | TEXT | Cron expression for scheduled features |
+| `configured_by` | TEXT | |
+
+Unique: `(candidate_id, feature_id)`
+
+---
+
+### Layer E — Health Monitoring
+
+---
+
+#### `platform.ecosystem_health`
+
+**Real-time health metrics per ecosystem.** Written by monitoring pipeline every 5–15 minutes.
+
+| Column | Type | Notes |
+|---|---|---|
+| `health_id` | UUID | PK |
+| `ecosystem_id` | UUID | FK → `platform.ecosystems`, CASCADE |
+| `check_time` | TIMESTAMPTZ | |
+| `status` | TEXT | CHECK: `healthy` / `degraded` / `critical` / `offline` / `maintenance` |
+| `uptime_pct` | NUMERIC(5,2) | |
+| `response_time_ms` | INTEGER | |
+| `error_rate_pct` | NUMERIC(5,2) | |
+| `events_in` / `events_out` / `events_failed` | BIGINT | Volume |
+| `queue_depth` | INTEGER | |
+| `features_active` / `features_degraded` / `features_offline` | INTEGER | |
+| `candidates_active` / `candidates_with_errors` | INTEGER | |
+| `active_alerts` | JSONB | `[{"severity":"warning","message":"..."}]` |
+
+**Indexes (4):** `(ecosystem_id, check_time DESC)`, `(status, check_time DESC)`, `(check_time DESC)`, UNIQUE on `(ecosystem_id, check_time)`
+
+---
+
 ## Audit Layer
 
 ### `audit.activity_log`
@@ -1215,6 +1450,38 @@ brain.candidate_triggers.trigger_id
 
 brain.candidate_metrics.candidate_id
     → core.candidates.candidate_id                     (FK, CASCADE)
+
+-- Ecosystem Registry (deployed 2026-04-13)
+
+platform.ecosystems.universe_id
+    → platform.universes.universe_id                   (FK, SET NULL)
+
+platform.ecosystem_dependencies.ecosystem_id
+    → platform.ecosystems.ecosystem_id                 (FK, CASCADE)
+
+platform.ecosystem_dependencies.depends_on_id
+    → platform.ecosystems.ecosystem_id                 (FK, RESTRICT)
+
+platform.ecosystem_features.ecosystem_id
+    → platform.ecosystems.ecosystem_id                 (FK, CASCADE)
+
+platform.ecosystem_versions.ecosystem_id
+    → platform.ecosystems.ecosystem_id                 (FK, CASCADE)
+
+platform.candidate_ecosystems.candidate_id
+    → core.candidates.candidate_id                     (FK, CASCADE)
+
+platform.candidate_ecosystems.ecosystem_id
+    → platform.ecosystems.ecosystem_id                 (FK, RESTRICT)
+
+platform.candidate_feature_config.candidate_id
+    → core.candidates.candidate_id                     (FK, CASCADE)
+
+platform.candidate_feature_config.feature_id
+    → platform.ecosystem_features.feature_id           (FK, CASCADE)
+
+platform.ecosystem_health.ecosystem_id
+    → platform.ecosystems.ecosystem_id                 (FK, CASCADE)
 ```
 
 ---
@@ -1425,6 +1692,39 @@ The `filter_config` JSONB on `candidate_data_subscriptions` narrows broad source
 
 ---
 
+### Rule 13 — Ecosystem Management via `platform` Schema
+
+All ecosystem-related operations must go through the `platform` schema tables. Key patterns:
+
+**Adding a new ecosystem:**
+```sql
+INSERT INTO platform.ecosystems (ecosystem_code, ecosystem_name, universe_id, tier, category, status)
+VALUES ('E61', 'New Ecosystem Name', (SELECT universe_id FROM platform.universes WHERE universe_code = 'OPS'), 6, 'operations', 'development');
+```
+
+**Adding a feature to an ecosystem:**
+```sql
+INSERT INTO platform.ecosystem_features (ecosystem_id, feature_code, feature_name, feature_type, status, introduced_version)
+VALUES ($ecosystem_id, 'new_feature', 'New Feature Name', 'enhancement', 'active', '1.1.0');
+```
+
+**Recording an ecosystem version:**
+```sql
+INSERT INTO platform.ecosystem_versions (ecosystem_id, version, version_type, changelog)
+VALUES ($ecosystem_id, '1.1.0', 'minor', '[{"type":"added","feature":"new_feature","description":"..."}]'::jsonb);
+UPDATE platform.ecosystems SET current_version = '1.1.0', version_date = CURRENT_DATE WHERE ecosystem_id = $ecosystem_id;
+```
+
+**Activating an ecosystem for a candidate:**
+```sql
+INSERT INTO platform.candidate_ecosystems (candidate_id, ecosystem_id, is_active)
+VALUES ($candidate_id, $ecosystem_id, TRUE);
+```
+
+`brain.event_queue.source_universe` and `brain.event_queue.source_ecosystem` must reference valid `platform.universes.universe_code` and `platform.ecosystems.ecosystem_code` values respectively. The `audit.activity_log.universe` and `audit.activity_log.ecosystem` columns follow the same convention.
+
+---
+
 ## Operational Procedures
 
 ### Adding a New File Source
@@ -1466,7 +1766,7 @@ ORDER BY parent.relname, child.relname;
 | Repository | `broyhill/BroyhillGOP` |
 | Active branch | `session-mar17-2026-clean` |
 | Migration range | `088` – `099` (Hetzner-native, dedup work) |
-| Latest migration | `HETZNER_CANDIDATE_DATA_FLOW.sql` — deployed 2026-04-13 (8 new tables, 9 seed data source rows) |
+| Latest migrations | `HETZNER_CANDIDATE_DATA_FLOW.sql` — deployed 2026-04-13 (8 tables, 9 seed sources); `HETZNER_ECOSYSTEM_REGISTRY.sql` — deployed 2026-04-13 (8 tables, 7 universes, 60 ecosystems) |
 
 All migration files should reference this document (`CURSOR_HETZNER_DB_ARCHITECTURE.md`) in their header comment for schema context. New migrations must:
 
