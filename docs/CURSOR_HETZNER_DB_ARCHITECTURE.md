@@ -1777,4 +1777,88 @@ All migration files should reference this document (`CURSOR_HETZNER_DB_ARCHITECT
 
 ---
 
+## Backup and Restore System
+
+### Overview
+
+Three-tier backup strategy providing both full-database and per-candidate recovery:
+
+| Tier | Method | Schedule | Retention | Restore Granularity |
+|------|--------|----------|-----------|-------------------|
+| 1 — PITR | pg_basebackup + WAL archiving | Daily 2:00 AM + continuous WAL | 7 days local | Any point in time (5-min resolution) |
+| 2 — Snapshots | pg_dump --format=custom → Dropbox | Daily 3:00 AM | 3 days local, 14 days Dropbox | Full DB or per-table |
+| 3 — Candidate | Per-candidate SQL export (13 tables) | On-demand (before risky changes) | Unlimited | Single candidate |
+
+### Directory Structure
+
+```
+/opt/pgbackup/
+├── wal_archive/          # Continuous WAL segments (PITR)
+├── base/                 # Daily pg_basebackup tarballs
+├── snapshots/            # Daily pg_dump .dump files
+├── candidates/           # Per-candidate SQL snapshots
+├── scripts/
+│   ├── daily_base_backup.sh         # PITR base backup (2 AM cron)
+│   ├── daily_snapshot_dropbox.sh    # pg_dump → Dropbox (3 AM cron)
+│   ├── snapshot_restore.sh          # Full DB restore from .dump
+│   ├── candidate_snapshot.sh        # Export 1 candidate (13 tables)
+│   ├── candidate_restore.sh         # Surgical restore for 1 candidate
+│   ├── backup_now.sh               # On-demand base backup
+│   └── pitr_restore.sh             # PITR full reset button
+└── logs/
+```
+
+### Per-Candidate Data Boundary (13 Tables)
+
+When a candidate's data needs to be rolled back, these 13 tables are affected:
+
+| Schema | Table | FK Column |
+|--------|-------|----------|
+| core | candidates | candidate_id (PK) |
+| core | campaigns | candidate_id |
+| brain | budgets | candidate_id |
+| brain | candidate_metrics | candidate_id |
+| brain | candidate_triggers | candidate_id |
+| brain | decisions | candidate_id |
+| pipeline | candidate_data_subscriptions | candidate_id |
+| pipeline | inbound_data_queue | candidate_id |
+| pipeline | candidate_enrichment_log | candidate_id |
+| platform | candidate_ecosystems | candidate_id |
+| platform | candidate_feature_config | candidate_id |
+
+Tables NOT touched by per-candidate restore (shared reference data):
+- raw.ncboe_donations, raw.fec_donations (keyed by donor, not candidate)
+- core.datatrust_voter_nc, core.acxiom_* (keyed by rnc_regid)
+- person_master, contribution_map (donor identity resolution)
+- audit.activity_log (append-only, never deleted)
+
+### backup Schema
+
+```sql
+-- backup.backup_history: tracks all backups
+--   backup_type IN ('base','manual','wal','snapshot','candidate')
+--   status IN ('started','completed','failed','expired')
+
+-- backup.restore_log: immutable audit trail of restores
+--   restore_type IN ('pitr','full','manual','candidate')
+
+-- backup.v_backup_status: quick status view
+--   SELECT * FROM backup.v_backup_status;
+```
+
+### Dropbox Integration
+
+- Uses rclone (v1.73.4) for Dropbox uploads
+- Remote name: `dropbox` (configured via `rclone config`)
+- Path: `BroyhillGOP/backups/daily/bgop_YYYYMMDD_HHMMSS.dump`
+- Upload runs as part of daily snapshot at 3 AM
+- 14-day retention on Dropbox (auto-pruned)
+
+### Rule 14: Backup Before Breaking
+
+Before any schema migration, bulk data change, or ecosystem restructure:
+1. Run `candidate_snapshot.sh <id>` for affected candidates
+2. Or run `backup_now.sh "before migration XYZ"` for full safety net
+3. On failure: `candidate_restore.sh <id> latest` (surgical) or `pitr_restore.sh "YYYY-MM-DD HH:MM:SS"` (nuclear)
+
 *Last updated: 2026-04-13. Maintained in `broyhill/BroyhillGOP` — branch `session-mar17-2026-clean`.*
