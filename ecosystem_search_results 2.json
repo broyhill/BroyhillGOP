@@ -1,0 +1,1596 @@
+{
+  "scan_summary": {
+    "files_scanned": 1393,
+    "files_with_hits": 528,
+    "total_ecosystem_hits": 13233,
+    "total_component_hits": 3554,
+    "errors_count": 0
+  },
+  "ecosystem_cross_reference": {
+    "E00": {
+      "name": "DataHub / Master Database",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_00_datahub_complete.py"
+      ],
+      "doc_references": 425,
+      "files_mentioning": 66,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT copy.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT.md",
+        "/Users/Broyhill/Downloads/feb 15 BroyhillGOP Supabase Audit - Recommendations & To-Do List.md"
+      ]
+    },
+    "E01": {
+      "name": "Donor Intelligence Engine",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_01_contact_import.py",
+        "ecosystem_01_data_import_engine.py",
+        "ecosystem_01_donor_intelligence_complete.py",
+        "ecosystem_01_platform_social_import.py",
+        "ecosystem_01_dual_grading_update.py",
+        "ecosystem_01_social_oauth_maximum_capture.py"
+      ],
+      "doc_references": 880,
+      "files_mentioning": 93,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/are you losing your memory___.md",
+        "/Users/Broyhill/Downloads/I cant figure out all this. it will take all night.md",
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md"
+      ]
+    },
+    "E02": {
+      "name": "Donation Processing",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_02_donation_processing_complete.py"
+      ],
+      "doc_references": 481,
+      "files_mentioning": 60,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/are you losing your memory___.md",
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/\u2705 2-supabase-upload-4 main files-dedupe-CAUGHT UP - HERE'S WHERE WE ARE.md"
+      ]
+    },
+    "E03": {
+      "name": "Candidate Profiles / Marketing Automation",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_03_candidate_profiles_complete.py"
+      ],
+      "doc_references": 227,
+      "files_mentioning": 57,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/are you losing your memory___.md",
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/\u2705 2-supabase-upload-4 main files-dedupe-CAUGHT UP - HERE'S WHERE WE ARE.md"
+      ]
+    },
+    "E04": {
+      "name": "Activist Network",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_04_activist_network_complete.py"
+      ],
+      "doc_references": 132,
+      "files_mentioning": 45,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/are you losing your memory___.md",
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md"
+      ]
+    },
+    "E05": {
+      "name": "Volunteer Management",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_05_volunteer_management_complete.py"
+      ],
+      "doc_references": 220,
+      "files_mentioning": 55,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/are you losing your memory___.md",
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md"
+      ]
+    },
+    "E06": {
+      "name": "Analytics Engine",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_06_analytics_engine_complete.py"
+      ],
+      "doc_references": 163,
+      "files_mentioning": 50,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md"
+      ]
+    },
+    "E07": {
+      "name": "Issue Tracking",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_07_issue_tracking_complete.py"
+      ],
+      "doc_references": 93,
+      "files_mentioning": 38,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/Here is a full strategic read of the candidate eng.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md"
+      ]
+    },
+    "E08": {
+      "name": "Communications Library",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_08_communications_library_complete.py"
+      ],
+      "doc_references": 118,
+      "files_mentioning": 42,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/Here is a full strategic read of the candidate eng.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md"
+      ]
+    },
+    "E09": {
+      "name": "Content Creation AI",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_09_content_creation_ai_complete.py"
+      ],
+      "doc_references": 109,
+      "files_mentioning": 36,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_VENDOR_LIST.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/Here is a full strategic read of the candidate eng.md"
+      ]
+    },
+    "E10": {
+      "name": "Compliance Manager",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_10_compliance_manager_complete.py"
+      ],
+      "doc_references": 127,
+      "files_mentioning": 55,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md"
+      ]
+    },
+    "E11": {
+      "name": "Budget Management / Training LMS",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_11_budget_management_complete.py",
+        "ecosystem_11_budget_dual_grading.py",
+        "ecosystem_11_training_lms_complete.py"
+      ],
+      "doc_references": 185,
+      "files_mentioning": 56,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md"
+      ]
+    },
+    "E12": {
+      "name": "Campaign Operations",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_12_campaign_operations_complete.py"
+      ],
+      "doc_references": 92,
+      "files_mentioning": 49,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md"
+      ]
+    },
+    "E13": {
+      "name": "AI Hub",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_13_ai_hub_complete.py"
+      ],
+      "doc_references": 303,
+      "files_mentioning": 74,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/feb 15 BroyhillGOP Supabase Audit - Recommendations & To-Do List.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_VENDOR_LIST.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md"
+      ]
+    },
+    "E14": {
+      "name": "Print Production",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_14_print_production_complete.py"
+      ],
+      "doc_references": 116,
+      "files_mentioning": 57,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md"
+      ]
+    },
+    "E15": {
+      "name": "Contact Directory",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_15_contact_directory_complete.py"
+      ],
+      "doc_references": 199,
+      "files_mentioning": 88,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/CRASH RECOVERY TRANSCRIPT - DONOR DEDUPLICATION SESSION.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md"
+      ]
+    },
+    "E16": {
+      "name": "TV/Radio AI + Voice Synthesis",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_16b_voice_synthesis_opensource_complete.py",
+        "ecosystem_16b_voice_synthesis_ULTRA.py",
+        "ecosystem_16_tv_radio_complete.py",
+        "ecosystem_16b_voice_synthesis_ULTRA_complete.py"
+      ],
+      "doc_references": 229,
+      "files_mentioning": 96,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_VENDOR_LIST.md"
+      ]
+    },
+    "E17": {
+      "name": "RVM (Ringless Voicemail)",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_17_rvm_complete.py"
+      ],
+      "doc_references": 119,
+      "files_mentioning": 63,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_VENDOR_LIST.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/datatrust-nc-voter-god-files copy.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_VIDEO_SOUND_E20_BRAIN_ANALYSIS.md"
+      ]
+    },
+    "E18": {
+      "name": "VDP / Print Advertising",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_18_vdp_composition_engine_complete.py",
+        "ecosystem_18_print_advertising_complete.py"
+      ],
+      "doc_references": 89,
+      "files_mentioning": 43,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md",
+        "/Users/Broyhill/Downloads/datatrust-nc-voter-god-files copy.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_AUDIT_MISSING_FILES.md"
+      ]
+    },
+    "E19": {
+      "name": "Social Media Manager / Personalization",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_19_social_media_enhanced.py",
+        "ecosystem_19_social_media_integration_patch.py",
+        "ecosystem_19_social_media_manager.py",
+        "ecosystem_19_personalization_engine.py"
+      ],
+      "doc_references": 522,
+      "files_mentioning": 87,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_VENDOR_LIST.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_COMPREHENSIVE_AUDIT_JAN17_2026.md"
+      ]
+    },
+    "E20": {
+      "name": "Intelligence Brain",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_20_intelligence_brain_complete.py"
+      ],
+      "doc_references": 1686,
+      "files_mentioning": 168,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I cant figure out all this. it will take all night.md",
+        "/Users/Broyhill/Downloads/1 GOD-SESSION-Mar-6-Database-BLUEPRINT.md",
+        "/Users/Broyhill/Downloads/GOP_DATATRUST_DONOR_ARCHITECTURE_COMPLETE_1.md",
+        "/Users/Broyhill/Downloads/MATCHING_ALGORITHM_COMPLETE_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md"
+      ]
+    },
+    "E21": {
+      "name": "ML Clustering",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_21_ml_clustering_complete.py"
+      ],
+      "doc_references": 251,
+      "files_mentioning": 83,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/MATCHING_ALGORITHM_COMPLETE_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT copy.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT.md"
+      ]
+    },
+    "E22": {
+      "name": "A/B Testing Engine (Thompson Sampling)",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_22_ab_testing_engine_complete.py"
+      ],
+      "doc_references": 198,
+      "files_mentioning": 71,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_TRANSCRIPT_JAN10_2026_1.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md"
+      ]
+    },
+    "E23": {
+      "name": "Creative Asset / 3D Engine",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_23_creative_asset_3d_engine_complete.py"
+      ],
+      "doc_references": 76,
+      "files_mentioning": 45,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/Here is a full strategic read of the candidate eng.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md"
+      ]
+    },
+    "E24": {
+      "name": "Candidate Portal",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_24_candidate_portal_complete.py"
+      ],
+      "doc_references": 123,
+      "files_mentioning": 45,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/Here is a full strategic read of the candidate eng.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md"
+      ]
+    },
+    "E25": {
+      "name": "Donor Portal",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_25_donor_portal_complete.py"
+      ],
+      "doc_references": 75,
+      "files_mentioning": 43,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md",
+        "/Users/Broyhill/Downloads/datatrust-nc-voter-god-files copy.md"
+      ]
+    },
+    "E26": {
+      "name": "Volunteer Portal",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_26_volunteer_portal_complete.py"
+      ],
+      "doc_references": 101,
+      "files_mentioning": 49,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md",
+        "/Users/Broyhill/Downloads/datatrust-nc-voter-god-files copy.md"
+      ]
+    },
+    "E27": {
+      "name": "Realtime Dashboard",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_27_realtime_dashboard_complete.py"
+      ],
+      "doc_references": 88,
+      "files_mentioning": 48,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md",
+        "/Users/Broyhill/Downloads/datatrust-nc-voter-god-files copy.md"
+      ]
+    },
+    "E28": {
+      "name": "Financial Dashboard",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_28_financial_dashboard_complete.py"
+      ],
+      "doc_references": 62,
+      "files_mentioning": 37,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md",
+        "/Users/Broyhill/Downloads/datatrust-nc-voter-god-files copy.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_AUDIT_MISSING_FILES.md"
+      ]
+    },
+    "E29": {
+      "name": "Analytics Dashboard",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_29_analytics_dashboard_complete.py"
+      ],
+      "doc_references": 132,
+      "files_mentioning": 66,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT copy.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT.md",
+        "/Users/Broyhill/Downloads/2 COMPLETE_SESSION_TRANSCRIPT_1.md"
+      ]
+    },
+    "E30": {
+      "name": "Email Engine",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_30_email_dual_grading.py",
+        "ecosystem_30_email_complete.py"
+      ],
+      "doc_references": 654,
+      "files_mentioning": 134,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT copy.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT.md"
+      ]
+    },
+    "E31": {
+      "name": "SMS/MMS Engine",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_31_sms_complete.py",
+        "ecosystem_31_sms_enhanced.py"
+      ],
+      "doc_references": 355,
+      "files_mentioning": 113,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/\u2705 2-supabase-upload-4 main files-dedupe-CAUGHT UP - HERE'S WHERE WE ARE.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md"
+      ]
+    },
+    "E32": {
+      "name": "Phone Banking",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_32_phone_banking_complete.py"
+      ],
+      "doc_references": 155,
+      "files_mentioning": 79,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_VENDOR_LIST.md"
+      ]
+    },
+    "E33": {
+      "name": "Direct Mail",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_33_direct_mail_complete.py"
+      ],
+      "doc_references": 179,
+      "files_mentioning": 76,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md"
+      ]
+    },
+    "E34": {
+      "name": "Events",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_34_events_complete.py"
+      ],
+      "doc_references": 129,
+      "files_mentioning": 67,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md"
+      ]
+    },
+    "E35": {
+      "name": "Interactive Comm Hub / Auto-Response",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_35_interactive_comm_hub_complete.py",
+        "ecosystem_35_auto_response_enhancement.py"
+      ],
+      "doc_references": 127,
+      "files_mentioning": 51,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_VENDOR_LIST.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md"
+      ]
+    },
+    "E36": {
+      "name": "Messenger Integration",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_36_messenger_integration_complete.py"
+      ],
+      "doc_references": 130,
+      "files_mentioning": 51,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_VENDOR_LIST.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md"
+      ]
+    },
+    "E37": {
+      "name": "Event Management",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_37_event_management_complete.py"
+      ],
+      "doc_references": 186,
+      "files_mentioning": 60,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/Here is a full strategic read of the candidate eng.md"
+      ]
+    },
+    "E38": {
+      "name": "Volunteer Coordination",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_38_volunteer_coordination_complete.py"
+      ],
+      "doc_references": 142,
+      "files_mentioning": 50,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md"
+      ]
+    },
+    "E39": {
+      "name": "P2P Fundraising",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_39_p2p_fundraising_complete.py"
+      ],
+      "doc_references": 102,
+      "files_mentioning": 59,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT copy.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT.md",
+        "/Users/Broyhill/Downloads/2 COMPLETE_SESSION_TRANSCRIPT_1.md"
+      ]
+    },
+    "E40": {
+      "name": "Automation Control Panel",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_40_automation_control_panel_complete.py"
+      ],
+      "doc_references": 159,
+      "files_mentioning": 71,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT copy.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT.md",
+        "/Users/Broyhill/Downloads/2 COMPLETE_SESSION_TRANSCRIPT_1.md"
+      ]
+    },
+    "E41": {
+      "name": "Campaign Builder",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_41_campaign_builder_complete.py"
+      ],
+      "doc_references": 194,
+      "files_mentioning": 61,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/broyhillgop-build-guide.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_TRANSCRIPT_JAN10_2026_1.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md"
+      ]
+    },
+    "E42": {
+      "name": "News Intelligence",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_42_news_intelligence_complete.py"
+      ],
+      "doc_references": 436,
+      "files_mentioning": 89,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/please discover all previous files that pertain to.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md"
+      ]
+    },
+    "E43": {
+      "name": "Advocacy Tools",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_43_advocacy_tools_complete.py"
+      ],
+      "doc_references": 75,
+      "files_mentioning": 37,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md"
+      ]
+    },
+    "E44": {
+      "name": "Vendor Compliance / Social Intelligence",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_44_vendor_compliance_security_complete.py"
+      ],
+      "doc_references": 157,
+      "files_mentioning": 62,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md"
+      ]
+    },
+    "E45": {
+      "name": "Video Studio",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_45_video_studio_complete.py"
+      ],
+      "doc_references": 344,
+      "files_mentioning": 89,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_VENDOR_LIST.md"
+      ]
+    },
+    "E46": {
+      "name": "Broadcast Hub",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_46_broadcast_hub_complete.py"
+      ],
+      "doc_references": 147,
+      "files_mentioning": 62,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md"
+      ]
+    },
+    "E47": {
+      "name": "AI Script Generator / Unified Voice",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_47_unified_voice_engine.py",
+        "ecosystem_47_ai_script_generator_complete.py"
+      ],
+      "doc_references": 310,
+      "files_mentioning": 71,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_VENDOR_LIST.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md"
+      ]
+    },
+    "E48": {
+      "name": "Communication DNA",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_48_communication_dna_complete.py"
+      ],
+      "doc_references": 264,
+      "files_mentioning": 63,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_VENDOR_LIST.md"
+      ]
+    },
+    "E49": {
+      "name": "Interview System / GPU Orchestrator",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_49_interview_system_complete.py"
+      ],
+      "doc_references": 268,
+      "files_mentioning": 81,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT copy.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT.md"
+      ]
+    },
+    "E50": {
+      "name": "GPU Orchestrator",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_50_gpu_orchestrator_complete.py"
+      ],
+      "doc_references": 146,
+      "files_mentioning": 48,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_VENDOR_LIST.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_COMPREHENSIVE_AUDIT_JAN17_2026.md",
+        "/Users/Broyhill/Downloads/datatrust-nc-voter-god-files copy.md"
+      ]
+    },
+    "E51": {
+      "name": "Nexus Dashboard",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_51_nexus_complete.py"
+      ],
+      "doc_references": 191,
+      "files_mentioning": 69,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/feb 15 BroyhillGOP Supabase Audit - Recommendations & To-Do List.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md"
+      ]
+    },
+    "E52": {
+      "name": "Contact Intelligence Engine",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_52_contact_intelligence_engine.py"
+      ],
+      "doc_references": 80,
+      "files_mentioning": 27,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/Here is a full strategic read of the candidate eng.md",
+        "/Users/Broyhill/Downloads/datatrust-nc-voter-god-files copy.md"
+      ]
+    },
+    "E53": {
+      "name": "Document Generation",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_53_document_generation_complete.py"
+      ],
+      "doc_references": 42,
+      "files_mentioning": 23,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/datatrust-nc-voter-god-files copy.md"
+      ]
+    },
+    "E54": {
+      "name": "Calendar/Scheduling",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_54_calendar_scheduling_complete.py"
+      ],
+      "doc_references": 46,
+      "files_mentioning": 28,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/datatrust-nc-voter-god-files copy.md"
+      ]
+    },
+    "E55": {
+      "name": "API Gateway",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_55_api_gateway_complete.py"
+      ],
+      "doc_references": 224,
+      "files_mentioning": 38,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT copy.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT.md",
+        "/Users/Broyhill/Downloads/2 COMPLETE_SESSION_TRANSCRIPT_1.md"
+      ]
+    },
+    "E56": {
+      "name": "Visitor Deanonymization",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_56_visitor_deanonymization_complete.py"
+      ],
+      "doc_references": 205,
+      "files_mentioning": 54,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT copy.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/COMPLETE_SESSION_TRANSCRIPT.md"
+      ]
+    },
+    "E57": {
+      "name": "Messaging Center",
+      "has_code": true,
+      "code_files": [
+        "ecosystem_57_messaging_center_complete.py"
+      ],
+      "doc_references": 126,
+      "files_mentioning": 34,
+      "status": "BUILT",
+      "top_files": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/feb 15 BroyhillGOP Supabase Audit - Recommendations & To-Do List.md",
+        "/Users/Broyhill/Downloads/\u2705 2-supabase-upload-4 main files-dedupe-CAUGHT UP - HERE'S WHERE WE ARE.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md"
+      ]
+    },
+    "E58": {
+      "name": "Business Model / Candidate Network Data Acquisition",
+      "has_code": false,
+      "code_files": [],
+      "doc_references": 39,
+      "files_mentioning": 9,
+      "status": "PLANNED",
+      "top_files": [
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/\u2705 2-supabase-upload-4 main files-dedupe-CAUGHT UP - HERE'S WHERE WE ARE.md",
+        "/Users/Broyhill/Downloads/Files 5/e58_business_model.md",
+        "/Users/Broyhill/Downloads/Files 6/e58_business_model.md",
+        "/Users/Broyhill/Documents/Claude/Scheduled/daily-document-index/SKILL.md"
+      ]
+    }
+  },
+  "component_report": {
+    "heat_map": {
+      "total_hits": 413,
+      "files_found_in": 77,
+      "file_list": [
+        "/Users/Broyhill/Downloads/list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md",
+        "/Users/Broyhill/Downloads/list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ (2).md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/conversation_log.md",
+        "/Users/Broyhill/Downloads/list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ (1).md",
+        "/Users/Broyhill/Downloads/datatrust-nc-voter-god-files copy.md",
+        "/Users/Broyhill/Downloads/broyhillgop-complete-implementation-guide.md",
+        "/Users/Broyhill/Downloads/DONOR_VOLUNTEER_PROFILE_AI_ENRICHMENT_SYSTEM_1.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 7313,
+          "context": "Based on your directive to incorporate local county and city issues since \"all politics is local,\" I've significantly expanded the comprehensive campaign strategy matrix to include **48 additional donor segments** and **48 new campaign strategies** focused on North Carolina's unique local political "
+        },
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 7315,
+          "context": "![BroyhillGOP Platform Campaign Strategy Matrix: Heat map showing effectiveness ratings for 25 donor segments across 30 campaign strategies, with red indicating highest effectiveness combinations for optimal ROI targeting.](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/e99d"
+        },
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 7615,
+          "context": "---\n\n# Dynamism of the Issue-Donor Heat Mapping Matrix\n\n## Real-Time Matrix Adaptation: How It Works"
+        }
+      ]
+    },
+    "variable_data_print": {
+      "total_hits": 337,
+      "files_found_in": 106,
+      "file_list": [
+        "/Users/Broyhill/Downloads/list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_TRANSCRIPT_JAN10_2026_1.md",
+        "/Users/Broyhill/Downloads/BroyhillGOP_Website_Introduction.md",
+        "/Users/Broyhill/Downloads/BroyhillGOP_Constitution.html.md",
+        "/Users/Broyhill/Downloads/list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ (2).md",
+        "/Users/Broyhill/Downloads/\u2705 2-supabase-upload-4 main files-dedupe-CAUGHT UP - HERE'S WHERE WE ARE.md",
+        "/Users/Broyhill/Downloads/list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ (1).md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 8974,
+          "context": "### **Mimeo Print**\n\n- **Strengths:** True print-on-demand with no minimum order. Supports variable data printing, on-demand digital/offset, and online storefronts.\n- **API \\& Integration:** Secure REST API; uploads, personalizes, and dispatches directly; works via Zapier/Make for OutSystems/Ontrapo"
+        },
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 9092,
+          "context": "[^48_18]: https://www.bestvaluecopy.com\n\n[^48_19]: https://sourceforge.net/software/variable-data-printing-vdp/for-freelance/\n\n[^48_20]: https://www.postgrid.com/print-mail-documents/"
+        },
+        {
+          "file": "BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+          "line": 408,
+          "context": "### E33 Direct Mail (/app/e33-direct-mail/)\n```\nindex.html \u2192 campaigns.html \u2192 design-studio.html \u2192 vdp-merge.html\n                                      \u2193\n                              qr-tracking.html"
+        }
+      ]
+    },
+    "opposition_research": {
+      "total_hits": 66,
+      "files_found_in": 28,
+      "file_list": [
+        "/Users/Broyhill/Downloads/list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+        "/Users/Broyhill/Downloads/BroyhillGOP-Platform-Report (1).md",
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ (2).md",
+        "/Users/Broyhill/Downloads/\u2705 2-supabase-upload-4 main files-dedupe-CAUGHT UP - HERE'S WHERE WE ARE.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ (1).md",
+        "/Users/Broyhill/Downloads/BroyhillGOP-Platform-Report.md",
+        "/Users/Broyhill/Downloads/DONOR_VOLUNTEER_PROFILE_AI_ENRICHMENT_SYSTEM_2.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 1562,
+          "context": "- Configure Perplexity Pro API with Sonar Pro model for enhanced capabilities\n- Set up automated research workflows for:\n    - Opposition research and competitive analysis\n    - Real-time political event monitoring and response\n    - Issue-based content generation with citations"
+        },
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 2396,
+          "context": "**Unified Fundraising Power:** Creates coordinated fundraising ecosystem where strong candidates can boost weaker ones through shared donor databases and cross-endorsement strategies.\n\n**Political Intelligence Integration:** Perplexity AI provides real-time political analysis and opposition research"
+        },
+        {
+          "file": "BroyhillGOP-Platform-Report (1).md",
+          "line": 994,
+          "context": "- Predictive modeling for election outcome probability\n- Voter behavior analysis and turnout prediction\n- Opposition research integration and intelligence gathering\n- Market research and polling data integration\n- Competitive analysis and benchmarking tools"
+        }
+      ]
+    },
+    "candidate_intake": {
+      "total_hits": 250,
+      "files_found_in": 108,
+      "file_list": [
+        "/Users/Broyhill/Downloads/list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/analize thoroughly the details of FEC and NC Board.md",
+        "/Users/Broyhill/Downloads/01_DATA_HUB_COMPLETE_1.md",
+        "/Users/Broyhill/Downloads/broyhillgop-build-guide.md",
+        "/Users/Broyhill/Downloads/BroyhillGOP_Developer_Impact_Assessment.md",
+        "/Users/Broyhill/Downloads/list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ (2).md",
+        "/Users/Broyhill/Downloads/BroyhillGOP_Demo_Communication_Sequence_COMPLETE.md",
+        "/Users/Broyhill/Downloads/\u2705 2-supabase-upload-4 main files-dedupe-CAUGHT UP - HERE'S WHERE WE ARE.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 1818,
+          "context": "**BroyhillGOP (Platform Provider)**: Delivers enterprise-grade technology infrastructure, AI-powered automation, comprehensive training, and ongoing technical support with dedicated Campaign Management Agents.\n\n**NC GOP House Caucus**: Provides leadership oversight through Speaker Hall and Caucus st"
+        },
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 1842,
+          "context": "- Initial staff hiring: 2 software developers, 1 technical supervisor\n\n**Deliverables**: Fully functional platform ready for candidate onboarding\n**Investment**: \\$25,667"
+        },
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 9685,
+          "context": "### **Phase 3: Expansion \\& Automation Scaling (Months 3\u20136)**\n\n- **Incremental Rollout**: Onboard all remaining GOP House candidates in waves of 10\u201315, prioritizing competitive races and high-potential donor markets.\n- **Multi-Segment Messaging**: Activate issue- and geography-specific campaigns (ag"
+        }
+      ]
+    },
+    "make_n8n_integration": {
+      "total_hits": 316,
+      "files_found_in": 23,
+      "file_list": [
+        "/Users/Broyhill/Downloads/list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ (2).md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ (1).md",
+        "/Users/Broyhill/Downloads/datatrust-nc-voter-god-files copy.md",
+        "/Users/Broyhill/Downloads/here-is-link-to-a-huge-spreads-3BVc0qykSdWKnSanfaAqGw.md",
+        "/Users/Broyhill/Downloads/broyhillgop-complete-implementation-guide.md",
+        "/Users/Broyhill/Downloads/how does your predictive model effect deployment o.md",
+        "/Users/Broyhill/Downloads/broyhillgop-complete-implementation-guide 2.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 8296,
+          "context": "**References:**\n[^40_1] make.com\n[^40_2] pabbly.com\n[^40_3] latenode.com"
+        },
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 8307,
+          "context": "<div style=\"text-align: center\">\u2042</div>\n\n[^40_1]: https://www.make.com/en/integrations/canva/perplexity-ai\n\n[^40_2]: https://www.pabbly.com/connect/integrations/canva/perplexity-ai/"
+        },
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 8339,
+          "context": "[^40_16]: https://www.canva.com/ai-assistant/\n\n[^40_17]: https://www.make.com/en/integrations/canva\n\n[^40_18]: https://zapier.com/blog/canva-ai/"
+        }
+      ]
+    },
+    "predictive_modeling": {
+      "total_hits": 608,
+      "files_found_in": 186,
+      "file_list": [
+        "/Users/Broyhill/Downloads/list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+        "/Users/Broyhill/Downloads/agreement-1-candidate-committee-reciprocal-data-license.md",
+        "/Users/Broyhill/Downloads/GOP_DATATRUST_DONOR_ARCHITECTURE_COMPLETE_1.md",
+        "/Users/Broyhill/Downloads/BroyhillGOP-Platform-Report (1).md",
+        "/Users/Broyhill/Downloads/MATCHING_ALGORITHM_COMPLETE_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/analize thoroughly the details of FEC and NC Board.md",
+        "/Users/Broyhill/Downloads/01_DATA_HUB_COMPLETE_1.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md",
+        "/Users/Broyhill/Downloads/feb 15 BroyhillGOP Supabase Audit - Recommendations & To-Do List.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 1590,
+          "context": "- Automated donor segmentation by political issues and candidate preferences\n- Real-time scoring updates based on behavior and engagement\n- Predictive modeling for optimal contact timing and channel selection\n- Automated nurture sequences triggered by engagement levels"
+        },
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 2243,
+          "context": "- Real-time political intelligence and issue tracking\n- Donor sentiment analysis and engagement patterns\n- Predictive modeling for optimal contact timing\n- Cross-candidate fundraising synergies and endorsement strategies\n- A/B testing results that automatically optimize messaging"
+        },
+        {
+          "file": "list-in-order-of-best-to-worst-GNyXuhFyRzSI4nhrntuXjQ.md",
+          "line": 2614,
+          "context": "- New donor pattern recognition and automated segmentation updates\n- Cross-platform performance correlation analysis and optimization\n- Predictive model refinement for enhanced future campaign performance"
+        }
+      ]
+    },
+    "thompson_sampling": {
+      "total_hits": 50,
+      "files_found_in": 29,
+      "file_list": [
+        "/Users/Broyhill/Downloads/PACKAGE_README.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_TRANSCRIPT_JAN10_2026_1.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_WEAPON_PERFORMANCE_VARIABLES_LP_FOUNDATION.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_TRANSCRIPT_JAN10_2026.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_COMPLETE_PLATFORM_OVERVIEW.md",
+        "/Users/Broyhill/Downloads/QUICK_START_GUIDE copy.md",
+        "/Users/Broyhill/Downloads/Perplexity Downloads/ncgop_platform_archive/documentation/AB_TESTING_FRAMEWORK.md",
+        "/Users/Broyhill/Downloads/ncgop_platform_archive 3/documentation/AB_TESTING_FRAMEWORK.md",
+        "/Users/Broyhill/Downloads/ncgop_platform_archive 4/documentation/AB_TESTING_FRAMEWORK.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "PACKAGE_README.md",
+          "line": 71,
+          "context": "\u251c\u2500\u2500 fc01847a...pdf (385 KB) - ML Optimization\n    \u2502   \u2192 Machine learning engine\n    \u2502   \u2192 Multi-Armed Bandit testing\n    \u2502   \u2192 8,711% ROI projected\n    \u2502"
+        },
+        {
+          "file": "PACKAGE_README.md",
+          "line": 125,
+          "context": "- Adobe Creative Cloud automation\n- ML optimization engine\n- Multi-Armed Bandit testing\n- 8,711% ROI\n- Cost: $127,600/year"
+        },
+        {
+          "file": "BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md",
+          "line": 52,
+          "context": "- India's BJP uses \"Parakhi\" \u2014 multi-source data for predicting voter issues and message resonance\n\n### Thompson Sampling / Multi-Armed Bandit\n- Bayesian algorithm for exploration/exploitation tradeoff\n- Instead of waiting until end of A/B test to act, continuously learns which variation performs be"
+        }
+      ]
+    },
+    "deanonymization": {
+      "total_hits": 206,
+      "files_found_in": 55,
+      "file_list": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/broyhillgop-build-guide.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_TRANSCRIPT_JAN10_2026_1.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/doc_01_system_architecture.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_COMPREHENSIVE_AUDIT_JAN17_2026.md",
+        "/Users/Broyhill/Downloads/doc_01_system_architecture (1).md",
+        "/Users/Broyhill/Downloads/doc_02_candidate_config.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 13195,
+          "context": "## E56 \u2014 Visitor Tracking\n\nThe addiction hook is the **real-time website visitor map** \u2014 watching individual visitors move through the campaign website in real time, seeing which pages they visit, how long they stay, and whether they click donate, creates a surveillance-like fascination that turns t"
+        },
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 13195,
+          "context": "## E56 \u2014 Visitor Tracking\n\nThe addiction hook is the **real-time website visitor map** \u2014 watching individual visitors move through the campaign website in real time, seeing which pages they visit, how long they stay, and whether they click donate, creates a surveillance-like fascination that turns t"
+        },
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 13195,
+          "context": "## E56 \u2014 Visitor Tracking\n\nThe addiction hook is the **real-time website visitor map** \u2014 watching individual visitors move through the campaign website in real time, seeing which pages they visit, how long they stay, and whether they click donate, creates a surveillance-like fascination that turns t"
+        }
+      ]
+    },
+    "voice_cloning": {
+      "total_hits": 498,
+      "files_found_in": 141,
+      "file_list": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md",
+        "/Users/Broyhill/Downloads/COMPLETE_ARSENAL_STRATEGIC_MATCHING_MATRIX.md",
+        "/Users/Broyhill/Downloads/ALL_CODE_FILES_INDEX.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_VENDOR_LIST.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_COMPREHENSIVE_AUDIT_JAN17_2026.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 13069,
+          "context": "## E35 \u2014 Unified Inbox \\& Phone System\n\nThe addiction hook is the **unified command center feel** \u2014 seeing every inbound call, text, email, voicemail, and social DM in one feed creates the sensation of being fully in control of all candidate communications, which is irresistible to a detail-oriented"
+        },
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 13069,
+          "context": "## E35 \u2014 Unified Inbox \\& Phone System\n\nThe addiction hook is the **unified command center feel** \u2014 seeing every inbound call, text, email, voicemail, and social DM in one feed creates the sensation of being fully in control of all candidate communications, which is irresistible to a detail-oriented"
+        },
+        {
+          "file": "BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+          "line": 337,
+          "context": "index.html (AI Video Dashboard):\n\u251c\u2500\u2500 \"Create Video\" \u2192 create-video.html\n\u251c\u2500\u2500 \"Voice Clone\" \u2192 voice-clone.html\n\u251c\u2500\u2500 \"Generate Avatar\" \u2192 avatar-generator.html\n\u251c\u2500\u2500 \"Video Library\" \u2192 video-library.html"
+        }
+      ]
+    },
+    "communication_dna": {
+      "total_hits": 137,
+      "files_found_in": 56,
+      "file_list": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE.md",
+        "/Users/Broyhill/Downloads/Here is a full strategic read of the candidate eng.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_SESSION_SUMMARY_DEC27_2025_2.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_VIDEO_SOUND_E20_BRAIN_ANALYSIS.md",
+        "/Users/Broyhill/Downloads/README_COMPLETE_49_ECOSYSTEMS.md",
+        "/Users/Broyhill/Downloads/dec-27-important-.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_55_ECOSYSTEM_TECHNICAL_ARCHITECTURE copy.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 12870,
+          "context": "| E46 | Broadcast Hub | StreamYard | \u2705 In Schema | \ud83d\udd32 Queue |\n| E47 | Script Generator | Proprietary | \u2705 In Schema | \ud83d\udd32 Queue |\n| E48 | Communication DNA | Proprietary | \u2705 In Schema | \ud83d\udd32 Queue |\n| E49 | Interview Prep | Proprietary | \u2705 In Schema | \ud83d\udd32 Queue |\n| E50 | GPU Processing | RunPod | \u2705 In Schema"
+        },
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 13141,
+          "context": "## E47 \u2014 Script Generator\n\nThe addiction hook is the **instant script surprise** \u2014 the candidate types a topic and within seconds receives a polished, on-brand talking points script that sounds exactly like them, making every future speech prep session feel effortless and eliminating the anxiety of "
+        },
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 13145,
+          "context": "***\n\n## E48 \u2014 Communication DNA\n\nThe addiction hook is the **authenticity score** \u2014 when the AI rates a generated message as 94/100 authentic to the candidate's communication style, it creates pride and confidence, and when it drops below 80, the candidate immediately wants to fix it, creating a con"
+        }
+      ]
+    },
+    "nexus_dashboard": {
+      "total_hits": 39,
+      "files_found_in": 8,
+      "file_list": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BroyhillGOP_Brain_Perplexity_Session copy.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/Perplexity_Brain_Architecture_Session_Complete.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/MD FILES/BroyhillGOP_Brain_Perplexity_Session.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/MD FILES/THE BROYHILLGOP BRAIN COMPREHENSIVE ARCHITECTURE & EXECUTION PLAN.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/MD FILES/ai broyhillgop ecosystem dashboard-homepage content consistent built in addicting functionality.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/MD FILES/Perplexity_Brain_Architecture_Session_Complete.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 13326,
+          "context": "- **Simple swipe interface** \u2014 Buying a stock takes 3 taps. The reduction of friction makes consequential decisions feel trivial.\n- **Social proof** \u2014 \"Most popular\" lists show what other users are buying, creating herd behavior and FOMO on trending stocks.\n- **\u26a1 Steal for Nexus:** Confetti on donat"
+        },
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 13382,
+          "context": "3. **Real-time counters** \u2014 Live numbers that move create compulsive watching (Robinhood/donation thermometer)\n4. **Social competition** \u2014 Leaderboards and public rankings activate tribal status instincts (Duolingo leagues)\n5. **FOMO triggers** \u2014 \"X happened while you were away\" creates urgency to r"
+        },
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 13455,
+          "context": "---\n\n# i like these ideas, others i dont. why not learn what i like: I like: 1. Personalization depth\u00a0\u2014 The more the platform knows you, the more irreplaceable it becomes (ChatGPT memory),2.  Real-time counters\u00a0\u2014 Live numbers that move create compulsive watching (Robinhood/donation thermometer) 3.  "
+        }
+      ]
+    },
+    "linkedin_monitoring": {
+      "total_hits": 243,
+      "files_found_in": 11,
+      "file_list": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BroyhillGOP_V8_Masterfile_Complete/BroyhillGOP_System_Revision_Requirements.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/MATCHING_LOGIC_AUDIT_COMPLETE.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/MD FILES/MATCHING_LOGIC_AUDIT_COMPLETE.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/MD FILES/JEEVA-AI-CLONE.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/MD FILES/Voter-file+datatrust.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/MD FILES/ai broyhillgop ecosystem dashboard-homepage content consistent built in addicting functionality.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/MD FILES/DataTrust + NC Voter File Integration.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/DataTrust/DataTrust + NC Voter File Integration copy.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 13582,
+          "context": "## Path 1 \u2014 Profile Change Monitoring (Promotions, Job Changes, Company Updates)\n\nThe right tool here is **People Data Labs (PDL)** \u2014 the same enrichment source already embedded in your DataTrust architecture.[^70_2][^70_4]\n\n### How It Works"
+        },
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 13586,
+          "context": "### How It Works\n\nPDL's `Person Changelog API` monitors specific LinkedIn profiles and fires a webhook when anything changes \u2014 job title, employer, headline, new skills, or company promotion.  You register a donor's LinkedIn URL once, and PDL watches it continuously.[^70_5]\n\n```javascript"
+        },
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 13586,
+          "context": "### How It Works\n\nPDL's `Person Changelog API` monitors specific LinkedIn profiles and fires a webhook when anything changes \u2014 job title, employer, headline, new skills, or company promotion.  You register a donor's LinkedIn URL once, and PDL watches it continuously.[^70_5]\n\n```javascript"
+        }
+      ]
+    },
+    "gpu_orchestration": {
+      "total_hits": 355,
+      "files_found_in": 65,
+      "file_list": [
+        "/Users/Broyhill/Downloads/I hit the output length limit mid-response. That's.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/\u2705 2-supabase-upload-4 main files-dedupe-CAUGHT UP - HERE'S WHERE WE ARE.md",
+        "/Users/Broyhill/Downloads/ecosytem-build-office-district-preditive-modeling.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_VENDOR_LIST.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_COMPREHENSIVE_AUDIT_JAN17_2026.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_DATABASE_COMPLETE_REBUILD_TRANSCRIPT.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_VIDEO_SOUND_E20_BRAIN_ANALYSIS.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_AUDIT_MISSING_FILES.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 12872,
+          "context": "| E48 | Communication DNA | Proprietary | \u2705 In Schema | \ud83d\udd32 Queue |\n| E49 | Interview Prep | Proprietary | \u2705 In Schema | \ud83d\udd32 Queue |\n| E50 | GPU Processing | RunPod | \u2705 In Schema | \ud83d\udd32 Queue |\n| E51 | Ecosystem Connections | Proprietary | \u2705 In Schema | \ud83d\udd32 Queue |\n| E52 | Contact Intelligence | Proprietary "
+        },
+        {
+          "file": "I hit the output length limit mid-response. That's.md",
+          "line": 13159,
+          "context": "## E50 \u2014 GPU Processing\n\nThe addiction hook here is subtle but powerful \u2014 it is the **speed that everything else delivers** because of this ecosystem. When a video renders in 30 seconds instead of 30 minutes, or 1,000 donor scores recalculate overnight instead of over a weekend, the candidate never "
+        },
+        {
+          "file": "BROYHILLGOP_QUICK_REFERENCE_LINKS.md",
+          "line": 436,
+          "context": "\u251c\u2500\u2500 \"Anedot\" \u2192 /app/e02-donation-processing/anedot-sync.html\n\u251c\u2500\u2500 \"Bandwidth.com\" \u2192 SMS/Voice provider settings\n\u2514\u2500\u2500 \"RunPod GPU\" \u2192 /app/e49-gpu-orchestrator/index.html\n```"
+        }
+      ]
+    },
+    "ai_content_factory": {
+      "total_hits": 13,
+      "files_found_in": 5,
+      "file_list": [
+        "/Users/Broyhill/Downloads/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Downloads/ECOSYSTEM_VIDEO_SOUND_E20_BRAIN_ANALYSIS.md",
+        "/Users/Broyhill/Downloads/united-AI-Intelligence-GOD/BROYHILLGOP_CLUSTER_TAXONOMY_NAMING.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/MD FILES/ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/MD FILES/BROYHILLGOP_CLUSTER_TAXONOMY_NAMING.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+          "line": 214,
+          "context": "| E49 | GPU Orchestrator | RunPod | Custom | Video/audio processing |\n| E56 | Visitor Deanonymization | Clearbit, ZoomInfo | Custom | 30-65% identification rate |\n| E58 | Political Content Factory | Holo.ai, AdCreative | Custom | Swipe approval + predictive scoring |"
+        },
+        {
+          "file": "ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+          "line": 214,
+          "context": "| E49 | GPU Orchestrator | RunPod | Custom | Video/audio processing |\n| E56 | Visitor Deanonymization | Clearbit, ZoomInfo | Custom | 30-65% identification rate |\n| E58 | Political Content Factory | Holo.ai, AdCreative | Custom | Swipe approval + predictive scoring |"
+        },
+        {
+          "file": "ECOSYSTEM_UI_UX_DESIGN_MASTER_TASK.md",
+          "line": 577,
+          "context": "\u251c\u2500\u2500 E09 (Content AI) \u2190\u2500\u2500 Campaign DNA                           \u2502\n    \u2502       \u2502                                                        \u2502\n    \u2502       \u251c\u2500\u2500 E19 (Social) \u2190\u2500\u2500 E58 (Content Factory)              \u2502\n    \u2502       \u251c\u2500\u2500 E30 (Email) \u2190\u2500\u2500 E08 (Comm Library)                  \u2502\n    \u2502       \u251c\u2500\u2500 E31 (SM"
+        }
+      ]
+    },
+    "facebook_group_infiltration": {
+      "total_hits": 1,
+      "files_found_in": 1,
+      "file_list": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md",
+          "line": 239,
+          "context": "4. **AI Voice Cloning at $0.004/drop** \u2014 Nobody in political tech has this\n5. **Variable Data Print** \u2014 Every piece unique per recipient, not mail merge\n6. **Social Media Harvesting** \u2014 AI agent prospecting from 140 Facebook groups (TO BE BUILT)\n7. **Communication DNA** \u2014 Tone matching per voter psy"
+        }
+      ]
+    },
+    "social_harvesting_inbound": {
+      "total_hits": 2,
+      "files_found_in": 2,
+      "file_list": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_WEAPON_PERFORMANCE_VARIABLES_LP_FOUNDATION.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md",
+          "line": 239,
+          "context": "4. **AI Voice Cloning at $0.004/drop** \u2014 Nobody in political tech has this\n5. **Variable Data Print** \u2014 Every piece unique per recipient, not mail merge\n6. **Social Media Harvesting** \u2014 AI agent prospecting from 140 Facebook groups (TO BE BUILT)\n7. **Communication DNA** \u2014 Tone matching per voter psy"
+        },
+        {
+          "file": "BROYHILLGOP_WEAPON_PERFORMANCE_VARIABLES_LP_FOUNDATION.md",
+          "line": 276,
+          "context": "| 141 | Post Saves | # who bookmark/save post | varies | high | low | X_soc_save |\n\n## 5B. AI Agent Prospecting (Inbound Harvesting)\n\n| # | Variable | What It Measures | Target | Positive | Negative | LP Var |"
+        }
+      ]
+    },
+    "prospecting_agent": {
+      "total_hits": 4,
+      "files_found_in": 4,
+      "file_list": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_WEAPON_PERFORMANCE_VARIABLES_LP_FOUNDATION.md",
+        "/Users/Broyhill/Downloads/under-what-circumstance-can-pe-ZqQNnoQmTfG2D4MCi3pBQw.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/files-donor volunteer-data-enrichment/E50_CONTACT_INTELLIGENCE_ARCHITECTURE.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md",
+          "line": 239,
+          "context": "4. **AI Voice Cloning at $0.004/drop** \u2014 Nobody in political tech has this\n5. **Variable Data Print** \u2014 Every piece unique per recipient, not mail merge\n6. **Social Media Harvesting** \u2014 AI agent prospecting from 140 Facebook groups (TO BE BUILT)\n7. **Communication DNA** \u2014 Tone matching per voter psy"
+        },
+        {
+          "file": "BROYHILLGOP_WEAPON_PERFORMANCE_VARIABLES_LP_FOUNDATION.md",
+          "line": 276,
+          "context": "| 141 | Post Saves | # who bookmark/save post | varies | high | low | X_soc_save |\n\n## 5B. AI Agent Prospecting (Inbound Harvesting)\n\n| # | Variable | What It Measures | Target | Positive | Negative | LP Var |"
+        },
+        {
+          "file": "under-what-circumstance-can-pe-ZqQNnoQmTfG2D4MCi3pBQw.md",
+          "line": 401,
+          "context": "---\n\n# BroyhillGOP is a political campaign platform for political candidates to raise campaign contributions and recruit campaign volunteers in voter outreach. The core asset is a comprehensive database containing as many as 10 years of donor history, contact information, issue based biases, demogra"
+        }
+      ]
+    },
+    "funnel_orchestration": {
+      "total_hits": 1,
+      "files_found_in": 1,
+      "file_list": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "BROYHILLGOP_WEAPON_INTELLIGENCE_RESEARCH.md",
+          "line": 234,
+          "context": "Based on this research, BroyhillGOP's competitive advantages:\n\n1. **Multichannel Funnel Orchestration** \u2014 Salesforce just announced this in June 2025; we've been building it\n2. **13 weapons firing simultaneously** \u2014 Most platforms do 3-4 channels max\n3. **Thompson Sampling across ALL channels** \u2014 No"
+        }
+      ]
+    },
+    "household_grouping": {
+      "total_hits": 15,
+      "files_found_in": 12,
+      "file_list": [
+        "/Users/Broyhill/Downloads/BROYHILLGOP_DATABASE_REVISION_TRANSCRIPT.md",
+        "/Users/Broyhill/Downloads/\u2705 2-supabase-upload-4 main files-dedupe-CAUGHT UP - HERE'S WHERE WE ARE.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_DATABASE_COMPLETE_REBUILD_TRANSCRIPT.md",
+        "/Users/Broyhill/Downloads/BROYHILLGOP_DATABASE_MASTER_TRANSCRIPT_JAN19.md",
+        "/Users/Broyhill/Downloads/FINAL_UPLOAD_PACKAGE 2/4_DOCUMENTATION/ECOSYSTEM_STATUS_REPORT_COMPLETE.md",
+        "/Users/Broyhill/Downloads/FINAL_UPLOAD_PACKAGE/4_DOCUMENTATION/ECOSYSTEM_STATUS_REPORT_COMPLETE.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/Claude-Cursor-ecosystems.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/docs/RFC-001-ARCHITECTURE-REVIEW.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/MD FILES/BROYHILLGOP_DATABASE_COMPLETE_REBUILD_TRANSCRIPT.md",
+        "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/MD FILES/BROYHILLGOP_CREDENTIALS_MASTER.md"
+      ],
+      "sample_contexts": [
+        {
+          "file": "BROYHILLGOP_DATABASE_REVISION_TRANSCRIPT.md",
+          "line": 136,
+          "context": "| spouse_name | VARCHAR(255) | Spouse full name |\n| spouse_donor_id | UUID | Link to spouse's donor record |\n| household_id | VARCHAR(50) | Household identifier |\n| household_total_donations | DECIMAL(12,2) | Combined household giving |\n| family_size | INTEGER | Number in household |"
+        },
+        {
+          "file": "\u2705 2-supabase-upload-4 main files-dedupe-CAUGHT UP - HERE'S WHERE WE ARE.md",
+          "line": 12084,
+          "context": "- `RegHouseNum` (field #82) = house number\n- `HouseHoldID` (field #77) = household identifier\n- `FirstName`, `LastName`, `MiddleName` (fields #39-41)\n- `RegistrationAddr1` (field #80)"
+        },
+        {
+          "file": "\u2705 2-supabase-upload-4 main files-dedupe-CAUGHT UP - HERE'S WHERE WE ARE.md",
+          "line": 12379,
+          "context": "- \u2705 `RegHouseNum` = house number extracted (\"525\")\n- \u2705 `HouseHoldID` = household identifier (groups families)\n- \u2705 `FirstName`, `LastName`, `MiddleName`\n- \u2705 `NameSuffix` = generational suffix (Jr, Sr, II)"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

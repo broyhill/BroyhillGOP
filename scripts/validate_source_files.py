@@ -116,7 +116,7 @@ def validate_file(path: Path) -> dict:
         return report
 
     try:
-        with open(path, newline="", encoding="utf-8", errors="replace") as f:
+        with open(path, newline="", encoding="utf-8-sig", errors="replace") as f:
             reader = csv.reader(f)
             headers = next(reader, [])
             if not headers:

@@ -15,81 +15,27 @@ Ed has 18 GOLD NCBOE donor files on his laptop. Before he transfers them, we nee
 
 ### TASK 1 — Build the NCBOE raw staging table
 
-The 18 GOLD NCBOE files have these columns:
+**Authoritative DDL:** `database/migrations/099_raw_ncboe_donations_gold_hetzner.sql` (replaces the inline SQL below).
+
+NCBOE GOLD CSV headers include **intentional typos** — do not “fix” them in the file. Database columns preserve typos as `transction_type` and `date_occured`. See `sessions/SESSION_APRIL12_2026.md` and `pipeline/ncboe_gold_csv_headers.py`.
+
+The 18 GOLD files use these **display** headers (typos shown):
 ```
 Name, Street Line 1, Street Line 2, City, State, Zip Code,
 Profession/Job Title, Employer's Name/Specific Field,
-Transaction Type, Committee Name, Committee SBoE ID,
+Transction Type, Committee Name, Committee SBoE ID,
 Committee Street 1, Committee Street 2, Committee City,
 Committee State, Committee Zip Code, Report Name,
-Date Occurred, Account Code, Amount, Form of Payment,
+Date Occured, Account Code, Amount, Form of Payment,
 Purpose, Candidate/Referendum Name, Declaration
 ```
 
-Create this table on the new server:
-```sql
-CREATE TABLE raw.ncboe_donations (
-    id SERIAL PRIMARY KEY,
-    source_file TEXT NOT NULL,
-    -- Original NCBOE columns
-    name TEXT,
-    street_line_1 TEXT,
-    street_line_2 TEXT,
-    city TEXT,
-    state TEXT,
-    zip_code TEXT,
-    profession_job_title TEXT,
-    employer_name TEXT,
-    transaction_type TEXT,
-    committee_name TEXT,
-    committee_sboe_id TEXT,
-    committee_street_1 TEXT,
-    committee_street_2 TEXT,
-    committee_city TEXT,
-    committee_state TEXT,
-    committee_zip_code TEXT,
-    report_name TEXT,
-    date_occurred TEXT,
-    account_code TEXT,
-    amount TEXT,
-    form_of_payment TEXT,
-    purpose TEXT,
-    candidate_referendum_name TEXT,
-    declaration TEXT,
-    -- Enrichment columns (populated during normalization)
-    norm_last TEXT,
-    norm_first TEXT,
-    norm_middle TEXT,
-    norm_suffix TEXT,
-    norm_prefix TEXT,
-    norm_nickname TEXT,
-    norm_zip5 TEXT,
-    norm_city TEXT,
-    norm_employer TEXT,
-    norm_amount NUMERIC(12,2),
-    norm_date DATE,
-    address_numbers TEXT[],  -- all numbers extracted from both address lines
-    all_addresses TEXT[],    -- complete addresses preserved (home, office, 2nd homes)
-    year_donated INTEGER,
-    -- Matching columns (populated during dedup)
-    cluster_id INTEGER,
-    rnc_regid TEXT,          -- FK to datatrust_voter_nc after matching
-    match_pass INTEGER,      -- which dedup pass matched this record
-    match_confidence NUMERIC(5,2),
-    is_matched BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE INDEX idx_ncboe_name ON raw.ncboe_donations (norm_last, norm_first);
-CREATE INDEX idx_ncboe_zip ON raw.ncboe_donations (norm_zip5);
-CREATE INDEX idx_ncboe_employer ON raw.ncboe_donations (norm_employer);
-CREATE INDEX idx_ncboe_committee ON raw.ncboe_donations (committee_sboe_id);
-CREATE INDEX idx_ncboe_date ON raw.ncboe_donations (norm_date);
-CREATE INDEX idx_ncboe_cluster ON raw.ncboe_donations (cluster_id);
-CREATE INDEX idx_ncboe_rnc ON raw.ncboe_donations (rnc_regid);
-CREATE INDEX idx_ncboe_source ON raw.ncboe_donations (source_file);
-CREATE INDEX idx_ncboe_candidate ON raw.ncboe_donations (candidate_referendum_name);
+Apply on Hetzner:
+```bash
+psql "$HETZNER_DB_URL" -v ON_ERROR_STOP=1 -f database/migrations/099_raw_ncboe_donations_gold_hetzner.sql
 ```
+
+Creates `raw.ncboe_donations` (BIGSERIAL, typo columns, `employer_sic_code` / `employer_naics_code`, `cluster_profile` JSONB, `is_unitemized`, indexes) and an empty `donor_intelligence.employer_sic_master` shell for local SIC loads (pg_dump from Supabase when authorized).
 
 ### TASK 2 — Build the NCBOE name parser
 
@@ -104,7 +50,7 @@ Write a Python function that parses the NCBOE `Name` field. CRITICAL RULES:
 - ED maps to EDGAR, not EDWARD — EVER
 - The LAST word is almost always the last name, BUT watch for suffixes
 
-Save to: /opt/broyhillgop/pipeline/ncboe_name_parser.py
+Save to: `pipeline/ncboe_name_parser.py` in Git; on server run `git pull` under `/opt/broyhillgop` (same relative path).
 Include unit tests for: ED BROYHILL, JAMES EDGAR BROYHILL, JAMES EDGAR 'ED' BROYHILL, J BROYHILL, JAMES T BROYHILL JR, DR JANE SMITH, REV JOHN DOE III
 
 ### TASK 3 — Build the address number extractor
@@ -118,7 +64,7 @@ Write a Python function that extracts ALL numeric values from address fields. CR
 - Handle: "STE 300 100 MAIN ST" → ["300", "100"]
 - Handle: "RR 3 BOX 45" → ["3", "45"]
 
-Save to: /opt/broyhillgop/pipeline/address_number_extractor.py
+Save to: `pipeline/address_number_extractor.py` (sync via git pull on server).
 Include unit tests.
 
 ### TASK 4 — Build the employer normalizer
@@ -132,7 +78,7 @@ Write a Python function that normalizes employer names:
 - "SELF" or "SELF-EMPLOYED" or "SELF EMPLOYED" → "SELF-EMPLOYED"
 - "NONE" or "N/A" or blank → NULL
 
-Save to: /opt/broyhillgop/pipeline/employer_normalizer.py
+Save to: `pipeline/employer_normalizer.py`. SIC lookup uses `donor_intelligence.employer_sic_master` on the same DB (empty until loaded from Supabase dump when authorized).
 
 ### TASK 5 — Build the NCBOE normalization pipeline
 
@@ -146,7 +92,7 @@ Write a Python script that:
 7. Computes year_donated
 8. INSERTs into raw.ncboe_donations with source_file tag
 
-Save to: /opt/broyhillgop/pipeline/ncboe_normalize_pipeline.py
+Save to: `pipeline/ncboe_normalize_pipeline.py`. Default is dry-run; use `--apply` to INSERT. Set `HETZNER_DB_URL` on the server.
 
 ### TASK 6 — Build the internal dedup clustering engine
 
@@ -161,7 +107,7 @@ Write a Python script that implements Stage 1 of DONOR_DEDUP_PIPELINE_V2.md:
 - Process 2026 → 2015 (reverse chronological)
 - Output: UPDATE raw.ncboe_donations SET cluster_id = X
 
-Save to: /opt/broyhillgop/pipeline/ncboe_internal_dedup.py
+Save to: `pipeline/ncboe_internal_dedup.py`.
 
 ## GUARDRAILS
 - All code goes in /opt/broyhillgop/pipeline/ on the new server

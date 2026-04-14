@@ -1,13 +1,28 @@
 -- ============================================================================
--- DATA TRUST MATCHING & INTEGRATION PROCEDURES
+-- DATA TRUST MATCHING & INTEGRATION PROCEDURES (nc_datatrust canonical)
 -- Part 3: Matching Functions, Sync Procedures, Algorithm Updates
+-- ============================================================================
+--
+-- Rewritten from datatrust_profiles → public.nc_datatrust per docs/CANONICAL_TABLES_AUDIT.md
+-- Column map (subset): rnc_id→rncid, first_name→firstname, last_name→lastname,
+--   home_* → reg* / countyname, phone_primary→cell (fallback landline / append sources),
+--   scores: turnout_likelihood_score→turnoutgeneralscore, modeled_partisanship→republicanpartyscore,
+--   voter_regularity_score→voterregularitygeneral.
+--
+-- Prerequisites:
+--   1) public.nc_datatrust populated
+--   2) database/migrations/097_INTEGRATION_DATATRUST_CONTACT_LINK.sql applied
+--   3) public.unified_contacts exists (CRM shell) if you run sync/enrichment functions
+--
+-- Note: nc_datatrust has no primary email column in the spine mapping doc; email match path is a no-op
+-- unless you add a column later. Issue / volunteer / CoS helpers use coalition + score proxies.
 -- ============================================================================
 
 -- ============================================================================
 -- MATCHING FUNCTIONS
 -- ============================================================================
 
--- Function 1: Match Data Trust Profile to Unified Contact
+-- Function 1: Match Data Trust row to Unified Contact
 CREATE OR REPLACE FUNCTION match_datatrust_to_contact(
     p_rnc_id VARCHAR(32)
 )
@@ -18,54 +33,59 @@ DECLARE
     v_best_match_id BIGINT;
     v_best_score INTEGER := 0;
 BEGIN
-    -- Try exact phone match first
+    -- Try exact phone match (cell, landline, Neustar append phones)
     SELECT uc.contact_id, 100 INTO v_contact_id, v_match_score
-    FROM unified_contacts uc
-    INNER JOIN datatrust_profiles dt ON dt.rnc_id = p_rnc_id
-    WHERE uc.mobile_phone = dt.phone_primary
-        OR uc.mobile_phone = dt.phone_secondary
-        OR uc.home_phone = dt.phone_neustar
+    FROM public.unified_contacts uc
+    INNER JOIN public.nc_datatrust dt ON dt.rncid::text = p_rnc_id
+    WHERE (
+        uc.mobile_phone IS NOT NULL AND (
+            uc.mobile_phone IS NOT DISTINCT FROM dt.cell
+         OR uc.mobile_phone IS NOT DISTINCT FROM dt.landline
+         OR uc.mobile_phone IS NOT DISTINCT FROM dt.cellneustar
+         OR uc.mobile_phone IS NOT DISTINCT FROM dt.landlineneustar
+        )
+    ) OR (
+        uc.home_phone IS NOT NULL AND (
+            uc.home_phone IS NOT DISTINCT FROM dt.landline
+         OR uc.home_phone IS NOT DISTINCT FROM dt.cell
+         OR uc.home_phone IS NOT DISTINCT FROM dt.landlineneustar
+        )
+    )
     LIMIT 1;
-    
+
     IF v_contact_id IS NOT NULL THEN
         RETURN v_contact_id;
     END IF;
-    
-    -- Try exact email match
-    SELECT uc.contact_id, 90 INTO v_contact_id, v_match_score
-    FROM unified_contacts uc
-    INNER JOIN datatrust_profiles dt ON dt.rnc_id = p_rnc_id
-    WHERE uc.email = dt.email_primary
-    LIMIT 1;
-    
-    IF v_contact_id IS NOT NULL THEN
-        RETURN v_contact_id;
+
+    -- Email: nc_datatrust typically has no email in current spine mapping; enable if you add column `email`
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'nc_datatrust' AND column_name = 'email'
+    ) THEN
+        SELECT uc.contact_id INTO v_contact_id
+        FROM public.unified_contacts uc
+        INNER JOIN public.nc_datatrust dt ON dt.rncid::text = p_rnc_id
+        WHERE uc.email IS NOT NULL AND uc.email IS NOT DISTINCT FROM dt.email
+        LIMIT 1;
+        IF v_contact_id IS NOT NULL THEN
+            RETURN v_contact_id;
+        END IF;
     END IF;
-    
-    -- Try fuzzy name + address match
+
+    -- Fuzzy name + geography (NC only)
     FOR v_contact_id, v_match_score IN
-        SELECT 
+        SELECT
             uc.contact_id,
-            CASE 
-                WHEN uc.last_name_clean = dt.last_name THEN 30 ELSE 0
-            END +
-            CASE 
-                WHEN uc.first_name_clean = dt.first_name THEN 20 ELSE 0
-            END +
-            CASE 
-                WHEN uc.zip_code = dt.home_zip THEN 20 ELSE 0
-            END +
-            CASE 
-                WHEN uc.city = dt.home_city THEN 15 ELSE 0
-            END +
-            CASE 
-                WHEN uc.county = dt.home_county THEN 15 ELSE 0
-            END as match_score
-        FROM unified_contacts uc
-        CROSS JOIN datatrust_profiles dt
-        WHERE dt.rnc_id = p_rnc_id
-            AND uc.last_name_clean = dt.last_name
-            AND uc.state = 'NC'
+            CASE WHEN uc.last_name_clean = dt.lastname THEN 30 ELSE 0 END +
+            CASE WHEN uc.first_name_clean = dt.firstname THEN 20 ELSE 0 END +
+            CASE WHEN uc.zip_code = dt.regzip5 THEN 20 ELSE 0 END +
+            CASE WHEN uc.city = dt.regcity THEN 15 ELSE 0 END +
+            CASE WHEN uc.county = dt.countyname THEN 15 ELSE 0 END AS match_score
+        FROM public.unified_contacts uc
+        CROSS JOIN public.nc_datatrust dt
+        WHERE dt.rncid::text = p_rnc_id
+          AND uc.last_name_clean = dt.lastname
+          AND uc.state = 'NC'
         ORDER BY match_score DESC
         LIMIT 5
     LOOP
@@ -74,103 +94,119 @@ BEGIN
             v_best_match_id := v_contact_id;
         END IF;
     END LOOP;
-    
-    -- Only return if confidence is high enough (>60)
+
     IF v_best_score >= 60 THEN
         RETURN v_best_match_id;
     END IF;
-    
+
     RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
 
--- Function 2: Sync Data Trust Data to Unified Contact
+-- Function 2: Sync Data Trust row into Unified Contact
 CREATE OR REPLACE FUNCTION sync_datatrust_to_unified_contact(
     p_rnc_id VARCHAR(32)
 )
 RETURNS BOOLEAN AS $$
 DECLARE
     v_contact_id BIGINT;
-    v_dt_record RECORD;
+    v_dt RECORD;
+    v_addr TEXT;
+    v_reg_score NUMERIC;
+    v_turnout_score NUMERIC;
 BEGIN
-    -- Get the Data Trust record
-    SELECT * INTO v_dt_record
-    FROM datatrust_profiles
-    WHERE rnc_id = p_rnc_id;
-    
+    SELECT * INTO v_dt
+    FROM public.nc_datatrust
+    WHERE rncid::text = p_rnc_id;
+
     IF NOT FOUND THEN
         RETURN FALSE;
     END IF;
-    
-    -- Get or match contact ID
-    v_contact_id := v_dt_record.contact_id;
+
+    v_reg_score := CASE
+        WHEN v_dt.voterregularitygeneral ~ '^[0-9]*\.?[0-9]+$'
+        THEN v_dt.voterregularitygeneral::numeric ELSE NULL END;
+    v_turnout_score := CASE
+        WHEN v_dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+        THEN v_dt.turnoutgeneralscore::numeric ELSE NULL END;
+
+    v_contact_id := (
+        SELECT lk.contact_id
+        FROM integration.datatrust_contact_link lk
+        WHERE lk.rncid = p_rnc_id
+    );
+
     IF v_contact_id IS NULL THEN
         v_contact_id := match_datatrust_to_contact(p_rnc_id);
-        
-        -- Update the link
         IF v_contact_id IS NOT NULL THEN
-            UPDATE datatrust_profiles
-            SET contact_id = v_contact_id,
+            INSERT INTO integration.datatrust_contact_link (
+                rncid, contact_id, synced_to_unified_contacts, sync_date, updated_at
+            ) VALUES (
+                p_rnc_id, v_contact_id, TRUE, now(), now()
+            )
+            ON CONFLICT (rncid) DO UPDATE SET
+                contact_id = EXCLUDED.contact_id,
                 synced_to_unified_contacts = TRUE,
-                sync_date = NOW()
-            WHERE rnc_id = p_rnc_id;
+                sync_date = now(),
+                updated_at = now();
         END IF;
     END IF;
-    
-    -- If we have a match, enrich the unified contact
+
+    v_addr := NULLIF(TRIM(COALESCE(v_dt.registrationaddr1, '')), '');
+    IF v_addr IS NULL THEN
+        v_addr := TRIM(CONCAT_WS(' ',
+            NULLIF(TRIM(v_dt.reghousenum), ''),
+            NULLIF(TRIM(v_dt.regstprefix), ''),
+            NULLIF(TRIM(v_dt.regstname), ''),
+            NULLIF(TRIM(v_dt.regsttype), '')
+        ));
+        v_addr := NULLIF(v_addr, '');
+    END IF;
+
     IF v_contact_id IS NOT NULL THEN
-        UPDATE unified_contacts SET
-            -- Update missing phone numbers
-            mobile_phone = COALESCE(mobile_phone, v_dt_record.phone_primary),
-            home_phone = COALESCE(home_phone, v_dt_record.phone_neustar),
-            
-            -- Update missing email
-            email = COALESCE(email, v_dt_record.email_primary),
-            
-            -- Enrich address if better quality
-            street_line_1 = CASE 
-                WHEN v_dt_record.home_full_address IS NOT NULL 
-                    AND street_line_1 IS NULL 
-                THEN v_dt_record.home_full_address
+        UPDATE public.unified_contacts SET
+            mobile_phone = COALESCE(mobile_phone, v_dt.cell),
+            home_phone = COALESCE(home_phone, v_dt.landline),
+            street_line_1 = CASE
+                WHEN v_addr IS NOT NULL AND street_line_1 IS NULL THEN v_addr
                 ELSE street_line_1
             END,
-            city = COALESCE(city, v_dt_record.home_city),
-            state = COALESCE(state, v_dt_record.home_state),
-            zip_code = COALESCE(zip_code, v_dt_record.home_zip),
-            county = COALESCE(county, v_dt_record.home_county),
-            
-            -- Add Data Trust-specific fields to custom_fields JSONB
-            custom_fields = custom_fields || jsonb_build_object(
-                'rnc_id', v_dt_record.rnc_id,
-                'voter_registration_status', v_dt_record.voter_registration_status,
-                'registered_party', v_dt_record.registered_party_affiliation,
-                'partisanship_score', v_dt_record.modeled_partisanship_score,
-                'turnout_score', v_dt_record.turnout_likelihood_score,
-                'voter_regularity', v_dt_record.voter_regularity_score,
-                'trump_approval', v_dt_record.issue_trump_approval,
-                'gun_rights_support', v_dt_record.issue_gun_rights_support,
-                'congressional_district', v_dt_record.congressional_district_current,
-                'state_senate_district', v_dt_record.state_senate_district,
-                'state_house_district', v_dt_record.state_house_district,
-                'precinct', v_dt_record.precinct_code,
+            city = COALESCE(city, v_dt.regcity),
+            state = COALESCE(state, v_dt.regsta),
+            zip_code = COALESCE(zip_code, v_dt.regzip5),
+            county = COALESCE(county, v_dt.countyname),
+            custom_fields = COALESCE(custom_fields, '{}'::jsonb) || jsonb_build_object(
+                'rncid', v_dt.rncid,
+                'voter_registration_status', v_dt.voterstatus,
+                'registered_party', v_dt.registeredparty,
+                'partisanship_score', v_dt.republicanpartyscore,
+                'turnout_score', v_dt.turnoutgeneralscore,
+                'voter_regularity', v_dt.voterregularitygeneral,
+                'congressional_district', v_dt.congressionaldistrict,
+                'state_senate_district', v_dt.statelegupperdistrict,
+                'state_house_district', v_dt.stateleglowerdistrict,
+                'precinct', v_dt.precinctcode,
                 'data_trust_synced', true,
                 'data_trust_sync_date', NOW()
             ),
-            
-            -- Update engagement score based on vote history
             engagement_score = GREATEST(
                 engagement_score,
-                (v_dt_record.voter_regularity_score * 50)::INTEGER + 
-                (v_dt_record.turnout_likelihood_score * 30)::INTEGER +
+                COALESCE((v_reg_score * 50)::INTEGER, 0) +
+                COALESCE((v_turnout_score * 30)::INTEGER, 0) +
                 20
             ),
-            
             updated_at = NOW()
         WHERE contact_id = v_contact_id;
-        
+
+        UPDATE integration.datatrust_contact_link SET
+            synced_to_unified_contacts = TRUE,
+            sync_date = now(),
+            updated_at = now()
+        WHERE rncid = p_rnc_id;
+
         RETURN TRUE;
     END IF;
-    
+
     RETURN FALSE;
 END;
 $$ LANGUAGE plpgsql;
@@ -188,31 +224,25 @@ RETURNS TABLE(
 BEGIN
     RETURN QUERY
     WITH unsynced AS (
-        SELECT dt.rnc_id
-        FROM datatrust_profiles dt
-        WHERE dt.synced_to_unified_contacts = FALSE
-            OR dt.contact_id IS NULL
+        SELECT dt.rncid::text AS rncid
+        FROM public.nc_datatrust dt
+        LEFT JOIN integration.datatrust_contact_link lk ON lk.rncid = dt.rncid::text
+        WHERE lk.rncid IS NULL
+           OR lk.synced_to_unified_contacts = FALSE
+           OR lk.contact_id IS NULL
         LIMIT p_limit
     ),
-    sync_results AS (
-        SELECT 
-            u.rnc_id,
-            sync_datatrust_to_unified_contact(u.rnc_id) as synced
+    ran AS (
+        SELECT u.rncid, sync_datatrust_to_unified_contact(u.rncid) AS synced_ok
         FROM unsynced u
     )
-    SELECT 
-        dt.rnc_id,
-        dt.contact_id,
-        CASE 
-            WHEN dt.contact_id IS NOT NULL THEN 'matched'
-            ELSE 'no_match'
-        END as sync_status,
-        CASE 
-            WHEN dt.contact_id IS NOT NULL THEN 100
-            ELSE 0
-        END as match_score
-    FROM datatrust_profiles dt
-    WHERE dt.rnc_id IN (SELECT rnc_id FROM unsynced);
+    SELECT
+        r.rncid::varchar(32),
+        lk.contact_id,
+        CASE WHEN lk.contact_id IS NOT NULL THEN 'matched'::varchar(20) ELSE 'no_match'::varchar(20) END,
+        CASE WHEN lk.contact_id IS NOT NULL THEN 100 ELSE 0 END
+    FROM ran r
+    LEFT JOIN integration.datatrust_contact_link lk ON lk.rncid = r.rncid;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -220,7 +250,6 @@ $$ LANGUAGE plpgsql;
 -- TARGETING FUNCTIONS FOR CAMPAIGNS
 -- ============================================================================
 
--- Function 4: Get High-Priority Voter Targets
 CREATE OR REPLACE FUNCTION get_voter_targets(
     p_county VARCHAR(100) DEFAULT NULL,
     p_district VARCHAR(10) DEFAULT NULL,
@@ -242,36 +271,44 @@ RETURNS TABLE(
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT 
-        dt.rnc_id,
-        dt.contact_id,
-        dt.full_name_computed,
-        dt.phone_primary,
-        dt.email_primary,
-        dt.home_county,
-        dt.congressional_district_current,
-        dt.turnout_likelihood_score,
-        dt.modeled_partisanship_score,
-        -- Calculate priority score
-        (dt.turnout_likelihood_score * 0.4 +
-         dt.modeled_partisanship_score * 0.3 +
-         dt.voter_regularity_score * 0.2 +
-         CASE WHEN uc.donor_grade IN ('A++', 'A+', 'A') THEN 0.1 ELSE 0 END) as priority_score
-    FROM datatrust_profiles dt
-    LEFT JOIN unified_contacts uc ON dt.contact_id = uc.contact_id
-    WHERE dt.voter_registration_status = 'active'
-        AND dt.deceased_flag = FALSE
-        AND dt.turnout_likelihood_score >= p_min_turnout_score
-        AND dt.modeled_partisanship_score >= p_min_partisanship
-        AND (p_county IS NULL OR dt.home_county = p_county)
-        AND (p_district IS NULL OR dt.congressional_district_current = p_district)
-        AND (dt.phone_primary IS NOT NULL OR dt.email_primary IS NOT NULL)
-    ORDER BY priority_score DESC
+    SELECT
+        dt.rncid::varchar(32),
+        lk.contact_id,
+        (TRIM(COALESCE(dt.firstname, '') || ' ' || COALESCE(dt.lastname, '')))::varchar(255),
+        COALESCE(dt.cell, dt.landline)::varchar(20),
+        NULL::varchar(255),
+        dt.countyname::varchar(100),
+        dt.congressionaldistrict::varchar(10),
+        CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+             THEN dt.turnoutgeneralscore::numeric ELSE NULL END,
+        CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$'
+             THEN dt.republicanpartyscore::numeric ELSE NULL END,
+        (
+         COALESCE(CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                  THEN dt.turnoutgeneralscore::numeric ELSE 0 END, 0) * 0.4 +
+         COALESCE(CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$'
+                  THEN dt.republicanpartyscore::numeric ELSE 0 END, 0) * 0.3 +
+         COALESCE(CASE WHEN dt.voterregularitygeneral ~ '^[0-9]*\.?[0-9]+$'
+                  THEN dt.voterregularitygeneral::numeric ELSE 0 END, 0) * 0.2 +
+         CASE WHEN uc.donor_grade IN ('A++', 'A+', 'A') THEN 0.1 ELSE 0 END
+        )::numeric AS priority_score
+    FROM public.nc_datatrust dt
+    LEFT JOIN integration.datatrust_contact_link lk ON lk.rncid = dt.rncid::text
+    LEFT JOIN public.unified_contacts uc ON uc.contact_id = lk.contact_id
+    WHERE UPPER(TRIM(COALESCE(dt.voterstatus, ''))) = 'A'
+      AND COALESCE(dt.cell, dt.landline) IS NOT NULL
+      AND (CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                THEN dt.turnoutgeneralscore::numeric ELSE 0 END) >= p_min_turnout_score
+      AND (CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$'
+                THEN dt.republicanpartyscore::numeric ELSE 0 END) >= p_min_partisanship
+      AND (p_county IS NULL OR dt.countyname = p_county)
+      AND (p_district IS NULL OR dt.congressionaldistrict = p_district)
+    ORDER BY priority_score DESC NULLS LAST
     LIMIT p_limit;
 END;
 $$ LANGUAGE plpgsql;
 
--- Function 5: Get Issue-Specific Targets
+-- Issue targeting: coalition Y/N flags (1.0) or republicanpartyscore (numeric)
 CREATE OR REPLACE FUNCTION get_issue_targets(
     p_issue_name VARCHAR(50),
     p_min_issue_score NUMERIC DEFAULT 0.6,
@@ -287,44 +324,68 @@ RETURNS TABLE(
     issue_score NUMERIC,
     turnout_score NUMERIC
 ) AS $$
-DECLARE
-    v_issue_column TEXT;
 BEGIN
-    -- Map issue name to column
-    v_issue_column := CASE p_issue_name
-        WHEN 'gun_rights' THEN 'issue_gun_rights_support'
-        WHEN 'abortion' THEN 'issue_abortion_pro_life'
-        WHEN 'border' THEN 'issue_border_security'
-        WHEN 'school_choice' THEN 'issue_school_choice'
-        WHEN 'trump' THEN 'issue_trump_approval'
-        WHEN 'taxes' THEN 'issue_tax_cuts_support'
-        WHEN 'law_order' THEN 'issue_law_and_order'
-        ELSE 'issue_trump_approval'
-    END;
-    
-    RETURN QUERY EXECUTE format('
-        SELECT 
-            dt.rnc_id,
-            dt.contact_id,
-            dt.full_name_computed,
-            dt.phone_primary,
-            dt.email_primary,
-            dt.%I as issue_score,
-            dt.turnout_likelihood_score
-        FROM datatrust_profiles dt
-        WHERE dt.voter_registration_status = ''active''
-            AND dt.deceased_flag = FALSE
-            AND dt.%I >= $1
-            AND ($2 IS NULL OR dt.home_county = $2)
-            AND dt.turnout_likelihood_score > 0.4
-        ORDER BY dt.%I DESC, dt.turnout_likelihood_score DESC
-        LIMIT $3
-    ', v_issue_column, v_issue_column, v_issue_column)
-    USING p_min_issue_score, p_county, p_limit;
+    RETURN QUERY
+    WITH scored AS (
+        SELECT
+            dt.*,
+            lk.contact_id AS lk_contact_id,
+            CASE lower(trim(p_issue_name))
+                WHEN 'gun_rights' THEN
+                    CASE WHEN upper(trim(coalesce(dt.coalitionid_2ndamendment, ''))) IN ('Y','1','T','TRUE') THEN 1.0::numeric
+                         WHEN dt.coalitionid_2ndamendment ~ '^[0-9]*\.?[0-9]+$' THEN dt.coalitionid_2ndamendment::numeric
+                         ELSE 0::numeric END
+                WHEN 'abortion' THEN
+                    CASE WHEN upper(trim(coalesce(dt.coalitionid_prolife, ''))) IN ('Y','1','T','TRUE') THEN 1.0::numeric
+                         WHEN dt.coalitionid_prolife ~ '^[0-9]*\.?[0-9]+$' THEN dt.coalitionid_prolife::numeric
+                         ELSE 0::numeric END
+                WHEN 'border' THEN
+                    CASE WHEN upper(trim(coalesce(dt.coalitionid_socialconservative, ''))) IN ('Y','1','T','TRUE') THEN 1.0::numeric
+                         WHEN dt.coalitionid_socialconservative ~ '^[0-9]*\.?[0-9]+$' THEN dt.coalitionid_socialconservative::numeric
+                         ELSE 0::numeric END
+                WHEN 'school_choice' THEN
+                    CASE WHEN upper(trim(coalesce(dt.coalitionid_fiscalconservative, ''))) IN ('Y','1','T','TRUE') THEN 1.0::numeric
+                         WHEN dt.coalitionid_fiscalconservative ~ '^[0-9]*\.?[0-9]+$' THEN dt.coalitionid_fiscalconservative::numeric
+                         ELSE 0::numeric END
+                WHEN 'trump' THEN
+                    CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$' THEN dt.republicanpartyscore::numeric ELSE 0::numeric END
+                WHEN 'taxes' THEN
+                    CASE WHEN upper(trim(coalesce(dt.coalitionid_fiscalconservative, ''))) IN ('Y','1','T','TRUE') THEN 1.0::numeric
+                         WHEN dt.coalitionid_fiscalconservative ~ '^[0-9]*\.?[0-9]+$' THEN dt.coalitionid_fiscalconservative::numeric
+                         ELSE 0::numeric END
+                WHEN 'law_order' THEN
+                    CASE WHEN upper(trim(coalesce(dt.coalitionid_socialconservative, ''))) IN ('Y','1','T','TRUE') THEN 1.0::numeric
+                         WHEN dt.coalitionid_socialconservative ~ '^[0-9]*\.?[0-9]+$' THEN dt.coalitionid_socialconservative::numeric
+                         ELSE 0::numeric END
+                ELSE
+                    CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$' THEN dt.republicanpartyscore::numeric ELSE 0::numeric END
+            END AS computed_issue,
+            CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                 THEN dt.turnoutgeneralscore::numeric ELSE NULL END AS computed_turnout
+        FROM public.nc_datatrust dt
+        LEFT JOIN integration.datatrust_contact_link lk ON lk.rncid = dt.rncid::text
+        WHERE upper(trim(coalesce(dt.voterstatus, ''))) = 'A'
+          AND (p_county IS NULL OR dt.countyname = p_county)
+          AND COALESCE(
+                CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                     THEN dt.turnoutgeneralscore::numeric ELSE 0 END, 0
+              ) > 0.4
+    )
+    SELECT
+        s.rncid::varchar(32),
+        s.lk_contact_id,
+        (TRIM(COALESCE(s.firstname, '') || ' ' || COALESCE(s.lastname, '')))::varchar(255),
+        COALESCE(s.cell, s.landline)::varchar(20),
+        NULL::varchar(255),
+        s.computed_issue,
+        s.computed_turnout
+    FROM scored s
+    WHERE s.computed_issue >= p_min_issue_score
+    ORDER BY s.computed_issue DESC NULLS LAST, s.computed_turnout DESC NULLS LAST
+    LIMIT p_limit;
 END;
 $$ LANGUAGE plpgsql;
 
--- Function 6: Get Volunteer Recruitment Targets
 CREATE OR REPLACE FUNCTION get_volunteer_targets(
     p_county VARCHAR(100) DEFAULT NULL,
     p_min_activism_score NUMERIC DEFAULT 0.5,
@@ -342,36 +403,38 @@ RETURNS TABLE(
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT 
-        dt.rnc_id,
-        dt.contact_id,
-        dt.full_name_computed,
-        dt.phone_primary,
-        dt.email_primary,
-        dt.political_activism_score,
-        dt.grassroots_volunteer_likelihood,
-        uc.donor_grade
-    FROM datatrust_profiles dt
-    LEFT JOIN unified_contacts uc ON dt.contact_id = uc.contact_id
-    WHERE dt.voter_registration_status = 'active'
-        AND dt.deceased_flag = FALSE
-        AND dt.political_activism_score >= p_min_activism_score
-        AND dt.turnout_likelihood_score > 0.6
-        AND (p_county IS NULL OR dt.home_county = p_county)
-        AND dt.phone_primary IS NOT NULL
-    ORDER BY dt.grassroots_volunteer_likelihood DESC, 
-             dt.political_activism_score DESC
+    SELECT
+        dt.rncid::varchar(32),
+        lk.contact_id,
+        (TRIM(COALESCE(dt.firstname, '') || ' ' || COALESCE(dt.lastname, '')))::varchar(255),
+        COALESCE(dt.cell, dt.landline)::varchar(20),
+        NULL::varchar(255),
+        CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$'
+             THEN dt.republicanpartyscore::numeric ELSE NULL END,
+        CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+             THEN dt.turnoutgeneralscore::numeric ELSE NULL END,
+        uc.donor_grade::varchar(10)
+    FROM public.nc_datatrust dt
+    LEFT JOIN integration.datatrust_contact_link lk ON lk.rncid = dt.rncid::text
+    LEFT JOIN public.unified_contacts uc ON uc.contact_id = lk.contact_id
+    WHERE UPPER(TRIM(COALESCE(dt.voterstatus, ''))) = 'A'
+      AND (CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$'
+                THEN dt.republicanpartyscore::numeric ELSE 0 END) >= p_min_activism_score
+      AND (CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                THEN dt.turnoutgeneralscore::numeric ELSE 0 END) > 0.6
+      AND (p_county IS NULL OR dt.countyname = p_county)
+      AND dt.cell IS NOT NULL
+    ORDER BY
+        CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+             THEN dt.turnoutgeneralscore::numeric ELSE 0 END DESC NULLS LAST,
+        CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$'
+             THEN dt.republicanpartyscore::numeric ELSE 0 END DESC NULLS LAST
     LIMIT p_limit;
 END;
 $$ LANGUAGE plpgsql;
 
--- ============================================================================
--- COUNCIL OF STATE CANDIDATE TARGETING
--- ============================================================================
-
--- Function 7: Get Statewide Targets for Council of State Races
 CREATE OR REPLACE FUNCTION get_council_of_state_targets(
-    p_office VARCHAR(50),  -- 'agriculture', 'labor', 'insurance', etc.
+    p_office VARCHAR(50),
     p_min_turnout NUMERIC DEFAULT 0.6,
     p_limit INTEGER DEFAULT 50000
 )
@@ -388,42 +451,46 @@ RETURNS TABLE(
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT 
-        dt.rnc_id,
-        dt.contact_id,
-        dt.full_name_computed,
-        dt.phone_primary,
-        dt.email_primary,
-        dt.home_county,
-        dt.turnout_likelihood_score,
-        dt.modeled_partisanship_score,
-        CASE p_office
-            WHEN 'agriculture' THEN dt.nc_agriculture_interest
-            WHEN 'labor' THEN dt.nc_labor_interest
-            WHEN 'insurance' THEN dt.nc_insurance_interest
-            WHEN 'education' THEN dt.nc_education_interest
-            WHEN 'treasurer' THEN dt.nc_treasurer_interest
+    SELECT
+        dt.rncid::varchar(32),
+        lk.contact_id,
+        (TRIM(COALESCE(dt.firstname, '') || ' ' || COALESCE(dt.lastname, '')))::varchar(255),
+        COALESCE(dt.cell, dt.landline)::varchar(20),
+        NULL::varchar(255),
+        dt.countyname::varchar(100),
+        CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+             THEN dt.turnoutgeneralscore::numeric ELSE NULL END,
+        CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$'
+             THEN dt.republicanpartyscore::numeric ELSE NULL END,
+        CASE lower(trim(p_office))
+            WHEN 'agriculture' THEN upper(trim(coalesce(dt.coalitionid_sportsmen, ''))) IN ('Y','1','T','TRUE')
+            WHEN 'labor' THEN upper(trim(coalesce(dt.coalitionid_veteran, ''))) IN ('Y','1','T','TRUE')
+            WHEN 'insurance' THEN upper(trim(coalesce(dt.coalitionid_fiscalconservative, ''))) IN ('Y','1','T','TRUE')
+            WHEN 'education' THEN upper(trim(coalesce(dt.coalitionid_socialconservative, ''))) IN ('Y','1','T','TRUE')
+            WHEN 'treasurer' THEN upper(trim(coalesce(dt.coalitionid_fiscalconservative, ''))) IN ('Y','1','T','TRUE')
             ELSE FALSE
-        END as office_interest
-    FROM datatrust_profiles dt
-    WHERE dt.voter_registration_status = 'active'
-        AND dt.deceased_flag = FALSE
-        AND dt.turnout_likelihood_score >= p_min_turnout
-        AND dt.modeled_partisanship_score >= 0.5
-        AND (dt.phone_primary IS NOT NULL OR dt.email_primary IS NOT NULL)
-    ORDER BY 
-        CASE 
-            WHEN CASE p_office
-                WHEN 'agriculture' THEN dt.nc_agriculture_interest
-                WHEN 'labor' THEN dt.nc_labor_interest
-                WHEN 'insurance' THEN dt.nc_insurance_interest
-                WHEN 'education' THEN dt.nc_education_interest
-                WHEN 'treasurer' THEN dt.nc_treasurer_interest
+        END
+    FROM public.nc_datatrust dt
+    LEFT JOIN integration.datatrust_contact_link lk ON lk.rncid = dt.rncid::text
+    WHERE UPPER(TRIM(COALESCE(dt.voterstatus, ''))) = 'A'
+      AND (CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                THEN dt.turnoutgeneralscore::numeric ELSE 0 END) >= p_min_turnout
+      AND (CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$'
+                THEN dt.republicanpartyscore::numeric ELSE 0 END) >= 0.5
+      AND COALESCE(dt.cell, dt.landline) IS NOT NULL
+    ORDER BY
+        CASE
+            WHEN CASE lower(trim(p_office))
+                WHEN 'agriculture' THEN upper(trim(coalesce(dt.coalitionid_sportsmen, ''))) IN ('Y','1','T','TRUE')
+                WHEN 'labor' THEN upper(trim(coalesce(dt.coalitionid_veteran, ''))) IN ('Y','1','T','TRUE')
+                WHEN 'insurance' THEN upper(trim(coalesce(dt.coalitionid_fiscalconservative, ''))) IN ('Y','1','T','TRUE')
+                WHEN 'education' THEN upper(trim(coalesce(dt.coalitionid_socialconservative, ''))) IN ('Y','1','T','TRUE')
+                WHEN 'treasurer' THEN upper(trim(coalesce(dt.coalitionid_fiscalconservative, ''))) IN ('Y','1','T','TRUE')
                 ELSE FALSE
-            END THEN 1
-            ELSE 2
+            END THEN 1 ELSE 2
         END,
-        dt.turnout_likelihood_score DESC
+        CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+             THEN dt.turnoutgeneralscore::numeric ELSE 0 END DESC
     LIMIT p_limit;
 END;
 $$ LANGUAGE plpgsql;
@@ -432,143 +499,139 @@ $$ LANGUAGE plpgsql;
 -- ALGORITHM UPDATES FOR ECOSYSTEM
 -- ============================================================================
 
--- Function 8: Update ML Model Inputs with Data Trust Data
 CREATE OR REPLACE FUNCTION update_ml_model_inputs()
 RETURNS INTEGER AS $$
 DECLARE
     v_updated_count INTEGER := 0;
 BEGIN
-    -- Update contact predictions with Data Trust turnout scores
+    -- Dynamic SQL so CREATE FUNCTION succeeds when ml_contact_predictions is not deployed yet
+    IF to_regclass('public.ml_contact_predictions') IS NULL THEN
+        RETURN 0;
+    END IF;
+    EXECUTE $ml$
     UPDATE ml_contact_predictions mcp
-    SET 
+    SET
         will_open_next_email = GREATEST(
             mcp.will_open_next_email,
-            dt.turnout_likelihood_score * 0.7  -- Adjust for email vs vote
+            CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                 THEN dt.turnoutgeneralscore::numeric * 0.7 ELSE mcp.will_open_next_email END
         ),
         will_volunteer_next = GREATEST(
             mcp.will_volunteer_next,
-            dt.grassroots_volunteer_likelihood
+            CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                 THEN dt.turnoutgeneralscore::numeric ELSE mcp.will_volunteer_next END
         ),
         best_send_hour = COALESCE(
             mcp.best_send_hour,
-            EXTRACT(HOUR FROM dt.phone_neustar_call_window_local::TIME)::INTEGER
+            CASE
+                WHEN trim(coalesce(dt.cellneustartimeofday, '')) ~ '^[0-9]{1,2}:[0-9]{2}'
+                THEN EXTRACT(HOUR FROM trim(dt.cellneustartimeofday)::time)::integer
+                WHEN trim(coalesce(dt.landlineneustartimeofday, '')) ~ '^[0-9]{1,2}:[0-9]{2}'
+                THEN EXTRACT(HOUR FROM trim(dt.landlineneustartimeofday)::time)::integer
+                ELSE 10
+            END
         ),
-        confidence = LEAST(
-            1.0,
-            mcp.confidence + (dt.data_accuracy_score / 200.0)  -- Boost confidence
-        ),
-        model_version = 'v2.0_datatrust',
+        confidence = LEAST(1.0, mcp.confidence + 0.05),
+        model_version = 'v2.1_nc_datatrust',
         prediction_date = NOW()
-    FROM datatrust_profiles dt
-    INNER JOIN unified_contacts uc ON dt.contact_id = uc.contact_id
+    FROM public.nc_datatrust dt
+    INNER JOIN integration.datatrust_contact_link lk ON lk.rncid = dt.rncid::text
+    INNER JOIN public.unified_contacts uc ON lk.contact_id = uc.contact_id
     WHERE mcp.contact_id = uc.contact_id
-        AND dt.synced_to_unified_contacts = TRUE;
-    
+      AND lk.synced_to_unified_contacts = TRUE
+    $ml$;
     GET DIAGNOSTICS v_updated_count = ROW_COUNT;
     RETURN v_updated_count;
 END;
 $$ LANGUAGE plpgsql;
 
--- Function 9: Enhance Donor Intelligence with Voter Data
 CREATE OR REPLACE FUNCTION enhance_donor_intelligence()
 RETURNS INTEGER AS $$
 DECLARE
     v_enhanced_count INTEGER := 0;
 BEGIN
-    -- Add voter participation data to donor profiles
-    UPDATE unified_contacts uc
-    SET 
-        custom_fields = uc.custom_fields || jsonb_build_object(
-            'voter_regularity', dt.voter_regularity_score,
-            'last_voted', dt.last_vote_date,
-            'turnout_2026_predicted', dt.turnout_general_2026_prob,
-            'partisanship_strength', CASE 
-                WHEN dt.modeled_partisanship_score > 0.8 THEN 'strong_republican'
-                WHEN dt.modeled_partisanship_score > 0.6 THEN 'lean_republican'
-                WHEN dt.modeled_partisanship_score > 0.4 THEN 'swing'
-                WHEN dt.modeled_partisanship_score > 0.2 THEN 'lean_democrat'
+    UPDATE public.unified_contacts uc
+    SET
+        custom_fields = COALESCE(uc.custom_fields, '{}'::jsonb) || jsonb_build_object(
+            'voter_regularity', dt.voterregularitygeneral,
+            'turnout_score', dt.turnoutgeneralscore,
+            'partisanship_strength', CASE
+                WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$' AND dt.republicanpartyscore::numeric > 0.8 THEN 'strong_republican'
+                WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$' AND dt.republicanpartyscore::numeric > 0.6 THEN 'lean_republican'
+                WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$' AND dt.republicanpartyscore::numeric > 0.4 THEN 'swing'
+                WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$' AND dt.republicanpartyscore::numeric > 0.2 THEN 'lean_democrat'
                 ELSE 'strong_democrat'
             END,
-            'primary_voter', CASE 
-                WHEN dt.voter_regularity_score > 0.7 THEN TRUE
+            'primary_voter', CASE
+                WHEN dt.voterregularitygeneral ~ '^[0-9]*\.?[0-9]+$' AND dt.voterregularitygeneral::numeric > 0.7 THEN TRUE
                 ELSE FALSE
             END,
-            'issue_top_priority', CASE 
-                WHEN dt.issue_gun_rights_support > 0.7 THEN '2A'
-                WHEN dt.issue_abortion_pro_life > 0.7 THEN 'pro_life'
-                WHEN dt.issue_border_security > 0.7 THEN 'border'
-                WHEN dt.issue_trump_approval > 0.7 THEN 'trump'
+            'issue_top_priority', CASE
+                WHEN upper(trim(coalesce(dt.coalitionid_2ndamendment, ''))) IN ('Y','1','T','TRUE') THEN '2A'
+                WHEN upper(trim(coalesce(dt.coalitionid_prolife, ''))) IN ('Y','1','T','TRUE') THEN 'pro_life'
+                WHEN upper(trim(coalesce(dt.coalitionid_socialconservative, ''))) IN ('Y','1','T','TRUE') THEN 'social_conservative'
+                WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$' AND dt.republicanpartyscore::numeric > 0.7 THEN 'partisan_gop'
                 ELSE 'mixed'
             END
         ),
-        
-        -- Upgrade engagement score for active voters
         engagement_score = LEAST(
             100,
-            uc.engagement_score + 
-            (dt.voter_regularity_score * 20)::INTEGER +
-            (dt.turnout_likelihood_score * 15)::INTEGER
+            uc.engagement_score +
+            COALESCE(CASE WHEN dt.voterregularitygeneral ~ '^[0-9]*\.?[0-9]+$'
+                     THEN (dt.voterregularitygeneral::numeric * 20)::integer ELSE 0 END, 0) +
+            COALESCE(CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                     THEN (dt.turnoutgeneralscore::numeric * 15)::integer ELSE 0 END, 0)
         ),
-        
         updated_at = NOW()
-    FROM datatrust_profiles dt
-    WHERE uc.contact_id = dt.contact_id
-        AND uc.donor_grade IS NOT NULL
-        AND dt.synced_to_unified_contacts = TRUE;
-    
+    FROM public.nc_datatrust dt
+    INNER JOIN integration.datatrust_contact_link lk ON lk.rncid = dt.rncid::text
+    WHERE uc.contact_id = lk.contact_id
+      AND uc.donor_grade IS NOT NULL
+      AND lk.synced_to_unified_contacts = TRUE;
+
     GET DIAGNOSTICS v_enhanced_count = ROW_COUNT;
     RETURN v_enhanced_count;
 END;
 $$ LANGUAGE plpgsql;
 
--- Function 10: Update Volunteer Intelligence with Activism Scores
 CREATE OR REPLACE FUNCTION enhance_volunteer_intelligence()
 RETURNS INTEGER AS $$
 DECLARE
     v_enhanced_count INTEGER := 0;
 BEGIN
-    UPDATE unified_contacts uc
-    SET 
-        custom_fields = uc.custom_fields || jsonb_build_object(
-            'activism_score', dt.political_activism_score,
-            'volunteer_likelihood', dt.grassroots_volunteer_likelihood,
-            'county_party_member', dt.nc_county_party_member,
-            'precinct_captain', dt.nc_precinct_captain,
-            'delegate_history', dt.nc_state_convention_delegate,
-            'reliable_volunteer_predicted', CASE 
-                WHEN dt.grassroots_volunteer_likelihood > 0.6 
-                    AND dt.voter_regularity_score > 0.7 
-                THEN TRUE
-                ELSE FALSE
+    UPDATE public.unified_contacts uc
+    SET
+        custom_fields = COALESCE(uc.custom_fields, '{}'::jsonb) || jsonb_build_object(
+            'activism_proxy_republican_score', dt.republicanpartyscore,
+            'volunteer_proxy_turnout_score', dt.turnoutgeneralscore,
+            'donorflag', dt.donorflag,
+            'reliable_volunteer_predicted', CASE
+                WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$' AND dt.turnoutgeneralscore::numeric > 0.6
+                 AND dt.voterregularitygeneral ~ '^[0-9]*\.?[0-9]+$' AND dt.voterregularitygeneral::numeric > 0.7
+                THEN TRUE ELSE FALSE
             END
         ),
-        
-        -- Boost engagement for activists
         engagement_score = LEAST(
             100,
-            uc.engagement_score + 
-            (dt.political_activism_score * 25)::INTEGER
+            uc.engagement_score +
+            COALESCE(CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$'
+                     THEN (dt.republicanpartyscore::numeric * 25)::integer ELSE 0 END, 0)
         ),
-        
         updated_at = NOW()
-    FROM datatrust_profiles dt
-    WHERE uc.contact_id = dt.contact_id
-        AND uc.volunteer_status IN ('active', 'prospective')
-        AND dt.synced_to_unified_contacts = TRUE;
-    
+    FROM public.nc_datatrust dt
+    INNER JOIN integration.datatrust_contact_link lk ON lk.rncid = dt.rncid::text
+    WHERE uc.contact_id = lk.contact_id
+      AND uc.volunteer_status IN ('active', 'prospective')
+      AND lk.synced_to_unified_contacts = TRUE;
+
     GET DIAGNOSTICS v_enhanced_count = ROW_COUNT;
     RETURN v_enhanced_count;
 END;
 $$ LANGUAGE plpgsql;
 
--- ============================================================================
--- CAMPAIGN ECOSYSTEM UPDATES
--- ============================================================================
-
--- Function 11: Generate Targeted Campaign Lists
 CREATE OR REPLACE FUNCTION generate_campaign_list(
-    p_campaign_type VARCHAR(50),  -- 'voter_turnout', 'persuasion', 'donor', 'volunteer'
-    p_geography_filter JSONB DEFAULT '{}',  -- {"county": "Wake", "district": "NC-02"}
+    p_campaign_type VARCHAR(50),
+    p_geography_filter JSONB DEFAULT '{}',
     p_limit INTEGER DEFAULT 10000
 )
 RETURNS TABLE(
@@ -584,114 +647,142 @@ RETURNS TABLE(
 BEGIN
     IF p_campaign_type = 'voter_turnout' THEN
         RETURN QUERY
-        SELECT 
-            dt.rnc_id,
-            dt.contact_id,
-            dt.full_name_computed,
-            dt.phone_primary,
-            dt.email_primary,
-            dt.turnout_likelihood_score,
-            CASE 
-                WHEN dt.abev_preference = 'mail' THEN 'absentee_ballot'
-                WHEN dt.abev_preference = 'early' THEN 'early_voting'
+        SELECT
+            dt.rncid::varchar(32),
+            lk.contact_id,
+            (TRIM(COALESCE(dt.firstname, '') || ' ' || COALESCE(dt.lastname, '')))::varchar(255),
+            COALESCE(dt.cell, dt.landline)::varchar(20),
+            NULL::varchar(255),
+            CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                 THEN dt.turnoutgeneralscore::numeric ELSE NULL END,
+            CASE
+                WHEN upper(trim(coalesce(dt.permanentabsentee, ''))) IN ('Y','1','T','TRUE') THEN 'absentee_ballot'
                 ELSE 'election_day'
-            END as recommended_message,
-            dt.phone_neustar_call_window_local
-        FROM datatrust_profiles dt
-        WHERE dt.turnout_likelihood_score BETWEEN 0.4 AND 0.7  -- Persuadable on turnout
-            AND dt.modeled_partisanship_score > 0.5
-            AND dt.voter_registration_status = 'active'
-            AND dt.deceased_flag = FALSE
-            AND (p_geography_filter = '{}' 
-                OR (p_geography_filter->>'county' IS NULL OR dt.home_county = p_geography_filter->>'county')
-                AND (p_geography_filter->>'district' IS NULL OR dt.congressional_district_current = p_geography_filter->>'district'))
-        ORDER BY dt.turnout_likelihood_score DESC
+            END::varchar(50),
+            COALESCE(
+                NULLIF(trim(dt.cellneustartimeofday), ''),
+                NULLIF(trim(dt.landlineneustartimeofday), ''),
+                'business_hours'
+            )::varchar(50)
+        FROM public.nc_datatrust dt
+        LEFT JOIN integration.datatrust_contact_link lk ON lk.rncid = dt.rncid::text
+        WHERE (CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                    THEN dt.turnoutgeneralscore::numeric ELSE 0 END) BETWEEN 0.4 AND 0.7
+          AND (CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$'
+                    THEN dt.republicanpartyscore::numeric ELSE 0 END) > 0.5
+          AND UPPER(TRIM(COALESCE(dt.voterstatus, ''))) = 'A'
+          AND (p_geography_filter = '{}'::jsonb
+               OR (
+                 (p_geography_filter->>'county' IS NULL OR dt.countyname = p_geography_filter->>'county')
+                 AND (p_geography_filter->>'district' IS NULL OR dt.congressionaldistrict = p_geography_filter->>'district')
+               ))
+        ORDER BY CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                      THEN dt.turnoutgeneralscore::numeric ELSE 0 END DESC
         LIMIT p_limit;
-        
+
     ELSIF p_campaign_type = 'persuasion' THEN
         RETURN QUERY
-        SELECT 
-            dt.rnc_id,
-            dt.contact_id,
-            dt.full_name_computed,
-            dt.phone_primary,
-            dt.email_primary,
-            ABS(0.5 - dt.modeled_partisanship_score) * -2 + 1 as priority_score,  -- Closer to center = higher
-            CASE 
-                WHEN dt.issue_gun_rights_support > 0.6 THEN 'gun_rights'
-                WHEN dt.issue_abortion_pro_life > 0.6 THEN 'pro_life'
-                WHEN dt.issue_border_security > 0.6 THEN 'immigration'
+        SELECT
+            dt.rncid::varchar(32),
+            lk.contact_id,
+            (TRIM(COALESCE(dt.firstname, '') || ' ' || COALESCE(dt.lastname, '')))::varchar(255),
+            COALESCE(dt.cell, dt.landline)::varchar(20),
+            NULL::varchar(255),
+            (ABS(0.5 - COALESCE(CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$'
+                               THEN dt.republicanpartyscore::numeric ELSE 0.5 END, 0.5)) * -2 + 1)::numeric,
+            CASE
+                WHEN upper(trim(coalesce(dt.coalitionid_2ndamendment, ''))) IN ('Y','1','T','TRUE') THEN 'gun_rights'
+                WHEN upper(trim(coalesce(dt.coalitionid_prolife, ''))) IN ('Y','1','T','TRUE') THEN 'pro_life'
+                WHEN upper(trim(coalesce(dt.coalitionid_socialconservative, ''))) IN ('Y','1','T','TRUE') THEN 'social_conservative'
                 ELSE 'economy'
-            END as recommended_message,
-            dt.phone_neustar_call_window_local
-        FROM datatrust_profiles dt
-        WHERE dt.modeled_partisanship_score BETWEEN 0.35 AND 0.65
-            AND dt.turnout_likelihood_score > 0.5
-            AND dt.voter_registration_status = 'active'
-            AND dt.deceased_flag = FALSE
-            AND (p_geography_filter = '{}' 
-                OR (p_geography_filter->>'county' IS NULL OR dt.home_county = p_geography_filter->>'county'))
-        ORDER BY priority_score DESC
+            END::varchar(50),
+            COALESCE(
+                NULLIF(trim(dt.cellneustartimeofday), ''),
+                NULLIF(trim(dt.landlineneustartimeofday), ''),
+                'business_hours'
+            )::varchar(50)
+        FROM public.nc_datatrust dt
+        LEFT JOIN integration.datatrust_contact_link lk ON lk.rncid = dt.rncid::text
+        WHERE (CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$'
+                    THEN dt.republicanpartyscore::numeric ELSE 0.5 END) BETWEEN 0.35 AND 0.65
+          AND (CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                    THEN dt.turnoutgeneralscore::numeric ELSE 0 END) > 0.5
+          AND UPPER(TRIM(COALESCE(dt.voterstatus, ''))) = 'A'
+          AND (p_geography_filter = '{}'::jsonb
+               OR (p_geography_filter->>'county' IS NULL OR dt.countyname = p_geography_filter->>'county'))
+        ORDER BY 6 DESC
         LIMIT p_limit;
-        
+
     ELSIF p_campaign_type = 'donor' THEN
         RETURN QUERY
-        SELECT 
-            dt.rnc_id,
-            dt.contact_id,
-            dt.full_name_computed,
-            dt.phone_primary,
-            dt.email_primary,
-            (dt.income_household / 100000.0 * 0.3 +
-             dt.political_activism_score * 0.4 +
-             dt.turnout_likelihood_score * 0.3) as priority_score,
-            CASE 
+        SELECT
+            dt.rncid::varchar(32),
+            lk.contact_id,
+            (TRIM(COALESCE(dt.firstname, '') || ' ' || COALESCE(dt.lastname, '')))::varchar(255),
+            COALESCE(dt.cell, dt.landline)::varchar(20),
+            NULL::varchar(255),
+            (
+              CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$'
+                   THEN dt.republicanpartyscore::numeric * 0.4 ELSE 0 END +
+              CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                   THEN dt.turnoutgeneralscore::numeric * 0.3 ELSE 0 END +
+              0.3
+            )::numeric,
+            CASE
                 WHEN uc.donor_grade IN ('A++', 'A+', 'A') THEN 'major_donor_upgrade'
                 WHEN uc.total_donations_aggregated > 0 THEN 'lapsed_donor'
                 ELSE 'prospective_donor'
-            END as recommended_message,
-            dt.phone_neustar_call_window_local
-        FROM datatrust_profiles dt
-        LEFT JOIN unified_contacts uc ON dt.contact_id = uc.contact_id
-        WHERE dt.modeled_partisanship_score > 0.6
-            AND dt.income_household > 75000
-            AND dt.voter_registration_status = 'active'
-            AND dt.deceased_flag = FALSE
-            AND (p_geography_filter = '{}' 
-                OR (p_geography_filter->>'county' IS NULL OR dt.home_county = p_geography_filter->>'county'))
-        ORDER BY priority_score DESC
+            END::varchar(50),
+            COALESCE(
+                NULLIF(trim(dt.cellneustartimeofday), ''),
+                NULLIF(trim(dt.landlineneustartimeofday), ''),
+                'business_hours'
+            )::varchar(50)
+        FROM public.nc_datatrust dt
+        LEFT JOIN integration.datatrust_contact_link lk ON lk.rncid = dt.rncid::text
+        LEFT JOIN public.unified_contacts uc ON uc.contact_id = lk.contact_id
+        WHERE (CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$'
+                    THEN dt.republicanpartyscore::numeric ELSE 0 END) > 0.6
+          AND UPPER(TRIM(COALESCE(dt.voterstatus, ''))) = 'A'
+          AND (p_geography_filter = '{}'::jsonb
+               OR (p_geography_filter->>'county' IS NULL OR dt.countyname = p_geography_filter->>'county'))
+        ORDER BY 6 DESC
         LIMIT p_limit;
-        
+
     ELSIF p_campaign_type = 'volunteer' THEN
         RETURN QUERY
-        SELECT 
-            dt.rnc_id,
-            dt.contact_id,
-            dt.full_name_computed,
-            dt.phone_primary,
-            dt.email_primary,
-            dt.grassroots_volunteer_likelihood,
-            'volunteer_recruitment' as recommended_message,
-            dt.phone_neustar_call_window_local
-        FROM datatrust_profiles dt
-        WHERE dt.grassroots_volunteer_likelihood > 0.5
-            AND dt.political_activism_score > 0.4
-            AND dt.turnout_likelihood_score > 0.6
-            AND dt.voter_registration_status = 'active'
-            AND dt.deceased_flag = FALSE
-            AND (p_geography_filter = '{}' 
-                OR (p_geography_filter->>'county' IS NULL OR dt.home_county = p_geography_filter->>'county'))
-        ORDER BY dt.grassroots_volunteer_likelihood DESC
+        SELECT
+            dt.rncid::varchar(32),
+            lk.contact_id,
+            (TRIM(COALESCE(dt.firstname, '') || ' ' || COALESCE(dt.lastname, '')))::varchar(255),
+            COALESCE(dt.cell, dt.landline)::varchar(20),
+            NULL::varchar(255),
+            CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                 THEN dt.turnoutgeneralscore::numeric ELSE NULL END,
+            'volunteer_recruitment'::varchar(50),
+            COALESCE(
+                NULLIF(trim(dt.cellneustartimeofday), ''),
+                NULLIF(trim(dt.landlineneustartimeofday), ''),
+                'business_hours'
+            )::varchar(50)
+        FROM public.nc_datatrust dt
+        LEFT JOIN integration.datatrust_contact_link lk ON lk.rncid = dt.rncid::text
+        WHERE (CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                    THEN dt.turnoutgeneralscore::numeric ELSE 0 END) > 0.5
+          AND (CASE WHEN dt.republicanpartyscore ~ '^[0-9]*\.?[0-9]+$'
+                    THEN dt.republicanpartyscore::numeric ELSE 0 END) > 0.4
+          AND (CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                    THEN dt.turnoutgeneralscore::numeric ELSE 0 END) > 0.6
+          AND UPPER(TRIM(COALESCE(dt.voterstatus, ''))) = 'A'
+          AND (p_geography_filter = '{}'::jsonb
+               OR (p_geography_filter->>'county' IS NULL OR dt.countyname = p_geography_filter->>'county'))
+        ORDER BY CASE WHEN dt.turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$'
+                      THEN dt.turnoutgeneralscore::numeric ELSE 0 END DESC
         LIMIT p_limit;
     END IF;
 END;
 $$ LANGUAGE plpgsql;
 
--- ============================================================================
--- ADMINISTRATIVE FUNCTIONS
--- ============================================================================
-
--- Function 12: Calculate System Statistics
 CREATE OR REPLACE FUNCTION get_datatrust_statistics()
 RETURNS TABLE(
     stat_name VARCHAR(50),
@@ -699,59 +790,49 @@ RETURNS TABLE(
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT 'total_profiles'::VARCHAR(50), COUNT(*)::TEXT FROM datatrust_profiles
+    SELECT 'total_profiles'::varchar(50), COUNT(*)::text FROM public.nc_datatrust
     UNION ALL
-    SELECT 'synced_to_contacts'::VARCHAR(50), COUNT(*)::TEXT FROM datatrust_profiles WHERE contact_id IS NOT NULL
+    SELECT 'synced_to_contacts'::varchar(50),
+           COUNT(*)::text FROM integration.datatrust_contact_link WHERE contact_id IS NOT NULL
     UNION ALL
-    SELECT 'has_mobile_phone'::VARCHAR(50), COUNT(*)::TEXT FROM datatrust_profiles WHERE has_mobile_phone = TRUE
+    SELECT 'has_mobile_phone'::varchar(50),
+           COUNT(*)::text FROM public.nc_datatrust WHERE cell IS NOT NULL AND trim(cell) <> ''
     UNION ALL
-    SELECT 'has_email'::VARCHAR(50), COUNT(*)::TEXT FROM datatrust_profiles WHERE has_email = TRUE
+    SELECT 'has_email'::varchar(50), '0'::text
     UNION ALL
-    SELECT 'active_voters'::VARCHAR(50), COUNT(*)::TEXT FROM datatrust_profiles WHERE voter_registration_status = 'active'
+    SELECT 'active_voters'::varchar(50),
+           COUNT(*)::text FROM public.nc_datatrust WHERE upper(trim(coalesce(voterstatus, ''))) = 'A'
     UNION ALL
-    SELECT 'republicans'::VARCHAR(50), COUNT(*)::TEXT FROM datatrust_profiles WHERE modeled_partisanship_score > 0.6
+    SELECT 'republicans'::varchar(50),
+           COUNT(*)::text FROM public.nc_datatrust
+           WHERE republicanpartyscore ~ '^[0-9]*\.?[0-9]+$' AND republicanpartyscore::numeric > 0.6
     UNION ALL
-    SELECT 'high_turnout'::VARCHAR(50), COUNT(*)::TEXT FROM datatrust_profiles WHERE turnout_likelihood_score > 0.7
+    SELECT 'high_turnout'::varchar(50),
+           COUNT(*)::text FROM public.nc_datatrust
+           WHERE turnoutgeneralscore ~ '^[0-9]*\.?[0-9]+$' AND turnoutgeneralscore::numeric > 0.7
     UNION ALL
-    SELECT 'matched_donors'::VARCHAR(50), COUNT(*)::TEXT 
-        FROM datatrust_profiles dt 
-        INNER JOIN unified_contacts uc ON dt.contact_id = uc.contact_id 
-        WHERE uc.donor_grade IS NOT NULL;
+    SELECT 'matched_donors'::varchar(50),
+           COUNT(*)::text
+    FROM integration.datatrust_contact_link lk
+    INNER JOIN public.unified_contacts uc ON lk.contact_id = uc.contact_id
+    WHERE uc.donor_grade IS NOT NULL;
 END;
 $$ LANGUAGE plpgsql;
 
--- ============================================================================
--- COMMENTS
--- ============================================================================
-
-COMMENT ON FUNCTION match_datatrust_to_contact IS 'Matches Data Trust profile to unified contact using phone, email, and fuzzy name/address matching';
-COMMENT ON FUNCTION sync_datatrust_to_unified_contact IS 'Syncs Data Trust data into unified_contacts table, enriching existing profiles';
-COMMENT ON FUNCTION bulk_sync_datatrust IS 'Bulk sync operation for matching and syncing multiple profiles';
-COMMENT ON FUNCTION get_voter_targets IS 'Returns prioritized list of voters for GOTV campaigns';
-COMMENT ON FUNCTION get_issue_targets IS 'Returns voters prioritized by specific issue positions';
-COMMENT ON FUNCTION get_volunteer_targets IS 'Returns high-likelihood volunteer recruitment targets';
-COMMENT ON FUNCTION get_council_of_state_targets IS 'Returns statewide targets for NC Council of State races';
-COMMENT ON FUNCTION update_ml_model_inputs IS 'Updates ML prediction models with Data Trust voter intelligence';
-COMMENT ON FUNCTION enhance_donor_intelligence IS 'Enriches donor profiles with voter participation data';
-COMMENT ON FUNCTION enhance_volunteer_intelligence IS 'Enriches volunteer profiles with activism and engagement scores';
-COMMENT ON FUNCTION generate_campaign_list IS 'Generates targeted lists for specific campaign types with personalized messaging recommendations';
-
--- ============================================================================
--- INITIALIZATION SCRIPT
--- ============================================================================
-
--- Run these after Data Trust import:
--- 1. Match profiles to contacts:
--- SELECT * FROM bulk_sync_datatrust(10000);
-
--- 2. Update ML models:
--- SELECT update_ml_model_inputs();
-
--- 3. Enhance donor intelligence:
--- SELECT enhance_donor_intelligence();
-
--- 4. Enhance volunteer intelligence:
--- SELECT enhance_volunteer_intelligence();
-
--- 5. View statistics:
--- SELECT * FROM get_datatrust_statistics();
+COMMENT ON FUNCTION match_datatrust_to_contact IS
+  'Matches nc_datatrust row to unified_contacts via phone, optional email column, name+geo (NC).';
+COMMENT ON FUNCTION sync_datatrust_to_unified_contact IS
+  'Enriches unified_contacts from nc_datatrust; persists link in integration.datatrust_contact_link.';
+COMMENT ON FUNCTION bulk_sync_datatrust IS 'Bulk sync using nc_datatrust + integration.datatrust_contact_link.';
+COMMENT ON FUNCTION get_voter_targets IS 'GOTV-style list from nc_datatrust (active = voterstatus A).';
+COMMENT ON FUNCTION get_issue_targets IS
+  'Issue targeting via coalition flags / republicanpartyscore (nc_datatrust column whitelist).';
+COMMENT ON FUNCTION get_volunteer_targets IS
+  'Volunteer prospects using republicanpartyscore + turnoutgeneralscore as proxies.';
+COMMENT ON FUNCTION get_council_of_state_targets IS
+  'Statewide list; office_interest uses coalition flags (proxy for legacy nc_*_interest columns).';
+COMMENT ON FUNCTION update_ml_model_inputs IS 'Updates ml_contact_predictions from nc_datatrust via contact link.';
+COMMENT ON FUNCTION enhance_donor_intelligence IS 'Donor custom_fields from nc_datatrust coalition + scores.';
+COMMENT ON FUNCTION enhance_volunteer_intelligence IS 'Volunteer custom_fields from nc_datatrust scores.';
+COMMENT ON FUNCTION generate_campaign_list IS 'Campaign lists from nc_datatrust + optional unified_contacts join.';
+COMMENT ON FUNCTION get_datatrust_statistics IS 'Row counts from nc_datatrust + integration.datatrust_contact_link.';

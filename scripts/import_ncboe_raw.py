@@ -10,6 +10,9 @@ SHA-256 idempotency per file.
 Usage:
   python scripts/import_ncboe_raw.py NCBOE-2015-2019.csv
   python scripts/import_ncboe_raw.py --dry-run NCBOE-2020-2026-part1.csv
+
+Env:
+  NCBOE_BATCH_SIZE — rows per commit during insert (default 2000, min 500).
 """
 
 from __future__ import annotations
@@ -18,6 +21,7 @@ import argparse
 import csv
 import hashlib
 import logging
+import os
 import sys
 from pathlib import Path
 
@@ -82,7 +86,8 @@ def main() -> int:
         logger.error("File not found: %s", args.file)
         return 1
 
-    with open(args.file, newline="", encoding="utf-8", errors="replace") as f:
+    # utf-8-sig strips BOM from Excel-exported CSVs
+    with open(args.file, newline="", encoding="utf-8-sig", errors="replace") as f:
         reader = csv.DictReader(f)
         headers = reader.fieldnames or []
         if not _detect_ncboe(headers):
@@ -91,6 +96,14 @@ def main() -> int:
 
     fhash = _file_hash(args.file)
     logger.info("File hash: %s", fhash[:16] + "...")
+
+    if args.dry_run:
+        rows = 0
+        with open(args.file, newline="", encoding="utf-8-sig", errors="replace") as f:
+            for _ in csv.DictReader(f):
+                rows += 1
+        logger.info("DRY RUN: %s rows, NCBOE schema OK, file=%s", rows, args.file.name)
+        return 0
 
     conn = psycopg2.connect(get_connection_url())
 
@@ -114,17 +127,8 @@ def main() -> int:
             conn.close()
             return 0
 
-    if args.dry_run:
-        rows = 0
-        with open(args.file, newline="", encoding="utf-8", errors="replace") as f:
-            for _ in csv.DictReader(f):
-                rows += 1
-        logger.info("DRY RUN: Would insert %s rows from %s", rows, args.file.name)
-        conn.close()
-        return 0
-
     # Column name variants (NCBOE files may differ)
-    with open(args.file, newline="", encoding="utf-8", errors="replace") as f:
+    with open(args.file, newline="", encoding="utf-8-sig", errors="replace") as f:
         reader = csv.DictReader(f)
         headers = list(reader.fieldnames or [])
     date_col = next((h for h in headers if "date occured" in h.lower() or "date occurred" in h.lower()), "Date Occured")
@@ -132,9 +136,12 @@ def main() -> int:
     contrib_col = next((h for h in headers if "contributor" in h.lower() or h.strip() == "Name"), "Contributor Name")
     txn_type_col = next((h for h in headers if "transction" in h.lower() or "transaction" in h.lower()), "Transction Type")
 
-    BATCH_SIZE = 2000
+    try:
+        BATCH_SIZE = max(500, int(os.environ.get("NCBOE_BATCH_SIZE", "2000")))
+    except ValueError:
+        BATCH_SIZE = 2000
     inserted = 0
-    with open(args.file, newline="", encoding="utf-8", errors="replace") as f:
+    with open(args.file, newline="", encoding="utf-8-sig", errors="replace") as f:
         reader = csv.DictReader(f)
         with conn.cursor() as cur:
             for row in reader:
