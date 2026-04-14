@@ -777,7 +777,10 @@ def deploy_news_intelligence():
         
         conn.commit()
         conn.close()
-        
+        # NOTE: Microsegment-specific media sources (agriculture, healthcare, nursing, etc.)
+        # are NOT in this table. They live in ms_segment_media_sources in the
+        # Microsegment Intelligence ecosystem — separate purpose, separate table.
+
         print("\n   ✅ news_sources table")
         print("   ✅ news_articles table")
         print("   ✅ candidate_mentions table")

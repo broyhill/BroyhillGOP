@@ -1,4 +1,14 @@
-# NCBOE File Manifest
+# NCBOE File Manifest — ⚠️ SUPERSEDED
+**DO NOT USE THIS FILE FOR ROUTING DECISIONS**
+This file is outdated (20-file narrative, April 6 vintage).
+**Use `sessions/MASTER_FILE_MANIFEST.md` as the single authoritative source.**
+
+---
+*Retired April 8, 2026 — Perplexity-Claude*
+
+---
+
+# ARCHIVED CONTENT BELOW (for reference only)
 **BroyhillGOP | Last updated: April 6, 2026**
 **Authority: Ed Broyhill**
 

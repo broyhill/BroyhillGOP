@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E58 Finance Committee Control Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --accent-primary: #0f3460;
+            --accent-secondary: #e94560;
+            --text-primary: #eaeaea;
+            --text-secondary: #b0b0b0;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --border-color: #2a2a3e;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .api-config {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .api-config input {
+            padding: 8px 12px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 0.9em;
+            width: 250px;
+        }
+
+        .api-config button {
+            padding: 8px 16px;
+            background-color: var(--accent-primary);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .api-config button:hover {
+            background-color: var(--accent-secondary);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-button {
+            padding: 12px 20px;
+            background-color: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .tab-button:hover {
+            color: var(--text-primary);
+            border-bottom-color: var(--accent-primary);
+        }
+
+        .tab-button.active {
+            color: var(--text-primary);
+            border-bottom-color: var(--accent-secondary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-header h2 {
+            font-size: 1.4em;
+            color: var(--text-primary);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group label {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .filter-group select {
+            padding: 8px 12px;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            min-width: 150px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .committee-card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .committee-card:hover {
+            border-color: var(--accent-secondary);
+            box-shadow: 0 0 15px rgba(233, 69, 96, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .committee-card h3 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .committee-card-meta {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.8;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent-primary);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .pace-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        .pace-on-track {
+            background-color: var(--success);
+        }
+
+        .pace-at-risk {
+            background-color: var(--warning);
+        }
+
+        .pace-off-track {
+            background-color: var(--danger);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--accent-secondary);
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .detail-title {
+            flex: 1;
+        }
+
+        .detail-title h2 {
+            font-size: 2em;
+            margin-bottom: 8px;
+        }
+
+        .detail-meta {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+        }
+
+        .back-button {
+            padding: 8px 16px;
+            background-color: var(--accent-primary);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95em;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: var(--accent-secondary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th {
+            background-color: var(--accent-primary);
+            color: var(--text-primary);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        tr:hover {
+            background-color: var(--bg-primary);
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        .grade-a {
+            background-color: rgba(39, 174, 96, 0.3);
+            color: var(--success);
+        }
+
+        .grade-b {
+            background-color: rgba(52, 152, 219, 0.3);
+            color: #3498db;
+        }
+
+        .grade-c {
+            background-color: rgba(243, 156, 18, 0.3);
+            color: var(--warning);
+        }
+
+        .grade-d {
+            background-color: rgba(231, 76, 60, 0.3);
+            color: var(--danger);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-secondary);
+            box-shadow: 0 0 8px rgba(233, 69, 96, 0.3);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: var(--accent-secondary);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #d63447;
+        }
+
+        .button-secondary {
+            background-color: var(--accent-primary);
+        }
+
+        .button-secondary:hover {
+            background-color: #0a213a;
+        }
+
+        .button-small {
+            padding: 6px 12px;
+            font-size: 0.9em;
+        }
+
+        .dynamic-rows {
+            margin-top: 10px;
+        }
+
+        .dynamic-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .dynamic-row input {
+            margin: 0;
+        }
+
+        .remove-btn {
+            padding: 6px 10px;
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .remove-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .add-row-btn {
+            padding: 8px 16px;
+            background-color: var(--success);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .add-row-btn:hover {
+            background-color: #229954;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+
+        .heatmap-cell {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent-secondary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background-color: var(--accent-primary);
+            color: var(--text-primary);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.error {
+            background-color: var(--danger);
+        }
+
+        .toast.success {
+            background-color: var(--success);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            border-left: 4px solid var(--accent-secondary);
+            padding-left: 12px;
+        }
+
+        .event-item {
+            background-color: var(--bg-primary);
+            border-left: 4px solid var(--accent-primary);
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .event-item .event-date {
+            color: var(--accent-secondary);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .event-item .event-desc {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .recommendation-item {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--accent-primary);
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .recommendation-priority {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.75em;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .priority-high {
+            background-color: rgba(231, 76, 60, 0.3);
+            color: var(--danger);
+        }
+
+        .priority-medium {
+            background-color: rgba(243, 156, 18, 0.3);
+            color: var(--warning);
+        }
+
+        .priority-low {
+            background-color: rgba(52, 152, 219, 0.3);
+            color: #3498db;
+        }
+
+        .list-section {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .list-section-title {
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .list-item {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95em;
+            color: var(--text-secondary);
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .gauge-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--accent-secondary);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-header {
+                flex-direction: column;
+            }
+
+            .dynamic-row {
+                grid-template-columns: 1fr;
+            }
+
+            .api-config {
+                flex-direction: column;
+            }
+
+            .api-config input {
+                width: 100%;
+            }
+
+            .tabs {
+                gap: 0;
+            }
+
+            .tab-button {
+                padding: 10px 15px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-info">
+                <div>
+                    <h1>E58 Finance Committee Control Panel</h1>
+                    <p style="color: var(--text-secondary); margin-top: 5px;">Manage fundraising across all candidates and office levels</p>
+                </div>
+            </div>
+            <div class="api-config">
+                <input type="text" id="apiBase" placeholder="API Base URL (e.g., https://api.example.com)" value="https://api.example.com">
+                <button onclick="saveApiConfig()">Save Config</button>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('overview')">Committee Overview</button>
+            <button class="tab-button" onclick="switchTab('detail')">Committee Detail</button>
+            <button class="tab-button" onclick="switchTab('audit')">District Audit</button>
+            <button class="tab-button" onclick="switchTab('questionnaire')">Candidate Questionnaire</button>
+            <button class="tab-button" onclick="switchTab('performance')">Performance Reports</button>
+            <button class="tab-button" onclick="switchTab('settings')">Settings</button>
+        </div>
+
+        <!-- Tab 1: Committee Overview -->
+        <div id="overview" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Committee Overview</h2>
+                </div>
+                
+                <div class="filter-group">
+                    <label>
+                        Filter by Office Tier
+                        <select id="filterOffice" onchange="applyFilters()">
+                            <option value="">All Offices</option>
+                            <option value="federal">Federal</option>
+                            <option value="state">State</option>
+                            <option value="local">Local</option>
+                        </select>
+                    </label>
+                    <label>
+                        Filter by Pace Status
+                        <select id="filterPace" onchange="applyFilters()">
+                            <option value="">All Statuses</option>
+                            <option value="on-track">On Track</option>
+                            <option value="at-risk">At Risk</option>
+                            <option value="off-track">Off Track</option>
+                        </select>
+                    </label>
+                    <label>
+                        Filter by Election Cycle
+                        <select id="filterCycle" onchange="applyFilters()">
+                            <option value="">All Cycles</option>
+                            <option value="2024">2024</option>
+                            <option value="2026">2026</option>
+                            <option value="2028">2028</option>
+                        </select>
+                    </label>
+                    <label>
+                        Sort by
+                        <select id="sortBy" onchange="applyFilters()">
+                            <option value="raised">Total Raised (High to Low)</option>
+                            <option value="goal">Goal Progress (High to Low)</option>
+                            <option value="remaining">Days Remaining (Ascending)</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div id="committeeGrid" class="grid">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <span>Loading committees...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Committee Detail -->
+        <div id="detail" class="tab-content">
+            <button class="back-button" onclick="switchTab('overview')">← Back to Overview</button>
+            
+            <div id="detailContent">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <span>Select a committee to view details</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: District Audit -->
+        <div id="audit" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>District Audit</h2>
+                </div>
+
+                <div class="form-group">
+                    <label>Select District</label>
+                    <select id="districtSelect" onchange="loadDistrictAudit()">
+                        <option value="">-- Select a District --</option>
+                        <option value="D1">D1 - Metro Urban</option>
+                        <option value="D2">D2 - Suburban Core</option>
+                        <option value="D3">D3 - Exurban</option>
+                        <option value="D4">D4 - Rural North</option>
+                        <option value="D5">D5 - Rural South</option>
+                    </select>
+                </div>
+
+                <div id="auditContent"></div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Candidate Questionnaire -->
+        <div id="questionnaire" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Candidate Onboarding Questionnaire</h2>
+                </div>
+
+                <form id="questionnaireForm" onsubmit="submitQuestionnaire(event)">
+                    <div class="section-title">Finance Chair Nomination</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Finance Chair Name</label>
+                            <input type="text" name="chairName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" name="chairEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" name="chairPhone" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Relationship to Candidate</label>
+                            <input type="text" name="chairRelationship" placeholder="e.g., Family friend, Former colleague" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Why This Person?</label>
+                            <textarea name="chairWhy" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Proposed Committee Members</div>
+                    <button type="button" class="add-row-btn" onclick="addMemberRow()">+ Add Member</button>
+                    <div class="dynamic-rows" id="memberRows"></div>
+
+                    <div class="section-title">Event Host Nominations</div>
+                    <button type="button" class="add-row-btn" onclick="addEventHostRow()">+ Add Event Host</button>
+                    <div class="dynamic-rows" id="eventHostRows"></div>
+
+                    <div class="section-title">Fundraising Goals & Experience</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fundraising Goal ($)</label>
+                            <input type="number" name="fundraisingGoal" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Self-Fund Amount ($)</label>
+                            <input type="number" name="selfFund" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Prior Campaign Experience?</label>
+                        <select name="priorExperience" required>
+                            <option value="">-- Select --</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Existing Donor List?</label>
+                        <select name="existingDonors" onchange="toggleDonorSize()" required>
+                            <option value="">-- Select --</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="donorSizeGroup" style="display: none;">
+                        <label>Size of Existing Donor List</label>
+                        <input type="number" name="donorListSize" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Strongest Industries (Select all that apply)</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="ind-finance" name="industries" value="finance">
+                                <label for="ind-finance">Finance</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="ind-tech" name="industries" value="tech">
+                                <label for="ind-tech">Technology</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="ind-real-estate" name="industries" value="real-estate">
+                                <label for="ind-real-estate">Real Estate</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="ind-healthcare" name="industries" value="healthcare">
+                                <label for="ind-healthcare">Healthcare</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="ind-law" name="industries" value="law">
+                                <label for="ind-law">Law</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="ind-energy" name="industries" value="energy">
+                                <label for="ind-energy">Energy</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Strongest Communities (Where are your strongest networks?)</label>
+                        <textarea name="strongestCommunities" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Key Relationships (Important donors, influencers, community leaders)</label>
+                        <textarea name="keyRelationships" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Opponent Information</label>
+                        <textarea name="opponentInfo" placeholder="Details about opponent(s), their fundraising, etc."></textarea>
+                    </div>
+
+                    <button type="submit" class="button">Submit Questionnaire</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tab 5: Performance Reports -->
+        <div id="performance" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Weekly Performance Reports</h2>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-label">Total Platform Raised</div>
+                        <div class="stat-value" id="totalRaised">$0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Platform Pace vs Goal</div>
+                        <div class="stat-value" id="platformPace">0%</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Active Committees</div>
+                        <div class="stat-value" id="activeCommittees">0</div>
+                    </div>
+                </div>
+
+                <div class="section-title">Member Grade Heatmap</div>
+                <div id="heatmapContainer"></div>
+
+                <div class="section-title">Top Performers</div>
+                <table id="topPerformersTable">
+                    <thead>
+                        <tr>
+                            <th>Member Name</th>
+                            <th>Committee</th>
+                            <th>Amount Raised</th>
+                            <th>Grade</th>
+                            <th>Asks Made</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topPerformersBody"></tbody>
+                </table>
+
+                <div class="section-title">Underperformers Needing Attention</div>
+                <table id="underperformersTable">
+                    <thead>
+                        <tr>
+                            <th>Member Name</th>
+                            <th>Committee</th>
+                            <th>Status</th>
+                            <th>Days Inactive</th>
+                            <th>Recommended Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="underperformersBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 6: Settings -->
+        <div id="settings" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Control Panel Settings</h2>
+                </div>
+
+                <div class="section-title">Office Tier Configuration</div>
+                <table id="officeTierTable">
+                    <thead>
+                        <tr>
+                            <th>Tier Name</th>
+                            <th>Bundler Minimum ($)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="officeTierBody">
+                        <tr>
+                            <td><input type="text" value="Federal" class="tier-name" style="width: 100%;"></td>
+                            <td><input type="number" value="5000" class="tier-min" style="width: 100%;"></td>
+                            <td><button class="button button-small" onclick="saveTierConfig()">Save</button></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="State" class="tier-name" style="width: 100%;"></td>
+                            <td><input type="number" value="2500" class="tier-min" style="width: 100%;"></td>
+                            <td><button class="button button-small" onclick="saveTierConfig()">Save</button></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="Local" class="tier-name" style="width: 100%;"></td>
+                            <td><input type="number" value="1000" class="tier-min" style="width: 100%;"></td>
+                            <td><button class="button button-small" onclick="saveTierConfig()">Save</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="section-title">AI Recommendation Settings</div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="enableAI" checked> Enable AI Recommendations
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Confidence Threshold (%)</label>
+                    <input type="number" id="confidenceThreshold" min="0" max="100" value="75">
+                </div>
+
+                <div class="section-title">Meeting Schedule Defaults</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Committee Meeting Frequency</label>
+                        <select>
+                            <option>Weekly</option>
+                            <option>Bi-weekly</option>
+                            <option>Monthly</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Preferred Meeting Day</label>
+                        <select>
+                            <option>Monday</option>
+                            <option>Tuesday</option>
+                            <option>Wednesday</option>
+                            <option>Thursday</option>
+                            <option>Friday</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section-title">Export Options</div>
+                <button class="button" onclick="exportMemberData()">Export Member Data (CSV)</button>
+                <button class="button button-secondary" style="margin-left: 10px;" onclick="exportReports()">Export All Reports (ZIP)</button>
+
+                <button class="button" style="margin-top: 30px; width: 100%;" onclick="saveSettings()">Save All Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let apiBase = localStorage.getItem('e58ApiBase') || 'https://api.example.com';
+        let currentTab = 'overview';
+        let currentCommitteeDetail = null;
+        let allCommittees = [];
+        let charts = {};
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('apiBase').value = apiBase;
+            loadCommittees();
+        });
+
+        // API Configuration
+        function saveApiConfig() {
+            apiBase = document.getElementById('apiBase').value;
+            if (!apiBase) {
+                showToast('Please enter an API base URL', 'error');
+                return;
+            }
+            localStorage.setItem('e58ApiBase', apiBase);
+            showToast('API configuration saved', 'success');
+            loadCommittees();
+        }
+
+        // Tab Navigation
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            currentTab = tabName;
+
+            if (tabName === 'detail' && !currentCommitteeDetail) {
+                document.getElementById('detailContent').innerHTML = '<div class="loading"><div class="spinner"></div><span>Select a committee from the overview to view details</span></div>';
+            }
+        }
+
+        // Load committees
+        async function loadCommittees() {
+            try {
+                // Simulate API call with mock data
+                allCommittees = generateMockCommittees();
+                renderCommittees(allCommittees);
+            } catch (error) {
+                showToast('Error loading committees: ' + error.message, 'error');
+            }
+        }
+
+        // Generate mock committee data
+        function generateMockCommittees() {
+            const offices = ['Federal', 'State', 'Local'];
+            const districts = ['D1', 'D2', 'D3', 'D4', 'D5'];
+            const paces = ['on-track', 'at-risk', 'off-track'];
+            const candidates = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis'];
+            
+            let committees = [];
+            for (let i = 0; i < 12; i++) {
+                const goal = Math.floor(Math.random() * 400000) + 100000;
+                const raised = Math.floor(goal * Math.random() * 0.8);
+                committees.push({
+                    id: 'C' + String(i + 1).padStart(3, '0'),
+                    name: candidates[i % candidates.length] + ' for ' + offices[i % offices.length],
+                    office: offices[i % offices.length],
+                    district: districts[i % districts.length],
+                    goal: goal,
+                    raised: raised,
+                    committeeSize: Math.floor(Math.random() * 15) + 5,
+                    pace: paces[i % paces.length],
+                    daysRemaining: Math.floor(Math.random() * 200) + 30,
+                    cycle: i % 2 === 0 ? '2024' : '2026'
+                });
+            }
+            return committees;
+        }
+
+        // Render committee cards
+        function renderCommittees(committees) {
+            const grid = document.getElementById('committeeGrid');
+            if (committees.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);">No committees match your filters</div>';
+                return;
+            }
+
+            grid.innerHTML = committees.map(c => {
+                const paceColor = c.pace === 'on-track' ? 'pace-on-track' : c.pace === 'at-risk' ? 'pace-at-risk' : 'pace-off-track';
+                const pctGoal = Math.round((c.raised / c.goal) * 100);
+                return `
+                    <div class="committee-card" onclick="showCommitteeDetail('${c.id}')">
+                        <h3>${c.name}</h3>
+                        <div class="committee-card-meta">
+                            <div><strong>Office:</strong> ${c.office}</div>
+                            <div><strong>District:</strong> ${c.district}</div>
+                            <div><strong>Committee Size:</strong> ${c.committeeSize}</div>
+                            <div><strong>Total Raised:</strong> $${c.raised.toLocaleString()}</div>
+                            <div><strong>Goal Progress:</strong> ${pctGoal}%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${Math.min(pctGoal, 100)}%"></div>
+                        </div>
+                        <div style="font-size: 0.9em;">
+                            <span class="pace-indicator ${paceColor}"></span>
+                            ${c.pace === 'on-track' ? 'On Track' : c.pace === 'at-risk' ? 'At Risk' : 'Off Track'} 
+                            | ${c.daysRemaining} days remaining
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Apply filters and sorting
+        function applyFilters() {
+            const office = document.getElementById('filterOffice').value;
+            const pace = document.getElementById('filterPace').value;
+            const cycle = document.getElementById('filterCycle').value;
+            const sortBy = document.getElementById('sortBy').value;
+
+            let filtered = allCommittees.filter(c => {
+                if (office && c.office !== office) return false;
+                if (pace && c.pace !== pace) return false;
+                if (cycle && c.cycle !== cycle) return false;
+                return true;
+            });
+
+            if (sortBy === 'raised') {
+                filtered.sort((a, b) => b.raised - a.raised);
+            } else if (sortBy === 'goal') {
+                filtered.sort((a, b) => (b.raised / b.goal) - (a.raised / a.goal));
+            } else if (sortBy === 'remaining') {
+                filtered.sort((a, b) => a.daysRemaining - b.daysRemaining);
+            }
+
+            renderCommittees(filtered);
+        }
+
+        // Show committee detail
+        async function showCommitteeDetail(committeeId) {
+            currentCommitteeDetail = allCommittees.find(c => c.id === committeeId);
+            if (!currentCommitteeDetail) return;
+
+            const detailHtml = `
+                <div class="detail-header">
+                    <div class="detail-title">
+                        <h2>${currentCommitteeDetail.name}</h2>
+                        <div class="detail-meta">
+                            ${currentCommitteeDetail.office} | District ${currentCommitteeDetail.district}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-label">Fundraising Goal</div>
+                        <div class="stat-value">$${currentCommitteeDetail.goal.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Total Raised</div>
+                        <div class="stat-value">$${currentCommitteeDetail.raised.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Goal Progress</div>
+                        <div class="stat-value">${Math.round((currentCommitteeDetail.raised / currentCommitteeDetail.goal) * 100)}%</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Committee Size</div>
+                        <div class="stat-value">${currentCommitteeDetail.committeeSize}</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Pace Gauge</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="gaugeChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Budget Breakdown</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Daily Pace (Actual vs Target)</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="paceLineChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Member Leaderboard</h2>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Personal Gift</th>
+                                <th>Pledge</th>
+                                <th>Raised</th>
+                                <th>Grade</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="memberTable"></tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Upcoming Events</h2>
+                    </div>
+                    <div id="eventsSection"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Prospect Pipeline</h2>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Qualified Prospects</div>
+                            <div class="stat-value">${Math.floor(Math.random() * 50) + 20}</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Active Asks</div>
+                            <div class="stat-value">${Math.floor(Math.random() * 15) + 5}</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Pending Pledges</div>
+                            <div class="stat-value">$${Math.floor(Math.random() * 50000) + 10000}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>AI Recommendations</h2>
+                    </div>
+                    <div id="recommendationsSection"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Brain Directives (Pending Approvals)</h2>
+                    </div>
+                    <div id="directivesSection"></div>
+                </div>
+            `;
+
+            document.getElementById('detailContent').innerHTML = detailHtml;
+            renderMemberTable();
+            renderEventsSection();
+            renderRecommendations();
+            renderDirectives();
+            renderCharts();
+            switchTab('detail');
+        }
+
+        // Render member table
+        function renderMemberTable() {
+            const members = [
+                { name: 'John Smith', role: 'Co-Chair', gift: 5000, pledge: 10000, raised: 45000, grade: 'A', status: 'active' },
+                { name: 'Jane Doe', role: 'Vice Chair', gift: 3000, pledge: 7500, raised: 32000, grade: 'A', status: 'active' },
+                { name: 'Mike Johnson', role: 'Member', gift: 1000, pledge: 2500, raised: 18000, grade: 'B', status: 'active' },
+                { name: 'Sarah Williams', role: 'Member', gift: 2000, pledge: 5000, raised: 25000, grade: 'A', status: 'active' },
+                { name: 'Tom Brown', role: 'Member', gift: 500, pledge: 1000, raised: 8000, grade: 'C', status: 'inactive' },
+            ];
+
+            const tbody = document.getElementById('memberTable');
+            tbody.innerHTML = members.map(m => {
+                const gradeClass = 'grade-' + m.grade.toLowerCase();
+                return `
+                    <tr>
+                        <td>${m.name}</td>
+                        <td>${m.role}</td>
+                        <td>$${m.gift.toLocaleString()}</td>
+                        <td>$${m.pledge.toLocaleString()}</td>
+                        <td>$${m.raised.toLocaleString()}</td>
+                        <td><span class="grade-badge ${gradeClass}">${m.grade}</span></td>
+                        <td><span class="pace-indicator ${m.status === 'active' ? 'pace-on-track' : 'pace-off-track'}"></span> ${m.status}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Render events
+        function renderEventsSection() {
+            const events = [
+                { date: '2025-05-15', title: 'Quarterly Dinner Fundraiser', goal: 25000 },
+                { date: '2025-06-20', title: 'Summer Picnic & Networking', goal: 15000 },
+                { date: '2025-07-10', title: 'Young Professionals Mixer', goal: 10000 },
+            ];
+
+            const section = document.getElementById('eventsSection');
+            section.innerHTML = events.map(e => `
+                <div class="event-item">
+                    <div class="event-date">${new Date(e.date).toLocaleDateString()}</div>
+                    <div class="event-desc">${e.title} - Goal: $${e.goal.toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
+
+        // Render recommendations
+        function renderRecommendations() {
+            const recs = [
+                { priority: 'high', action: 'Schedule asks with 5 qualified prospects', confidence: 92 },
+                { priority: 'high', action: 'Follow up on $50K pending pledges', confidence: 88 },
+                { priority: 'medium', action: 'Engage 3 inactive members', confidence: 75 },
+                { priority: 'medium', action: 'Host networking event for mid-level donors', confidence: 71 },
+            ];
+
+            const section = document.getElementById('recommendationsSection');
+            section.innerHTML = recs.map(r => {
+                const priorityClass = 'priority-' + r.priority;
+                return `
+                    <div class="recommendation-item">
+                        <span class="recommendation-priority ${priorityClass}">${r.priority.toUpperCase()}</span>
+                        <div>${r.action}</div>
+                        <div style="font-size: 0.85em; color: var(--text-secondary); margin-top: 5px;">Confidence: ${r.confidence}%</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render directives
+        function renderDirectives() {
+            const directives = [
+                { id: 1, directive: 'Approve bundler tier: Tech Industry Group ($5K minimum)' },
+                { id: 2, directive: 'Authorize major donor follow-up strategy' },
+            ];
+
+            const section = document.getElementById('directivesSection');
+            section.innerHTML = directives.map(d => `
+                <div class="recommendation-item" style="border-color: var(--accent-secondary);">
+                    <div>${d.directive}</div>
+                    <div style="margin-top: 10px;">
+                        <button class="button button-small" style="margin-right: 5px;">Approve</button>
+                        <button class="button button-small button-secondary">Reject</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render charts
+        function renderCharts() {
+            // Gauge Chart
+            const gaugeCtx = document.getElementById('gaugeChart').getContext('2d');
+            const pct = Math.round((currentCommitteeDetail.raised / currentCommitteeDetail.goal) * 100);
+            charts.gauge = new Chart(gaugeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Raised', 'Remaining'],
+                    datasets: [{
+                        data: [pct, 100 - pct],
+                        backgroundColor: ['#e94560', '#16213e'],
+                        borderColor: '#1a1a2e',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#eaeaea' } }
+                    }
+                }
+            });
+
+            // Budget Breakdown
+            const budgetCtx = document.getElementById('budgetChart').getContext('2d');
+            charts.budget = new Chart(budgetCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Bundlers', 'Events', 'Direct', 'Online', 'PAC', 'Self'],
+                    datasets: [{
+                        label: 'Amount Raised',
+                        data: [
+                            Math.floor(currentCommitteeDetail.raised * 0.25),
+                            Math.floor(currentCommitteeDetail.raised * 0.20),
+                            Math.floor(currentCommitteeDetail.raised * 0.20),
+                            Math.floor(currentCommitteeDetail.raised * 0.15),
+                            Math.floor(currentCommitteeDetail.raised * 0.12),
+                            Math.floor(currentCommitteeDetail.raised * 0.08),
+                        ],
+                        backgroundColor: '#e94560',
+                        borderColor: '#0f3460',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#eaeaea' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#b0b0b0' }, grid: { color: '#2a2a3e' } },
+                        y: { ticks: { color: '#b0b0b0' }, grid: { color: '#2a2a3e' } }
+                    }
+                }
+            });
+
+            // Pace Line Chart
+            const paceCtx = document.getElementById('paceLineChart').getContext('2d');
+            const days = Array.from({length: 30}, (_, i) => i + 1);
+            const targetData = days.map(d => (currentCommitteeDetail.goal / 30) * d);
+            const actualData = days.map((d, i) => {
+                const variance = Math.sin(i * 0.3) * currentCommitteeDetail.goal * 0.1;
+                return Math.max(0, (currentCommitteeDetail.goal / 30) * d + variance);
+            });
+
+            charts.pace = new Chart(paceCtx, {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [
+                        {
+                            label: 'Target Pace',
+                            data: targetData,
+                            borderColor: '#0f3460',
+                            backgroundColor: 'rgba(15, 52, 96, 0.1)',
+                            borderWidth: 2,
+                            fill: true
+                        },
+                        {
+                            label: 'Actual',
+                            data: actualData,
+                            borderColor: '#e94560',
+                            backgroundColor: 'rgba(233, 69, 96, 0.1)',
+                            borderWidth: 2,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#eaeaea' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#b0b0b0' }, grid: { color: '#2a2a3e' } },
+                        y: { ticks: { color: '#b0b0b0' }, grid: { color: '#2a2a3e' } }
+                    }
+                }
+            });
+        }
+
+        // Load district audit
+        async function loadDistrictAudit() {
+            const district = document.getElementById('districtSelect').value;
+            if (!district) {
+                document.getElementById('auditContent').innerHTML = '';
+                return;
+            }
+
+            const scores = {
+                D1: 78, D2: 82, D3: 65, D4: 71, D5: 88
+            };
+
+            const auditHtml = `
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-label">Partisan Lean</div>
+                        <div class="stat-value">D+${Math.floor(Math.random() * 10) + 3}</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Voter Registration</div>
+                        <div class="stat-value">${Math.floor(Math.random() * 50) + 30}%</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Major Donors</div>
+                        <div class="stat-value">${Math.floor(Math.random() * 20) + 5}</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Mid-Level Donors</div>
+                        <div class="stat-value">${Math.floor(Math.random() * 100) + 30}</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h2>Top Microsegments</h2></div>
+                    <div class="chart-container">
+                        <canvas id="microsegmentChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h2>Estimated Budget Range</h2></div>
+                    <div class="stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Low Estimate</div>
+                            <div class="stat-value">$${Math.floor(Math.random() * 100000) + 50000}</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Mid Estimate</div>
+                            <div class="stat-value">$${Math.floor(Math.random() * 200000) + 150000}</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">High Estimate</div>
+                            <div class="stat-value">$${Math.floor(Math.random() * 300000) + 350000}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h2>Opponent Intelligence</h2></div>
+                    <div class="list-section">
+                        <div class="list-section-title">Primary Opponent</div>
+                        <div class="list-item"><strong>Name:</strong> Robert Wilson</div>
+                        <div class="list-item"><strong>Office:</strong> State Senate</div>
+                        <div class="list-item"><strong>Est. Raised:</strong> $${Math.floor(Math.random() * 250000) + 100000}</div>
+                        <div class="list-item"><strong>Key Donors:</strong> Tech Industry, Real Estate</div>
+                        <div class="list-item"><strong>Strength:</strong> Strong incumbent advantage, well-funded</div>
+                        <div class="list-item"><strong>Weakness:</strong> Limited grassroots support</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('auditContent').innerHTML = auditHtml;
+
+            // Render microsegment chart
+            setTimeout(() => {
+                const ctx = document.getElementById('microsegmentChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Young Professionals', 'Healthcare Workers', 'Tech Industry', 'Real Estate', 'Education'],
+                        datasets: [{
+                            label: 'Donor Count',
+                            data: [45, 38, 52, 31, 28],
+                            backgroundColor: '#e94560',
+                            borderColor: '#0f3460',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#eaeaea' } }
+                        },
+                        scales: {
+                            x: { ticks: { color: '#b0b0b0' }, grid: { color: '#2a2a3e' } },
+                            y: { ticks: { color: '#b0b0b0' }, grid: { color: '#2a2a3e' } }
+                        }
+                    }
+                });
+            }, 100);
+        }
+
+        // Questionnaire form handling
+        function addMemberRow() {
+            const container = document.getElementById('memberRows');
+            const row = document.createElement('div');
+            row.className = 'dynamic-row';
+            row.innerHTML = `
+                <input type="text" placeholder="Member Name" class="member-name">
+                <input type="email" placeholder="Email" class="member-email">
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function addEventHostRow() {
+            const container = document.getElementById('eventHostRows');
+            const row = document.createElement('div');
+            row.className = 'dynamic-row';
+            row.innerHTML = `
+                <input type="text" placeholder="Host Name" class="host-name">
+                <input type="email" placeholder="Email" class="host-email">
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function toggleDonorSize() {
+            const group = document.getElementById('donorSizeGroup');
+            const select = document.querySelector('select[name="existingDonors"]');
+            group.style.display = select.value === 'yes' ? 'block' : 'none';
+        }
+
+        async function submitQuestionnaire(event) {
+            event.preventDefault();
+            
+            const formData = {
+                chairName: document.querySelector('input[name="chairName"]').value,
+                chairEmail: document.querySelector('input[name="chairEmail"]').value,
+                chairPhone: document.querySelector('input[name="chairPhone"]').value,
+                chairRelationship: document.querySelector('input[name="chairRelationship"]').value,
+                chairWhy: document.querySelector('textarea[name="chairWhy"]').value,
+                proposedMembers: Array.from(document.querySelectorAll('.member-name')).map((el, i) => ({
+                    name: el.value,
+                    email: document.querySelectorAll('.member-email')[i].value
+                })),
+                eventHosts: Array.from(document.querySelectorAll('.host-name')).map((el, i) => ({
+                    name: el.value,
+                    email: document.querySelectorAll('.host-email')[i].value
+                })),
+                fundraisingGoal: parseInt(document.querySelector('input[name="fundraisingGoal"]').value),
+                selfFund: parseInt(document.querySelector('input[name="selfFund"]').value),
+                priorExperience: document.querySelector('select[name="priorExperience"]').value,
+                existingDonors: document.querySelector('select[name="existingDonors"]').value,
+                donorListSize: document.querySelector('input[name="donorListSize"]').value,
+                industries: Array.from(document.querySelectorAll('input[name="industries"]:checked')).map(el => el.value),
+                strongestCommunities: document.querySelector('textarea[name="strongestCommunities"]').value,
+                keyRelationships: document.querySelector('textarea[name="keyRelationships"]').value,
+                opponentInfo: document.querySelector('textarea[name="opponentInfo"]').value,
+            };
+
+            try {
+                showToast('Questionnaire submitted successfully', 'success');
+                document.getElementById('questionnaireForm').reset();
+                document.getElementById('memberRows').innerHTML = '';
+                document.getElementById('eventHostRows').innerHTML = '';
+            } catch (error) {
+                showToast('Error submitting questionnaire: ' + error.message, 'error');
+            }
+        }
+
+        // Performance reports
+        function renderPerformanceReports() {
+            // Total raised
+            const totalRaised = allCommittees.reduce((sum, c) => sum + c.raised, 0);
+            document.getElementById('totalRaised').textContent = '$' + totalRaised.toLocaleString();
+
+            // Platform pace
+            const totalGoal = allCommittees.reduce((sum, c) => sum + c.goal, 0);
+            const pace = Math.round((totalRaised / totalGoal) * 100);
+            document.getElementById('platformPace').textContent = pace + '%';
+
+            // Active committees
+            document.getElementById('activeCommittees').textContent = allCommittees.length;
+
+            // Mock heatmap data
+            const members = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones'];
+            const weeks = ['W1', 'W2', 'W3', 'W4'];
+            const heatmapHtml = members.map(member => {
+                const cellsHtml = weeks.map(week => {
+                    const grade = ['A', 'B', 'C', 'D'][Math.floor(Math.random() * 4)];
+                    const colors = { A: 'rgba(39, 174, 96, 0.5)', B: 'rgba(52, 152, 219, 0.5)', C: 'rgba(243, 156, 18, 0.5)', D: 'rgba(231, 76, 60, 0.5)' };
+                    return `<div class="heatmap-cell" style="background-color: ${colors[grade]}">${grade}</div>`;
+                }).join('');
+                return `<div style="display: contents;">${cellsHtml}</div>`;
+            }).join('');
+
+            document.getElementById('heatmapContainer').innerHTML = `
+                <div style="margin-bottom: 10px; display: grid; grid-template-columns: repeat(4, minmax(40px, 1fr)); gap: 4px;">
+                    <div></div>${weeks.map(w => `<div style="text-align: center; font-size: 0.85em; color: var(--text-secondary); margin-bottom: 5px;">${w}</div>`).join('')}
+                    ${members.map(m => `<div style="font-size: 0.85em; color: var(--text-secondary);">${m}</div>`).join('')}
+                    ${heatmapHtml}
+                </div>
+            `;
+
+            // Top performers
+            const topPerformersBody = document.getElementById('topPerformersBody');
+            topPerformersBody.innerHTML = Array.from({length: 5}, (_, i) => `
+                <tr>
+                    <td>${['Smith', 'Johnson', 'Williams', 'Brown', 'Jones'][i]}</td>
+                    <td>Committee ${i + 1}</td>
+                    <td>$${Math.floor(Math.random() * 50000) + 20000}</td>
+                    <td><span class="grade-badge grade-a">A</span></td>
+                    <td>${Math.floor(Math.random() * 20) + 10}</td>
+                </tr>
+            `).join('');
+
+            // Underperformers
+            const underperformersBody = document.getElementById('underperformersBody');
+            underperformersBody.innerHTML = Array.from({length: 3}, (_, i) => `
+                <tr>
+                    <td>${['Davis', 'Miller', 'Wilson'][i]}</td>
+                    <td>Committee ${i + 6}</td>
+                    <td><span class="pace-indicator pace-off-track"></span> Inactive</td>
+                    <td>${Math.floor(Math.random() * 30) + 10}</td>
+                    <td>Schedule check-in call</td>
+                </tr>
+            `).join('');
+        }
+
+        // Settings
+        function saveTierConfig() {
+            showToast('Tier configuration saved', 'success');
+        }
+
+        function exportMemberData() {
+            let csv = 'Member Name,Committee,Role,Amount Raised,Grade\n';
+            csv += 'John Smith,Committee 1,Co-Chair,$45000,A\n';
+            csv += 'Jane Doe,Committee 1,Vice Chair,$32000,A\n';
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'member_data.csv';
+            a.click();
+            showToast('Member data exported', 'success');
+        }
+
+        function exportReports() {
+            showToast('Reports exported (ZIP)', 'success');
+        }
+
+        function saveSettings() {
+            showToast('All settings saved', 'success');
+        }
+
+        // Toast notifications
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Load performance data when tab is opened
+        const originalSwitchTab = switchTab;
+        window.switchTab = function(tabName) {
+            if (tabName === 'performance') {
+                renderPerformanceReports();
+            }
+            originalSwitchTab(tabName);
+            document.querySelectorAll('.tab-button').forEach((btn, i) => {
+                if (btn.textContent.includes('Committee Overview') && tabName === 'overview') btn.classList.add('active');
+                else if (btn.textContent.includes('Committee Detail') && tabName === 'detail') btn.classList.add('active');
+                else if (btn.textContent.includes('District Audit') && tabName === 'audit') btn.classList.add('active');
+                else if (btn.textContent.includes('Questionnaire') && tabName === 'questionnaire') btn.classList.add('active');
+                else if (btn.textContent.includes('Performance') && tabName === 'performance') btn.classList.add('active');
+                else if (btn.textContent.includes('Settings') && tabName === 'settings') btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        };
+    </script>
+</body>
+</html>

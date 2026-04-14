@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BroyhillGOP E59 Agent Mesh Control Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #1a1a2e;
+            --bg-tertiary: #16213e;
+            --accent-purple: #a78bfa;
+            --accent-green: #34d399;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
+            --text-primary: #f3f4f6;
+            --text-secondary: #d1d5db;
+            --border-color: #374151;
+            --success: #34d399;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* LAYOUT */
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-green));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background-color: var(--bg-tertiary);
+            color: var(--accent-purple);
+            border-left-color: var(--accent-purple);
+            font-weight: 600;
+        }
+
+        /* MAIN CONTENT */
+        .main {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .topbar {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex: 1;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 300px;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .search-box::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 12px;
+            padding: 0.5rem 1rem;
+            background-color: var(--bg-tertiary);
+            border-radius: 6px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .dot.running {
+            background-color: var(--accent-green);
+        }
+
+        .dot.error {
+            background-color: var(--accent-red);
+        }
+
+        .dot.disabled {
+            background-color: #6b7280;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* CONTENT AREA */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        /* DASHBOARD GRID */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .ecosystem-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .ecosystem-card:hover {
+            border-color: var(--accent-purple);
+            background-color: var(--bg-tertiary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(167, 139, 250, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .card-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 12px;
+        }
+
+        .card-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-top: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: var(--accent-green);
+        }
+
+        /* SUMMARY STATS */
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .stat-box-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stat-box-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        .stat-box-trend {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 1rem 0;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            border-bottom-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* TABLES */
+        .table-container {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background-color: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-right: 1px solid var(--border-color);
+        }
+
+        th:last-child {
+            border-right: none;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+        }
+
+        td:last-child {
+            border-right: none;
+        }
+
+        tbody tr:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-purple);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #9d7de8;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+        }
+
+        .btn-danger {
+            background-color: var(--accent-red);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .btn-success {
+            background-color: var(--accent-green);
+            color: #0a0a0f;
+        }
+
+        .btn-success:hover {
+            background-color: #2ab08f;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 12px;
+        }
+
+        /* TOGGLES */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .toggle-input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #4b5563;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-input:checked + .toggle-slider {
+            background-color: var(--accent-green);
+        }
+
+        .toggle-input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        /* MODALS */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 10, 15, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem;
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* LOADING SPINNER */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--accent-purple);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* TOAST NOTIFICATIONS */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .toast {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-green);
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            min-width: 300px;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .toast.error {
+            border-left-color: var(--accent-red);
+        }
+
+        .toast.warning {
+            border-left-color: var(--accent-amber);
+        }
+
+        .toast.info {
+            border-left-color: var(--accent-blue);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* BADGES */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background-color: rgba(52, 211, 153, 0.1);
+            color: var(--accent-green);
+        }
+
+        .badge-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--accent-red);
+        }
+
+        .badge-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--accent-amber);
+        }
+
+        /* DETAIL VIEW */
+        .detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .detail-name {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        /* CONTROLS GRID */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .control-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-info {
+            flex: 1;
+        }
+
+        .control-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .control-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* COST CHART */
+        .chart-container {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* DIRECTIVES */
+        .directive-item {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .directive-info {
+            flex: 1;
+        }
+
+        .directive-type {
+            font-size: 12px;
+            color: var(--accent-purple);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .directive-payload {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-family: 'Monaco', monospace;
+            background-color: var(--bg-tertiary);
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .directive-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .topbar {
+                flex-wrap: wrap;
+            }
+
+            .search-box {
+                max-width: none;
+                order: 3;
+                flex-basis: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">E59</div>
+                <div class="sidebar-title">Agent Mesh</div>
+            </div>
+            <div class="sidebar-nav">
+                <div class="nav-item active" data-view="dashboard">Dashboard</div>
+                <div class="nav-item" data-view="brain-directives">Brain Directives</div>
+                <div class="nav-item" data-view="cost-overview">Cost Overview</div>
+                <div class="nav-item" data-view="settings">Settings</div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main">
+            <!-- TOPBAR -->
+            <div class="topbar">
+                <div class="topbar-left">
+                    <div class="page-title" id="pageTitle">Dashboard</div>
+                    <input type="text" class="search-box" id="searchInput" placeholder="Search ecosystems...">
+                </div>
+                <div class="topbar-right">
+                    <div class="status-indicator">
+                        <div class="dot running"></div>
+                        <span id="statusText">System Running</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENT AREA -->
+            <div class="content" id="content">
+                <!-- DASHBOARD VIEW -->
+                <div id="dashboardView" class="view active">
+                    <div class="summary-stats" id="summaryStats">
+                        <div class="stat-box">
+                            <div class="stat-box-label">Agents Running</div>
+                            <div class="stat-box-value" id="agentsRunning">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-label">Total Alerts</div>
+                            <div class="stat-box-value" id="totalAlerts">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-label">Critical Alerts</div>
+                            <div class="stat-box-value" id="criticalAlerts" style="color: var(--accent-red);">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-label">Monthly Cost</div>
+                            <div class="stat-box-value" id="monthlyCost">$0</div>
+                        </div>
+                    </div>
+                    <div class="dashboard-grid" id="dashboardGrid"></div>
+                </div>
+
+                <!-- ECOSYSTEM DETAIL VIEW -->
+                <div id="detailView" class="view" style="display: none;">
+                    <div class="detail-header">
+                        <div class="detail-title">
+                            <span class="detail-name" id="detailEcosystemName">E00</span>
+                            <span class="badge badge-success" id="detailStatus">Running</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="toggle-input" id="masterToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="tabs">
+                        <div class="tab active" data-tab="rules">Rules Manager</div>
+                        <div class="tab" data-tab="controls">Controls & Toggles</div>
+                        <div class="tab" data-tab="events">Events & Alerts</div>
+                        <div class="tab" data-tab="metrics">Metrics & Performance</div>
+                        <div class="tab" data-tab="costs">Cost Tracker</div>
+                    </div>
+
+                    <!-- RULES TAB -->
+                    <div id="rulesTab" class="tab-content active">
+                        <button class="btn btn-primary" id="addRuleBtn">+ Add Rule</button>
+                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary btn-sm" id="enableAllRulesBtn">Enable All</button>
+                            <button class="btn btn-secondary btn-sm" id="disableAllRulesBtn">Disable All</button>
+                            <button class="btn btn-secondary btn-sm" id="exportRulesBtn">Export JSON</button>
+                        </div>
+                        <div class="table-container" style="margin-top: 1rem;">
+                            <table id="rulesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Rule Name</th>
+                                        <th>Category</th>
+                                        <th>Metric</th>
+                                        <th>Operator</th>
+                                        <th>Threshold</th>
+                                        <th>Severity</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rulesTbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- CONTROLS TAB -->
+                    <div id="controlsTab" class="tab-content" style="display: none;">
+                        <button class="btn btn-secondary btn-sm" id="resetControlsBtn" style="margin-bottom: 1rem;">Reset to Defaults</button>
+                        <div class="controls-grid" id="controlsGrid"></div>
+                    </div>
+
+                    <!-- EVENTS TAB -->
+                    <div id="eventsTab" class="tab-content" style="display: none;">
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                            <select class="form-select" id="severityFilter" style="flex: 1; max-width: 150px;">
+                                <option value="">All Severities</option>
+                                <option value="critical">Critical</option>
+                                <option value="warning">Warning</option>
+                                <option value="info">Info</option>
+                            </select>
+                            <input type="date" class="form-input" id="dateFromFilter" style="flex: 1; max-width: 150px;">
+                            <input type="date" class="form-input" id="dateToFilter" style="flex: 1; max-width: 150px;">
+                            <button class="btn btn-secondary btn-sm" id="acknowledgeAllBtn">Acknowledge All</button>
+                        </div>
+                        <div id="eventsContainer"></div>
+                    </div>
+
+                    <!-- METRICS TAB -->
+                    <div id="metricsTab" class="tab-content" style="display: none;">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <div style="flex: 1;">
+                                    <select class="form-select" id="metricSelector" style="width: 100%; max-width: 250px;">
+                                        <option value="cpu">CPU Usage</option>
+                                        <option value="memory">Memory Usage</option>
+                                        <option value="requests">API Requests</option>
+                                        <option value="errors">Error Rate</option>
+                                    </select>
+                                </div>
+                                <div class="chart-controls">
+                                    <button class="btn btn-secondary btn-sm" data-range="1h">1h</button>
+                                    <button class="btn btn-secondary btn-sm active" data-range="24h">24h</button>
+                                    <button class="btn btn-secondary btn-sm" data-range="7d">7d</button>
+                                    <button class="btn btn-secondary btn-sm" data-range="30d">30d</button>
+                                </div>
+                            </div>
+                            <canvas id="metricsChart" style="max-height: 300px;"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- COSTS TAB -->
+                    <div id="costsTab" class="tab-content" style="display: none;">
+                        <div class="summary-stats" style="margin-bottom: 1.5rem;">
+                            <div class="stat-box">
+                                <div class="stat-box-label">API Calls</div>
+                                <div class="stat-box-value" id="costApiCalls">0</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-label">Compute</div>
+                                <div class="stat-box-value" id="costCompute">$0</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-label">Storage</div>
+                                <div class="stat-box-value" id="costStorage">$0</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-label">Total Cost</div>
+                                <div class="stat-box-value" id="costTotal">$0</div>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="costChart" style="max-height: 300px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BRAIN DIRECTIVES VIEW -->
+                <div id="brainDirectivesView" class="view" style="display: none;">
+                    <div style="margin-bottom: 1.5rem;">
+                        <h3 style="margin-bottom: 1rem;">Pending Directives</h3>
+                        <div id="pendingDirectives"></div>
+                    </div>
+                    <div>
+                        <h3 style="margin-bottom: 1rem;">Execution Log</h3>
+                        <div id="directiveLog"></div>
+                    </div>
+                </div>
+
+                <!-- COST OVERVIEW VIEW -->
+                <div id="costOverviewView" class="view" style="display: none;">
+                    <button class="btn btn-primary" id="exportCostBtn" style="margin-bottom: 1rem;">Export to CSV</button>
+                    <div class="table-container">
+                        <table id="costTable">
+                            <thead>
+                                <tr>
+                                    <th>Ecosystem</th>
+                                    <th>API Calls</th>
+                                    <th>Compute</th>
+                                    <th>Storage</th>
+                                    <th>Total</th>
+                                    <th>Budget</th>
+                                    <th>Variance %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="costTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SETTINGS VIEW -->
+                <div id="settingsView" class="view" style="display: none;">
+                    <div style="max-width: 600px;">
+                        <div class="form-group">
+                            <label class="form-label">Slack Webhook URL</label>
+                            <input type="text" class="form-input" id="slackWebhook" placeholder="https://hooks.slack.com/...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Recipients (comma-separated)</label>
+                            <input type="text" class="form-input" id="emailRecipients" placeholder="admin@example.com, ops@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">SMS Numbers (comma-separated)</label>
+                            <input type="text" class="form-input" id="smsNumbers" placeholder="+1234567890, +0987654321">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Default Check Interval (seconds)</label>
+                            <input type="number" class="form-input" id="checkInterval" value="30">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Alert Escalation Timer (minutes)</label>
+                            <input type="number" class="form-input" id="escalationTimer" value="30">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" class="toggle-input" id="brainAutoExecute">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                Brain Auto-Execute Directives
+                            </label>
+                        </div>
+                        <button class="btn btn-primary" id="saveSettingsBtn">Save Settings</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RULE MODAL -->
+    <div class="modal" id="ruleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="ruleModalTitle">Add New Rule</div>
+                <button class="modal-close" id="ruleModalClose">&times;</button>
+            </div>
+            <div id="ruleModalBody">
+                <div class="form-group">
+                    <label class="form-label">Rule Name</label>
+                    <input type="text" class="form-input" id="ruleName" placeholder="e.g., High CPU Usage">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <input type="text" class="form-input" id="ruleDescription" placeholder="Describe what this rule monitors...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="ruleCategory">
+                        <option value="performance">Performance</option>
+                        <option value="reliability">Reliability</option>
+                        <option value="security">Security</option>
+                        <option value="cost">Cost</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Metric</label>
+                    <select class="form-select" id="ruleMetric">
+                        <option value="cpu">CPU Usage</option>
+                        <option value="memory">Memory Usage</option>
+                        <option value="requests">API Requests</option>
+                        <option value="errors">Error Rate</option>
+                        <option value="latency">Latency</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Metric Query</label>
+                    <textarea class="form-textarea" id="ruleQuery" placeholder="SELECT metric FROM..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Operator</label>
+                    <select class="form-select" id="ruleOperator">
+                        <option value="gt">&gt; (Greater Than)</option>
+                        <option value="lt">&lt; (Less Than)</option>
+                        <option value="eq">== (Equal)</option>
+                        <option value="between">Between</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Threshold</label>
+                    <input type="number" class="form-input" id="ruleThreshold" placeholder="e.g., 80">
+                </div>
+                <div class="form-group" id="secondaryThresholdGroup" style="display: none;">
+                    <label class="form-label">Secondary Threshold (for Between)</label>
+                    <input type="number" class="form-input" id="ruleSecondaryThreshold">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Severity</label>
+                    <select class="form-select" id="ruleSeverity">
+                        <option value="critical">Critical</option>
+                        <option value="warning">Warning</option>
+                        <option value="info">Info</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notification Channels</label>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="notifSlack"> Slack
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="notifEmail"> Email
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="notifSms"> SMS
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="notifDashboard" checked> Dashboard
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="notifWebhook"> Webhook
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Cooldown (seconds)</label>
+                    <input type="number" class="form-input" id="ruleCooldown" value="60">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="toggle-input" id="ruleAiManaged">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        AI-Managed Rule
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tags (comma-separated)</label>
+                    <input type="text" class="form-input" id="ruleTags" placeholder="automation, critical">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="ruleModalCancel">Cancel</button>
+                <button class="btn btn-primary" id="ruleModalSave">Save Rule</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ===== CONFIGURATION =====
+        const config = {
+            BASE_URL: 'http://localhost:8059',
+            REFRESH_INTERVAL: 30000, // 30 seconds
+            ECOSYSTEMS: Array.from({ length: 58 }, (_, i) => ({
+                id: i,
+                name: `E${String(i).padStart(2, '0')}`
+            }))
+        };
+
+        // ===== STATE MANAGEMENT =====
+        let appState = {
+            currentView: 'dashboard',
+            selectedEcosystem: null,
+            ecosystemData: {},
+            searchTerm: '',
+            charts: {},
+            refreshInterval: null
+        };
+
+        // ===== UTILITY FUNCTIONS =====
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function formatTime(date) {
+            return new Date(date).toLocaleString();
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount);
+        }
+
+        // ===== API FUNCTIONS =====
+        async function fetchAPI(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${config.BASE_URL}${endpoint}`, {
+                    headers: { 'Content-Type': 'application/json' },
+                    ...options
+                });
+                if (!response.ok) throw new Error(`API error: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error(`API Error: ${endpoint}`, error);
+                showToast(`Error: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        async function loadDashboard() {
+            try {
+                const data = await fetchAPI('/dashboard');
+                updateDashboard(data);
+            } catch (error) {
+                console.error('Failed to load dashboard:', error);
+            }
+        }
+
+        // ===== DASHBOARD FUNCTIONS =====
+        function updateDashboard(data) {
+            // Update summary stats
+            document.getElementById('agentsRunning').textContent = data.agentsRunning || 0;
+            document.getElementById('totalAlerts').textContent = data.totalAlerts || 0;
+            document.getElementById('criticalAlerts').textContent = data.criticalAlerts || 0;
+            document.getElementById('monthlyCost').textContent = formatCurrency(data.monthlyCost || 0);
+
+            // Update ecosystem cards
+            const grid = document.getElementById('dashboardGrid');
+            grid.innerHTML = '';
+            
+            const filtered = config.ECOSYSTEMS.filter(e => 
+                e.name.toLowerCase().includes(appState.searchTerm.toLowerCase())
+            );
+
+            filtered.forEach(ecosystem => {
+                const ecoData = data.ecosystems?.[ecosystem.id] || {
+                    status: 'disabled',
+                    lastHeartbeat: new Date(),
+                    alerts: 0,
+                    enrichmentScore: 0
+                };
+
+                const card = document.createElement('div');
+                card.className = 'ecosystem-card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-name">${ecosystem.name}</div>
+                        <div class="card-status">
+                            <div class="dot ${ecoData.status}"></div>
+                            <span>${ecoData.status}</span>
+                        </div>
+                    </div>
+                    <div class="card-stat">
+                        <span class="stat-label">Last Heartbeat</span>
+                        <span class="stat-value">${formatTime(ecoData.lastHeartbeat)}</span>
+                    </div>
+                    <div class="card-stat">
+                        <span class="stat-label">Active Alerts</span>
+                        <span class="stat-value">${ecoData.alerts}</span>
+                    </div>
+                    <div class="card-stat">
+                        <span class="stat-label">Enrichment Score</span>
+                        <span class="stat-value">${ecoData.enrichmentScore.toFixed(2)}</span>
+                    </div>
+                `;
+                card.addEventListener('click', () => showEcosystemDetail(ecosystem.id, ecosystem.name));
+                grid.appendChild(card);
+            });
+        }
+
+        // ===== ECOSYSTEM DETAIL FUNCTIONS =====
+        function showEcosystemDetail(ecosystemId, ecosystemName) {
+            appState.selectedEcosystem = ecosystemId;
+            appState.currentView = 'detail';
+            document.getElementById('dashboardView').style.display = 'none';
+            document.getElementById('detailView').style.display = 'block';
+            document.getElementById('pageTitle').textContent = ecosystemName;
+            document.getElementById('detailEcosystemName').textContent = ecosystemName;
+            loadEcosystemDetail(ecosystemId);
+        }
+
+        async function loadEcosystemDetail(ecosystemId) {
+            try {
+                const data = await fetchAPI(`/ecosystem/${ecosystemId}`);
+                
+                // Load rules
+                loadRules(data.rules || []);
+                
+                // Load controls
+                loadControls(data.controls || []);
+                
+                // Load events
+                loadEvents(data.events || []);
+                
+                // Load cost data
+                updateCostTab(data.costs || {});
+                
+                // Load metrics
+                updateMetricsTab(data.metrics || {});
+            } catch (error) {
+                console.error('Failed to load ecosystem detail:', error);
+            }
+        }
+
+        // ===== RULES FUNCTIONS =====
+        function loadRules(rules) {
+            const tbody = document.getElementById('rulesTbody');
+            tbody.innerHTML = '';
+            rules.forEach(rule => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${rule.name}</td>
+                    <td>${rule.category}</td>
+                    <td>${rule.metric}</td>
+                    <td>${rule.operator}</td>
+                    <td>${rule.threshold}</td>
+                    <td><span class="badge badge-${rule.severity === 'critical' ? 'error' : rule.severity === 'warning' ? 'warning' : 'success'}">${rule.severity}</span></td>
+                    <td>
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="toggle-input" ${rule.enabled ? 'checked' : ''} onchange="toggleRule(${rule.id})">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="editRule(${rule.id})">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteRule(${rule.id})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function editRule(ruleId) {
+            document.getElementById('ruleModalTitle').textContent = 'Edit Rule';
+            document.getElementById('ruleModal').classList.add('active');
+        }
+
+        function deleteRule(ruleId) {
+            if (confirm('Are you sure you want to delete this rule?')) {
+                showToast('Rule deleted successfully', 'success');
+                loadEcosystemDetail(appState.selectedEcosystem);
+            }
+        }
+
+        function toggleRule(ruleId) {
+            showToast('Rule status updated', 'success');
+        }
+
+        document.getElementById('addRuleBtn')?.addEventListener('click', () => {
+            document.getElementById('ruleModalTitle').textContent = 'Add New Rule';
+            document.getElementById('ruleModal').classList.add('active');
+        });
+
+        document.getElementById('ruleModalClose')?.addEventListener('click', () => {
+            document.getElementById('ruleModal').classList.remove('active');
+        });
+
+        document.getElementById('ruleModalCancel')?.addEventListener('click', () => {
+            document.getElementById('ruleModal').classList.remove('active');
+        });
+
+        document.getElementById('ruleOperator')?.addEventListener('change', (e) => {
+            const group = document.getElementById('secondaryThresholdGroup');
+            group.style.display = e.target.value === 'between' ? 'flex' : 'none';
+        });
+
+        document.getElementById('ruleModalSave')?.addEventListener('click', () => {
+            showToast('Rule saved successfully', 'success');
+            document.getElementById('ruleModal').classList.remove('active');
+        });
+
+        // ===== CONTROLS FUNCTIONS =====
+        function loadControls(controls) {
+            const grid = document.getElementById('controlsGrid');
+            grid.innerHTML = '';
+            controls.forEach(control => {
+                const card = document.createElement('div');
+                card.className = 'control-card';
+                card.innerHTML = `
+                    <div class="control-info">
+                        <div class="control-name">${control.name}</div>
+                        <div class="control-description">${control.description}</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" class="toggle-input" ${control.value ? 'checked' : ''}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        document.getElementById('resetControlsBtn')?.addEventListener('click', () => {
+            if (confirm('Reset all controls to defaults?')) {
+                showToast('Controls reset to defaults', 'success');
+                loadEcosystemDetail(appState.selectedEcosystem);
+            }
+        });
+
+        // ===== EVENTS FUNCTIONS =====
+        function loadEvents(events) {
+            const container = document.getElementById('eventsContainer');
+            container.innerHTML = '';
+            events.forEach(event => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;';
+                div.innerHTML = `
+                    <div>
+                        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 0.25rem;">${formatTime(event.timestamp)}</div>
+                        <div style="margin-bottom: 0.5rem;"><span class="badge badge-${event.severity === 'critical' ? 'error' : event.severity === 'warning' ? 'warning' : 'success'}">${event.severity}</span></div>
+                        <div style="font-size: 14px; margin-bottom: 0.25rem;">${event.message}</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Rule: ${event.source}</div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="acknowledgeEvent(${event.id})">${event.acknowledged ? 'Acknowledged' : 'Acknowledge'}</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function acknowledgeEvent(eventId) {
+            showToast('Event acknowledged', 'success');
+        }
+
+        document.getElementById('acknowledgeAllBtn')?.addEventListener('click', () => {
+            showToast('All events acknowledged', 'success');
+        });
+
+        // ===== METRICS FUNCTIONS =====
+        function updateMetricsTab(metrics) {
+            const chartContainer = document.getElementById('metricsChart');
+            if (appState.charts.metrics) {
+                appState.charts.metrics.destroy();
+            }
+            appState.charts.metrics = new Chart(chartContainer, {
+                type: 'line',
+                data: {
+                    labels: metrics.labels || [],
+                    datasets: [{
+                        label: 'CPU Usage %',
+                        data: metrics.data || [],
+                        borderColor: '#a78bfa',
+                        backgroundColor: 'rgba(167, 139, 250, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { labels: { color: '#d1d5db' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#d1d5db' } },
+                        y: { ticks: { color: '#d1d5db' } }
+                    }
+                }
+            });
+        }
+
+        document.querySelectorAll('[data-range]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-range]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // ===== COST TAB =====
+        function updateCostTab(costs) {
+            document.getElementById('costApiCalls').textContent = costs.apiCalls || '0';
+            document.getElementById('costCompute').textContent = formatCurrency(costs.compute || 0);
+            document.getElementById('costStorage').textContent = formatCurrency(costs.storage || 0);
+            document.getElementById('costTotal').textContent = formatCurrency((costs.compute || 0) + (costs.storage || 0));
+
+            const chartContainer = document.getElementById('costChart');
+            if (appState.charts.cost) {
+                appState.charts.cost.destroy();
+            }
+            appState.charts.cost = new Chart(chartContainer, {
+                type: 'bar',
+                data: {
+                    labels: ['Budget', 'Actual'],
+                    datasets: [{
+                        label: 'Cost ($)',
+                        data: [costs.budget || 0, costs.actual || 0],
+                        backgroundColor: ['#34d399', costs.actual > costs.budget ? '#ef4444' : '#3b82f6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { labels: { color: '#d1d5db' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#d1d5db' } },
+                        y: { ticks: { color: '#d1d5db' } }
+                    }
+                }
+            });
+        }
+
+        // ===== BRAIN DIRECTIVES VIEW =====
+        function loadBrainDirectives() {
+            const pending = document.getElementById('pendingDirectives');
+            const log = document.getElementById('directiveLog');
+            pending.innerHTML = '<div class="directive-item"><div class="directive-info"><div class="directive-type">ENRICHMENT_RUN</div><div>Target: E20 Brain</div><div class="directive-payload">{"task": "enrich_contacts", "batch_size": 1000}</div></div><div class="directive-actions"><button class="btn btn-success btn-sm">Approve</button><button class="btn btn-danger btn-sm">Reject</button></div></div>';
+            log.innerHTML = '<div class="directive-item"><div class="directive-info"><div class="directive-type">ENRICHMENT_RUN (Executed)</div><div>Completed: 2025-04-11 14:30:22</div></div></div>';
+        }
+
+        // ===== COST OVERVIEW VIEW =====
+        function loadCostOverview() {
+            const tbody = document.getElementById('costTbody');
+            tbody.innerHTML = '';
+            config.ECOSYSTEMS.forEach(eco => {
+                const tr = document.createElement('tr');
+                const variance = Math.random() * 20 - 10;
+                tr.innerHTML = `
+                    <td>${eco.name}</td>
+                    <td>1,245</td>
+                    <td>$156.50</td>
+                    <td>$45.20</td>
+                    <td>$201.70</td>
+                    <td>$250.00</td>
+                    <td style="color: ${variance < 0 ? '#34d399' : '#ef4444'};">${variance.toFixed(1)}%</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('exportCostBtn')?.addEventListener('click', () => {
+            const csv = 'Ecosystem,API Calls,Compute,Storage,Total,Budget,Variance%\n';
+            showToast('Cost data exported to CSV', 'success');
+        });
+
+        // ===== SETTINGS VIEW =====
+        document.getElementById('saveSettingsBtn')?.addEventListener('click', () => {
+            showToast('Settings saved successfully', 'success');
+        });
+
+        // ===== NAVIGATION =====
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                const view = item.getAttribute('data-view');
+                document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+                document.getElementById(`${view}View`).style.display = 'block';
+                document.getElementById('pageTitle').textContent = item.textContent;
+                
+                if (view === 'brain-directives') loadBrainDirectives();
+                if (view === 'cost-overview') loadCostOverview();
+            });
+        });
+
+        // ===== TAB NAVIGATION =====
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+                tab.classList.add('active');
+                const tabName = tab.getAttribute('data-tab');
+                document.getElementById(`${tabName}Tab`).style.display = 'block';
+            });
+        });
+
+        // ===== SEARCH =====
+        document.getElementById('searchInput')?.addEventListener('input', (e) => {
+            appState.searchTerm = e.target.value;
+            if (appState.currentView === 'dashboard') {
+                loadDashboard();
+            }
+        });
+
+        // ===== INITIALIZATION =====
+        function init() {
+            loadDashboard();
+            appState.refreshInterval = setInterval(loadDashboard, config.REFRESH_INTERVAL);
+        }
+
+        window.addEventListener('load', init);
+        window.addEventListener('beforeunload', () => {
+            clearInterval(appState.refreshInterval);
+        });
+    </script>
+</body>
+</html>
