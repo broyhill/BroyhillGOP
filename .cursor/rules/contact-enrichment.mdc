@@ -1,0 +1,64 @@
+---
+description: Contact enrichment rules — phone/email population from staging tables. Fires when working with staging tables, contact data, or enrichment scripts.
+globs: "**/*{contact,enrich,staging,phone,email}*"
+alwaysApply: false
+---
+
+# CONTACT ENRICHMENT RULES
+
+Donor files are contact enrichment ONLY — not donation amounts.
+Ed: "dont add donations. thats old" / "just phones emails"
+
+## IS NULL GUARD — MANDATORY ON EVERY UPDATE
+
+First source wins. NEVER overwrite existing data. Every SET clause must have IS NULL guard:
+
+```sql
+UPDATE raw.ncboe_donations d
+SET cell_phone = s.phone
+FROM staging.some_table s
+WHERE d.cluster_id = s.cluster_id
+  AND d.cell_phone IS NULL  -- ← NEVER REMOVE THIS
+```
+
+## SOURCE ORDER (process in this exact sequence)
+
+1. DataTrust (JOIN on rnc_regid) — phones only
+2. staging.winred_deduped → personal/business email + phones
+3. staging.harris_cluster_contacts + harris_spouse_contacts
+4. staging.budd_matches
+5. staging.budd_forsyth_matches
+6. staging.budd_guilford_matches
+7. staging.budd_wake_matches
+8. staging.trump_nc_matches
+9. staging.ncgop_forsyth_matches
+10. staging.apollo_matches ← BAD EMAIL GUARD: exclude jsneeden@msn.com on cluster 372171
+11. staging.master_matches
+12. staging.military_matches
+13. staging.trump_rally_matches ← tag trump_rally_donor = TRUE only (no contact info)
+14. staging.ncgop_2026_matches
+15. staging.foxx_matches
+16. staging.trump_ln_matches
+17. staging.oneill_matches
+
+## PHONE RULES
+
+- Hierarchy (best → fallback): neustar+data_axle > data_axle > neustar > voter_file
+- Clean: REGEXP_REPLACE(phone, '[^0-9]', '', 'g'), truncate to 10 digits
+- Label: cell_phone vs home_phone — clearly distinguish
+
+## EMAIL RULES
+
+- Personal domains → personal_email:
+  gmail, yahoo, hotmail, aol, icloud, msn, outlook, comcast, att, bellsouth, earthlink
+- All other domains → business_email
+- Ed: "clearly identify a label cell phone and personal email and business emails"
+
+## CONTAMINATION BLACKLIST
+
+- jsneeden@msn.com is NEVER Ed's email (Apollo bad data)
+- If found on cluster 372171, clear immediately:
+  ```sql
+  UPDATE raw.ncboe_donations SET personal_email = NULL
+  WHERE cluster_id = 372171 AND personal_email = 'jsneeden@msn.com';
+  ```
