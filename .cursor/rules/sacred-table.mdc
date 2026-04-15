@@ -1,0 +1,65 @@
+---
+description: MANDATORY constraints when working with raw.ncboe_donations — the sacred spine table. Fires on any SQL, Python, or markdown referencing this table.
+globs: "**/*.{sql,py,md}"
+alwaysApply: false
+---
+
+# SACRED TABLE — raw.ncboe_donations
+
+You are about to interact with the most critical table in the BroyhillGOP database.
+Ed Broyhill has lost data and hours of work because previous AIs touched this table carelessly.
+
+## AUTHORIZATION REQUIRED
+
+ANY of the following on raw.ncboe_donations require Ed to type EXACTLY:
+**"I AUTHORIZE THIS ACTION"**
+
+- UPDATE (any column)
+- DELETE (with or without WHERE)
+- TRUNCATE
+- DROP TABLE / DROP COLUMN
+- ALTER TABLE that removes or renames columns
+- Re-running ncboe_dedup_v2.py or datatrust_enrich.py
+
+"yes", "ok", "go ahead", "do it" are NOT authorization. Only the exact phrase.
+
+Before executing, show Ed:
+1. The exact SQL
+2. How many rows will be affected (run a SELECT COUNT first)
+3. Expected outcome
+4. Rollback plan
+
+## CURRENT STATE
+
+- 2,431,198 rows — this number is SACRED. If your COUNT(*) differs, STOP.
+- The spine is INFLATED 7.4x due to cross-file transaction duplication
+- Only ~321,756 are unique transactions
+- If is_primary_txn column exists, ALWAYS filter on is_primary_txn = true for dollar totals
+- If is_primary_txn does NOT exist, Phase 1 is not done — do not build contribution_map or person_master
+
+## ED'S CANARY — CLUSTER 372171
+
+Check BEFORE and AFTER any operation:
+
+```sql
+-- Inflated (full table)
+SELECT COUNT(*), ROUND(SUM(norm_amount)::numeric, 2)
+FROM raw.ncboe_donations WHERE cluster_id = 372171;
+-- Expected: 627 txns / $1,318,672.04
+
+-- Deduped (if is_primary_txn exists)
+SELECT COUNT(*), ROUND(SUM(norm_amount)::numeric, 2)
+FROM raw.ncboe_donations WHERE cluster_id = 372171 AND is_primary_txn = true;
+-- Expected: 147 txns / $332,631.30
+```
+
+If these numbers change and you didn't expect it: ROLLBACK. STOP. Tell Ed.
+
+## ABSOLUTE PROHIBITIONS
+
+- NEVER use fuzzy matching (ILIKE, similarity(), soundex, LEFT(first,3))
+- NEVER overwrite existing contact data (all SET clauses need IS NULL guard)
+- ED = EDGAR, never EDWARD
+- Ed's zip is 27104, NOT 27105 (use DataTrust reg_zip5)
+- jsneeden@msn.com is NEVER Ed's email — if found on cluster 372171, clear it immediately
+- NEVER run committee donations through the spine pipeline — separate table
