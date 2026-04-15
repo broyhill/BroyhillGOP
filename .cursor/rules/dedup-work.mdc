@@ -1,0 +1,75 @@
+---
+description: Transaction deduplication rules for the NCBOE spine. Fires when working on dedup, transaction marking, or is_primary_txn logic.
+globs: "**/*dedup*"
+alwaysApply: false
+---
+
+# TRANSACTION DEDUP — The #1 Blocker
+
+The spine (raw.ncboe_donations) has 2,431,198 rows but only ~321,756 unique transactions.
+18 NCBOE source files overlap. The ONLY column that differs between duplicates is source_file.
+Cursor's ncboe_dedup_v2.py deduplicated PEOPLE (clusters), not TRANSACTIONS.
+
+## THE DEDUP KEY (VERIFIED ON ED'S CLUSTER)
+
+```
+(name, street_line_1, date_occured, amount, candidate_referendum_name, committee_sboe_id)
+```
+
+Adding account_code or form_of_payment does NOT change results — they're identical across dupes.
+
+## WHAT EXISTS AND MUST NOT BE TOUCHED
+
+- Cluster identity (Union-Find stages 1A-1G) — CORRECT, do not redo
+- Party matching (288,786 linked rows) — CORRECT, do not redo
+- Contact enrichment (phones/emails) — CORRECT, do not redo
+- DataTrust voter matching (1,293,069 rows) — CORRECT, do not redo
+- ncboe_dedup_v2.py — ALREADY RAN, do not re-run
+- datatrust_enrich.py — ALREADY RAN, do not re-run
+
+## PHASE 1 APPROACH (from REVISED_PLAN_APR15.md)
+
+Option B (mark-and-filter) first, then Option C after Ed validates.
+
+Step 1: Add column
+```sql
+ALTER TABLE raw.ncboe_donations ADD COLUMN IF NOT EXISTS is_primary_txn boolean DEFAULT false;
+```
+
+Step 2: Mark primaries
+```sql
+WITH ranked AS (
+    SELECT id, ROW_NUMBER() OVER (
+        PARTITION BY name, street_line_1, date_occured, amount,
+                     candidate_referendum_name, committee_sboe_id
+        ORDER BY id ASC
+    ) AS rn
+    FROM raw.ncboe_donations
+)
+UPDATE raw.ncboe_donations d
+SET is_primary_txn = true
+FROM ranked r
+WHERE d.id = r.id AND r.rn = 1;
+```
+
+Step 3: Verify canary
+```sql
+SELECT COUNT(*) as txns, SUM(norm_amount) as total
+FROM raw.ncboe_donations
+WHERE cluster_id = 372171 AND is_primary_txn = true;
+-- MUST BE: 147 txns / $332,631.30
+```
+
+Step 4: Verify spine-wide
+```sql
+SELECT COUNT(*) as primary_rows,
+       COUNT(DISTINCT cluster_id) as clusters,
+       ROUND(SUM(norm_amount)::numeric, 2) as total_dollars
+FROM raw.ncboe_donations WHERE is_primary_txn = true;
+-- Expected: ~321,756 rows / ~98,305 clusters / ~$162,056,814
+```
+
+## DO NOT MODIFY THE DEDUP PROCESS
+
+Ed: "please tell me that you didnt change the dedupe process we labored over for hours 10 times"
+The dedup key above was verified against Ed's real-world knowledge. Do not change it.
