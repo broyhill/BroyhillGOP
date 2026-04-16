@@ -1,0 +1,22 @@
+# === Credentials & Secrets ===
+.env
+.env.*
+.env.local
+.env.production
+**/.env
+**/secrets/
+**/credentials/
+*.pem
+*.key
+*.p12
+
+# === Session transcripts with credentials ===
+**/session_transcript*
+**/SESSION_STATE*
+
+# === Database connection strings ===
+**/mcp.json
+
+# === Anything with passwords ===
+**/*password*
+**/*credential*
