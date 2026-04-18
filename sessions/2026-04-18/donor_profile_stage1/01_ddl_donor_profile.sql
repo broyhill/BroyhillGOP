@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS core.donor_profile (
     norm_middle                TEXT,
     norm_last                  TEXT,
     suffix                     TEXT,
-    rnc_regid                  BIGINT,
+    rnc_regid                  TEXT,
     ncid                       TEXT,
     has_voter_match            BOOLEAN      NOT NULL DEFAULT FALSE,
 
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS core.person_canonical (
     norm_last          TEXT,
     suffix             TEXT,
     dob                DATE,
-    rnc_regid          BIGINT,
+    rnc_regid          TEXT,
     ncid               TEXT,
     primary_cluster_id INTEGER,
     created_at         TIMESTAMPTZ NOT NULL DEFAULT NOW()
