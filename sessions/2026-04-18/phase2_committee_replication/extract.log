@@ -1,0 +1,37 @@
+/home/user/workspace/phase2_committee_replication/03_replicate.py:208: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  print(f"== EXTRACT phase @ {datetime.utcnow().isoformat()}Z ==")
+== EXTRACT phase @ 2026-04-18T18:31:48.684878Z ==
+   Source: https://isbgjpnbocdkeslofota.supabase.co
+   Output: /home/user/workspace/phase2_committee_replication/csv
+
+-> boe_donation_candidate_map (expecting ~338,213 rows)
+  [boe_donation_candidate_map] page=25 offset=24000 rows=25,000 (1,723 rows/sec)
+  [boe_donation_candidate_map] page=50 offset=49000 rows=50,000 (1,896 rows/sec)
+  [boe_donation_candidate_map] page=75 offset=74000 rows=75,000 (1,937 rows/sec)
+  [boe_donation_candidate_map] page=100 offset=99000 rows=100,000 (1,980 rows/sec)
+  [boe_donation_candidate_map] page=125 offset=124000 rows=125,000 (1,985 rows/sec)
+  [boe_donation_candidate_map] page=150 offset=149000 rows=150,000 (1,994 rows/sec)
+  [boe_donation_candidate_map] page=175 offset=174000 rows=175,000 (1,997 rows/sec)
+  [boe_donation_candidate_map] page=200 offset=199000 rows=200,000 (1,997 rows/sec)
+  [boe_donation_candidate_map] page=225 offset=224000 rows=225,000 (1,991 rows/sec)
+  [boe_donation_candidate_map] page=250 offset=249000 rows=250,000 (1,993 rows/sec)
+  [boe_donation_candidate_map] page=275 offset=274000 rows=275,000 (1,990 rows/sec)
+  [boe_donation_candidate_map] page=300 offset=299000 rows=300,000 (1,988 rows/sec)
+  [boe_donation_candidate_map] page=325 offset=324000 rows=325,000 (1,983 rows/sec)
+  [boe_donation_candidate_map] page=339 offset=338000 rows=338,213 (1,977 rows/sec)
+  [boe_donation_candidate_map] EXTRACT DONE: 338,213 rows in 171.1s -> /home/user/workspace/phase2_committee_replication/csv/boe_donation_candidate_map.csv (70,588,071 bytes)
+
+-> ncsbe_candidates_full (expecting ~55,985 rows)
+  [ncsbe_candidates_full] page=25 offset=24000 rows=25,000 (3,218 rows/sec)
+  [ncsbe_candidates_full] page=50 offset=49000 rows=50,000 (3,106 rows/sec)
+  [ncsbe_candidates_full] page=56 offset=55000 rows=55,985 (3,094 rows/sec)
+  [ncsbe_candidates_full] EXTRACT DONE: 55,985 rows in 18.1s -> /home/user/workspace/phase2_committee_replication/csv/ncsbe_candidates_full.csv (11,037,631 bytes)
+
+-> fec_committee_candidate_lookup (expecting ~2,012 rows)
+  [fec_committee_candidate_lookup] page=3 offset=2000 rows=2,012 (2,098 rows/sec)
+  [fec_committee_candidate_lookup] EXTRACT DONE: 2,012 rows in 1.0s -> /home/user/workspace/phase2_committee_replication/csv/fec_committee_candidate_lookup.csv (344,700 bytes)
+
+== EXTRACT SUMMARY ==
+   boe_donation_candidate_map                       338,213 rows
+   ncsbe_candidates_full                             55,985 rows
+   fec_committee_candidate_lookup                     2,012 rows
