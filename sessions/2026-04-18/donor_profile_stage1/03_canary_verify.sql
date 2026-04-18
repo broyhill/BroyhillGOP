@@ -117,7 +117,69 @@ FROM core.donor_profile;
 SELECT *
 FROM core.donor_profile_audit
 ORDER BY id DESC
-LIMIT 1;
+LIMIT 3;
+
+\echo ''
+\echo '=== 9. Business-address bridge: industry coverage ==='
+SELECT
+    COUNT(*)                                                AS total,
+    COUNT(employer_normalized)                              AS with_employer_norm,
+    COUNT(sic_code)                                         AS with_sic,
+    COUNT(*) FILTER (WHERE sic_match_method = 'EMPLOYER_KEYWORD') AS via_keyword,
+    COUNT(*) FILTER (WHERE sic_match_method = 'PROFESSION')        AS via_profession,
+    ROUND(100.0 * COUNT(sic_code) / NULLIF(COUNT(*),0), 1) AS pct_sic
+FROM core.donor_profile;
+-- Expected after bridge: with_sic > 0 and non-trivial; pct_sic shows the
+-- industry hit rate. Prior rough target (per skills): well over half of
+-- clusters with a non-null employer should land on a SIC code.
+
+\echo ''
+\echo '=== 10. Business-address bridge: address classification ==='
+SELECT
+    address_class,
+    COUNT(*) AS rows,
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 1) AS pct
+FROM core.donor_profile
+GROUP BY address_class
+ORDER BY rows DESC;
+-- Expected: HOME / BUSINESS / UNKNOWN mix. Per skills, ~75% of wealthy-donor
+-- filings are business addresses, so expect a material BUSINESS slice.
+
+\echo ''
+\echo '=== 11. Business-address bridge: dark-donor business-likely coverage ==='
+SELECT
+    COUNT(*)                                                      AS total_dark,
+    COUNT(*) FILTER (WHERE dark_donor_business_likely)            AS flagged_business,
+    ROUND(100.0 * COUNT(*) FILTER (WHERE dark_donor_business_likely)
+                / NULLIF(COUNT(*),0), 1)                          AS pct_flagged
+FROM core.donor_profile
+WHERE has_voter_match = FALSE;
+-- Expected: total_dark ≈ 17,698. flagged_business > 0 (real thousands).
+
+\echo ''
+\echo '=== 12. Top 10 industries by lifetime giving ==='
+SELECT
+    COALESCE(industry_sector, '(unclassified)') AS industry,
+    COUNT(*)                                    AS clusters,
+    SUM(lifetime_total)                         AS dollars
+FROM core.donor_profile
+GROUP BY 1
+ORDER BY dollars DESC NULLS LAST
+LIMIT 10;
+
+\echo ''
+\echo '=== 13. Ed 372171 bridge check (sic + address class — informational) ==='
+SELECT cluster_id, employer, employer_normalized,
+       sic_code, sic_division, industry_sector,
+       sic_match_method, sic_match_confidence, sic_matched_pattern,
+       address_class, home_matches_voter,
+       voter_home_street, street_line_1
+  FROM core.donor_profile
+ WHERE cluster_id = 372171;
+-- Informational only. Anvil Venture Group isn't in the 272-keyword list
+-- (added as a variant in core.normalize_employer). Expect employer_normalized
+-- = 'ANVIL VENTURE GROUP'. SIC likely lands via profession fallback OR is
+-- NULL if no job_title is populated. Flag here is documentary, not a gate.
 
 \echo ''
 \echo '=== DONE. If any row above looks wrong, DO NOT PROCEED. Send Nexus the output. ==='

@@ -16,7 +16,9 @@
 |---|---|---|
 | `01_ddl_donor_profile.sql` | Create `core.donor_profile` + 5 companion tables | Creates tables only (no existing data touched) |
 | `02_populate_donor_profile.sql` | Fill `core.donor_profile` from `raw.ncboe_donations` | Populates only the new table; sacred spine is read-only |
-| `03_canary_verify.sql` | Read-only verification of the populated profile | None |
+| `01b_bridge_ddl.sql` | Additive `ALTER TABLE` on `core.donor_profile` adding SIC/NAICS + business-address columns and `core.normalize_employer()` function | Adds columns + function; no row data touched |
+| `02b_business_address_bridge.sql` | SIC/NAICS classifier (keyword + profession fallback) + HOME/BUSINESS address classifier + dark-donor business-likely flag | UPDATE-only on `core.donor_profile`; IS NULL guards throughout; row count preserved |
+| `03_canary_verify.sql` | Read-only verification of the populated profile AND the bridge outputs | None |
 
 All SQL targets Hetzner Postgres at `37.27.169.232` over the tailnet as `hetzner-1`.
 
@@ -99,6 +101,37 @@ COMMIT
 
 ---
 
+## Step 3b — run the business-address bridge
+
+This extends `core.donor_profile` with SIC/NAICS industry, HOME vs BUSINESS address classification, and a dark-donor business-likely flag. Required before Stage 2 matching can use business addresses on the 17,698 unmatched clusters.
+
+```bash
+# Additive ALTER TABLE + core.normalize_employer() function (no row writes)
+scp /Users/ed/BroyhillGOP/sessions/2026-04-18/donor_profile_stage1/01b_bridge_ddl.sql hetzner-1:/tmp/01b_ddl.sql
+ssh root@hetzner-1 "sudo -u postgres psql -f /tmp/01b_ddl.sql"
+
+# DRY RUN the bridge (rolled back)
+scp /Users/ed/BroyhillGOP/sessions/2026-04-18/donor_profile_stage1/02b_business_address_bridge.sql hetzner-1:/tmp/02b_bridge.sql
+ssh root@hetzner-1 "sed 's/^COMMIT;$/ROLLBACK;/' /tmp/02b_bridge.sql > /tmp/02b_bridge_dry.sql && sudo -u postgres psql -f /tmp/02b_bridge_dry.sql"
+```
+
+**Expected tail:**
+```
+NOTICE:  Ed 372171 bridge result: sic=..., method=..., address_class=...
+NOTICE:  Bridge summary: rows=98303, sic_hit=<non-zero>, dark_biz=<positive>
+ROLLBACK
+```
+
+If `CANARY FAIL`, stop and send Nexus the output.
+
+**Send Nexus `I AUTHORIZE THIS ACTION` once the DRY RUN shows CANARY PASS.** Then run the committed bridge:
+
+```bash
+ssh root@hetzner-1 "sudo -u postgres psql -f /tmp/02b_bridge.sql"
+```
+
+---
+
 ## Step 4 — verify (read-only)
 
 ```bash
@@ -133,6 +166,8 @@ ssh root@hetzner-1 "sudo -u postgres psql -c \"INSERT INTO public.session_state 
 - **`core.donor_attribution` seeding** — the Layer-2 rollup (Ed Family Office = $344,031.30). Schema is created by `01_ddl`. Seeding happens in a separate DRY RUN package that also requires `I AUTHORIZE THIS ACTION`. The preview query in `03_canary_verify.sql` step 5 is read-only.
 - **Committee / candidate join enrichment** — we rely on `committee_sboe_id` and `candidate_referendum_name` as they live on `raw.ncboe_donations`. A later Stage 1b pass will join `committee.registry` for display-name polish.
 - **Grade assignment** — `donor_profile.grade` is left `NULL` for now. Grading rules (Acxiom + donation history + volunteer) come in Stage 2.
+- **NC Secretary of State registry lookup (Stage 1c — non-blocking).** Ideally every business-address donor would be enriched with the NC SoS entity record (officer names, registered agent, business status, dissolution date). There is **no free bulk download** from sosnc.gov; the public search is per-entity and Cobalt Intelligence offers a paid API. Deferring as a Stage 1c loader (cron job, rate-limited lookups) that populates a new `ref.nc_sos_business` table and a column `core.donor_profile.nc_sos_entity_id`. The SIC/NAICS bridge in Step 3b works without it — it uses local `donor_intelligence.sic_keyword_patterns` (272) + `donor_intelligence.profession_sic_patterns` (74) already on Hetzner.
+- **Home-address detection for dark donors** — we cannot confirm a dark donor's address is business without a voter file match. The `dark_donor_business_likely` flag is a heuristic (employer populated + not a PO Box), not a certainty. Stage 1c NC SoS lookup is the confirmation step.
 
 ---
 
