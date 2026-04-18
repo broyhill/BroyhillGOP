@@ -178,11 +178,11 @@ LEFT JOIN cluster_latest l USING (cluster_id);
 --    (this is a lookup, not a mutation of sacred tables)
 -- ---------------------------------------------------------------------
 UPDATE core.donor_profile p
-   SET ncid = v.ncid
+   SET ncid = v.state_voter_id
   FROM core.datatrust_voter_nc v
  WHERE p.rnc_regid = v.rnc_regid
    AND p.ncid IS NULL
-   AND v.ncid IS NOT NULL;
+   AND v.state_voter_id IS NOT NULL;
 
 -- ---------------------------------------------------------------------
 -- Step 3 — log the build to audit + run the canary
