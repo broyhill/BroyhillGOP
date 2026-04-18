@@ -1,0 +1,52 @@
+HETZNER SERVER — CREDENTIALS ROSTER (REDACTED for GitHub)
+Generated: 2026-04-17 03:35 UTC (11:35 PM EDT April 16)
+Live passwords live only in workspace HETZNER_NEW_CREDS.txt — never commit the clear version.
+
+SERVER
+  Host: 37.27.169.232
+  Root SSH password: <REDACTED>
+  Connect: ssh root@37.27.169.232
+
+POSTGRES
+  Host: 37.27.169.232
+  Port: 5432
+  DB: postgres
+  User: postgres
+  Password: <REDACTED>
+  Connection string:
+    postgresql://postgres:<REDACTED>@37.27.169.232:5432/postgres
+
+FIREWALL (UFW) — who can reach what
+  Port 22   (SSH)    : anyone (protected by fail2ban; 4 IPs already banned)
+  Port 5432 (Postgres): Ed home (174.111.16.88), sandbox (34.57/34.72),
+                        Vercel/Google egress (34/35/104 /8)
+  Port 4399 (1Panel) : Ed home only
+  Port 8080 (relay)  : Ed home only
+  Port 8317          : DENY IN+OUT (masscan attacker port — locked)
+
+UPDATED ON SERVER (2026-04-17)
+  /opt/broyhillgop/.env                 ← LOCAL_DB_PASSWORD replaced
+  /opt/pgbackup/scripts/daily_snapshot_dropbox.sh
+      ← DB_PASS replaced
+      ← --format=custom changed to --format=directory (was failing 4 days)
+  Both files backed up with .bak.<timestamp> suffix
+
+HUMAN FOLLOW-UPS (unchanged from rotation)
+  1. Rotate RNC DataHub Client Secret on the RNC portal
+  2. Submit Hetzner abuse statement (if URL 404s, reply via abuse email)
+  3. Remove the leaked password from the GitHub handoff doc
+
+--- 2026-04-18 11:16 EDT ---
+37.27.169.232 (AX162-R #2973063, HEL1-DC7) rescue password: <REDACTED>
+  Note: Server is network-locked by Hetzner (abuse). Rescue unreachable until lock lifted.
+  Auto-expires ~60 min if unused. DO NOT REBOOT (prod Postgres 238GB).
+
+--- 2026-04-18 11:19 EDT ---
+144.76.219.24 (AX41-NVMe #2955738, FSN1-DC11) rescue password: <REDACTED>
+  Auto-expires ~60 min if unused. Box is in rescue as of 2026-04-18 11:22 EDT.
+
+RETIRED (do not attempt)
+  Anamaria@2026@     — retired 2026-04-17
+  c7pgN4_fD63DnG     — retired 2026-04-10 (leaked password, original compromise vector)
+  NvHvF3mrZGvP7W     — retired
+  rwbs8bEX3w8K       — retired
