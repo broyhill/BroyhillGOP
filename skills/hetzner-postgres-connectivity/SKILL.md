@@ -33,7 +33,7 @@ python3 - <<'PY'
 import socket, psycopg2
 
 host='37.27.169.232'; port=5432
-db='broyhillgop'; user='postgres'; pw='MelanieRNC2026$'
+db='broyhillgop'; user='postgres'; pw='[PASSWORD_FROM_1PASSWORD]'
 
 try:
     s = socket.create_connection((host, port), timeout=5)

@@ -25,7 +25,7 @@ python3 - <<'PY'
 import socket, psycopg2
 from psycopg2.extras import RealDictCursor
 
-HOST='37.27.169.232'; PORT=5432; DB='broyhillgop'; USER='postgres'; PWD='MelanieRNC2026$'
+HOST='37.27.169.232'; PORT=5432; DB='broyhillgop'; USER='postgres'; PWD='[PASSWORD_FROM_1PASSWORD]'
 
 try:
     s=socket.create_connection((HOST,PORT), timeout=5); s.close()
