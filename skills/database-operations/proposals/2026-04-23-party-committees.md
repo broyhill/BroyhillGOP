@@ -10,6 +10,28 @@ ACK emitted in-session before design drafting.
 - `broyhill/nexus-platform` repository was not reachable from this workspace.
 - `handoffs/README.md` and `handoffs/2026-04-23T1347_nexus-to-cursor_design-review-request.md` were not found in the current checkout.
 - This draft is therefore a safe, non-destructive review scaffold pending handoff document access.
+- Direct PostgreSQL handshake to `37.27.169.232:5432` is currently blocked from this agent session, preventing live Q0 result collection.
+
+## Q0 Discovery (Read-Only, Run Before Q1-Q5)
+
+### Q0 checklist requested
+1. `tables_matching_committee`
+2. `existing_fec_ingest` (`raw.*` inventory/size proxy for `\\dt+ raw.*`)
+3. `donations_committee_fields` (`public.donations` structure proxy for `\\d+ public.donations`)
+4. `canary_precheck` (cluster `372171`)
+
+### Evidence log (EV_01..EV_NN)
+- **EV_01** — Attempted live connect using DSN A (`dbname=broyhillgop`, `sslmode=prefer`): failed with `server closed the connection unexpectedly`.
+- **EV_02** — Attempted live connect using DSN B (`dbname=postgres`, `sslmode=prefer`): failed with `server closed the connection unexpectedly`.
+- **EV_03** — Because connection failed before authentication/query execution, none of Q0 query blocks (`tables_matching_committee`, `existing_fec_ingest`, `donations_committee_fields`, `canary_precheck`) could be executed in this run.
+
+### Q0 status
+- `Q0_tables_matching_committee`: **BLOCKED** (connectivity)
+- `Q0_existing_fec_ingest`: **BLOCKED** (connectivity)
+- `Q0_donations_committee_fields`: **BLOCKED** (connectivity)
+- `Q0_canary_precheck`: **BLOCKED** (connectivity)
+
+No Q1-Q5 sections should be completed until Q0 executes successfully and EV logs include real query output.
 
 ## Hard Gates (Must Remain in Effect)
 1. **No schema changes** until explicit `APPROVED + AUTHORIZE`.
