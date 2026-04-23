@@ -37,12 +37,36 @@ No Q1-Q5 sections should be completed until Q0 executes successfully and EV logs
 1. **No schema changes** until explicit `APPROVED + AUTHORIZE`.
 2. **No destructive SQL** (`TRUNCATE`, `DROP`, broad `DELETE`, irreversible `UPDATE`) until explicit `APPROVED + AUTHORIZE`.
 3. **Read-only audit first**, execution second.
+4. **C7 Donor separation hard rule**: donor categories must remain in separate tables/files; never use a mixed-category donor table with discriminator-only separation.
+
+## C7 — Donor Category Separation (Amendment Applied)
+The following categories remain strictly separated in storage and ingest:
+- Individual donors
+- Party committees
+- PACs (super/leadership/hybrid)
+- Candidate/campaign committees
+- Corporate donors
+- Labor/union committees
+- Any additional donor category encountered later
+
+### Prohibited
+- Single generic donor table holding multiple categories (even with `type` column)
+- Combined cross-category schema for ingest
+- Rollups that aggregate categories without explicit per-category breakdown
+- Ingesting party committee rows into any individual-donor table
+
+### Required
+- `party_committees` is its own table, ingest, and canary stream
+- Each future donor category gets its own table at time of ingestion
+- Cross-category joins only via explicit, named bridge tables
+- Two-layer attribution (`legal_donor` vs `credited_to`) applies within-category only
 
 ## Design Scope
 Create a controlled process for:
 - committee mapping integrity (registry, party map, committee→candidate bridge),
 - NCBOE spine integrity (row baseline, cluster baseline, canary),
-- reproducible handoff outputs for future sessions.
+- reproducible handoff outputs for future sessions,
+- donor-category isolation compliance (C7) as a first-class acceptance gate.
 
 ## Proposed Review Workflow (Read-Only)
 ### Phase A — Source-of-Truth Lock
@@ -64,6 +88,9 @@ Create a controlled process for:
    - unmapped committees
    - conflicting party flags
    - bridge collisions (one committee mapped to incompatible candidates)
+4. Run category-mix scan:
+   - identify any existing tables that mix donor categories
+   - classify as `HIGH` risk and propose separation migration path
 
 ### Phase C — NCBOE Spine Audit
 1. Validate baseline totals and distinct clusters.
@@ -85,11 +112,13 @@ This design review is considered complete when:
 2. Canary and baseline checks are explicit and first-class.
 3. No write-path SQL is required to run the review.
 4. A clear execution gate states: **no writes until APPROVED + AUTHORIZE**.
+5. C7 separation rules are explicitly encoded in entity, join, and attribution design sections.
 
 ## Pending Before Execution
 1. Provide accessible `broyhill/nexus-platform` repository path or URL.
 2. Provide the two handoff files or their contents.
 3. Confirm which environment is canonical for this run.
+4. Complete Q0 category-mix evidence capture; if a mixed donor table exists, emit `EV_XX` with `severity=high` and separation recommendation.
 
 ---
 **Execution note:** This artifact intentionally contains no schema or destructive SQL.
