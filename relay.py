@@ -260,7 +260,10 @@ async def peek_outbound(req: OutboundRequest):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _validate_agent(name: str, field: str):
-    valid = {"perplexity", "claude", "both", "system"}
+    # Roster of agents the message bus knows about.
+    # 'all' broadcasts to every human agent (perplexity + claude + cursor).
+    # 'both' is the legacy alias for perplexity+claude (kept for backward compat).
+    valid = {"perplexity", "claude", "cursor", "both", "all", "system"}
     if name not in valid:
         raise HTTPException(status_code=400, detail=f"{field} must be one of {valid}")
 
@@ -314,14 +317,14 @@ async def send_message(req: MessageRequest):
 
 @app.get("/inbox", dependencies=[Depends(require_key)])
 async def inbox(
-    agent: str = Query(..., description="'perplexity' or 'claude' — whose inbox to read"),
-    include_both: bool = Query(True, description="Include messages sent to 'both'"),
+    agent: str = Query(..., description="'perplexity' | 'claude' | 'cursor' — whose inbox to read"),
+    include_both: bool = Query(True, description="Include messages sent to 'both' or 'all'"),
     unread_only: bool  = Query(True),
     limit: int         = Query(50, ge=1, le=200),
 ):
     """
     Return unread messages for an agent.
-    Call this at the start of every session to catch messages left by the other agent.
+    Call this at the start of every session to catch messages left by the other agent(s).
     """
     _validate_agent(agent, "agent")
     try:
@@ -332,8 +335,8 @@ async def inbox(
             .limit(limit)
         )
         if include_both:
-            # Supabase REST: filter to_agent IN ('agent', 'both')
-            q = q.in_("to_agent", [agent, "both"])
+            # 'both' is the legacy 2-agent broadcast; 'all' is the 3-agent broadcast.
+            q = q.in_("to_agent", [agent, "both", "all"])
         else:
             q = q.eq("to_agent", agent)
         if unread_only:

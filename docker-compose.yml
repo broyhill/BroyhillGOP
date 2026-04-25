@@ -32,8 +32,9 @@ services:
     ports:
       - "8080:8080"
     command: >
-      bash -c "pip install anthropic supabase redis fastapi uvicorn[standard] --quiet
-      && python app/relay.py"
+      bash -c "apt-get update -qq && apt-get install -y -qq curl
+      && pip install anthropic supabase redis fastapi 'uvicorn[standard]' pydantic --quiet
+      && python relay.py"
     depends_on:
       - redis
     healthcheck:
@@ -41,7 +42,7 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 20s
+      start_period: 60s
 
 volumes:
   redis_data:
