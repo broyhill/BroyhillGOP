@@ -334,7 +334,7 @@ SQL
   - FEC (all time): 102 txn / $319,841 | NCBOE (all time): 151 txn / $320,622 | Combined: **$640,463**
   - 10-year total (2015-2024): ~$610-640K (vs Ed's claimed $625K — numbers track)
   - Known FEC name variants: BROYHILL ED, EDGAR, JAMES EDGAR, JAMES ED, JAMES E, J EDGAR, J. EDGAR, J E, J. E
-  - EXCLUDE: JAMES T / JAMES T. / JAMES THOMAS BROYHILL — that is Senator James Thomas Broyhill (uncle, deceased 2023)
+  - JAMES T / JAMES T. / JAMES THOMAS BROYHILL = Senator James Thomas Broyhill **Sr. (Ed's father, deceased 2023)** — NOT Ed's uncle (corrected 2026-04-25 by Ed verbatim). Treatment: separate `legal_donor` identity in `core.di_person_canonical` as `JAMES_SR_BROYHILL`. `credited_to` rolls up to `ED_BROYHILL_FAMILY_OFFICE` per `SUPREME-MASTERPLAN/FAMILY-AND-DONOR-ROSTER.md` (same household model as Ed's wife Melanie Pennell and Ed's mother Louise). Address-based guard required: `JAMES T / JAMES THOMAS BROYHILL` rows from `5033 Gorham Dr` are Ed's son James II (out-of-scope, separate person_key `JAMES_II_BROYHILL`).
 - Melanie Pennell Broyhill (wife): ~$45,755 total (FEC + NCBOE)
 - AI team cost: ~$77.80/day / ~$2,334/mo (64 ecosystems, Claude model assignments per agent registry)
 
