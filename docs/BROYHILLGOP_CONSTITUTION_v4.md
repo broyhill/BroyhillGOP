@@ -1,22 +1,22 @@
-# BroyhillGOP Constitution for Claude — Version 4.0
+# BroyhillGOP Constitution — Version 4.1
 
-**Official Operating Charter & Context Reference**
-**Effective Date:** April 13, 2026
-**Authority:** Supersedes ALL prior versions (v1, v2, v3) in their entirety
-**Maintained by:** Claude + Perplexity — update when architecture changes
+**Operating Charter & Context Reference**
+**Effective Date:** April 13, 2026 (v4.0) · Loosened April 25, 2026 (v4.1)
+**Authority:** Supersedes prior versions (v1, v2, v3, v4.0) in their entirety
+**Maintained by:** Ed Broyhill. Any agent (Claude, Perplexity, Cursor, or other) may propose edits via PR; Ed approves before merge.
 
 ---
 
-## MANDATORY SESSION START PROTOCOL
+## Recommended Session Start Protocol
 
-Before any work in any session, Claude MUST complete these steps in order:
+Before non-trivial work, the agent should complete these steps. They exist because skipping them has caused damage; treat them as the default unless Ed explicitly waives them for a given task.
 
 1. Search Google Drive: `fullText contains 'BroyhillGOP' and modifiedTime > '2026-01-01'` — find the most recent state documents
-2. Read `docs/CLAUDE_MASTER_CONTEXT.md` from the GitHub repo — authoritative architecture reference
+2. Read `docs/MASTER_CONTEXT.md` from the GitHub repo — current architecture reference
 3. Read `docs/SESSION-STATE.md` from the GitHub repo — what was last done, what's in progress
-4. Open with: *"I've read the master context and session state. [State what's current]. What are we working on today?"*
+4. Confirm readiness in the agent's own voice (no scripted opener required)
 
-**Do NOT design, create tables, write migrations, or ALTER anything until steps 1–3 are complete.**
+Agents should not design tables, write migrations, or ALTER anything until steps 1–3 are complete, unless Ed explicitly waives the read for a specific task.
 
 ---
 
@@ -136,9 +136,11 @@ Full reference: `docs/COMPLETE_ECOSYSTEM_REFERENCE.md`
 
 ---
 
-## Article V — Immutable Architecture Rules
+## Article V — Architecture Rules
 
-These are settled decisions. Do not propose changing them.
+These are the current settled decisions. They can be revisited, but only with Ed's explicit approval and an amendment-log entry. Do not change them silently.
+
+**Hard rules** (Rules 1, 2, 6, 12, 13) prevent data loss and cannot be waived without Ed's written authorization. **Default rules** (Rules 3, 4, 5, 7, 8, 9, 10, 11, 14) are strong defaults that Ed may waive for a specific task.
 
 **Rule 1 — Raw donation tables are FROZEN.**
 Do NOT modify `fec_donations`, `fec_party_committee_donations`, `nc_boe_donations_raw` for enrichment. Query through views: `v_fec_donations_enriched`, `v_ncboe_donations_enriched`, `v_fec_party_donations_enriched`.
@@ -181,8 +183,8 @@ Apply Rule 14 first. These tables took months to load. One bad migration cost we
 **Rule 13 — Supabase is agent coordination only.**
 Do not create application tables on Supabase. `agent_messages` and `decisions` only.
 
-**Rule 14 — Backup Before Breaking. (Perplexity, April 13 2026)**
-Before any migration, bulk data change, or restructure:
+**Rule 14 — Backup Before High-Risk Changes. (Default rule — Ed may waive)**
+Before high-risk changes (DDL on live donor/voter tables, bulk data changes >10K rows, restructures, ecosystem migrations), run a backup. For routine work and reversible changes, backup is optional but recommended.
 1. Run `candidate_snapshot.sh <id>` for affected candidates, OR
 2. Run `backup_now.sh "description"` for full safety net
 3. Rollback: `candidate_restore.sh <id> latest` (surgical) or `pitr_restore.sh "timestamp"` (nuclear)
@@ -239,21 +241,21 @@ nc_datatrust, fec_donations, person_master/spine, political_entity_master, brain
 **§9.1 When Starting Work**
 - Identify which ecosystems are affected
 - State which tables will be touched
-- Confirm Rule 14 backup is in plan if touching donor/voter data
+- Confirm Rule 14 backup is in plan if touching donor/voter data with a high-risk change
 
 **§9.2 When Stuck or Uncertain**
 - State the specific uncertainty
 - Search Google Drive for prior decisions on the topic
-- Ask Eddie rather than guess
+- Ask Ed rather than guess
 
-**§9.3 Never**
-- Drop tables without explicit authorization
-- Truncate live data
-- Modify raw donation tables
-- Create Supabase tables for application data
-- Use unqualified `person_spine` or `person_master`
-- Assume a feature doesn't exist without checking the ecosystem catalog
-- Start a session without reading CLAUDE_MASTER_CONTEXT.md and SESSION-STATE.md
+**§9.3 Avoid Unless Ed Authorizes**
+- Dropping tables
+- Truncating live data
+- Modifying raw donation tables (Hard Rule 1)
+- Creating Supabase tables for application data (Hard Rule 13)
+- Using unqualified `person_spine` or `person_master` (Hard Rule 6)
+- Assuming a feature doesn't exist without checking the ecosystem catalog
+- Starting a session without reading MASTER_CONTEXT.md and SESSION-STATE.md (waiveable for trivial tasks)
 
 ---
 
@@ -274,34 +276,39 @@ At the end of every session:
 | v1.0 | Jan 2026 | Initial Constitution | Establish baseline (Django/Inspinia era) |
 | v2.0 | Jan 4, 2026 | Added emergency protocols, tool prohibitions | Prevent common errors |
 | v3.0 | ~Jan 2026 | Added credential startup protocol | Session initialization |
-| **v4.0** | **Apr 13, 2026** | **Full rewrite: Hetzner stack, 60 ecosystems, 14 rules, Google Drive search protocol, brain worker gap, multi-tenant model** | **Platform migrated to Hetzner; Supabase demoted; major architecture evolution; repeated session errors caused by stale context** |
+| v4.0 | Apr 13, 2026 | Full rewrite: Hetzner stack, 60 ecosystems, 14 rules, Google Drive search protocol, brain worker gap, multi-tenant model | Platform migrated to Hetzner; Supabase demoted; major architecture evolution; repeated session errors caused by stale context |
+| **v4.1** | **Apr 25, 2026** | **Loosened agent-controlling language; renamed CLAUDE_MASTER_CONTEXT.md to MASTER_CONTEXT.md (with redirect); reclassified rules into Hard (1, 2, 6, 12, 13) and Default (3, 4, 5, 7, 8, 9, 10, 11, 14); loosened Rule 14 to high-risk changes only; removed maintainer attribution to specific agents** | **Constitution was scoped to Claude only; needed to apply to any agent. "MUST/NEVER/MANDATORY" framing was too rigid. Ed authorized the loosening on 2026-04-25.** |
 
 ---
 
 ## Appendix A — Quick Reference
 
-**🚫 NEVER:**
-- Use `person_master` or `person_spine` without schema prefix
-- Touch `fec_donations` / `fec_party_committee_donations` / `nc_boe_donations_raw` directly
-- Create tables on Supabase
-- Start work without reading CLAUDE_MASTER_CONTEXT.md
-- Migrate/ALTER without Rule 14 backup
+**Defaults — override only with Ed's go-ahead:**
 
-**✅ ALWAYS:**
+**Hard (cannot waive without Ed's written authorization):**
+- Use `person_master` or `person_spine` without schema prefix (Hard Rule 6)
+- Touch `fec_donations` / `fec_party_committee_donations` / `nc_boe_donations_raw` directly (Hard Rule 1)
+- Create tables on Supabase for application data (Hard Rule 13)
+
+**Default (Ed may waive per task):**
+- Start work without reading MASTER_CONTEXT.md (waiveable for trivial tasks)
+- High-risk changes without a Rule 14 backup
+- Designing new features without checking the ecosystem catalog
+
+**Always recommended:**
 - Schema-qualify every table name
-- Search Drive + read CLAUDE_MASTER_CONTEXT.md at session start
+- Search Drive + read MASTER_CONTEXT.md at session start
 - Check ecosystem catalog before designing new features
-- Apply Rule 14 before touching live donor/voter data
 - Update SESSION-STATE.md at session end
 
 **📍 Primary Repo:** `github.com/broyhill/BroyhillGOP` (PUBLIC — more complete than private repo)
 **📍 Hetzner Host:** `37.27.169.232` — PG16, bgop database
-**📍 Key Doc:** `docs/CLAUDE_MASTER_CONTEXT.md` — read this first every session
+**📍 Key Doc:** `docs/MASTER_CONTEXT.md` — read this first every session
 **📍 Key Doc:** `docs/BGOP_ARCHITECTURE_BRIEF.docx` — all P1–P3 DDL
 **📍 Key Doc:** `docs/COMPLETE_ECOSYSTEM_REFERENCE.md` — all 60 ecosystems
 
 ---
 
-*Constitution v4.0 — Ratified April 13, 2026*
-*This document supersedes BroyhillGOP-Constitution-v2.md, v3, and all prior operating instructions.*
+*Constitution v4.1 — April 25, 2026*
+*This document supersedes prior versions (v1, v2, v3, v4.0) and all prior operating instructions.*
 *Next review: When platform architecture changes significantly or a new session causes damage due to stale context.*
