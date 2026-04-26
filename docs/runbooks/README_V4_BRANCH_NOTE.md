@@ -1,0 +1,1 @@
+This branch preserves the Committee Ingestion V4 artifacts and merged Phase B dry-run materials. It does not apply Phase B, run Stage 4, swap columns, or modify scoring/model systems. Original session-mar17-2026-clean remains diverged.
