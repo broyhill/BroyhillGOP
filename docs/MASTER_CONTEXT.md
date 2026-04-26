@@ -359,37 +359,16 @@ Then push SESSION-STATE.md and CLAUDE_MASTER_CONTEXT.md to GitHub.
 
 ---
 
-## §11 CANONICAL VOTER-ID JOIN RECIPE (per Zach Imel, RNC Data Director)
+## §11 CANONICAL VOTER-ID JOIN RECIPE
 
-**Authority:** Zach Imel, Data Director, Republican National Committee (270-799-0923)
-**Date received:** 2026-04-25 evening
-**Status:** Canonical. Use this pattern for any voter-file → RNC → Acxiom join.
+**Authority:** RNC Data Team — already documented in `docs/DATATRUST_API_ANSWERS.md` (received April 3, 2026 from Danny Gustafson and Zach Imel).
 
-### The three IDs and their relationships
+**See that doc for:** the three-ID chain (ncid ↔ StateVoterID ↔ RNC_RegID), the canonical SQL join pattern (nc_voters → rnc.VoterSnapshot → Acxiom), RNC contact info, and the official answers on DataTrust API behavior, FactInitiativeContacts, AcxiomConsumerData, and identity resolution.
 
-| ID | Source | What it is |
-|---|---|---|
-| `ncid` | NC SBOE (state government) | NC's official voter ID. Stable. |
-| `StateVoterID` | RNC DataTrust (`rnc.VoterSnapshot` view) | RNC's storage of the same NCID value. `StateVoterID = ncid`. |
-| `RNC_RegID` | RNC DataTrust | RNC's national unique voter ID. Used by Acxiom and all RNC enrichment downstream. |
+**Local equivalents on Hetzner PG16:**
 
-### Canonical join
+- `nc_voters` (raw NC SBOE feed): **NOT YET INGESTED** as of 2026-04-25. To-do for Phase C deceased/moved classification.
+- `rnc.VoterSnapshot` (RNC view): mirrored locally as `core.datatrust_voter_nc` (7.7M rows). Already has both `state_voter_id` and `rnc_regid` columns side by side, so the three-table join collapses to a single lookup at the row level.
+- Acxiom: three tables locally — `core.acxiom_ap_models`, `core.acxiom_consumer_nc`, `core.acxiom_ibe`. All key on `rnc_regid`.
 
-```sql
-SELECT *
-FROM nc_voters a
-JOIN myodd_nc_statecomm.rnc.VoterSnapshot b
-  ON a.ncid = b.StateVoterID
-JOIN Acxiom c
-  ON b.RNC_RegID = c.RNC_RegID;
-```
-
-### Local equivalents on Hetzner PG16
-
-- `nc_voters` (raw NC SBOE feed): **NOT YET INGESTED** as of 2026-04-25. To-do.
-- `rnc.VoterSnapshot` (RNC view): mirrored locally as `core.datatrust_voter_nc` (7.7M rows). Already has both `state_voter_id` and `rnc_regid` columns side by side, so the join Zach describes is already pre-resolved at the row level.
-- `Acxiom`: three tables locally — `core.acxiom_ap_models`, `core.acxiom_consumer_nc`, `core.acxiom_ibe`. All key on `rnc_regid`.
-
-### Implication
-
-When matching donations to voters in Phase B of the Committee Ingestion Plan V3, write **both** `rnc_regid` and `state_voter_id` from the same `core.datatrust_voter_nc` row. They must stay paired. Downstream consumers will use `rnc_regid` to reach Acxiom and `state_voter_id` to reach NC SBOE removal/registration data.
+**Operational rule:** when matching donations to voters (Committee Ingestion Plan V3 Phase B), write **both** `rnc_regid` and `state_voter_id` from the same `core.datatrust_voter_nc` row. Keep them paired. Downstream consumers use `rnc_regid` to reach Acxiom and `state_voter_id` to reach NC SBOE removal/registration data.
