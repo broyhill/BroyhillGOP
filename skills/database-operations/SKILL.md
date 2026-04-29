@@ -310,5 +310,13 @@ Name format: FIRST MIDDLE LAST (not LAST, FIRST like FEC)
 
 ---
 
+## RELATED SKILLS
+
+- `db-smoke-canary` — minimal, repeatable smoke + canary checks for startup validation
+- `hetzner-postgres-connectivity` — connectivity triage for handshake, pg_hba, SSL, and firewall issues
+- `cloud-env-bootstrap` — bootstrap plan for missing base tools in minimal cloud agents
+
+---
+
 *Last updated: April 16, 2026 by Perplexity (CEO)*
 *Do not modify without Ed Broyhill's authorization.*

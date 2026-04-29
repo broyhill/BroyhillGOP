@@ -25,6 +25,14 @@ Next Build Task: [specific task]
 Ready for orders.
 ```
 
+## STEP 1.5: MODEL ESCALATION (Required)
+
+Use the default model for normal implementation. Escalate to an additional model/subagent when the task benefits from specialization:
+
+- **Use `composer-2-fast` subagent** for broad codebase exploration, parallelized discovery, or deep debugging loops that need fast iteration.
+- **Keep execution in this main session** for final edits, git operations, and user-facing status updates.
+- **State the escalation intent** before launching: what question is being delegated and what output is expected back.
+
 ---
 
 ## STEP 2: PRE-CODE MANDATORY CHECKLIST
@@ -40,6 +48,7 @@ BEFORE I PROCEED:
 □ Verified no duplicate tables/functions will be created
 □ Confirmed integration points with E20 (Intelligence Brain)
 □ Eddie has approved any destructive operations
+□ Selected model strategy (default vs `composer-2-fast` subagent)
 ```
 
 ---
