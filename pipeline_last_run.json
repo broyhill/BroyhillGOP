@@ -1,9 +1,9 @@
 {
-  "started_at": "2026-04-29T15:19:42Z",
-  "finished_at": "2026-04-29T17:22:22Z",
+  "started_at": "2026-04-30T13:38:10Z",
+  "finished_at": "2026-04-30T20:10:34Z",
   "status": "ok",
   "host": "MacBook-Pro",
-  "log_file": "/Users/Broyhill/Library/Logs/godfile-pipeline/run-20260429-111940.log",
+  "log_file": "/Users/Broyhill/Library/Logs/godfile-pipeline/run-20260430-093810.log",
   "exit_codes": {
     "ecosystem_search_engine.py": 0,
     "enrich_json_v7.py": 0,
@@ -11,7 +11,7 @@
   },
   "html_output": {
     "path": "/Users/Broyhill/Documents/GitHub/BroyhillGOP/GOD_FILE_INDEX_V7.html",
-    "size_bytes": 1851988,
-    "mtime_utc": "2026-04-29T17:22:22Z"
+    "size_bytes": 1854469,
+    "mtime_utc": "2026-04-30T20:10:34Z"
   }
 }
