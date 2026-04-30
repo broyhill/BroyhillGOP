@@ -78,7 +78,7 @@
 
 ### Hetzner state
 - Direct postgres on 5432 reachable from sandbox (UFW rule from Apr 18 active)
-- Password: `MelanieRNC2026$` (per database-operations skill)
+- Password: `${HETZNER_SSH_PASSWORD}` (per database-operations skill)
 - Last `session_state` row: 2026-04-20 10:30 EDT by Nexus (stale; should refresh after Phase 2 work)
 
 ### What's safe

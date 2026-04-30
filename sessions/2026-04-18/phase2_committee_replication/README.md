@@ -38,7 +38,7 @@ Pick one:
 ### Option A — Ed runs from laptop (RECOMMENDED, safest)
 1. Pull this package down (GitHub: `broyhill/BroyhillGOP` → `sessions/2026-04-18/phase2_committee_replication/`).
 2. `pip install psycopg2-binary requests`
-3. Apply DDL once: `psql "postgresql://postgres:XanypdTxZb3qRE8bUdGXFGGK@37.27.169.232:5432/postgres" -f 01_hetzner_ddl.sql`
+3. Apply DDL once: `psql "postgresql://postgres:${PG_PASSWORD_RETIRED_20260424}@37.27.169.232:5432/postgres" -f 01_hetzner_ddl.sql`
 4. Load: `python 03_replicate.py load`
 5. Verify: `python 03_replicate.py verify`
 6. Or: `psql ... -f 04_post_load_verify.sql | tee verify.log`
@@ -50,7 +50,7 @@ Adds `34.0.0.0/8`, `35.0.0.0/8`, `104.0.0.0/8` to UFW port 5432 — letting me d
 
 ```bash
 cd phase2_committee_replication
-psql "postgresql://postgres:XanypdTxZb3qRE8bUdGXFGGK@37.27.169.232:5432/postgres" \
+psql "postgresql://postgres:${PG_PASSWORD_RETIRED_20260424}@37.27.169.232:5432/postgres" \
   -f 01_hetzner_ddl.sql
 python 03_replicate.py all        # extract + load + verify
 ```

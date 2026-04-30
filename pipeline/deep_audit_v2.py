@@ -66,7 +66,7 @@ except ImportError:
         dsn = (
             os.environ.get("SUPABASE_DB_URL")
             or os.environ.get("DATABASE_URL")
-            or "postgresql://postgres:Anamaria@2026@@db.isbgjpnbocdkeslofota.supabase.co:5432/postgres"
+            or "postgresql://postgres:${PG_PASSWORD}@db.isbgjpnbocdkeslofota.supabase.co:5432/postgres"
         )
         return dsn
 

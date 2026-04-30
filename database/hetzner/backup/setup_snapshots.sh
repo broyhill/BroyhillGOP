@@ -76,7 +76,7 @@ echo "  └── candidate_restore.sh        Per-candidate surgical restore"
 echo ""
 echo "[4/5] Ensuring backup schema exists..."
 
-PGPASSWORD='Anamaria@2026@' psql -h 127.0.0.1 -U postgres -d postgres << 'SQLBLOCK'
+PGPASSWORD='${PG_PASSWORD}' psql -h 127.0.0.1 -U postgres -d postgres << 'SQLBLOCK'
 CREATE SCHEMA IF NOT EXISTS backup;
 
 CREATE TABLE IF NOT EXISTS backup.backup_history (
@@ -223,7 +223,7 @@ echo "    ${SCRIPTS_DIR}/candidate_restore.sh <candidate_id> latest"
 echo "    ${SCRIPTS_DIR}/candidate_restore.sh <candidate_id> list"
 echo ""
 echo "  Check backup status:"
-echo "    PGPASSWORD='Anamaria@2026@' psql -h 127.0.0.1 -U postgres -d postgres \\"
+echo "    PGPASSWORD='${PG_PASSWORD}' psql -h 127.0.0.1 -U postgres -d postgres \\"
 echo "      -c \"SELECT * FROM backup.v_backup_status;\""
 echo ""
 if ! rclone listremotes 2>/dev/null | grep -q "^dropbox:"; then

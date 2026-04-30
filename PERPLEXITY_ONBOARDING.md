@@ -105,10 +105,10 @@ On day 1 of this session, Perplexity made these mistakes:
 
 ### Supabase Project
 - **ID:** isbgjpnbocdkeslofota | **Region:** us-east-1 | **Postgres:** 17.6
-- **Connection:** `postgresql://postgres:Anamaria@2026@@db.isbgjpnbocdkeslofota.supabase.co:5432/postgres`
+- **Connection:** `postgresql://postgres:${PG_PASSWORD}@db.isbgjpnbocdkeslofota.supabase.co:5432/postgres`
 - **Always set:** `SET statement_timeout = 0;` before heavy queries
 - **REST API:** `https://isbgjpnbocdkeslofota.supabase.co/rest/v1`
-- **Service Role Key:** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzYmdqcG5ib2Nka2VzbG9mb3RhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDcwNzcwNywiZXhwIjoyMDgwMjgzNzA3fQ.DUIkApJpqTSv02ZRU4OQ0nK4iElqOm6SLAmDSqkvF0`
+- **Service Role Key:** `${SUPABASE_SERVICE_ROLE_KEY}`
 
 ### Key Table Row Counts (last verified March 3, 2026 — verify live before acting)
 
@@ -228,7 +228,7 @@ The relay cannot reach Cursor directly — send to `both` or ask Ed to paste.
 
 **When loading files via psql always:**
 ```bash
-export PGPASSWORD='Anamaria@2026@'
+export PGPASSWORD='${PG_PASSWORD}'
 export PGSSLMODE=require
 psql "postgresql://postgres@db.isbgjpnbocdkeslofota.supabase.co:5432/postgres" -v ON_ERROR_STOP=1 <<'SQL'
 SET statement_timeout = 0;
@@ -236,8 +236,8 @@ SET statement_timeout = 0;
 SQL
 ```
 
-**Never use `Anamaria@2026@@` (double @) in the connection string** — URL-encode as
-`Anamaria%402026%40` or use PGPASSWORD env var to avoid parsing issues.
+**Never use `${PG_PASSWORD}@` (double @) in the connection string** — URL-encode as
+`${PG_PASSWORD_URLENCODED}` or use PGPASSWORD env var to avoid parsing issues.
 
 ---
 

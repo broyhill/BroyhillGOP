@@ -45,7 +45,7 @@ If you need to understand the dedup logic, read `/opt/broyhillgop/sessions/DONOR
 | **Disk** | 1.8 TB total, 222 GB used (14%) |
 | **RAM usage** | 4% |
 | **PostgreSQL** | Local, port 5432 |
-| **DB connstring** | `postgresql://postgres:Anamaria%402026%40@127.0.0.1:5432/postgres` |
+| **DB connstring** | `postgresql://postgres:${PG_PASSWORD_URLENCODED}@127.0.0.1:5432/postgres` |
 | **Supabase project** | `isbgjpnbocdkeslofota` |
 | **GitHub repo** | `broyhill/BroyhillGOP`, branch `main` |
 | **Last git commit** | `8412b6a` — NCBOE GOLD file audit script |

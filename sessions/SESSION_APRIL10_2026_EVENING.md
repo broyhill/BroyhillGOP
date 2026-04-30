@@ -49,9 +49,9 @@ nc_voters.ncid = DataTrust.StateVoterID → DataTrust.RNC_RegID = Acxiom.RNC_Reg
 | Supabase (main DB) | Project: isbgjpnbocdkeslofota, us-east-1 |
 | Supabase direct | db.isbgjpnbocdkeslofota.supabase.co port 5432 |
 | Supabase pooler | port 6543 |
-| Supabase password | Anamaria@2026@ |
+| Supabase password | ${PG_PASSWORD} |
 | New Hetzner (PRIMARY) | 37.27.169.232 (AX162-R, Finland, 96 cores, 252GB RAM, 1.8TB RAID) |
-| New Hetzner root pw | c7pgN4_fD63DnG |
+| New Hetzner root pw | ${PG_PASSWORD_RETIRED_20260417} |
 | Old Hetzner (COMPROMISED) | 5.9.99.109 — DDoS abuse report, relay lives here, deadline April 11 11:50 PM UTC |
 | Old Hetzner 2 (GPU) | 144.76.219.24 (GEX44, RTX 4000) root: NvHvF3mrZGvP7W |
 | RNC API auth | POST https://rncdhapi.azurewebsites.net/api/Authenticate (NEW endpoint for auth) |

@@ -5,7 +5,7 @@
 ```
 Host: 37.27.169.232
 User: root
-Password: c7pgN4_fD63DnG
+Password: ${PG_PASSWORD_RETIRED_20260417}
 ```
 
 **Connect with key (preferred):**
@@ -15,7 +15,7 @@ ssh -i ~/.ssh/id_ed25519_hetzner root@37.27.169.232
 
 **Connect with password (if key fails):**
 ```bash
-sshpass -p 'c7pgN4_fD63DnG' ssh -o StrictHostKeyChecking=no root@37.27.169.232
+sshpass -p '${PG_PASSWORD_RETIRED_20260417}' ssh -o StrictHostKeyChecking=no root@37.27.169.232
 ```
 
 **Authorized keys on server:**
@@ -30,12 +30,12 @@ Password authentication is now **enabled**. If your key doesn't work, password w
 
 ```
 PostgreSQL on localhost (same server):
-postgresql://postgres:Anamaria%402026%40@localhost:5432/postgres
+postgresql://postgres:${PG_PASSWORD_URLENCODED}@localhost:5432/postgres
 ```
 
 **Quick test:**
 ```bash
-PGPASSWORD='Anamaria@2026@' psql -h localhost -U postgres -d postgres -c "SELECT COUNT(*) FROM raw.ncboe_donations;"
+PGPASSWORD='${PG_PASSWORD}' psql -h localhost -U postgres -d postgres -c "SELECT COUNT(*) FROM raw.ncboe_donations;"
 ```
 
 ---

@@ -14,13 +14,13 @@ import time
 
 # Supabase config
 SUPABASE_URL = "https://isbgjpnbocdkeslofota.supabase.co"
-ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzYmdqcG5ib2Nka2VzbG9mb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3MDc3MDcsImV4cCI6MjA4MDI4MzcwN30.pSF0-C-QOklmDWtbexUvnFphuz_bFTdF4INaBMSW1SM"
+ANON_KEY = "${SUPABASE_ANON_KEY}"
 
 # Hetzner config
 HETZNER_HOST = "37.27.169.232"
-HETZNER_PASS = "c7pgN4_fD63DnG"
-PG_PASS = "Anamaria@2026@"
-PG_CONNSTR = "postgresql://postgres:Anamaria%402026%40@localhost:5432/postgres"
+HETZNER_PASS = "${PG_PASSWORD_RETIRED_20260417}"
+PG_PASS = "${PG_PASSWORD}"
+PG_CONNSTR = "postgresql://postgres:${PG_PASSWORD_URLENCODED}@localhost:5432/postgres"
 
 def ssh_cmd(cmd):
     """Execute command on Hetzner via SSH."""

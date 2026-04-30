@@ -44,7 +44,7 @@ DB_CONFIG = {
     'port': 6543,
     'dbname': 'postgres',
     'user': 'postgres.slkbmwfpxgdcriqqsome',
-    'password': 'ChairMan2024!$@!'
+    'password': '${PG_PASSWORD}'
 }
 
 

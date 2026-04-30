@@ -53,7 +53,7 @@ HETZNER_HOST = os.environ.get("HETZNER_HOST", "37.27.169.232")
 HETZNER_PORT = int(os.environ.get("HETZNER_PORT", 5432))
 HETZNER_DB   = os.environ.get("HETZNER_DB",   "postgres")
 HETZNER_USER = os.environ.get("HETZNER_USER", "postgres")
-HETZNER_PW   = os.environ.get("HETZNER_PW",   "XanypdTxZb3qRE8bUdGXFGGK")
+HETZNER_PW   = os.environ.get("HETZNER_PW",   "${PG_PASSWORD_RETIRED_20260424}")
 
 # Page size: 1000 rows per RPC call (proved safe under the 30KB response cap
 # in the April 15 replication).

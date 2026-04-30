@@ -30,7 +30,7 @@ Re-run ONLY these files — `ON CONFLICT (sub_id) DO NOTHING` protects against d
 | `2022-2026-Trump-nc-individ-only.csv` | 377,779 | 377,778 | 1 |
 
 ```bash
-export FEC_BULK_DATABASE_URL="postgresql://postgres:Anamaria%402026%40@db.isbgjpnbocdkeslofota.supabase.co:6543/postgres?sslmode=require"
+export FEC_BULK_DATABASE_URL="postgresql://postgres:${PG_PASSWORD_URLENCODED}@db.isbgjpnbocdkeslofota.supabase.co:6543/postgres?sslmode=require"
 
 python3 -m pipeline.load_fec_bulk --file "WHATLEY-MCCRORY-2015-2026-US-SENATE.csv" --category SENATE
 python3 -m pipeline.load_fec_bulk --file "GROUP-3-BROWN-MORROM-FEC-SENATE-2015-2026-3.csv" --category SENATE

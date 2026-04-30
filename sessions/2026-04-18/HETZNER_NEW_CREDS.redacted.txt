@@ -46,7 +46,7 @@ HUMAN FOLLOW-UPS (unchanged from rotation)
   Auto-expires ~60 min if unused. Box is in rescue as of 2026-04-18 11:22 EDT.
 
 RETIRED (do not attempt)
-  Anamaria@2026@     — retired 2026-04-17
-  c7pgN4_fD63DnG     — retired 2026-04-10 (leaked password, original compromise vector)
+  ${PG_PASSWORD}     — retired 2026-04-17
+  ${PG_PASSWORD_RETIRED_20260417}     — retired 2026-04-10 (leaked password, original compromise vector)
   NvHvF3mrZGvP7W     — retired
   rwbs8bEX3w8K       — retired

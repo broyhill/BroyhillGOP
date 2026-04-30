@@ -12,7 +12,7 @@ You MUST read these files first (session-start.mdc requires this):
 2. `/opt/broyhillgop/sessions/SESSION_TRANSCRIPT_APRIL14_2026_AFTERNOON.md`
 3. `/opt/broyhillgop/sessions/SESSION_TRANSCRIPT_APRIL14_2026_CONTACT_ENRICHMENT.md`
 
-**Connection string**: `postgresql://postgres:Anamaria%402026%40@37.27.169.232:5432/postgres`
+**Connection string**: `postgresql://postgres:${PG_PASSWORD_URLENCODED}@37.27.169.232:5432/postgres`
 
 ---
 

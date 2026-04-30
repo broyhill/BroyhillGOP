@@ -13,7 +13,7 @@ Every AI session before March 24, 2026 audited this database using the Supabase 
 
 ```
 psql -h db.isbgjpnbocdkeslofota.supabase.co -U postgres -d postgres
-Password: Anamaria@2026@
+Password: ${PG_PASSWORD}
 ```
 
 ---
@@ -150,7 +150,7 @@ CREATE VIEW public.donor_contribution_map AS
 DB Host:   db.isbgjpnbocdkeslofota.supabase.co
 Port:      5432
 User:      postgres
-Password:  Anamaria@2026@
+Password:  ${PG_PASSWORD}
 Database:  postgres
 
 Hetzner:   root@5.9.99.109

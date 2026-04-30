@@ -56,7 +56,7 @@
 ```bash
 screen -r acxrestructure
 # or:
-PGPASSWORD='Anamaria@2026@' psql -h 127.0.0.1 -U postgres -d postgres -c "SELECT count(*) FROM core.acxiom_ibe;"
+PGPASSWORD='${PG_PASSWORD}' psql -h 127.0.0.1 -U postgres -d postgres -c "SELECT count(*) FROM core.acxiom_ibe;"
 ```
 
 ---
@@ -157,8 +157,8 @@ PGPASSWORD='Anamaria@2026@' psql -h 127.0.0.1 -U postgres -d postgres -c "SELECT
 | Item | Value |
 |------|-------|
 | Hetzner server | 37.27.169.232 |
-| Root password | c7pgN4_fD63DnG |
-| PostgreSQL | postgresql://postgres:Anamaria%402026%40@127.0.0.1:5432/postgres |
+| Root password | ${PG_PASSWORD_RETIRED_20260417} |
+| PostgreSQL | postgresql://postgres:${PG_PASSWORD_URLENCODED}@127.0.0.1:5432/postgres |
 | Supabase project | isbgjpnbocdkeslofota |
 | GitHub repo | broyhill/BroyhillGOP |
 | GitHub branch | session-mar17-2026-clean (tip: 80e33f3) |

@@ -35,7 +35,7 @@ PG_DATA="/var/lib/postgresql/16/main"
 PG_CONF="/etc/postgresql/16/main/postgresql.conf"
 PG_USER="postgres"
 DB_NAME="postgres"
-DB_PASS="Anamaria@2026@"
+DB_PASS="${PG_PASSWORD}"
 RETENTION_DAYS=7
 
 echo "============================================="
@@ -103,7 +103,7 @@ TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BACKUP_NAME="base_${TIMESTAMP}"
 BACKUP_PATH="${BASE_DIR}/${BACKUP_NAME}"
 LOG_FILE="${LOG_DIR}/backup_${TIMESTAMP}.log"
-DB_PASS="Anamaria@2026@"
+DB_PASS="${PG_PASSWORD}"
 
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
@@ -208,7 +208,7 @@ BACKUP_ROOT="/opt/pgbackup"
 BASE_DIR="${BACKUP_ROOT}/base"
 WAL_DIR="${BACKUP_ROOT}/wal_archive"
 PG_DATA="/var/lib/postgresql/16/main"
-DB_PASS="Anamaria@2026@"
+DB_PASS="${PG_PASSWORD}"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -485,7 +485,7 @@ LABEL="${1:-manual_$(date +%Y%m%d_%H%M%S)}"
 BACKUP_ROOT="/opt/pgbackup"
 BASE_DIR="${BACKUP_ROOT}/base"
 LOG_DIR="${BACKUP_ROOT}/logs"
-DB_PASS="Anamaria@2026@"
+DB_PASS="${PG_PASSWORD}"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BACKUP_NAME="manual_${TIMESTAMP}"
 BACKUP_PATH="${BASE_DIR}/${BACKUP_NAME}"

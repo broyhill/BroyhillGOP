@@ -3,7 +3,7 @@ import os, csv, zipfile, requests, sys
 sys.stdout.reconfigure(line_buffering=True)
 
 SUPABASE_URL = 'https://isbgjpnbocdkeslofota.supabase.co'
-SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzYmdqcG5ib2Nka2VzbG9mb3RhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDcwNzcwNywiZXhwIjoyMDgwMjgzNzA3fQ.DUIkApJpqTSv02ZRU4OQ0nK4iElq_Om6SLAmDSqkvF0'
+SUPABASE_KEY = '${SUPABASE_SERVICE_ROLE_KEY}'
 HEADERS = {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal'}
 
 def fmt_date(d):

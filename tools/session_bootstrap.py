@@ -32,7 +32,7 @@ import datetime
 import psycopg2
 import subprocess
 
-DB_CONN = "host=37.27.169.232 port=5432 dbname=postgres user=postgres password=Anamaria@2026@"
+DB_CONN = "host=37.27.169.232 port=5432 dbname=postgres user=postgres password=${PG_PASSWORD}"
 
 # ════════════════════════════════════════════════════════════════════════════
 # ED'S RULES — HARDCODED, NON-NEGOTIABLE, NEVER CHANGE

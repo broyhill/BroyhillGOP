@@ -37,7 +37,7 @@ import psycopg2
 import psycopg2.extras
 
 # ─── CONFIG ─────────────────────────────────────────────────────────
-DB_DSN = "host=127.0.0.1 dbname=postgres user=postgres password=Anamaria@2026@"
+DB_DSN = "host=127.0.0.1 dbname=postgres user=postgres password=${PG_PASSWORD}"
 BATCH_SIZE = 5000
 ED_CLUSTER = 372171
 ED_RNCID = "c45eeea9-663f-40e1-b0e7-a473baee794e"

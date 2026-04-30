@@ -41,7 +41,7 @@
 ## Database Connection
 
 ```
-postgresql://postgres:Anamaria%402026%40@localhost:5432/postgres
+postgresql://postgres:${PG_PASSWORD_URLENCODED}@localhost:5432/postgres
 ```
 
 When connecting via CLI always use `-h 127.0.0.1` (not `localhost`) to force TCP:

@@ -50,7 +50,7 @@ import argparse
 import datetime
 import psycopg2
 
-DB_CONN = "host=37.27.169.232 port=5432 dbname=postgres user=postgres password=Anamaria@2026@"
+DB_CONN = "host=37.27.169.232 port=5432 dbname=postgres user=postgres password=${PG_PASSWORD}"
 
 TASK_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cursor_tasks")
 RESULT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cursor_results")

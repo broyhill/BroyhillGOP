@@ -22,7 +22,7 @@ screen -r factpull
 # Ctrl+A D to detach
 
 # Quick table count summary
-psql "postgresql://postgres:Anamaria%402026%40@127.0.0.1:5432/postgres" -c "
+psql "postgresql://postgres:${PG_PASSWORD_URLENCODED}@127.0.0.1:5432/postgres" -c "
 SELECT schemaname, tablename,
        pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) AS size
 FROM pg_tables
@@ -77,7 +77,7 @@ ssh root@37.27.169.232 "ls -lh /data/ncboe/gold/"
 ```bash
 ssh root@37.27.169.232
 cd /opt/broyhillgop
-export HETZNER_DB_URL='postgresql://postgres:Anamaria%402026%40@127.0.0.1:5432/postgres'
+export HETZNER_DB_URL='postgresql://postgres:${PG_PASSWORD_URLENCODED}@127.0.0.1:5432/postgres'
 python3 -m pipeline.ncboe_normalize_pipeline --file /data/ncboe/gold/[first_file].csv
 ```
 
@@ -117,7 +117,7 @@ The `donor_intelligence.employer_sic_master` table was created empty. It needs t
 ```bash
 # On your Mac — dump from Supabase
 pg_dump \
-  "postgresql://postgres:Anamaria@2026@@db.isbgjpnbocdkeslofota.supabase.co:5432/postgres" \
+  "postgresql://postgres:${PG_PASSWORD}@db.isbgjpnbocdkeslofota.supabase.co:5432/postgres" \
   -t donor_intelligence.employer_sic_master \
   --data-only \
   -f /tmp/employer_sic_master.sql
@@ -129,11 +129,11 @@ scp -i ~/.ssh/id_ed25519_hetzner \
 
 # Load on new server
 ssh root@37.27.169.232
-psql "postgresql://postgres:Anamaria%402026%40@127.0.0.1:5432/postgres" \
+psql "postgresql://postgres:${PG_PASSWORD_URLENCODED}@127.0.0.1:5432/postgres" \
   < /tmp/employer_sic_master.sql
 
 # Verify
-psql "postgresql://postgres:Anamaria%402026%40@127.0.0.1:5432/postgres" \
+psql "postgresql://postgres:${PG_PASSWORD_URLENCODED}@127.0.0.1:5432/postgres" \
   -c "SELECT COUNT(*) FROM donor_intelligence.employer_sic_master;"
 # Must be 62,100
 ```
@@ -185,16 +185,16 @@ These are important but wait:
 | Item | Value |
 |------|-------|
 | New server | 37.27.169.232 |
-| Server root pw | c7pgN4_fD63DnG |
-| PostgreSQL password | Anamaria@2026@ (URL-encoded: Anamaria%402026%40) |
+| Server root pw | ${PG_PASSWORD_RETIRED_20260417} |
+| PostgreSQL password | ${PG_PASSWORD} (URL-encoded: ${PG_PASSWORD_URLENCODED}) |
 | Supabase project | isbgjpnbocdkeslofota |
 | Supabase pooler | db.isbgjpnbocdkeslofota.supabase.co port 6543 |
-| Supabase password | Anamaria@2026@ |
+| Supabase password | ${PG_PASSWORD} |
 | GitHub branch | session-mar17-2026-clean, tip fb1dbea4 |
 | Relay | 37.27.169.232:8080, key: bgop-relay-k9x2mP8vQnJwT4rL |
 | Danny Peletski | DPeletski@gop.com |
 | Zack Imel | ZImel@gop.com, 270-799-0923 |
-| HETZNER_DB_URL | postgresql://postgres:Anamaria%402026%40@127.0.0.1:5432/postgres |
+| HETZNER_DB_URL | postgresql://postgres:${PG_PASSWORD_URLENCODED}@127.0.0.1:5432/postgres |
 
 ---
 

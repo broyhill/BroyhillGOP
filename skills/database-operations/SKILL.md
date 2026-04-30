@@ -87,8 +87,8 @@ Tell Ed the row counts and cluster check results. Confirm they match expectation
 
 ```
 Host: 37.27.169.232 | Port: 5432 | DB: postgres | User: postgres
-Password: Anamaria@2026@
-Full: postgresql://postgres:Anamaria%402026%40@37.27.169.232:5432/postgres
+Password: ${PG_PASSWORD}
+Full: postgresql://postgres:${PG_PASSWORD_URLENCODED}@37.27.169.232:5432/postgres
 ```
 
 **Supabase (legacy — READ ONLY):**

@@ -32,7 +32,7 @@ LOG_DIR="${BACKUP_ROOT}/logs"
 DB_HOST="127.0.0.1"
 DB_USER="postgres"
 DB_NAME="postgres"
-DB_PASS="Anamaria@2026@"
+DB_PASS="${PG_PASSWORD}"
 
 mkdir -p "${CAND_DIR}" "${LOG_DIR}"
 

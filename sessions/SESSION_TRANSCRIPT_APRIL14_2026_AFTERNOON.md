@@ -101,7 +101,7 @@ Shut down the port 5433 temp instance, reclaimed 175GB disk space.
 
 Ed asked about giving Claude access to the database. I changed `listen_addresses` from `'127.0.0.1'` to `'*'` and restarted PostgreSQL. Had to reallocate huge pages (echo 33868 > /proc/sys/vm/nr_hugepages) before restart.
 
-Connection string for Claude: `postgresql://postgres:Anamaria%402026%40@37.27.169.232:5432/postgres`
+Connection string for Claude: `postgresql://postgres:${PG_PASSWORD_URLENCODED}@37.27.169.232:5432/postgres`
 
 ### ~3:45 PM — Ed Shared Claude's Audit Report
 

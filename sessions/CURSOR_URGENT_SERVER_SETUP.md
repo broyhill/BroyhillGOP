@@ -2,13 +2,13 @@
 # DO THIS NOW. The new server has NO OS. It is in Hetzner Rescue mode.
 
 ## SERVER: 37.27.169.232 (AX162-R #2973063, Finland)
-- Root password (rescue mode): c7pgN4_fD63DnG
+- Root password (rescue mode): ${PG_PASSWORD_RETIRED_20260417}
 - This server is BLANK. No OS installed. Claude never did it.
 
 ## STEP 1 — SSH in and install Ubuntu 24.04
 ```bash
 ssh root@37.27.169.232
-# Password: c7pgN4_fD63DnG
+# Password: ${PG_PASSWORD_RETIRED_20260417}
 # You are now in Hetzner Rescue System
 
 # Run the Hetzner installimage tool:
@@ -29,7 +29,7 @@ apt update && apt upgrade -y
 apt install -y postgresql-16 postgresql-client-16 postgresql-contrib
 systemctl enable postgresql
 systemctl start postgresql
-sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'Anamaria@2026@';"
+sudo -u postgres psql -c "ALTER USER postgres PASSWORD '${PG_PASSWORD}';"
 ```
 
 ## STEP 3 — Install Python and dependencies

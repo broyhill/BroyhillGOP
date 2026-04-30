@@ -44,7 +44,7 @@ Ed pastes back `bore.pub:XXXXX`. Nexus connects: `psql -h bore.pub -p XXXXX -U p
 ### Method B — Direct (after Hetzner network lock lifts)
 ```
 psql -h 37.27.169.232 -p 5432 -U postgres -d postgres
-Password: XanypdTxZb3qRE8bUdGXFGGK
+Password: ${PG_PASSWORD_RETIRED_20260424}
 ```
 UFW + pg_hba.conf already configured for sandbox IP `136.109.176.148`.
 

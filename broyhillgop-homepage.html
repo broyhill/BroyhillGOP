@@ -393,7 +393,7 @@
     <script>
         // ═══ SUPABASE CLIENT ═══
         const SUPABASE_URL = 'https://isbgjpnbocdkeslofota.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzYmdqcG5ib2Nka2VzbG9mb3RhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDcwNzcwNywiZXhwIjoyMDgwMjgzNzA3fQ.DUIkApJpqTSv02ZRU4OQ0nK4iElq_Om6SLAmDSqkvF0';
+        const SUPABASE_KEY = '${SUPABASE_SERVICE_ROLE_KEY}';
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function fmt(n) { return n >= 1000000 ? (n/1000000).toFixed(1) + 'M' : n >= 1000 ? (n/1000).toFixed(1) + 'K' : String(n); }

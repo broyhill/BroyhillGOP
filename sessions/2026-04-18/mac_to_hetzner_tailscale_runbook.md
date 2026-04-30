@@ -212,7 +212,7 @@ Tag-gate everything. Nexus cannot SSH in. Nexus can only reach Postgres on port 
 
 ## 6 · Pre-auth key hygiene (from the April 17 incident)
 
-- **Never commit a pre-auth key to git.** The April 17 server compromise came from `c7pgN4_fD63DnG` sitting in plaintext in a committed doc. Treat `tskey-auth-*` exactly the same.
+- **Never commit a pre-auth key to git.** The April 17 server compromise came from `${PG_PASSWORD_RETIRED_20260417}` sitting in plaintext in a committed doc. Treat `tskey-auth-*` exactly the same.
 - **One key per class of device.** `tag:mac`, `tag:nexus-sandbox`, `tag:hetzner-server` each get their own reusable key, so a leak is containable by revoking one key in Tailscale admin without re-provisioning the others.
 - **Rotate on a schedule.** The current key expires 2026-07-17. Calendar alert fires 7 days prior; generate a new one, update `HETZNER_NEW_CREDS.txt`, re-enroll the sandbox. Servers stay enrolled even after key expires.
 - **Revoke immediately on any suspected leak.** Admin → Settings → Keys → the key → Revoke. Doesn't affect already-authenticated nodes.

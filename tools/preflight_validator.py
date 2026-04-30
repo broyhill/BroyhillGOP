@@ -34,7 +34,7 @@ import psycopg2
 # CONFIGURATION — Update these values as the database evolves
 # ════════════════════════════════════════════════════════════════════════════
 
-DB_CONN = "host=37.27.169.232 port=5432 dbname=postgres user=postgres password=Anamaria@2026@"
+DB_CONN = "host=37.27.169.232 port=5432 dbname=postgres user=postgres password=${PG_PASSWORD}"
 
 # Ed's canary cluster — the source of truth
 ED_CLUSTER = 372171

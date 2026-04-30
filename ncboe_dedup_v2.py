@@ -21,7 +21,7 @@ from collections import defaultdict
 
 import psycopg2
 
-DB_URL = "postgresql://postgres:Anamaria%402026%40@127.0.0.1:5432/postgres"
+DB_URL = "postgresql://postgres:${PG_PASSWORD_URLENCODED}@127.0.0.1:5432/postgres"
 LOG_FILE = "/tmp/ncboe_dedup_v2.log"
 
 logging.basicConfig(

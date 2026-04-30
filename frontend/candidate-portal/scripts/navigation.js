@@ -5,7 +5,7 @@
 
 // Supabase Config
 const SUPABASE_URL = 'https://isbgjpnbocdkeslofota.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzYmdqcG5ib2Nka2VzbG9mb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3MDc3MDcsImV4cCI6MjA4MDI4MzcwN30.pSF0-C-QOklmDWtbexUvnFphuz_bFTdF4INaBMSW1SM';
+const SUPABASE_KEY = '${SUPABASE_ANON_KEY}';
 
 // Initialize Supabase (requires supabase-js to be loaded first)
 let supabase;

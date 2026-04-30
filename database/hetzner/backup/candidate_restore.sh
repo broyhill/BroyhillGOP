@@ -31,7 +31,7 @@ SCRIPTS_DIR="${BACKUP_ROOT}/scripts"
 DB_HOST="127.0.0.1"
 DB_USER="postgres"
 DB_NAME="postgres"
-DB_PASS="Anamaria@2026@"
+DB_PASS="${PG_PASSWORD}"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'

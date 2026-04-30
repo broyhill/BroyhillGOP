@@ -93,7 +93,7 @@ After completing a task:
 
 ## CONNECTION
 Host: 37.27.169.232 | Port: 5432 | DB: postgres
-User: postgres | Password: Anamaria@2026@
+User: postgres | Password: ${PG_PASSWORD}
 
 ## CANARY VALUES (update after Phase 1 dedup)
 Ed cluster 372171 spine (inflated): 627 txns / $1,318,672.04

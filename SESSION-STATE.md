@@ -27,7 +27,7 @@ Supabase is legacy, READ ONLY, limited scope: `brain.agent_messages`, `brain.dec
 |---|---|---|
 | `37.27.169.232` (broyhillgop-db) | Prod postgres — ALL real data | SSH via Tailscale only (public IP network-locked by Hetzner post-abuse) |
 | `100.108.229.41` | Tailscale IP of prod-db | `ssh root@hetzner-1` from Ed's Mac |
-| Postgres password | `XanypdTxZb3qRE8bUdGXFGGK` | Port 5432, db: postgres, user: postgres |
+| Postgres password | `${PG_PASSWORD_RETIRED_20260424}` | Port 5432, db: postgres, user: postgres |
 | PostgreSQL version | 16 | Config: `/etc/postgresql/16/main/` |
 
 ---

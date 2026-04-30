@@ -211,9 +211,9 @@
 | Item | Value |
 |------|-------|
 | Hetzner server | 37.27.169.232 |
-| Root password | c7pgN4_fD63DnG (**ROTATE — appeared in logs**) |
-| PostgreSQL | postgresql://postgres:Anamaria%402026%40@127.0.0.1:5432/postgres |
-| PG password | Anamaria@2026@ (**ROTATE — appeared in logs**) |
+| Root password | ${PG_PASSWORD_RETIRED_20260417} (**ROTATE — appeared in logs**) |
+| PostgreSQL | postgresql://postgres:${PG_PASSWORD_URLENCODED}@127.0.0.1:5432/postgres |
+| PG password | ${PG_PASSWORD} (**ROTATE — appeared in logs**) |
 | Supabase project | isbgjpnbocdkeslofota |
 | GitHub repo | broyhill/BroyhillGOP |
 | GitHub branch | session-mar17-2026-clean (tip: `6c7b344`) |

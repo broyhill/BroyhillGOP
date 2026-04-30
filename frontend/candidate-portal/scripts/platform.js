@@ -8,7 +8,7 @@ const BroyhillGOP = {
     // Supabase Configuration
     config: {
         supabaseUrl: 'https://isbgjpnbocdkeslofota.supabase.co',
-        supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzYmdqcG5ib2Nka2VzbG9mb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM4NzI2NTcsImV4cCI6MjA0OTQ0ODY1N30.UwpYp7KjMT8vO0cTxFjDadO3BQPkt9JsI0S4-RwA0Mw',
+        supabaseKey: '${SUPABASE_ANON_KEY}',
         apiBase: '/api'
     },
 
