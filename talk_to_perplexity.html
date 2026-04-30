@@ -1,0 +1,467 @@
+<!doctype html>
+<html><head>
+<meta charset="utf-8">
+<title>Talk to Perplexity — BroyhillGOP Relay</title>
+<!--
+  ⚠ This chat UI requires CORS to be enabled on the relay (currently it isn't).
+  If you want browser-based chat, add CORSMiddleware to relay.py and redeploy.
+  Until then, use TALK_TO_PERPLEXITY.command instead — same flow, terminal UI.
+-->
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #0d1117; color: #e6edf3;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+}
+#topbar {
+  background: #161b22; border-bottom: 1px solid #30363d;
+  padding: 10px 16px; display: flex; align-items: center; gap: 12px;
+}
+#topbar h1 { font-size: 16px; font-weight: 700; color: #f0883e; }
+.status-badge {
+  font-size: 11px; padding: 2px 8px; border-radius: 10px;
+  background: #21262d; border: 1px solid #30363d;
+}
+.status-badge.ok    { border-color: #3fb950; color: #3fb950; }
+.status-badge.bad   { border-color: #f85149; color: #f85149; }
+.status-badge.warn  { border-color: #f0883e; color: #f0883e; }
+#agent-select {
+  background: #21262d; border: 1px solid #30363d; color: #e6edf3;
+  padding: 5px 10px; border-radius: 5px; font-size: 12px;
+}
+#main { flex: 1; display: flex; overflow: hidden; }
+#thread-list {
+  width: 240px; flex-shrink: 0; background: #161b22;
+  border-right: 1px solid #30363d; overflow-y: auto;
+}
+.thread-item {
+  padding: 10px 12px; border-bottom: 1px solid #21262d;
+  cursor: pointer; font-size: 12px;
+}
+.thread-item:hover { background: #21262d; }
+.thread-item.active { background: #1f4e79; border-left: 3px solid #388bfd; }
+.thread-subj { font-weight: 600; color: #e6edf3; margin-bottom: 4px; line-height: 1.3; }
+.thread-meta { color: #8b949e; font-size: 10px; }
+.thread-item.unread .thread-subj { color: #f0883e; }
+.thread-item.unread::after {
+  content: '●'; color: #f0883e; float: right; margin-top: -16px; font-size: 10px;
+}
+#chat-pane { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+#chat-header {
+  padding: 12px 16px; background: #161b22; border-bottom: 1px solid #30363d;
+  font-size: 13px; color: #8b949e;
+}
+#chat-header b { color: #e6edf3; }
+#messages {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.msg {
+  max-width: 75%; padding: 10px 14px; border-radius: 10px;
+  background: #161b22; border: 1px solid #30363d; line-height: 1.5;
+  font-size: 14px; word-wrap: break-word;
+}
+.msg.from-me {
+  align-self: flex-end; background: #1f4e79; border-color: #388bfd;
+}
+.msg.from-perplexity { align-self: flex-start; border-left: 3px solid #f0883e; }
+.msg.from-claude     { align-self: flex-start; border-left: 3px solid #a371f7; }
+.msg.from-cursor     { align-self: flex-start; border-left: 3px solid #3fb950; }
+.msg.from-system     { align-self: center; max-width: 60%; opacity: 0.7; font-style: italic; }
+.msg-meta {
+  font-size: 10px; color: #8b949e; margin-bottom: 4px;
+  display: flex; gap: 8px; align-items: center;
+}
+.msg-from { font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.msg-from.perplexity { color: #f0883e; }
+.msg-from.claude     { color: #a371f7; }
+.msg-from.cursor     { color: #3fb950; }
+.msg-from.me         { color: #79c0ff; }
+.msg-body { white-space: pre-wrap; }
+.msg-payload {
+  margin-top: 6px; padding: 6px 8px; background: #0d1117;
+  border: 1px solid #21262d; border-radius: 4px; font-family: monospace;
+  font-size: 11px; color: #8b949e; max-height: 100px; overflow-y: auto;
+}
+#composer {
+  background: #161b22; border-top: 1px solid #30363d; padding: 12px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+#subject-row { display: flex; gap: 8px; }
+#subject-input {
+  flex: 1; background: #21262d; border: 1px solid #30363d;
+  color: #e6edf3; padding: 7px 10px; border-radius: 5px; font-size: 13px;
+}
+#subject-input:focus { outline: none; border-color: #388bfd; }
+#body-row { display: flex; gap: 8px; align-items: flex-end; }
+#body-input {
+  flex: 1; background: #21262d; border: 1px solid #30363d;
+  color: #e6edf3; padding: 9px 12px; border-radius: 5px; font-size: 14px;
+  resize: vertical; min-height: 60px; max-height: 200px;
+  font-family: inherit;
+}
+#body-input:focus { outline: none; border-color: #388bfd; }
+#send-btn {
+  background: #1f4e79; border: 1px solid #388bfd; color: #e6edf3;
+  padding: 10px 20px; border-radius: 5px; cursor: pointer;
+  font-weight: 600; font-size: 14px;
+}
+#send-btn:hover { background: #388bfd; }
+#send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.no-messages { text-align: center; color: #8b949e; padding: 60px 20px; font-size: 13px; }
+.composer-hint { font-size: 11px; color: #8b949e; }
+.composer-hint kbd {
+  background: #21262d; border: 1px solid #30363d; border-radius: 3px;
+  padding: 1px 4px; font-family: monospace;
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0d1117; }
+::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+#config-modal {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: #000a; display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+}
+#config-modal-inner {
+  background: #161b22; border: 1px solid #388bfd; border-radius: 10px;
+  padding: 24px; max-width: 480px; width: 90%;
+}
+#config-modal h2 { color: #f0883e; margin-bottom: 12px; font-size: 18px; }
+#config-modal p { font-size: 13px; color: #e6edf3; margin-bottom: 16px; line-height: 1.5; }
+#config-modal label {
+  display: block; font-size: 11px; color: #8b949e; margin-top: 12px; margin-bottom: 4px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+#config-modal input {
+  width: 100%; background: #0d1117; border: 1px solid #30363d;
+  color: #e6edf3; padding: 8px 10px; border-radius: 5px; font-family: monospace;
+  font-size: 13px;
+}
+#config-save {
+  margin-top: 18px; background: #1f4e79; border: 1px solid #388bfd;
+  color: #e6edf3; padding: 8px 18px; border-radius: 5px; cursor: pointer;
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>💬 Talk to Perplexity</h1>
+  <span class="status-badge" id="relay-status">checking…</span>
+  <span class="status-badge" id="poll-status">idle</span>
+  <div style="flex: 1"></div>
+  <span style="font-size: 12px; color: #8b949e">I am</span>
+  <select id="agent-select">
+    <option value="claude">Claude</option>
+    <option value="cursor">Cursor</option>
+    <option value="system">System</option>
+  </select>
+  <span style="font-size: 12px; color: #8b949e">→</span>
+  <select id="to-select">
+    <option value="perplexity">Perplexity</option>
+    <option value="claude">Claude</option>
+    <option value="cursor">Cursor</option>
+    <option value="all">All (broadcast)</option>
+  </select>
+  <button id="config-btn" style="background: #21262d; border: 1px solid #30363d; color: #e6edf3; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px">⚙ Config</button>
+</div>
+
+<div id="main">
+  <aside id="thread-list">
+    <div class="no-messages" id="no-threads">No threads yet.<br>Send a message to start.</div>
+  </aside>
+  <section id="chat-pane">
+    <div id="chat-header">
+      <b>New conversation</b> — your message will start a new thread.
+    </div>
+    <div id="messages">
+      <div class="no-messages">
+        Pick a thread on the left, or compose a new message below.
+        <br><br>
+        <span style="font-size: 11px">Polling for new messages every 8 seconds.</span>
+      </div>
+    </div>
+    <div id="composer">
+      <div id="subject-row">
+        <input id="subject-input" placeholder="Subject (e.g. 'Donor matching threshold question')" />
+      </div>
+      <div id="body-row">
+        <textarea id="body-input" placeholder="Type your message to Perplexity… (⌘+Enter to send)"></textarea>
+        <button id="send-btn">Send →</button>
+      </div>
+      <div class="composer-hint">
+        <kbd>⌘ + Enter</kbd> sends · <kbd>Esc</kbd> clears thread context · Replies come in automatically every 8s
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="config-modal" style="display: none">
+  <div id="config-modal-inner">
+    <h2>⚙ Relay configuration</h2>
+    <p>The chat fetches from <span style="color: #f0883e">/message</span>, <span style="color: #f0883e">/inbox</span>, <span style="color: #f0883e">/reply</span> on the relay. If your relay moves or the API key changes, update here.</p>
+    <label>Relay base URL</label>
+    <input id="cfg-url" />
+    <label>API key (X-API-Key header)</label>
+    <input id="cfg-key" type="password" />
+    <button id="config-save">Save</button>
+  </div>
+</div>
+
+<script>
+// ─── Config (persisted in localStorage) ────────────────────────────────────
+const DEFAULT_CONFIG = {
+  url: "http://37.27.169.232:8080",
+  key: "bgop-relay-k9x2mP8vQnJwT4rL"
+};
+function loadConfig() {
+  return {
+    url: localStorage.getItem("relay_url") || DEFAULT_CONFIG.url,
+    key: localStorage.getItem("relay_key") || DEFAULT_CONFIG.key
+  };
+}
+function saveConfig(url, key) {
+  localStorage.setItem("relay_url", url);
+  localStorage.setItem("relay_key", key);
+}
+let cfg = loadConfig();
+
+// ─── State ─────────────────────────────────────────────────────────────────
+let state = {
+  me: "claude",          // who I am
+  to: "perplexity",      // default recipient
+  threads: {},           // thread_id → {subject, messages: [], unread: int}
+  activeThread: null,
+  pollTimer: null,
+  lastFetchAt: 0
+};
+
+// ─── DOM helpers ───────────────────────────────────────────────────────────
+const $ = (id) => document.getElementById(id);
+function escHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+function fmtTime(iso) {
+  const d = new Date(iso);
+  const now = new Date();
+  const diffMin = (now - d) / 60000;
+  if (diffMin < 1) return "just now";
+  if (diffMin < 60) return Math.floor(diffMin) + "m ago";
+  if (diffMin < 1440) return Math.floor(diffMin/60) + "h ago";
+  return d.toLocaleString();
+}
+
+// ─── Health check ──────────────────────────────────────────────────────────
+async function checkHealth() {
+  const badge = $("relay-status");
+  try {
+    const res = await fetch(cfg.url + "/health", { cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      badge.textContent = "relay online · v" + (data.version || "?");
+      badge.className = "status-badge ok";
+    } else {
+      badge.textContent = "relay HTTP " + res.status;
+      badge.className = "status-badge bad";
+    }
+  } catch (e) {
+    badge.textContent = "relay unreachable";
+    badge.className = "status-badge bad";
+  }
+}
+
+// ─── Inbox poll ────────────────────────────────────────────────────────────
+async function fetchInbox() {
+  $("poll-status").textContent = "polling…";
+  try {
+    const url = `${cfg.url}/inbox?agent=${state.me}&unread_only=false&limit=200`;
+    const res = await fetch(url, { headers: { "X-API-Key": cfg.key } });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+
+    // Rebuild thread map
+    const newThreads = {};
+    for (const msg of data.messages) {
+      const tid = msg.thread_id || ("nothread_" + msg.id);
+      if (!newThreads[tid]) {
+        newThreads[tid] = { subject: msg.subject || "(no subject)", messages: [], unread: 0, last_at: msg.created_at };
+      }
+      newThreads[tid].messages.push(msg);
+      newThreads[tid].last_at = msg.created_at;
+      if (!msg.read_at && msg.to_agent !== state.me + "_self") newThreads[tid].unread++;
+      if (msg.subject && msg.subject.length) newThreads[tid].subject = msg.subject;
+    }
+    state.threads = newThreads;
+    state.lastFetchAt = Date.now();
+    renderThreadList();
+    if (state.activeThread && state.threads[state.activeThread]) {
+      renderMessages(state.activeThread);
+    }
+    $("poll-status").textContent = "synced " + new Date().toLocaleTimeString();
+    $("poll-status").className = "status-badge ok";
+  } catch (e) {
+    $("poll-status").textContent = "poll error: " + e.message;
+    $("poll-status").className = "status-badge bad";
+  }
+}
+
+// ─── Render ────────────────────────────────────────────────────────────────
+function renderThreadList() {
+  const ids = Object.keys(state.threads).sort((a, b) =>
+    new Date(state.threads[b].last_at) - new Date(state.threads[a].last_at)
+  );
+  const box = $("thread-list");
+  if (!ids.length) {
+    box.innerHTML = `<div class="no-messages" id="no-threads">No threads yet.<br>Send a message to start.</div>`;
+    return;
+  }
+  box.innerHTML = ids.map(tid => {
+    const t = state.threads[tid];
+    const active = (tid === state.activeThread) ? " active" : "";
+    const unread = t.unread > 0 ? " unread" : "";
+    return `
+      <div class="thread-item${active}${unread}" onclick="openThread('${tid}')">
+        <div class="thread-subj">${escHtml(t.subject)}</div>
+        <div class="thread-meta">${t.messages.length} msg · ${fmtTime(t.last_at)}</div>
+      </div>`;
+  }).join("");
+}
+
+function renderMessages(tid) {
+  const t = state.threads[tid];
+  if (!t) return;
+  const msgs = t.messages.slice().sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+  $("chat-header").innerHTML = `<b>${escHtml(t.subject)}</b> &nbsp; <span style="color:#8b949e">thread ${escHtml(tid)} · ${msgs.length} messages</span>`;
+  const box = $("messages");
+  box.innerHTML = msgs.map(m => {
+    const fromMe = (m.from_agent === state.me);
+    const cls = fromMe ? "from-me" : ("from-" + (m.from_agent || "system"));
+    const fromCls = fromMe ? "me" : (m.from_agent || "system");
+    const fromLabel = fromMe ? "You (" + state.me + ")" : (m.from_agent || "system");
+    const payloadHtml = m.payload && Object.keys(m.payload).length
+      ? `<div class="msg-payload">${escHtml(JSON.stringify(m.payload, null, 2))}</div>`
+      : "";
+    return `<div class="msg ${cls}">
+      <div class="msg-meta">
+        <span class="msg-from ${fromCls}">${escHtml(fromLabel)}</span>
+        <span style="opacity:0.6">→ ${escHtml(m.to_agent)}</span>
+        <span style="opacity:0.6">${fmtTime(m.created_at)}</span>
+      </div>
+      <div class="msg-body">${escHtml(m.body)}</div>
+      ${payloadHtml}
+    </div>`;
+  }).join("");
+  box.scrollTop = box.scrollHeight;
+  // mark this thread's unreads as read locally
+  for (const m of t.messages) {
+    if (!m.read_at && m.from_agent !== state.me) {
+      markRead(m.id);
+      m.read_at = new Date().toISOString();
+    }
+  }
+  t.unread = 0;
+  renderThreadList();
+}
+
+async function markRead(msgId) {
+  try {
+    await fetch(`${cfg.url}/message/${msgId}/read`, {
+      method: "PATCH",
+      headers: { "X-API-Key": cfg.key }
+    });
+  } catch (e) { /* swallow */ }
+}
+
+window.openThread = function(tid) {
+  state.activeThread = tid;
+  renderMessages(tid);
+};
+
+// ─── Send ──────────────────────────────────────────────────────────────────
+async function sendMessage() {
+  const subject = $("subject-input").value.trim() || null;
+  const body = $("body-input").value.trim();
+  if (!body) { $("body-input").focus(); return; }
+
+  $("send-btn").disabled = true;
+  $("send-btn").textContent = "Sending…";
+
+  const payload = {
+    from_agent: state.me,
+    to_agent:   state.to,
+    subject:    subject,
+    body:       body,
+    thread_id:  state.activeThread || null
+  };
+
+  try {
+    const res = await fetch(cfg.url + "/message", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": cfg.key
+      },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status + " — " + (await res.text()).slice(0, 200));
+    const data = await res.json();
+    // optimistically add to local thread
+    const tid = data.thread_id;
+    if (!state.threads[tid]) {
+      state.threads[tid] = { subject: subject || "(no subject)", messages: [], unread: 0, last_at: data.timestamp };
+    }
+    state.threads[tid].messages.push({
+      id: data.id,
+      from_agent: state.me,
+      to_agent: state.to,
+      subject: subject,
+      body: body,
+      created_at: data.timestamp,
+      read_at: null,
+      payload: null
+    });
+    state.threads[tid].last_at = data.timestamp;
+    state.activeThread = tid;
+    renderThreadList();
+    renderMessages(tid);
+
+    $("body-input").value = "";
+    $("subject-input").value = "";
+  } catch (e) {
+    alert("Send failed: " + e.message + "\n\nCheck Config to verify the URL/key, and confirm the relay is up.");
+  } finally {
+    $("send-btn").disabled = false;
+    $("send-btn").textContent = "Send →";
+  }
+}
+
+// ─── Wire up UI ────────────────────────────────────────────────────────────
+$("send-btn").addEventListener("click", sendMessage);
+$("body-input").addEventListener("keydown", (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); sendMessage(); }
+  if (e.key === "Escape") { state.activeThread = null; $("subject-input").value = ""; renderThreadList(); $("chat-header").innerHTML = `<b>New conversation</b> — your message will start a new thread.`; $("messages").innerHTML = `<div class="no-messages">New thread mode. Type a subject above and your message below.</div>`; }
+});
+$("agent-select").addEventListener("change", (e) => { state.me = e.target.value; fetchInbox(); });
+$("to-select").addEventListener("change", (e) => { state.to = e.target.value; });
+
+$("config-btn").addEventListener("click", () => {
+  $("cfg-url").value = cfg.url; $("cfg-key").value = cfg.key;
+  $("config-modal").style.display = "flex";
+});
+$("config-save").addEventListener("click", () => {
+  saveConfig($("cfg-url").value.trim(), $("cfg-key").value.trim());
+  cfg = loadConfig();
+  $("config-modal").style.display = "none";
+  checkHealth(); fetchInbox();
+});
+
+// ─── Boot ──────────────────────────────────────────────────────────────────
+checkHealth();
+fetchInbox();
+state.pollTimer = setInterval(() => { fetchInbox(); checkHealth(); }, 8000);
+</script>
+</body></html>
