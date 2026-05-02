@@ -1810,38 +1810,38 @@ if __name__ == "__main__":
     import sys
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 01ContactImportError(Exception):
+class E01ContactImportError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 01ContactImportValidationError(01ContactImportError):
+class E01ContactImportValidationError(E01ContactImportError):
     """Validation error in this ecosystem"""
     pass
 
-class 01ContactImportDatabaseError(01ContactImportError):
+class E01ContactImportDatabaseError(E01ContactImportError):
     """Database error in this ecosystem"""
     pass
 
-class 01ContactImportAPIError(01ContactImportError):
+class E01ContactImportAPIError(E01ContactImportError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===
 
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 01ContactImportError(Exception):
+class E01ContactImportError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 01ContactImportValidationError(01ContactImportError):
+class E01ContactImportValidationError(E01ContactImportError):
     """Validation error in this ecosystem"""
     pass
 
-class 01ContactImportDatabaseError(01ContactImportError):
+class E01ContactImportDatabaseError(E01ContactImportError):
     """Database error in this ecosystem"""
     pass
 
-class 01ContactImportAPIError(01ContactImportError):
+class E01ContactImportAPIError(E01ContactImportError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===

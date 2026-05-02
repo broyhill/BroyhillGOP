@@ -860,38 +860,38 @@ if __name__ == "__main__":
     import sys
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 19SocialMediaManagerError(Exception):
+class E19SocialMediaManagerError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 19SocialMediaManagerValidationError(19SocialMediaManagerError):
+class E19SocialMediaManagerValidationError(E19SocialMediaManagerError):
     """Validation error in this ecosystem"""
     pass
 
-class 19SocialMediaManagerDatabaseError(19SocialMediaManagerError):
+class E19SocialMediaManagerDatabaseError(E19SocialMediaManagerError):
     """Database error in this ecosystem"""
     pass
 
-class 19SocialMediaManagerAPIError(19SocialMediaManagerError):
+class E19SocialMediaManagerAPIError(E19SocialMediaManagerError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===
 
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 19SocialMediaManagerError(Exception):
+class E19SocialMediaManagerError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 19SocialMediaManagerValidationError(19SocialMediaManagerError):
+class E19SocialMediaManagerValidationError(E19SocialMediaManagerError):
     """Validation error in this ecosystem"""
     pass
 
-class 19SocialMediaManagerDatabaseError(19SocialMediaManagerError):
+class E19SocialMediaManagerDatabaseError(E19SocialMediaManagerError):
     """Database error in this ecosystem"""
     pass
 
-class 19SocialMediaManagerAPIError(19SocialMediaManagerError):
+class E19SocialMediaManagerAPIError(E19SocialMediaManagerError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===

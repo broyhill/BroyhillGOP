@@ -100,7 +100,7 @@ class EventType(Enum):
 ECOSYSTEM_REGISTRY = {
     'E0': {
         'name': 'DataHub',
-        'module': 'ecosystem_00_datahub_complete',
+        'module': 'ecosystem_00_datahub',
         'class': 'DataHub',
         'capabilities': ['data_storage', 'event_bus', 'central_registry'],
         'publishes': ['data.updated', 'data.created'],
@@ -108,7 +108,7 @@ ECOSYSTEM_REGISTRY = {
     },
     'E1': {
         'name': 'Donor Intelligence',
-        'module': 'ecosystem_01_donor_intelligence_complete',
+        'module': 'ecosystem_01_donor_intelligence',
         'class': 'DonorIntelligenceEngine',
         'capabilities': ['grading', 'scoring', 'segmentation'],
         'publishes': ['donor.graded', 'donor.upgraded', 'donor.flagged'],
@@ -116,7 +116,7 @@ ECOSYSTEM_REGISTRY = {
     },
     'E2': {
         'name': 'Donation Processing',
-        'module': 'ecosystem_02_donation_processing_complete',
+        'module': 'ecosystem_02_donation_processing',
         'class': 'DonationProcessor',
         'capabilities': ['payment_processing', 'receipt_generation'],
         'publishes': ['donation.received', 'donation.large', 'donation.maxout'],
@@ -124,7 +124,7 @@ ECOSYSTEM_REGISTRY = {
     },
     'E8': {
         'name': 'Communications Library',
-        'module': 'ecosystem_08_communications_library_complete',
+        'module': 'ecosystem_08_communications_library',
         'class': 'CommunicationsLibrary',
         'capabilities': ['content_storage', 'template_management', 'ab_testing'],
         'publishes': ['content.approved', 'content.ab_winner'],
@@ -132,7 +132,7 @@ ECOSYSTEM_REGISTRY = {
     },
     'E9': {
         'name': 'Content Creation AI',
-        'module': 'ecosystem_09_content_creation_ai_complete',
+        'module': 'ecosystem_09_content_creation_ai',
         'class': 'ContentCreationEngine',
         'capabilities': ['ai_generation', 'multi_variant', 'personalization'],
         'publishes': ['content.generated'],
@@ -140,7 +140,7 @@ ECOSYSTEM_REGISTRY = {
     },
     'E10': {
         'name': 'Compliance Manager',
-        'module': 'ecosystem_10_compliance_manager_complete',
+        'module': 'ecosystem_10_compliance_manager',
         'class': 'ComplianceManager',
         'capabilities': ['limit_checking', 'disclaimer_generation', 'filing_tracking'],
         'publishes': ['compliance.warning', 'compliance.violation'],
@@ -148,7 +148,7 @@ ECOSYSTEM_REGISTRY = {
     },
     'E11': {
         'name': 'Budget Management',
-        'module': 'ecosystem_11_budget_management_complete',
+        'module': 'ecosystem_11_budget_management',
         'class': 'BudgetManager',
         'capabilities': ['budget_tracking', 'spend_allocation', 'roi_calculation'],
         'publishes': ['budget.warning', 'budget.exceeded'],
@@ -156,7 +156,7 @@ ECOSYSTEM_REGISTRY = {
     },
     'E13': {
         'name': 'AI Hub',
-        'module': 'ecosystem_13_ai_hub_complete',
+        'module': 'ecosystem_13_ai_hub',
         'class': 'AIHub',
         'capabilities': ['ai_orchestration', 'model_selection', 'prompt_management'],
         'publishes': ['ai.response_ready'],
@@ -164,7 +164,7 @@ ECOSYSTEM_REGISTRY = {
     },
     'E20': {
         'name': 'Intelligence Brain',
-        'module': 'ecosystem_20_intelligence_brain_complete',
+        'module': 'ecosystem_20_intelligence_brain',
         'class': 'IntelligenceBrain',
         'capabilities': ['decision_making', 'trigger_processing', 'campaign_orchestration'],
         'publishes': ['decision.go', 'decision.no_go', 'campaign.execute'],
@@ -172,7 +172,7 @@ ECOSYSTEM_REGISTRY = {
     },
     'E30': {
         'name': 'Email System',
-        'module': 'ecosystem_30_email_complete',
+        'module': 'ecosystem_30_email',
         'class': 'EmailEngine',
         'capabilities': ['email_sending', 'personalization', 'tracking'],
         'publishes': ['email.sent', 'email.opened', 'email.clicked'],
@@ -180,7 +180,7 @@ ECOSYSTEM_REGISTRY = {
     },
     'E31': {
         'name': 'SMS System',
-        'module': 'ecosystem_31_sms_complete',
+        'module': 'ecosystem_31_sms',
         'class': 'SMSEngine',
         'capabilities': ['sms_sending', 'two_way', 'compliance'],
         'publishes': ['sms.sent', 'sms.delivered', 'sms.replied'],
@@ -188,7 +188,7 @@ ECOSYSTEM_REGISTRY = {
     },
     'E32': {
         'name': 'Phone Banking',
-        'module': 'ecosystem_32_phone_banking_complete',
+        'module': 'ecosystem_32_phone_banking',
         'class': 'PhoneBankingEngine',
         'capabilities': ['dialing', 'script_delivery', 'response_tracking'],
         'publishes': ['call.completed', 'call.answered'],
@@ -196,7 +196,7 @@ ECOSYSTEM_REGISTRY = {
     },
     'E33': {
         'name': 'Direct Mail',
-        'module': 'ecosystem_33_direct_mail_complete',
+        'module': 'ecosystem_33_direct_mail',
         'class': 'DirectMailEngine',
         'capabilities': ['mail_generation', 'print_coordination', 'tracking'],
         'publishes': ['mail.sent', 'mail.delivered'],
@@ -204,7 +204,7 @@ ECOSYSTEM_REGISTRY = {
     },
     'E34': {
         'name': 'Events',
-        'module': 'ecosystem_34_events_complete',
+        'module': 'ecosystem_34_events',
         'class': 'EventsEngine',
         'capabilities': ['event_management', 'rsvp_tracking', 'check_in'],
         'publishes': ['event.rsvp', 'event.checkin', 'event.donation'],
@@ -212,7 +212,7 @@ ECOSYSTEM_REGISTRY = {
     },
     'E42': {
         'name': 'News Intelligence',
-        'module': 'ecosystem_42_news_intelligence_complete',
+        'module': 'ecosystem_42_news_intelligence',
         'class': 'NewsIntelligenceEngine',
         'capabilities': ['news_monitoring', 'crisis_detection', 'sentiment_analysis'],
         'publishes': ['news.crisis_detected', 'news.candidate_mentioned', 'news.issue_trending'],
@@ -220,7 +220,7 @@ ECOSYSTEM_REGISTRY = {
     },
     'Demo': {
         'name': 'Video Production',
-        'module': 'ecosystem_demo_video_production_complete',
+        'module': 'ecosystem_demo_video_production',
         'class': 'DemoVideoEngine',
         'capabilities': ['video_generation', 'personalization', 'multi_provider'],
         'publishes': ['video.completed', 'video.failed'],
@@ -396,7 +396,7 @@ class MasterOrchestrator:
         """Route event to Intelligence Brain for GO/NO-GO decision"""
         # Import and call Intelligence Brain
         try:
-            from ecosystem_20_intelligence_brain_complete import IntelligenceBrain
+            from ecosystem_20_intelligence_brain import IntelligenceBrain
             
             brain = IntelligenceBrain()
             decision = brain.process_event(event_type, event_data, candidate_id)
@@ -591,7 +591,7 @@ class MasterOrchestrator:
                                    candidate_id: str) -> Dict:
         """Execute email campaign via E30"""
         logger.info("📧 Executing email campaign")
-        # In production: from ecosystem_30_email_complete import EmailEngine
+        # In production: from ecosystem_30_email import EmailEngine
         return {'channel': 'email', 'status': 'sent'}
     
     async def _send_sms_campaign(self, decision: Dict, event_data: Dict,

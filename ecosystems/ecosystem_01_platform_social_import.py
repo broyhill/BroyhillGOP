@@ -1372,38 +1372,38 @@ Supported Platforms (Social OAuth):
         import csv
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 01PlatformSocialImportError(Exception):
+class E01PlatformSocialImportError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 01PlatformSocialImportValidationError(01PlatformSocialImportError):
+class E01PlatformSocialImportValidationError(E01PlatformSocialImportError):
     """Validation error in this ecosystem"""
     pass
 
-class 01PlatformSocialImportDatabaseError(01PlatformSocialImportError):
+class E01PlatformSocialImportDatabaseError(E01PlatformSocialImportError):
     """Database error in this ecosystem"""
     pass
 
-class 01PlatformSocialImportAPIError(01PlatformSocialImportError):
+class E01PlatformSocialImportAPIError(E01PlatformSocialImportError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===
 
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 01PlatformSocialImportError(Exception):
+class E01PlatformSocialImportError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 01PlatformSocialImportValidationError(01PlatformSocialImportError):
+class E01PlatformSocialImportValidationError(E01PlatformSocialImportError):
     """Validation error in this ecosystem"""
     pass
 
-class 01PlatformSocialImportDatabaseError(01PlatformSocialImportError):
+class E01PlatformSocialImportDatabaseError(E01PlatformSocialImportError):
     """Database error in this ecosystem"""
     pass
 
-class 01PlatformSocialImportAPIError(01PlatformSocialImportError):
+class E01PlatformSocialImportAPIError(E01PlatformSocialImportError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===

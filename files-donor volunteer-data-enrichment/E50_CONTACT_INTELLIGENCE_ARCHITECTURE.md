@@ -101,7 +101,7 @@ Build a **continuously-running contact intelligence system** that:
 
 | System | File | What It Does |
 |--------|------|--------------|
-| **E15 Contact Directory** | `ecosystem_15_contact_directory_complete.py` | 360° unified contact view, deceased status field, household linking, email/phone hashes |
+| **E15 Contact Directory** | `ecosystem_15_contact_directory.py` | 360° unified contact view, deceased status field, household linking, email/phone hashes |
 | **E44 Social Intelligence** | `ecosystem_44_scraper.py` | FREE enrichment via NC Voter File, FEC API, County GIS, NC SoS |
 | **Family/Spouse Linking** | `BROYHILLGOP_FAMILY_SPOUSE_LINKING.sql` | Spouse detection by address matching, household aggregation, family networks |
 | **Donor Merge Pipeline** | `donor_merge_pipeline.py` | Name parsing, deduplication by email_hash/phone_hash/name_address_hash |
@@ -314,11 +314,11 @@ Build a **continuously-running contact intelligence system** that:
 
 | File | Size | Purpose |
 |------|------|---------|
-| `ecosystem_50_contact_intelligence_engine.py` | ~45 KB | Main Python module with Apollo, BetterContact, RNC, deceased detection |
+| `ecosystem_52_contact_intelligence_engine.py` | ~45 KB | Main Python module with Apollo, BetterContact, RNC, deceased detection |
 
 ### Already Exists (E50 integrates with):
-- `ecosystem_15_contact_directory_complete.py`
-- `ecosystem_44_vendor_compliance_security_complete.py` 
+- `ecosystem_15_contact_directory.py`
+- `ecosystem_44_vendor_compliance_security.py` 
 - `BROYHILLGOP_FAMILY_SPOUSE_LINKING.sql`
 - `donor_merge_pipeline.py`
 - `import_datahub_complete.py`
@@ -345,7 +345,7 @@ export BANDWIDTH_ACCOUNT_ID="your-bandwidth-id"
 ### Step 3: Deploy Python Module
 ```bash
 # Copy to your deployment server
-scp ecosystem_50_contact_intelligence_engine.py root@5.9.99.109:/app/
+scp ecosystem_52_contact_intelligence_engine.py root@5.9.99.109:/app/
 
 # Install dependencies (most already installed)
 pip install aiohttp psycopg2-binary
@@ -354,12 +354,12 @@ pip install aiohttp psycopg2-binary
 ### Step 4: Set Up Cron Jobs
 ```bash
 # Add to crontab
-0 2 * * * python /app/ecosystem_50_contact_intelligence_engine.py --job=rnc_sync
-0 3 * * * python /app/ecosystem_50_contact_intelligence_engine.py --job=fec_scrape  
-0 5 * * * python /app/ecosystem_50_contact_intelligence_engine.py --job=deceased_check
-0 4 * * 0 python /app/ecosystem_50_contact_intelligence_engine.py --job=ncboe_sync
-0 7 1 * * python /app/ecosystem_50_contact_intelligence_engine.py --job=monthly_enrich
-0 6 1 */3 * python /app/ecosystem_50_contact_intelligence_engine.py --job=quarterly_enrich
+0 2 * * * python /app/ecosystem_52_contact_intelligence_engine.py --job=rnc_sync
+0 3 * * * python /app/ecosystem_52_contact_intelligence_engine.py --job=fec_scrape  
+0 5 * * * python /app/ecosystem_52_contact_intelligence_engine.py --job=deceased_check
+0 4 * * 0 python /app/ecosystem_52_contact_intelligence_engine.py --job=ncboe_sync
+0 7 1 * * python /app/ecosystem_52_contact_intelligence_engine.py --job=monthly_enrich
+0 6 1 */3 * python /app/ecosystem_52_contact_intelligence_engine.py --job=quarterly_enrich
 ```
 
 ---

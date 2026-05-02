@@ -320,38 +320,38 @@ class AudioPostProcessor:
             import shutil
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 47UnifiedVoiceEngineError(Exception):
+class E47UnifiedVoiceEngineError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 47UnifiedVoiceEngineValidationError(47UnifiedVoiceEngineError):
+class E47UnifiedVoiceEngineValidationError(E47UnifiedVoiceEngineError):
     """Validation error in this ecosystem"""
     pass
 
-class 47UnifiedVoiceEngineDatabaseError(47UnifiedVoiceEngineError):
+class E47UnifiedVoiceEngineDatabaseError(E47UnifiedVoiceEngineError):
     """Database error in this ecosystem"""
     pass
 
-class 47UnifiedVoiceEngineAPIError(47UnifiedVoiceEngineError):
+class E47UnifiedVoiceEngineAPIError(E47UnifiedVoiceEngineError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===
 
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 47UnifiedVoiceEngineError(Exception):
+class E47UnifiedVoiceEngineError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 47UnifiedVoiceEngineValidationError(47UnifiedVoiceEngineError):
+class E47UnifiedVoiceEngineValidationError(E47UnifiedVoiceEngineError):
     """Validation error in this ecosystem"""
     pass
 
-class 47UnifiedVoiceEngineDatabaseError(47UnifiedVoiceEngineError):
+class E47UnifiedVoiceEngineDatabaseError(E47UnifiedVoiceEngineError):
     """Database error in this ecosystem"""
     pass
 
-class 47UnifiedVoiceEngineAPIError(47UnifiedVoiceEngineError):
+class E47UnifiedVoiceEngineAPIError(E47UnifiedVoiceEngineError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===

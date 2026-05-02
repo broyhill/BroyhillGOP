@@ -42,10 +42,10 @@ BroyhillGOP-Platform/
 ├── backend/
 │   └── python/
 │       ├── ecosystems/              # 51 Ecosystem Python Files
-│       │   ├── ecosystem_00_datahub_complete.py
-│       │   ├── ecosystem_01_donor_intelligence_complete.py
+│       │   ├── ecosystem_00_datahub.py
+│       │   ├── ecosystem_01_donor_intelligence.py
 │       │   ├── ... (E02-E50)
-│       │   └── ecosystem_51_nexus_complete.py
+│       │   └── ecosystem_51_nexus.py
 │       │
 │       ├── engines/                 # NEXUS AI Engines
 │       │   ├── nexus_brain_engine.py
@@ -114,7 +114,7 @@ psql $DATABASE_URL -f database/migrations/053_NEXUS_PLATFORM_INTEGRATION.sql
 pip install psycopg2-binary anthropic requests pandas python-dotenv
 
 # 5. Test deployment
-python backend/python/ecosystems/ecosystem_51_nexus_complete.py status
+python backend/python/ecosystems/ecosystem_51_nexus.py status
 ```
 
 ---

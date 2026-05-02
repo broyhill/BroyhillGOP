@@ -1989,38 +1989,38 @@ async def main():
     import argparse
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 01SocialOauthMaximumCaptureError(Exception):
+class E01SocialOauthMaximumCaptureError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 01SocialOauthMaximumCaptureValidationError(01SocialOauthMaximumCaptureError):
+class E01SocialOauthMaximumCaptureValidationError(E01SocialOauthMaximumCaptureError):
     """Validation error in this ecosystem"""
     pass
 
-class 01SocialOauthMaximumCaptureDatabaseError(01SocialOauthMaximumCaptureError):
+class E01SocialOauthMaximumCaptureDatabaseError(E01SocialOauthMaximumCaptureError):
     """Database error in this ecosystem"""
     pass
 
-class 01SocialOauthMaximumCaptureAPIError(01SocialOauthMaximumCaptureError):
+class E01SocialOauthMaximumCaptureAPIError(E01SocialOauthMaximumCaptureError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===
 
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 01SocialOauthMaximumCaptureError(Exception):
+class E01SocialOauthMaximumCaptureError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 01SocialOauthMaximumCaptureValidationError(01SocialOauthMaximumCaptureError):
+class E01SocialOauthMaximumCaptureValidationError(E01SocialOauthMaximumCaptureError):
     """Validation error in this ecosystem"""
     pass
 
-class 01SocialOauthMaximumCaptureDatabaseError(01SocialOauthMaximumCaptureError):
+class E01SocialOauthMaximumCaptureDatabaseError(E01SocialOauthMaximumCaptureError):
     """Database error in this ecosystem"""
     pass
 
-class 01SocialOauthMaximumCaptureAPIError(01SocialOauthMaximumCaptureError):
+class E01SocialOauthMaximumCaptureAPIError(E01SocialOauthMaximumCaptureError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===

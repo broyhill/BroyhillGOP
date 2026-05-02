@@ -34,7 +34,7 @@ All responses are:
 ============================================================================
 """
 
-# Add these tables and methods to ecosystem_35_interactive_comm_hub_complete.py
+# Add these tables and methods to ecosystem_35_interactive_comm_hub.py
 
 AUTO_RESPONSE_SCHEMA_ADDITION = """
 -- ============================================================================
@@ -727,19 +727,19 @@ import traceback
 from functools import wraps
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 35AutoResponseEnhancementError(Exception):
+class E35AutoResponseEnhancementError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 35AutoResponseEnhancementValidationError(35AutoResponseEnhancementError):
+class E35AutoResponseEnhancementValidationError(E35AutoResponseEnhancementError):
     """Validation error in this ecosystem"""
     pass
 
-class 35AutoResponseEnhancementDatabaseError(35AutoResponseEnhancementError):
+class E35AutoResponseEnhancementDatabaseError(E35AutoResponseEnhancementError):
     """Database error in this ecosystem"""
     pass
 
-class 35AutoResponseEnhancementAPIError(35AutoResponseEnhancementError):
+class E35AutoResponseEnhancementAPIError(E35AutoResponseEnhancementError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===
@@ -760,19 +760,19 @@ def handle_errors(func):
 
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 35AutoResponseEnhancementError(Exception):
+class E35AutoResponseEnhancementError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 35AutoResponseEnhancementValidationError(35AutoResponseEnhancementError):
+class E35AutoResponseEnhancementValidationError(E35AutoResponseEnhancementError):
     """Validation error in this ecosystem"""
     pass
 
-class 35AutoResponseEnhancementDatabaseError(35AutoResponseEnhancementError):
+class E35AutoResponseEnhancementDatabaseError(E35AutoResponseEnhancementError):
     """Database error in this ecosystem"""
     pass
 
-class 35AutoResponseEnhancementAPIError(35AutoResponseEnhancementError):
+class E35AutoResponseEnhancementAPIError(E35AutoResponseEnhancementError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===

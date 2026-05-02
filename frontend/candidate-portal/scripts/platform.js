@@ -22,22 +22,22 @@ const BroyhillGOP = {
 
     // All 16 Ecosystems with status
     ecosystems: [
-        { id: 'donor-intelligence', name: 'Donor Intelligence', icon: 'ti-users', color: '#0071e3', file: 'ecosystem-donor-intelligence.html', python: 'ecosystem_01_donor_intelligence_complete.py' },
-        { id: 'email', name: 'Email Studio', icon: 'ti-mail', color: '#34c759', file: 'ecosystem-email.html', python: 'ecosystem_30_email_complete.py' },
-        { id: 'sms', name: 'SMS Center', icon: 'ti-message', color: '#af52de', file: 'ecosystem-sms.html', python: 'ecosystem_31_sms_complete.py' },
+        { id: 'donor-intelligence', name: 'Donor Intelligence', icon: 'ti-users', color: '#0071e3', file: 'ecosystem-donor-intelligence.html', python: 'ecosystem_01_donor_intelligence.py' },
+        { id: 'email', name: 'Email Studio', icon: 'ti-mail', color: '#34c759', file: 'ecosystem-email.html', python: 'ecosystem_30_email.py' },
+        { id: 'sms', name: 'SMS Center', icon: 'ti-message', color: '#af52de', file: 'ecosystem-sms.html', python: 'ecosystem_31_sms.py' },
         { id: 'voice', name: 'ULTRA Voice', icon: 'ti-microphone', color: '#ff3b30', file: 'ecosystem-voice.html', python: 'ecosystem_16b_voice_synthesis_ULTRA.py' },
-        { id: 'video', name: 'Video Studio', icon: 'ti-video', color: '#ff2d55', file: 'ecosystem-video.html', python: 'ecosystem_45_video_studio_complete.py' },
-        { id: 'direct-mail', name: 'Direct Mail', icon: 'ti-mail-forward', color: '#ff9500', file: 'ecosystem-direct-mail.html', python: 'ecosystem_33_direct_mail_complete.py' },
-        { id: 'donations', name: 'Donations', icon: 'ti-wallet', color: '#34c759', file: 'ecosystem-donations.html', python: 'ecosystem_02_donation_processing_complete.py' },
-        { id: 'events', name: 'Events & RSVP', icon: 'ti-calendar-event', color: '#5856d6', file: 'ecosystem-events.html', python: 'ecosystem_34_events_complete.py' },
-        { id: 'volunteers', name: 'Volunteers', icon: 'ti-heart-handshake', color: '#32ade6', file: 'ecosystem-volunteers.html', python: 'ecosystem_05_volunteer_management_complete.py' },
+        { id: 'video', name: 'Video Studio', icon: 'ti-video', color: '#ff2d55', file: 'ecosystem-video.html', python: 'ecosystem_45_video_studio.py' },
+        { id: 'direct-mail', name: 'Direct Mail', icon: 'ti-mail-forward', color: '#ff9500', file: 'ecosystem-direct-mail.html', python: 'ecosystem_33_direct_mail.py' },
+        { id: 'donations', name: 'Donations', icon: 'ti-wallet', color: '#34c759', file: 'ecosystem-donations.html', python: 'ecosystem_02_donation_processing.py' },
+        { id: 'events', name: 'Events & RSVP', icon: 'ti-calendar-event', color: '#5856d6', file: 'ecosystem-events.html', python: 'ecosystem_34_events.py' },
+        { id: 'volunteers', name: 'Volunteers', icon: 'ti-heart-handshake', color: '#32ade6', file: 'ecosystem-volunteers.html', python: 'ecosystem_05_volunteer_management.py' },
         { id: 'social', name: 'Social Media', icon: 'ti-brand-twitter', color: '#ff2d55', file: 'ecosystem-social.html', python: 'ecosystem_19_social_media_manager.py' },
-        { id: 'compliance', name: 'Compliance & FEC', icon: 'ti-shield-check', color: '#34c759', file: 'ecosystem-compliance.html', python: 'ecosystem_10_compliance_manager_complete.py' },
-        { id: 'analytics', name: 'Analytics', icon: 'ti-chart-line', color: '#5ac8fa', file: 'ecosystem-analytics.html', python: 'ecosystem_06_analytics_engine_complete.py' },
-        { id: 'ai-hub', name: 'AI Hub', icon: 'ti-sparkles', color: '#5856d6', file: 'ecosystem-ai-hub.html', python: 'ecosystem_13_ai_hub_complete.py' },
-        { id: 'budget', name: 'Budget', icon: 'ti-currency-dollar', color: '#00c7be', file: 'ecosystem-budget.html', python: 'ecosystem_11_budget_management_complete.py' },
-        { id: 'canvassing', name: 'Canvassing', icon: 'ti-map-pin', color: '#a8e063', file: 'ecosystem-canvassing.html', python: 'ecosystem_38_volunteer_coordination_complete.py' },
-        { id: 'phone-banking', name: 'Phone Banking', icon: 'ti-phone', color: '#5856d6', file: 'ecosystem-phone-banking.html', python: 'ecosystem_32_phone_banking_complete.py' }
+        { id: 'compliance', name: 'Compliance & FEC', icon: 'ti-shield-check', color: '#34c759', file: 'ecosystem-compliance.html', python: 'ecosystem_10_compliance_manager.py' },
+        { id: 'analytics', name: 'Analytics', icon: 'ti-chart-line', color: '#5ac8fa', file: 'ecosystem-analytics.html', python: 'ecosystem_06_analytics_engine.py' },
+        { id: 'ai-hub', name: 'AI Hub', icon: 'ti-sparkles', color: '#5856d6', file: 'ecosystem-ai-hub.html', python: 'ecosystem_13_ai_hub.py' },
+        { id: 'budget', name: 'Budget', icon: 'ti-currency-dollar', color: '#00c7be', file: 'ecosystem-budget.html', python: 'ecosystem_11_budget_management.py' },
+        { id: 'canvassing', name: 'Canvassing', icon: 'ti-map-pin', color: '#a8e063', file: 'ecosystem-canvassing.html', python: 'ecosystem_38_volunteer_coordination.py' },
+        { id: 'phone-banking', name: 'Phone Banking', icon: 'ti-phone', color: '#5856d6', file: 'ecosystem-phone-banking.html', python: 'ecosystem_32_phone_banking.py' }
     ],
 
     // AI Brain Intelligence Connection (Ecosystem 20)
