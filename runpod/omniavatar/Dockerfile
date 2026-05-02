@@ -38,7 +38,7 @@ RUN pip install --no-cache-dir \
 
 # Install OmniAvatar dependencies
 WORKDIR /workspace/OmniAvatar
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements-pipeline.txt
 
 # Install pinned versions for stability
 RUN pip install --no-cache-dir \

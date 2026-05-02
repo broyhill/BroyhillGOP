@@ -101,18 +101,18 @@ echo "---------------------------------------------"
 
 cd "$PROJECT_ROOT"
 
-if [ -f "requirements.txt" ]; then
+if [ -f "requirements-pipeline.txt" ]; then
     # Add new dependencies if not already present
-    grep -q "fastapi" requirements.txt || echo "fastapi>=0.109.0" >> requirements.txt
-    grep -q "uvicorn" requirements.txt || echo "uvicorn>=0.27.0" >> requirements.txt
-    grep -q "psycopg2-binary" requirements.txt || echo "psycopg2-binary>=2.9.9" >> requirements.txt
-    grep -q "pydantic" requirements.txt || echo "pydantic>=2.5.0" >> requirements.txt
+    grep -q "fastapi" requirements-pipeline.txt || echo "fastapi>=0.109.0" >> requirements-pipeline.txt
+    grep -q "uvicorn" requirements-pipeline.txt || echo "uvicorn>=0.27.0" >> requirements-pipeline.txt
+    grep -q "psycopg2-binary" requirements-pipeline.txt || echo "psycopg2-binary>=2.9.9" >> requirements-pipeline.txt
+    grep -q "pydantic" requirements-pipeline.txt || echo "pydantic>=2.5.0" >> requirements-pipeline.txt
     
-    pip install -r requirements.txt --quiet
+    pip install -r requirements-pipeline.txt --quiet
     echo "✓ Dependencies installed"
 else
     pip install fastapi uvicorn psycopg2-binary pydantic --quiet
-    echo "✓ Dependencies installed (no requirements.txt found)"
+    echo "✓ Dependencies installed (no requirements-pipeline.txt found)"
 fi
 
 echo ""

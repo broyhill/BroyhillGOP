@@ -146,9 +146,9 @@ CREATE TABLE IF NOT EXISTS platform.ecosystems (
 
     -- Technical
     python_module           TEXT,
-        -- Primary Python file: 'ecosystem_01_donor_intelligence_complete.py'
+        -- Primary Python file: 'ecosystem_01_donor_intelligence.py'
     python_variants         TEXT[],
-        -- Variant files: ['ecosystem_01_dual_grading_update.py']
+        -- Variant files: ['ecosystem_01_donor_intelligence.py']
     api_endpoint            TEXT,
         -- Base API path if applicable: '/api/v1/donor-intelligence'
     has_frontend            BOOLEAN         NOT NULL DEFAULT FALSE,
@@ -728,72 +728,72 @@ ON CONFLICT (universe_code) DO NOTHING;
 INSERT INTO platform.ecosystems (ecosystem_code, ecosystem_name, tier, tier_name, category, status, is_core, estimated_value, python_module)
 VALUES
     -- Tier 1: Core Data Infrastructure
-    ('E00', 'DataHub',                    1, 'Core Data', 'data',           'active', TRUE,  150000, 'ecosystem_00_datahub_complete.py'),
-    ('E01', 'Donor Intelligence',         1, 'Core Data', 'data',           'active', TRUE,  120000, 'ecosystem_01_donor_intelligence_complete.py'),
-    ('E02', 'Donation Processing',        1, 'Core Data', 'data',           'active', TRUE,   90000, 'ecosystem_02_donation_processing_complete.py'),
-    ('E03', 'Candidate Management',       1, 'Core Data', 'data',           'active', TRUE,   80000, 'ecosystem_03_candidate_profiles_complete.py'),
-    ('E04', 'Activist Network',           1, 'Core Data', 'data',           'active', FALSE,  85000, 'ecosystem_04_activist_network_complete.py'),
-    ('E05', 'Volunteer Management',       1, 'Core Data', 'operations',     'active', FALSE,  75000, 'ecosystem_05_volunteer_management_complete.py'),
-    ('E06', 'Analytics Engine',           1, 'Core Data', 'analytics',      'active', TRUE,   95000, 'ecosystem_06_analytics_engine_complete.py'),
-    ('E07', 'Issue Tracking',             1, 'Core Data', 'analytics',      'active', FALSE,  65000, 'ecosystem_07_issue_tracking_complete.py'),
+    ('E00', 'DataHub',                    1, 'Core Data', 'data',           'active', TRUE,  150000, 'ecosystem_00_datahub.py'),
+    ('E01', 'Donor Intelligence',         1, 'Core Data', 'data',           'active', TRUE,  120000, 'ecosystem_01_donor_intelligence.py'),
+    ('E02', 'Donation Processing',        1, 'Core Data', 'data',           'active', TRUE,   90000, 'ecosystem_02_donation_processing.py'),
+    ('E03', 'Candidate Management',       1, 'Core Data', 'data',           'active', TRUE,   80000, 'ecosystem_03_candidate_profiles.py'),
+    ('E04', 'Activist Network',           1, 'Core Data', 'data',           'active', FALSE,  85000, 'ecosystem_04_activist_network.py'),
+    ('E05', 'Volunteer Management',       1, 'Core Data', 'operations',     'active', FALSE,  75000, 'ecosystem_05_volunteer_management.py'),
+    ('E06', 'Analytics Engine',           1, 'Core Data', 'analytics',      'active', TRUE,   95000, 'ecosystem_06_analytics_engine.py'),
+    ('E07', 'Issue Tracking',             1, 'Core Data', 'analytics',      'active', FALSE,  65000, 'ecosystem_07_issue_tracking.py'),
 
     -- Tier 2: Content & AI
-    ('E08', 'Communications Library',     2, 'Content & AI', 'content',     'active', FALSE,  55000, 'ecosystem_08_communications_library_complete.py'),
-    ('E09', 'Content Creation AI',        2, 'Content & AI', 'content',     'active', FALSE,  70000, 'ecosystem_09_content_creation_ai_complete.py'),
-    ('E10', 'Compliance Manager',         2, 'Content & AI', 'compliance',  'active', TRUE,   60000, 'ecosystem_10_compliance_manager_complete.py'),
-    ('E11', 'Budget Management',          2, 'Content & AI', 'operations',  'active', FALSE,  65000, 'ecosystem_11_budget_management_complete.py'),
-    ('E12', 'Campaign Operations',        2, 'Content & AI', 'operations',  'active', FALSE,  70000, 'ecosystem_12_campaign_operations_complete.py'),
-    ('E13', 'AI Hub',                     2, 'Content & AI', 'automation',  'active', TRUE,   85000, 'ecosystem_13_ai_hub_complete.py'),
-    ('E14', 'Print Production',           2, 'Content & AI', 'media',       'active', FALSE,  50000, 'ecosystem_14_print_production_complete.py'),
-    ('E15', 'Contact Management',         2, 'Content & AI', 'data',        'active', FALSE,  40000, 'ecosystem_15_contact_directory_complete.py'),
+    ('E08', 'Communications Library',     2, 'Content & AI', 'content',     'active', FALSE,  55000, 'ecosystem_08_communications_library.py'),
+    ('E09', 'Content Creation AI',        2, 'Content & AI', 'content',     'active', FALSE,  70000, 'ecosystem_09_content_creation_ai.py'),
+    ('E10', 'Compliance Manager',         2, 'Content & AI', 'compliance',  'active', TRUE,   60000, 'ecosystem_10_compliance_manager.py'),
+    ('E11', 'Budget Management',          2, 'Content & AI', 'operations',  'active', FALSE,  65000, 'ecosystem_11_budget_management.py'),
+    ('E12', 'Campaign Operations',        2, 'Content & AI', 'operations',  'active', FALSE,  70000, 'ecosystem_12_campaign_operations.py'),
+    ('E13', 'AI Hub',                     2, 'Content & AI', 'automation',  'active', TRUE,   85000, 'ecosystem_13_ai_hub.py'),
+    ('E14', 'Print Production',           2, 'Content & AI', 'media',       'active', FALSE,  50000, 'ecosystem_14_print_production.py'),
+    ('E15', 'Contact Management',         2, 'Content & AI', 'data',        'active', FALSE,  40000, 'ecosystem_15_contact_directory.py'),
 
     -- Tier 3: Media & Advertising
-    ('E16', 'TV/Radio AI',                3, 'Media & Advertising', 'media', 'active', FALSE, 120000, 'ecosystem_16_tv_radio_complete.py'),
-    ('E17', 'RVM System',                 3, 'Media & Advertising', 'communication', 'active', FALSE, 55000, 'ecosystem_17_rvm_complete.py'),
-    ('E18', 'VDP Composition',            3, 'Media & Advertising', 'media', 'active', FALSE,  65000, 'ecosystem_18_vdp_composition_engine_complete.py'),
+    ('E16', 'TV/Radio AI',                3, 'Media & Advertising', 'media', 'active', FALSE, 120000, 'ecosystem_16_tv_radio.py'),
+    ('E17', 'RVM System',                 3, 'Media & Advertising', 'communication', 'active', FALSE, 55000, 'ecosystem_17_rvm.py'),
+    ('E18', 'VDP Composition',            3, 'Media & Advertising', 'media', 'active', FALSE,  65000, 'ecosystem_18_vdp_composition_engine.py'),
     ('E19', 'Social Media',               3, 'Media & Advertising', 'media', 'active', FALSE,  80000, 'ecosystem_19_social_media_manager.py'),
-    ('E20', 'Intelligence Brain',         3, 'Media & Advertising', 'automation', 'active', TRUE, 150000, 'ecosystem_20_intelligence_brain_complete.py'),
-    ('E21', 'ML Clustering',              3, 'Media & Advertising', 'analytics', 'active', FALSE, 85000, 'ecosystem_21_ml_clustering_complete.py'),
+    ('E20', 'Intelligence Brain',         3, 'Media & Advertising', 'automation', 'active', TRUE, 150000, 'ecosystem_20_intelligence_brain.py'),
+    ('E21', 'ML Clustering',              3, 'Media & Advertising', 'analytics', 'active', FALSE, 85000, 'ecosystem_21_ml_clustering.py'),
 
     -- Tier 4: Dashboards & Portals
-    ('E22', 'A/B Testing Engine',         4, 'Dashboards & Portals', 'analytics', 'active', FALSE, 60000, 'ecosystem_22_ab_testing_engine_complete.py'),
-    ('E23', 'Creative Asset 3D',          4, 'Dashboards & Portals', 'media', 'active', FALSE,  75000, 'ecosystem_23_creative_asset_3d_engine_complete.py'),
-    ('E24', 'Candidate Portal',           4, 'Dashboards & Portals', 'portal', 'active', FALSE,  65000, 'ecosystem_24_candidate_portal_complete.py'),
-    ('E25', 'Donor Portal',              4, 'Dashboards & Portals', 'portal', 'active', FALSE,  55000, 'ecosystem_25_donor_portal_complete.py'),
-    ('E26', 'Volunteer Portal',           4, 'Dashboards & Portals', 'portal', 'active', FALSE,  50000, 'ecosystem_26_volunteer_portal_complete.py'),
-    ('E27', 'Realtime Dashboard',         4, 'Dashboards & Portals', 'portal', 'active', FALSE,  70000, 'ecosystem_27_realtime_dashboard_complete.py'),
-    ('E28', 'Financial Dashboard',        4, 'Dashboards & Portals', 'portal', 'active', FALSE,  55000, 'ecosystem_28_financial_dashboard_complete.py'),
-    ('E29', 'Analytics Dashboard',        4, 'Dashboards & Portals', 'portal', 'active', FALSE,  60000, 'ecosystem_29_analytics_dashboard_complete.py'),
+    ('E22', 'A/B Testing Engine',         4, 'Dashboards & Portals', 'analytics', 'active', FALSE, 60000, 'ecosystem_22_ab_testing_engine.py'),
+    ('E23', 'Creative Asset 3D',          4, 'Dashboards & Portals', 'media', 'active', FALSE,  75000, 'ecosystem_23_creative_asset_3d_engine.py'),
+    ('E24', 'Candidate Portal',           4, 'Dashboards & Portals', 'portal', 'active', FALSE,  65000, 'ecosystem_24_candidate_portal.py'),
+    ('E25', 'Donor Portal',              4, 'Dashboards & Portals', 'portal', 'active', FALSE,  55000, 'ecosystem_25_donor_portal.py'),
+    ('E26', 'Volunteer Portal',           4, 'Dashboards & Portals', 'portal', 'active', FALSE,  50000, 'ecosystem_26_volunteer_portal.py'),
+    ('E27', 'Realtime Dashboard',         4, 'Dashboards & Portals', 'portal', 'active', FALSE,  70000, 'ecosystem_27_realtime_dashboard.py'),
+    ('E28', 'Financial Dashboard',        4, 'Dashboards & Portals', 'portal', 'active', FALSE,  55000, 'ecosystem_28_financial_dashboard.py'),
+    ('E29', 'Analytics Dashboard',        4, 'Dashboards & Portals', 'portal', 'active', FALSE,  60000, 'ecosystem_29_analytics_dashboard.py'),
 
     -- Tier 5: Communication Channels
-    ('E30', 'Email Campaigns',            5, 'Communication Channels', 'communication', 'active', FALSE, 75000, 'ecosystem_30_email_complete.py'),
-    ('E31', 'SMS Marketing',              5, 'Communication Channels', 'communication', 'active', FALSE, 55000, 'ecosystem_31_sms_complete.py'),
-    ('E32', 'Phone Call Center',          5, 'Communication Channels', 'communication', 'active', FALSE, 65000, 'ecosystem_32_phone_banking_complete.py'),
-    ('E33', 'Direct Mail',               5, 'Communication Channels', 'communication', 'active', FALSE, 70000, 'ecosystem_33_direct_mail_complete.py'),
-    ('E34', 'Events',                     5, 'Communication Channels', 'operations', 'active', FALSE,  50000, 'ecosystem_34_events_complete.py'),
-    ('E35', 'Unified Inbox',             5, 'Communication Channels', 'communication', 'active', FALSE, 60000, 'ecosystem_35_interactive_comm_hub_complete.py'),
-    ('E36', 'Messenger',                  5, 'Communication Channels', 'communication', 'active', FALSE, 45000, 'ecosystem_36_messenger_integration_complete.py'),
+    ('E30', 'Email Campaigns',            5, 'Communication Channels', 'communication', 'active', FALSE, 75000, 'ecosystem_30_email.py'),
+    ('E31', 'SMS Marketing',              5, 'Communication Channels', 'communication', 'active', FALSE, 55000, 'ecosystem_31_sms.py'),
+    ('E32', 'Phone Call Center',          5, 'Communication Channels', 'communication', 'active', FALSE, 65000, 'ecosystem_32_phone_banking.py'),
+    ('E33', 'Direct Mail',               5, 'Communication Channels', 'communication', 'active', FALSE, 70000, 'ecosystem_33_direct_mail.py'),
+    ('E34', 'Events',                     5, 'Communication Channels', 'operations', 'active', FALSE,  50000, 'ecosystem_34_events.py'),
+    ('E35', 'Unified Inbox',             5, 'Communication Channels', 'communication', 'active', FALSE, 60000, 'ecosystem_35_interactive_comm_hub.py'),
+    ('E36', 'Messenger',                  5, 'Communication Channels', 'communication', 'active', FALSE, 45000, 'ecosystem_36_messenger_integration.py'),
 
     -- Tier 6: Advanced Features
-    ('E37', 'Event Management',           6, 'Advanced Features', 'operations', 'active', FALSE,  55000, 'ecosystem_37_event_management_complete.py'),
-    ('E38', 'Field Operations',           6, 'Advanced Features', 'operations', 'active', FALSE,  50000, 'ecosystem_38_volunteer_coordination_complete.py'),
-    ('E39', 'P2P Fundraising',           6, 'Advanced Features', 'operations', 'active', FALSE,  65000, 'ecosystem_39_p2p_fundraising_complete.py'),
-    ('E40', 'Automation Control',         6, 'Advanced Features', 'automation', 'active', FALSE,  70000, 'ecosystem_40_automation_control_panel_complete.py'),
-    ('E41', 'Campaign Builder',           6, 'Advanced Features', 'operations', 'active', FALSE,  75000, 'ecosystem_41_campaign_builder_complete.py'),
-    ('E42', 'News Intelligence',          6, 'Advanced Features', 'analytics', 'active', FALSE,  85000, 'ecosystem_42_news_intelligence_complete.py'),
-    ('E43', 'Advocacy',                   6, 'Advanced Features', 'operations', 'active', FALSE,  55000, 'ecosystem_43_advocacy_tools_complete.py'),
-    ('E44', 'Vendor Management',          6, 'Advanced Features', 'infrastructure', 'active', FALSE, 60000, 'ecosystem_44_vendor_compliance_security_complete.py'),
+    ('E37', 'Event Management',           6, 'Advanced Features', 'operations', 'active', FALSE,  55000, 'ecosystem_37_event_management.py'),
+    ('E38', 'Field Operations',           6, 'Advanced Features', 'operations', 'active', FALSE,  50000, 'ecosystem_38_volunteer_coordination.py'),
+    ('E39', 'P2P Fundraising',           6, 'Advanced Features', 'operations', 'active', FALSE,  65000, 'ecosystem_39_p2p_fundraising.py'),
+    ('E40', 'Automation Control',         6, 'Advanced Features', 'automation', 'active', FALSE,  70000, 'ecosystem_40_automation_control_panel.py'),
+    ('E41', 'Campaign Builder',           6, 'Advanced Features', 'operations', 'active', FALSE,  75000, 'ecosystem_41_campaign_builder.py'),
+    ('E42', 'News Intelligence',          6, 'Advanced Features', 'analytics', 'active', FALSE,  85000, 'ecosystem_42_news_intelligence.py'),
+    ('E43', 'Advocacy',                   6, 'Advanced Features', 'operations', 'active', FALSE,  55000, 'ecosystem_43_advocacy_tools.py'),
+    ('E44', 'Vendor Management',          6, 'Advanced Features', 'infrastructure', 'active', FALSE, 60000, 'ecosystem_44_vendor_compliance_security.py'),
 
     -- Tier 7: Video & Broadcast
-    ('E45', 'Video Studio',              7, 'Video & Broadcast', 'media',  'active', FALSE,  95000, 'ecosystem_45_video_studio_complete.py'),
-    ('E46', 'Broadcast Hub',             7, 'Video & Broadcast', 'media',  'active', FALSE,  70000, 'ecosystem_46_broadcast_hub_complete.py'),
-    ('E47', 'AI Script Generator',       7, 'Video & Broadcast', 'content','active', FALSE,  55000, 'ecosystem_47_ai_script_generator_complete.py'),
-    ('E48', 'Communication DNA',         7, 'Video & Broadcast', 'communication', 'active', FALSE, 65000, 'ecosystem_48_communication_dna_complete.py'),
-    ('E49', 'Interview System',          7, 'Video & Broadcast', 'media',  'active', FALSE,  65000, 'ecosystem_49_interview_system_complete.py'),
+    ('E45', 'Video Studio',              7, 'Video & Broadcast', 'media',  'active', FALSE,  95000, 'ecosystem_45_video_studio.py'),
+    ('E46', 'Broadcast Hub',             7, 'Video & Broadcast', 'media',  'active', FALSE,  70000, 'ecosystem_46_broadcast_hub.py'),
+    ('E47', 'AI Script Generator',       7, 'Video & Broadcast', 'content','active', FALSE,  55000, 'ecosystem_47_ai_script_generator.py'),
+    ('E48', 'Communication DNA',         7, 'Video & Broadcast', 'communication', 'active', FALSE, 65000, 'ecosystem_48_communication_dna.py'),
+    ('E49', 'Interview System',          7, 'Video & Broadcast', 'media',  'active', FALSE,  65000, 'ecosystem_49_interview_system.py'),
 
     -- Tier 8: GPU & AI Orchestration
-    ('E50', 'GPU Orchestrator',          8, 'GPU & AI Orchestration', 'infrastructure', 'active', FALSE, 85000, 'ecosystem_50_gpu_orchestrator_complete.py'),
-    ('E51', 'NEXUS AI / Prime Command',  8, 'GPU & AI Orchestration', 'infrastructure', 'active', TRUE, 150000, 'ecosystem_51_nexus_complete.py'),
+    ('E50', 'GPU Orchestrator',          8, 'GPU & AI Orchestration', 'infrastructure', 'active', FALSE, 85000, 'ecosystem_50_gpu_orchestrator.py'),
+    ('E51', 'NEXUS AI / Prime Command',  8, 'GPU & AI Orchestration', 'infrastructure', 'active', TRUE, 150000, 'ecosystem_51_nexus.py'),
 
     -- Tier 9: Extended Platform (E52+)
     ('E52', 'Contact Intelligence',      9, 'Extended Platform', 'data',   'active', FALSE, NULL, NULL),

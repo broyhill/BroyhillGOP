@@ -3302,38 +3302,38 @@ async def main():
     import argparse
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 52ContactIntelligenceEngineError(Exception):
+class E52ContactIntelligenceEngineError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 52ContactIntelligenceEngineValidationError(52ContactIntelligenceEngineError):
+class E52ContactIntelligenceEngineValidationError(E52ContactIntelligenceEngineError):
     """Validation error in this ecosystem"""
     pass
 
-class 52ContactIntelligenceEngineDatabaseError(52ContactIntelligenceEngineError):
+class E52ContactIntelligenceEngineDatabaseError(E52ContactIntelligenceEngineError):
     """Database error in this ecosystem"""
     pass
 
-class 52ContactIntelligenceEngineAPIError(52ContactIntelligenceEngineError):
+class E52ContactIntelligenceEngineAPIError(E52ContactIntelligenceEngineError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===
 
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 52ContactIntelligenceEngineError(Exception):
+class E52ContactIntelligenceEngineError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 52ContactIntelligenceEngineValidationError(52ContactIntelligenceEngineError):
+class E52ContactIntelligenceEngineValidationError(E52ContactIntelligenceEngineError):
     """Validation error in this ecosystem"""
     pass
 
-class 52ContactIntelligenceEngineDatabaseError(52ContactIntelligenceEngineError):
+class E52ContactIntelligenceEngineDatabaseError(E52ContactIntelligenceEngineError):
     """Database error in this ecosystem"""
     pass
 
-class 52ContactIntelligenceEngineAPIError(52ContactIntelligenceEngineError):
+class E52ContactIntelligenceEngineAPIError(E52ContactIntelligenceEngineError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===
@@ -3520,7 +3520,7 @@ class 52ContactIntelligenceEngineAPIError(52ContactIntelligenceEngineError):
 🔍 E50 CONTACT INTELLIGENCE ENGINE
 
 USAGE:
-  python ecosystem_50_contact_intelligence_engine.py --job <JOB>
+  python ecosystem_52_contact_intelligence_engine.py --job <JOB>
 
 JOBS:
   Core Operations:
@@ -3546,13 +3546,13 @@ JOBS:
 
 EXAMPLES:
   # Enrich a single donor
-  python ecosystem_50_contact_intelligence_engine.py --job enrich_donor --donor-id abc-123
+  python ecosystem_52_contact_intelligence_engine.py --job enrich_donor --donor-id abc-123
   
   # Start Brain listener (runs continuously)
-  python ecosystem_50_contact_intelligence_engine.py --job listen_brain
+  python ecosystem_52_contact_intelligence_engine.py --job listen_brain
   
   # Run quarterly enrichment for B-tier donors
-  python ecosystem_50_contact_intelligence_engine.py --job quarterly_enrich --grades B+ B B-
+  python ecosystem_52_contact_intelligence_engine.py --job quarterly_enrich --grades B+ B B-
         """)
 
 

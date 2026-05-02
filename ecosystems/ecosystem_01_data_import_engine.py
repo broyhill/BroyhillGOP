@@ -2395,38 +2395,38 @@ if __name__ == "__main__":
     import sys
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 01DataImportEngineError(Exception):
+class E01DataImportEngineError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 01DataImportEngineValidationError(01DataImportEngineError):
+class E01DataImportEngineValidationError(E01DataImportEngineError):
     """Validation error in this ecosystem"""
     pass
 
-class 01DataImportEngineDatabaseError(01DataImportEngineError):
+class E01DataImportEngineDatabaseError(E01DataImportEngineError):
     """Database error in this ecosystem"""
     pass
 
-class 01DataImportEngineAPIError(01DataImportEngineError):
+class E01DataImportEngineAPIError(E01DataImportEngineError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===
 
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 01DataImportEngineError(Exception):
+class E01DataImportEngineError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 01DataImportEngineValidationError(01DataImportEngineError):
+class E01DataImportEngineValidationError(E01DataImportEngineError):
     """Validation error in this ecosystem"""
     pass
 
-class 01DataImportEngineDatabaseError(01DataImportEngineError):
+class E01DataImportEngineDatabaseError(E01DataImportEngineError):
     """Database error in this ecosystem"""
     pass
 
-class 01DataImportEngineAPIError(01DataImportEngineError):
+class E01DataImportEngineAPIError(E01DataImportEngineError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===

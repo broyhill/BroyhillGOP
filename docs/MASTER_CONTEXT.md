@@ -140,45 +140,45 @@ ECOSYSTEM_REPORTS docx files exist for each one in `ECOSYSTEM_REPORTS/`.
 ### Tier 1 — Data & Intelligence (E0–E13)
 | ID | Name | File |
 |----|------|------|
-| E0 | DataHub | ecosystem_00_datahub_complete.py |
-| E1 | Donor Intelligence | ecosystem_01_donor_intelligence_complete.py |
-| E2 | Donation Processing | ecosystem_02_donation_processing_complete.py |
-| E3 | Candidate Profiles | ecosystem_03_candidate_profiles_complete.py |
-| E4 | Activist Network | ecosystem_04_activist_network_complete.py |
-| E5 | Volunteer Management | ecosystem_05_volunteer_management_complete.py |
-| E6 | Analytics Engine | ecosystem_06_analytics_engine_complete.py |
-| E7 | Issue Tracking | ecosystem_07_issue_tracking_complete.py |
-| E8 | Communications Library | ecosystem_08_communications_library_complete.py |
-| E9 | Content Creation AI | ecosystem_09_content_creation_ai_complete.py |
-| E10 | Compliance Manager | ecosystem_10_compliance_manager_complete.py |
-| E11 | Budget Management | ecosystem_11_budget_management_complete.py |
-| E12 | Campaign Operations | ecosystem_12_campaign_operations_complete.py |
-| E13 | AI Hub | ecosystem_13_ai_hub_complete.py |
+| E0 | DataHub | ecosystem_00_datahub.py |
+| E1 | Donor Intelligence | ecosystem_01_donor_intelligence.py |
+| E2 | Donation Processing | ecosystem_02_donation_processing.py |
+| E3 | Candidate Profiles | ecosystem_03_candidate_profiles.py |
+| E4 | Activist Network | ecosystem_04_activist_network.py |
+| E5 | Volunteer Management | ecosystem_05_volunteer_management.py |
+| E6 | Analytics Engine | ecosystem_06_analytics_engine.py |
+| E7 | Issue Tracking | ecosystem_07_issue_tracking.py |
+| E8 | Communications Library | ecosystem_08_communications_library.py |
+| E9 | Content Creation AI | ecosystem_09_content_creation_ai.py |
+| E10 | Compliance Manager | ecosystem_10_compliance_manager.py |
+| E11 | Budget Management | ecosystem_11_budget_management.py |
+| E12 | Campaign Operations | ecosystem_12_campaign_operations.py |
+| E13 | AI Hub | ecosystem_13_ai_hub.py |
 
 ### Tier 2 — Production & Media (E14–E21)
 | ID | Name | File |
 |----|------|------|
-| E14 | Print Production | ecosystem_14_print_production_complete.py |
-| E15 | Contact Directory | ecosystem_15_contact_directory_complete.py |
-| E16 | TV/Radio AI | ecosystem_16_tv_radio_complete.py |
+| E14 | Print Production | ecosystem_14_print_production.py |
+| E15 | Contact Directory | ecosystem_15_contact_directory.py |
+| E16 | TV/Radio AI | ecosystem_16_tv_radio.py |
 | E16b | Voice Synthesis ULTRA | ecosystem_16b_voice_synthesis_ULTRA.py |
-| E17 | RVM System | ecosystem_17_rvm_complete.py |
-| E18 | VDP Composition | ecosystem_18_vdp_composition_engine_complete.py |
+| E17 | RVM System | ecosystem_17_rvm.py |
+| E18 | VDP Composition | ecosystem_18_vdp_composition_engine.py |
 | E19 | Social Media | ecosystem_19_social_media_manager.py |
-| E20 | Intelligence Brain | ecosystem_20_intelligence_brain_complete.py |
-| E21 | ML Clustering | ecosystem_21_ml_clustering_complete.py |
+| E20 | Intelligence Brain | ecosystem_20_intelligence_brain.py |
+| E21 | ML Clustering | ecosystem_21_ml_clustering.py |
 
 ### Tier 3 — Analytics & Portals (E22–E29)
 | ID | Name | File |
 |----|------|------|
-| E22 | A/B Testing Engine | ecosystem_22_ab_testing_engine_complete.py |
-| E23 | Creative Asset 3D | ecosystem_23_creative_asset_3d_engine_complete.py |
-| E24 | Candidate Portal | ecosystem_24_candidate_portal_complete.py |
-| E25 | Donor Portal | ecosystem_25_donor_portal_complete.py |
-| E26 | Volunteer Portal | ecosystem_26_volunteer_portal_complete.py |
-| E27 | Realtime Dashboard | ecosystem_27_realtime_dashboard_complete.py |
-| E28 | Financial Dashboard | ecosystem_28_financial_dashboard_complete.py |
-| E29 | Analytics Dashboard | ecosystem_29_analytics_dashboard_complete.py |
+| E22 | A/B Testing Engine | ecosystem_22_ab_testing_engine.py |
+| E23 | Creative Asset 3D | ecosystem_23_creative_asset_3d_engine.py |
+| E24 | Candidate Portal | ecosystem_24_candidate_portal.py |
+| E25 | Donor Portal | ecosystem_25_donor_portal.py |
+| E26 | Volunteer Portal | ecosystem_26_volunteer_portal.py |
+| E27 | Realtime Dashboard | ecosystem_27_realtime_dashboard.py |
+| E28 | Financial Dashboard | ecosystem_28_financial_dashboard.py |
+| E29 | Analytics Dashboard | ecosystem_29_analytics_dashboard.py |
 
 ### Tier 4 — Communication Channels (E30–E36)
 | ID | Name | Notes |

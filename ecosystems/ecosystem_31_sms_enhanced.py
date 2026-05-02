@@ -1266,19 +1266,19 @@ import traceback
 from functools import wraps
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 31SmsEnhancedError(Exception):
+class E31SmsEnhancedError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 31SmsEnhancedValidationError(31SmsEnhancedError):
+class E31SmsEnhancedValidationError(E31SmsEnhancedError):
     """Validation error in this ecosystem"""
     pass
 
-class 31SmsEnhancedDatabaseError(31SmsEnhancedError):
+class E31SmsEnhancedDatabaseError(E31SmsEnhancedError):
     """Database error in this ecosystem"""
     pass
 
-class 31SmsEnhancedAPIError(31SmsEnhancedError):
+class E31SmsEnhancedAPIError(E31SmsEnhancedError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===
@@ -1299,19 +1299,19 @@ def handle_errors(func):
 
 
 # === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class 31SmsEnhancedError(Exception):
+class E31SmsEnhancedError(Exception):
     """Base exception for this ecosystem"""
     pass
 
-class 31SmsEnhancedValidationError(31SmsEnhancedError):
+class E31SmsEnhancedValidationError(E31SmsEnhancedError):
     """Validation error in this ecosystem"""
     pass
 
-class 31SmsEnhancedDatabaseError(31SmsEnhancedError):
+class E31SmsEnhancedDatabaseError(E31SmsEnhancedError):
     """Database error in this ecosystem"""
     pass
 
-class 31SmsEnhancedAPIError(31SmsEnhancedError):
+class E31SmsEnhancedAPIError(E31SmsEnhancedError):
     """API error in this ecosystem"""
     pass
 # === END CUSTOM EXCEPTIONS ===

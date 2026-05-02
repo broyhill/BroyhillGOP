@@ -13,8 +13,8 @@
 
 ## SECTION 1: WHAT WAS DESIGNED (E03 + E24)
 
-### E03: Candidate Profiles System — `ecosystem_03_candidate_profiles_complete.py`
-**File:** `/mnt/project/ecosystem_03_candidate_profiles_complete.py` (1,258 lines)
+### E03: Candidate Profiles System — `ecosystem_03_candidate_profiles.py`
+**File:** `/mnt/project/ecosystem_03_candidate_profiles.py` (1,258 lines)
 **Development Value:** $80,000+
 **Capacity:** 5,000+ candidates across all levels
 
@@ -224,8 +224,8 @@ Full CRUD operations:
 
 ---
 
-### E24: Candidate Portal — `ecosystem_24_candidate_portal_complete.py`
-**File:** `/mnt/project/ecosystem_24_candidate_portal_complete.py` (1,284 lines)
+### E24: Candidate Portal — `ecosystem_24_candidate_portal.py`
+**File:** `/mnt/project/ecosystem_24_candidate_portal.py` (1,284 lines)
 **Development Value:** $140,000+
 **Monthly Savings:** $900+/month (replaces NationBuilder $500/mo + NGP VAN $400/mo)
 
@@ -459,7 +459,7 @@ Per established protocol, deployment requires:
 
 ## APPENDIX: DEPLOYMENT SQL (From E03 deploy_candidate_system())
 
-The deploy function at line 1154 of `ecosystem_03_candidate_profiles_complete.py` executes:
+The deploy function at line 1154 of `ecosystem_03_candidate_profiles.py` executes:
 1. `CANDIDATE_SCHEMA` — All CREATE TABLE, CREATE INDEX, CREATE VIEW statements
 2. Office types seed — 50+ INSERT INTO office_types
 3. Factions seed — 13 INSERT INTO factions

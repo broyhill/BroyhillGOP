@@ -1,4 +1,4 @@
-# ecosystem_19_personalization_engine.py
+# ecosystem_19_social_media_integration_patch.py
 # BROYHILLGOP - AI Content Personalization Engine
 # ECOSYSTEM 19: Social Media Manager - Voice Matching Component
 # Learns each candidate's unique voice, style, and patterns

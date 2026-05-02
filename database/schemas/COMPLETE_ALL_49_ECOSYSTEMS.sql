@@ -4,7 +4,7 @@
 
 
 -- ================================================================
--- FROM: ecosystem_00_datahub_complete.py (E00)
+-- FROM: ecosystem_00_datahub.py (E00)
 -- ================================================================
 
 -- ============================================================================
@@ -313,7 +313,7 @@ SELECT 'Monitoring setup complete!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_01_donor_intelligence_complete.py (E01)
+-- FROM: ecosystem_01_donor_intelligence.py (E01)
 -- ================================================================
 
 -- ============================================================================
@@ -559,7 +559,7 @@ SELECT 'Donor Intelligence schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_02_donation_processing_complete.py (E02)
+-- FROM: ecosystem_02_donation_processing.py (E02)
 -- ================================================================
 
 -- ============================================================================
@@ -926,7 +926,7 @@ SELECT 'Donation Processing schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_03_candidate_profiles_complete.py (E03)
+-- FROM: ecosystem_03_candidate_profiles.py (E03)
 -- ================================================================
 
 -- ============================================================================
@@ -1429,7 +1429,7 @@ SELECT 'Candidate Profiles schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_04_activist_network_complete.py (E04)
+-- FROM: ecosystem_04_activist_network.py (E04)
 -- ================================================================
 
 -- ============================================================================
@@ -1716,7 +1716,7 @@ SELECT 'Activist Network schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_05_volunteer_management_complete.py (E05)
+-- FROM: ecosystem_05_volunteer_management.py (E05)
 -- ================================================================
 
 -- ============================================================================
@@ -2070,7 +2070,7 @@ SELECT 'Volunteer Management schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_06_analytics_engine_complete.py (E06)
+-- FROM: ecosystem_06_analytics_engine.py (E06)
 -- ================================================================
 
 -- ============================================================================
@@ -2520,7 +2520,7 @@ SELECT 'Analytics Engine schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_07_issue_tracking_complete.py (E07)
+-- FROM: ecosystem_07_issue_tracking.py (E07)
 -- ================================================================
 
 -- ============================================================================
@@ -2775,7 +2775,7 @@ SELECT 'Issue Tracking schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_08_communications_library_complete.py (E08)
+-- FROM: ecosystem_08_communications_library.py (E08)
 -- ================================================================
 
 -- ============================================================================
@@ -2943,7 +2943,7 @@ SELECT 'Communications Library schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_09_content_creation_ai_complete.py (E09)
+-- FROM: ecosystem_09_content_creation_ai.py (E09)
 -- ================================================================
 
 -- ============================================================================
@@ -3097,7 +3097,7 @@ SELECT 'Content Creation AI schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_10_compliance_manager_complete.py (E10)
+-- FROM: ecosystem_10_compliance_manager.py (E10)
 -- ================================================================
 
 -- ============================================================================
@@ -3459,7 +3459,7 @@ SELECT 'FEC Compliance Manager schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_11_budget_management_complete.py (E11)
+-- FROM: ecosystem_11_budget_management.py (E11)
 -- ================================================================
 
 -- ============================================================================
@@ -3706,7 +3706,7 @@ SELECT 'Budget Management schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_11_training_lms_complete.py (E11)
+-- FROM: ecosystem_11_training_lms.py (E11)
 -- ================================================================
 
 -- ============================================================================
@@ -3979,7 +3979,7 @@ SELECT 'Training LMS schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_12_campaign_operations_complete.py (E12)
+-- FROM: ecosystem_12_campaign_operations.py (E12)
 -- ================================================================
 
 -- ============================================================================
@@ -4235,7 +4235,7 @@ SELECT 'Campaign Operations schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_13_ai_hub_complete.py (E13)
+-- FROM: ecosystem_13_ai_hub.py (E13)
 -- ================================================================
 
 -- ============================================================================
@@ -4353,7 +4353,7 @@ SELECT 'AI Hub schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_14_print_production_complete.py (E14)
+-- FROM: ecosystem_14_print_production.py (E14)
 -- ================================================================
 
 -- ============================================================================
@@ -4548,7 +4548,7 @@ SELECT 'Print Production schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_15_contact_directory_complete.py (E15)
+-- FROM: ecosystem_15_contact_directory.py (E15)
 -- ================================================================
 
 -- ============================================================================
@@ -4798,7 +4798,7 @@ SELECT 'Contact Directory schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_16_tv_radio_complete.py (E16)
+-- FROM: ecosystem_16_tv_radio.py (E16)
 -- ================================================================
 
 -- ============================================================================
@@ -5061,7 +5061,7 @@ SELECT 'TV/Radio AI schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_17_rvm_complete.py (E17)
+-- FROM: ecosystem_17_rvm.py (E17)
 -- ================================================================
 
 -- ============================================================================
@@ -5542,7 +5542,7 @@ SELECT 'RVM Enterprise (Political) schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_18_print_advertising_complete.py (E18)
+-- FROM: ecosystem_18_print_advertising.py (E18)
 -- ================================================================
 
 -- ============================================================================
@@ -5844,7 +5844,7 @@ SELECT 'Print Advertising schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_18_vdp_composition_engine_complete.py (E18)
+-- FROM: ecosystem_18_vdp_composition_engine.py (E18)
 -- ================================================================
 
 -- ============================================================================
@@ -6116,7 +6116,7 @@ SELECT 'VDP Composition Engine schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_19_personalization_engine.py (E19)
+-- FROM: ecosystem_19_social_media_integration_patch.py (E19)
 -- ================================================================
 
 -- ================================================================
@@ -6472,7 +6472,7 @@ SELECT 'Enhanced Social Media schema with Carousels deployed!' as status;
 -- ================================================================
 
 -- ================================================================
--- FROM: ecosystem_20_intelligence_brain_complete.py (E20)
+-- FROM: ecosystem_20_intelligence_brain.py (E20)
 -- ================================================================
 
 -- ============================================================================
@@ -6641,7 +6641,7 @@ SELECT 'Intelligence Brain schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_21_ml_clustering_complete.py (E21)
+-- FROM: ecosystem_21_ml_clustering.py (E21)
 -- ================================================================
 
 -- ============================================================================
@@ -6886,7 +6886,7 @@ SELECT 'ML Clustering schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_22_ab_testing_engine_complete.py (E22)
+-- FROM: ecosystem_22_ab_testing_engine.py (E22)
 -- ================================================================
 
 -- ============================================================================
@@ -7168,7 +7168,7 @@ SELECT 'Universal A/B Testing Engine schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_23_creative_asset_3d_engine_complete.py (E23)
+-- FROM: ecosystem_23_creative_asset_3d_engine.py (E23)
 -- ================================================================
 
 -- ============================================================================
@@ -7555,7 +7555,7 @@ SELECT 'Creative Asset & 3D Engine schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_24_candidate_portal_complete.py (E24)
+-- FROM: ecosystem_24_candidate_portal.py (E24)
 -- ================================================================
 
 -- ============================================================================
@@ -7936,7 +7936,7 @@ SELECT 'Candidate Portal schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_25_donor_portal_complete.py (E25)
+-- FROM: ecosystem_25_donor_portal.py (E25)
 -- ================================================================
 
 -- ============================================================================
@@ -8238,7 +8238,7 @@ SELECT 'Donor Portal schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_26_volunteer_portal_complete.py (E26)
+-- FROM: ecosystem_26_volunteer_portal.py (E26)
 -- ================================================================
 
 -- ============================================================================
@@ -8581,7 +8581,7 @@ SELECT 'Volunteer Portal schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_27_realtime_dashboard_complete.py (E27)
+-- FROM: ecosystem_27_realtime_dashboard.py (E27)
 -- ================================================================
 
 -- ============================================================================
@@ -8870,7 +8870,7 @@ SELECT 'Real-Time Dashboard schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_28_financial_dashboard_complete.py (E28)
+-- FROM: ecosystem_28_financial_dashboard.py (E28)
 -- ================================================================
 
 -- ============================================================================
@@ -9188,7 +9188,7 @@ SELECT 'Financial Dashboard schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_29_analytics_dashboard_complete.py (E29)
+-- FROM: ecosystem_29_analytics_dashboard.py (E29)
 -- ================================================================
 
 -- ============================================================================
@@ -9533,7 +9533,7 @@ SELECT 'Analytics Dashboard schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_30_email_complete.py (E30)
+-- FROM: ecosystem_30_email.py (E30)
 -- ================================================================
 
 -- Email Campaigns
@@ -9819,7 +9819,7 @@ SELECT 'Email Marketing schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_31_sms_complete.py (E31)
+-- FROM: ecosystem_31_sms.py (E31)
 -- ================================================================
 
 -- SMS Campaigns
@@ -10524,7 +10524,7 @@ SELECT 'Enhanced Omnichannel Messaging schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_32_phone_banking_complete.py (E32)
+-- FROM: ecosystem_32_phone_banking.py (E32)
 -- ================================================================
 
 -- ============================================================================
@@ -10748,7 +10748,7 @@ SELECT 'Phone Banking schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_33_direct_mail_complete.py (E33)
+-- FROM: ecosystem_33_direct_mail.py (E33)
 -- ================================================================
 
 -- ============================================================================
@@ -11078,7 +11078,7 @@ SELECT 'Direct Mail schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_34_events_complete.py (E34)
+-- FROM: ecosystem_34_events.py (E34)
 -- ================================================================
 
 -- ============================================================================
@@ -11577,7 +11577,7 @@ GROUP BY t.template_id, t.name, t.trigger_type, t.delay_seconds, t.times_sent;
 
 
 -- ================================================================
--- FROM: ecosystem_35_interactive_comm_hub_complete.py (E35)
+-- FROM: ecosystem_35_interactive_comm_hub.py (E35)
 -- ================================================================
 
 -- ============================================================================
@@ -12245,11 +12245,11 @@ ON CONFLICT DO NOTHING;
 
 
 -- ================================================================
--- FROM: ecosystem_36_messenger_integration_complete.py (E36)
+-- FROM: ecosystem_36_messenger_integration.py (E36)
 -- ================================================================
 
 -- ================================================================
--- FROM: ecosystem_37_event_management_complete.py (E37)
+-- FROM: ecosystem_37_event_management.py (E37)
 -- ================================================================
 
 -- ============================================================================
@@ -12653,7 +12653,7 @@ SELECT 'Event Management schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_38_volunteer_coordination_complete.py (E38)
+-- FROM: ecosystem_38_volunteer_coordination.py (E38)
 -- ================================================================
 
 -- ============================================================================
@@ -12857,7 +12857,7 @@ SELECT 'Volunteer Coordination schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_39_p2p_fundraising_complete.py (E39)
+-- FROM: ecosystem_39_p2p_fundraising.py (E39)
 -- ================================================================
 
 -- ============================================================================
@@ -13212,7 +13212,7 @@ SELECT 'P2P Fundraising schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_40_automation_control_panel_complete.py (E40)
+-- FROM: ecosystem_40_automation_control_panel.py (E40)
 -- ================================================================
 
 -- ============================================================================
@@ -13716,7 +13716,7 @@ SELECT 'Workflow control schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_41_campaign_builder_complete.py (E41)
+-- FROM: ecosystem_41_campaign_builder.py (E41)
 -- ================================================================
 
 -- ============================================================================
@@ -13935,7 +13935,7 @@ SELECT 'Campaign Builder schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_42_news_intelligence_complete.py (E42)
+-- FROM: ecosystem_42_news_intelligence.py (E42)
 -- ================================================================
 
 -- ============================================================================
@@ -14162,7 +14162,7 @@ SELECT 'News Intelligence schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_43_advocacy_tools_complete.py (E43)
+-- FROM: ecosystem_43_advocacy_tools.py (E43)
 -- ================================================================
 
 -- Petitions
@@ -14282,7 +14282,7 @@ SELECT 'Advocacy Tools deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_44_vendor_compliance_security_complete.py (E44)
+-- FROM: ecosystem_44_vendor_compliance_security.py (E44)
 -- ================================================================
 
 -- ============================================================================
@@ -14653,7 +14653,7 @@ SELECT 'Vendor Compliance & Security schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_45_video_studio_complete.py (E45)
+-- FROM: ecosystem_45_video_studio.py (E45)
 -- ================================================================
 
 -- ============================================================================
@@ -14848,23 +14848,23 @@ SELECT 'E45 Video Studio schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_46_broadcast_hub_complete.py (E46)
+-- FROM: ecosystem_46_broadcast_hub.py (E46)
 -- ================================================================
 
 -- ================================================================
--- FROM: ecosystem_47_ai_script_generator_complete.py (E47)
+-- FROM: ecosystem_47_ai_script_generator.py (E47)
 -- ================================================================
 
 -- ================================================================
--- FROM: ecosystem_48_communication_dna_complete.py (E48)
+-- FROM: ecosystem_48_communication_dna.py (E48)
 -- ================================================================
 
 -- ================================================================
--- FROM: ecosystem_49_interview_system_complete.py (E49)
+-- FROM: ecosystem_49_interview_system.py (E49)
 -- ================================================================
 
 -- ================================================================
--- FROM: ecosystem_demo_controller_complete.py (E)
+-- FROM: ecosystem_demo_controller.py (E)
 -- ================================================================
 
 -- Demo Controller Schema
@@ -14893,7 +14893,7 @@ SELECT 'Demo Controller schema deployed!' as status;
 
 
 -- ================================================================
--- FROM: ecosystem_demo_video_production_complete.py (E)
+-- FROM: ecosystem_demo_video_production.py (E)
 -- ================================================================
 
 -- ============================================================================

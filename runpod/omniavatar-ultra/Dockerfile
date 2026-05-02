@@ -13,7 +13,7 @@ RUN git clone https://github.com/Omni-Avatar/OmniAvatar.git
 
 # Install dependencies
 WORKDIR /workspace/OmniAvatar
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements-pipeline.txt
 RUN pip install --no-cache-dir flash_attn runpod huggingface_hub[cli]
 
 # Create model directory

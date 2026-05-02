@@ -9,7 +9,7 @@
 
 | # | File | Type | Size | Purpose |
 |---|------|------|------|---------|
-| 1 | `ecosystem_05_volunteer_management_complete.py` | Python | ~25KB | Core volunteer management system |
+| 1 | `ecosystem_05_volunteer_management.py` | Python | ~25KB | Core volunteer management system |
 | 2 | `VOLUNTEER_ECOSYSTEM_COMPLETE_SCHEMA.sql` | SQL | ~18KB | Supabase database schema |
 | 3 | `E20_VOLUNTEER_INTEGRATION_UPDATE.py` | Python | ~8KB | Brain Hub event handlers |
 | 4 | `E05_VOLUNTEER_MANAGEMENT_DASHBOARD.html` | HTML | ~22KB | Admin dashboard (Inspinia) |
@@ -132,7 +132,7 @@ NO_SHOW_RATE_WARNING = 0.2
 
 ### 2. Backend (Hetzner)
 ```bash
-scp ecosystem_05_volunteer_management_complete.py root@5.9.99.109:/var/www/broyhillgop/backend/python/ecosystems/
+scp ecosystem_05_volunteer_management.py root@5.9.99.109:/var/www/broyhillgop/backend/python/ecosystems/
 ```
 
 ### 3. E20 Brain Hub
@@ -188,7 +188,7 @@ git push origin main
 ```
 GitHub: broyhill/BroyhillGOP/
 ├── backend/python/ecosystems/
-│   └── ecosystem_05_volunteer_management_complete.py
+│   └── ecosystem_05_volunteer_management.py
 ├── database/schemas/
 │   └── volunteer_ecosystem_schema.sql
 └── frontend/
@@ -199,7 +199,7 @@ GitHub: broyhill/BroyhillGOP/
 
 Hetzner: /var/www/broyhillgop/
 ├── backend/python/ecosystems/
-│   └── ecosystem_05_volunteer_management_complete.py
+│   └── ecosystem_05_volunteer_management.py
 └── frontend/
     └── volunteer/
         └── index.html

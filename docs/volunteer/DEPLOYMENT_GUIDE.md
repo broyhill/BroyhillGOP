@@ -8,7 +8,7 @@
 
 ```
 VOLUNTEER_ECOSYSTEM_COMPLETE/
-├── ecosystem_05_volunteer_management_complete.py    # Core volunteer system
+├── ecosystem_05_volunteer_management.py    # Core volunteer system
 ├── VOLUNTEER_ECOSYSTEM_COMPLETE_SCHEMA.sql          # Database schema
 ├── E20_VOLUNTEER_INTEGRATION_UPDATE.py              # Brain Hub integration
 ├── E05_VOLUNTEER_MANAGEMENT_DASHBOARD.html          # Admin dashboard
@@ -133,10 +133,10 @@ ssh root@5.9.99.109
 cd /var/www/broyhillgop/backend/python/ecosystems
 
 # Upload file
-scp ecosystem_05_volunteer_management_complete.py root@5.9.99.109:/var/www/broyhillgop/backend/python/ecosystems/
+scp ecosystem_05_volunteer_management.py root@5.9.99.109:/var/www/broyhillgop/backend/python/ecosystems/
 
 # Set permissions
-chmod 644 ecosystem_05_volunteer_management_complete.py
+chmod 644 ecosystem_05_volunteer_management.py
 ```
 
 ### 3.2 Install Dependencies
@@ -149,7 +149,7 @@ pip install redis psycopg2-binary --break-system-packages
 
 ```python
 python3 -c "
-from ecosystem_05_volunteer_management_complete import VolunteerManagement
+from ecosystem_05_volunteer_management import VolunteerManagement
 vm = VolunteerManagement()
 print('✅ Volunteer Management loaded successfully')
 "
@@ -165,7 +165,7 @@ print('✅ Volunteer Management loaded successfully')
 cd /path/to/BroyhillGOP
 
 # Add new files
-git add backend/python/ecosystems/ecosystem_05_volunteer_management_complete.py
+git add backend/python/ecosystems/ecosystem_05_volunteer_management.py
 git add database/schemas/volunteer_ecosystem_schema.sql
 
 # Commit with proper message
@@ -284,7 +284,7 @@ redis-cli
 - [ ] Achievement definitions seeded
 
 ### Python
-- [ ] ecosystem_05_volunteer_management_complete.py deployed
+- [ ] ecosystem_05_volunteer_management.py deployed
 - [ ] Dependencies installed
 - [ ] Module imports successfully
 
@@ -314,7 +314,7 @@ redis-cli
 ### 10.1 Create Test Volunteer
 
 ```python
-from ecosystem_05_volunteer_management_complete import VolunteerManagement
+from ecosystem_05_volunteer_management import VolunteerManagement
 
 vm = VolunteerManagement()
 

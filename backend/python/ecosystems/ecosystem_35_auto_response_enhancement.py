@@ -22,7 +22,7 @@ All responses are:
 ============================================================================
 """
 
-# Add these tables and methods to ecosystem_35_interactive_comm_hub_complete.py
+# Add these tables and methods to ecosystem_35_interactive_comm_hub.py
 
 AUTO_RESPONSE_SCHEMA_ADDITION = """
 -- ============================================================================
