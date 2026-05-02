@@ -160,8 +160,7 @@ Each file implements one ecosystem's backend logic — API endpoints, data model
 | ecosystem_08_communications_library_complete.py | E08 Comms Library | Template CRUD, version control |
 | ecosystem_09_content_creation_ai_complete.py | E09 AI Content | LLM integration, copy generation, tone matching |
 | ecosystem_10_compliance_manager_complete.py | E10 Compliance | FEC validation, filing automation |
-| ecosystem_11_budget_management_complete.py | E11 Budget | Budget CRUD, burn rate calculation |
-| ecosystem_11_budget_dual_grading.py | E11 Grading | Budget line dual grading |
+| ecosystem_11_budget_management.py | E11 Budget | Budget CRUD, burn rate calculation |
 | ecosystem_12_campaign_operations_complete.py | E12 Campaign Ops | Field ops routing, GOTV targeting |
 | ecosystem_13_ai_hub_complete.py | E13 AI Hub | Central AI model registry, inference routing |
 | ecosystem_14_print_production_complete.py | E14 Print | Print job management, VDP templates |
@@ -25534,7 +25533,7 @@ Search engine v2 found 27445 files not in the index:
 | pre_deployment_validator.py | .py | donor, donation, volunteer, candidate, campaign, events, microsegment, AI, voice |
 | ecosystem_47_unified_voice_engine.py | .py | FEC, compliance, candidate, campaign, scoring, AI, voice, print, API, RunPod, Su |
 | ecosystem_30_email_dual_grading.py | .py | donor, donation, campaign, email, fundraising, grading, AI, print, county, sheri |
-| ecosystem_11_training_lms_complete.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
+| ecosystem_11b_training_lms.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
 | ecosystem_31_sms_enhanced.py | .py | donation, compliance, volunteer, candidate, campaign, analytics, dashboard, SMS, |
 | ecosystem_16b_voice_synthesis_opensource_complete.py | .py | donor, candidate, campaign, analytics, email, phone, matching, AI, ML, voice, pr |
 | ecosystem_35_auto_response_enhancement.py | .py | donor, donation, volunteer, candidate, campaign, analytics, email, SMS, phone, c |
@@ -25563,7 +25562,7 @@ Search engine v2 found 27445 files not in the index:
 | ecosystem_19_social_media_integration_patch.py | .py | compliance, candidate, SMS, phone, events, brain, AI, voice, video, print, socia |
 | ecosystem_01_data_import_engine.py | .py | donor, donation, candidate, campaign, email, phone, events, voter, DataTrust, de |
 | ecosystem_47_unified_voice_engine.py | .py | FEC, compliance, candidate, campaign, scoring, AI, voice, print, API, RunPod, Su |
-| ecosystem_11_training_lms_complete.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
+| ecosystem_11b_training_lms.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
 | ecosystem_31_sms_enhanced.py | .py | donation, compliance, volunteer, candidate, campaign, analytics, dashboard, SMS, |
 | ecosystem_16b_voice_synthesis_opensource_complete.py | .py | donor, candidate, campaign, analytics, email, phone, matching, AI, ML, voice, pr |
 | ecosystem_35_auto_response_enhancement.py | .py | donor, donation, volunteer, candidate, campaign, analytics, email, SMS, phone, c |
@@ -25613,7 +25612,7 @@ Search engine v2 found 27445 files not in the index:
 | e49_enhanced_worker.py | .py | candidate, phone, AI, ML, voice, video, print, GPU, Supabase |
 | script.py | .py | compliance, AI, print |
 | ecosystem_24_candidate_onboarding_social_gate.py | .py | donor, volunteer, candidate, campaign, analytics, dashboard, email, phone, event |
-| ecosystem_11_training_lms_complete.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
+| ecosystem_11b_training_lms.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
 | ecosystem_19_social_media_manager.py | .py | compliance, candidate, campaign, analytics, events, address, AI, video, print, s |
 | DAVE_VIDEO_NOW.py | .py | FEC, campaign, AI, ML, voice, video, print, API, RunPod |
 | script_1.py | .py | donation, AI, print |
@@ -26138,7 +26137,7 @@ Search engine v2 found 27445 files not in the index:
 | ECOSYSTEM_38_SOCIAL_MEDIA_ARSENAL.py | .py | compliance, candidate, events, AI, video, print, social media, automation, API,  |
 | ECOSYSTEM_38_PERSONALIZATION_ENGINE.py | .py | FEC, candidate, matching, AI, ML, voice, print, social media, API, Supabase, dis |
 | DAVE_VIDEO_NOW.py | .py | FEC, campaign, AI, ML, voice, video, print, API, RunPod |
-| ecosystem_11_training_lms_complete.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
+| ecosystem_11b_training_lms.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
 | ecosystem_31_sms_enhanced.py | .py | donation, compliance, volunteer, candidate, campaign, analytics, dashboard, SMS, |
 | ecosystem_35_auto_response_enhancement.py | .py | donor, donation, volunteer, candidate, campaign, analytics, email, SMS, phone, c |
 | ecosystem_19_social_media_manager.py | .py | compliance, candidate, campaign, analytics, events, address, AI, video, print, s |
@@ -26146,7 +26145,7 @@ Search engine v2 found 27445 files not in the index:
 | ECOSYSTEM_38_SOCIAL_MEDIA_ARSENAL.py | .py | compliance, candidate, events, AI, video, print, social media, automation, API,  |
 | ECOSYSTEM_38_PERSONALIZATION_ENGINE.py | .py | FEC, candidate, matching, AI, ML, voice, print, social media, API, Supabase, dis |
 | master_upload.py | .py | donor, candidate, campaign, AI, print, automation, API, district, county, sherif |
-| ecosystem_11_training_lms_complete.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
+| ecosystem_11b_training_lms.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
 | ecosystem_31_sms_enhanced.py | .py | donation, compliance, volunteer, candidate, campaign, analytics, dashboard, SMS, |
 | ecosystem_35_auto_response_enhancement.py | .py | donor, donation, volunteer, candidate, campaign, analytics, email, SMS, phone, c |
 | ecosystem_19_social_media_manager.py | .py | compliance, candidate, campaign, analytics, events, address, AI, video, print, s |
@@ -26161,7 +26160,7 @@ Search engine v2 found 27445 files not in the index:
 | voice_compiler.py | .py | candidate, phone, scoring, AI, voice, API, integration, RunPod, Supabase |
 | youtube_extractor.py | .py | candidate, AI, voice, video, integration, Supabase |
 | upload_handler.py | .py | candidate, phone, AI, voice, Supabase |
-| ecosystem_11_training_lms_complete.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
+| ecosystem_11b_training_lms.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
 | ecosystem_31_sms_enhanced.py | .py | donation, compliance, volunteer, candidate, campaign, analytics, dashboard, SMS, |
 | ecosystem_35_auto_response_enhancement.py | .py | donor, donation, volunteer, candidate, campaign, analytics, email, SMS, phone, c |
 | ecosystem_19_social_media_manager.py | .py | compliance, candidate, email, SMS, events, brain, AI, video, print, social media |
@@ -26193,7 +26192,7 @@ Search engine v2 found 27445 files not in the index:
 | pre_deployment_validator.py | .py | donor, donation, volunteer, candidate, campaign, events, microsegment, AI, voice |
 | ecosystem_47_unified_voice_engine.py | .py | FEC, compliance, candidate, campaign, scoring, AI, voice, print, API, RunPod, Su |
 | ecosystem_30_email_dual_grading.py | .py | donor, donation, campaign, email, fundraising, grading, AI, print, county, sheri |
-| ecosystem_11_training_lms_complete.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
+| ecosystem_11b_training_lms.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
 | ecosystem_31_sms_enhanced.py | .py | donation, compliance, volunteer, candidate, campaign, analytics, dashboard, SMS, |
 | ecosystem_16b_voice_synthesis_opensource_complete.py | .py | donor, candidate, campaign, analytics, email, phone, matching, AI, ML, voice, pr |
 | ecosystem_35_auto_response_enhancement.py | .py | donor, donation, volunteer, candidate, campaign, analytics, email, SMS, phone, c |
@@ -26215,7 +26214,7 @@ Search engine v2 found 27445 files not in the index:
 | ecosystem_19_social_media_integration_patch.py | .py | compliance, candidate, SMS, phone, events, brain, AI, voice, video, print, socia |
 | ecosystem_01_data_import_engine.py | .py | donor, donation, candidate, campaign, email, phone, events, voter, DataTrust, de |
 | ecosystem_47_unified_voice_engine.py | .py | FEC, compliance, candidate, campaign, scoring, AI, voice, print, API, RunPod, Su |
-| ecosystem_11_training_lms_complete.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
+| ecosystem_11b_training_lms.py | .py | FEC, compliance, volunteer, campaign, analytics, phone, fundraising, voter, cont |
 | ecosystem_31_sms_enhanced.py | .py | donation, compliance, volunteer, candidate, campaign, analytics, dashboard, SMS, |
 | ecosystem_16b_voice_synthesis_opensource_complete.py | .py | donor, candidate, campaign, analytics, email, phone, matching, AI, ML, voice, pr |
 | ecosystem_35_auto_response_enhancement.py | .py | donor, donation, volunteer, candidate, campaign, analytics, email, SMS, phone, c |

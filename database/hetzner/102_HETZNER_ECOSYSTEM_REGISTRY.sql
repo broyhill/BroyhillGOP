@@ -742,6 +742,7 @@ VALUES
     ('E09', 'Content Creation AI',        2, 'Content & AI', 'content',     'active', FALSE,  70000, 'ecosystem_09_content_creation_ai.py'),
     ('E10', 'Compliance Manager',         2, 'Content & AI', 'compliance',  'active', TRUE,   60000, 'ecosystem_10_compliance_manager.py'),
     ('E11', 'Budget Management',          2, 'Content & AI', 'operations',  'active', FALSE,  65000, 'ecosystem_11_budget_management.py'),
+    ('E11B', 'Training & LMS',            2, 'Content & AI', 'operations',  'active', FALSE, 100000, 'ecosystem_11b_training_lms.py'),
     ('E12', 'Campaign Operations',        2, 'Content & AI', 'operations',  'active', FALSE,  70000, 'ecosystem_12_campaign_operations.py'),
     ('E13', 'AI Hub',                     2, 'Content & AI', 'automation',  'active', TRUE,   85000, 'ecosystem_13_ai_hub.py'),
     ('E14', 'Print Production',           2, 'Content & AI', 'media',       'active', FALSE,  50000, 'ecosystem_14_print_production.py'),

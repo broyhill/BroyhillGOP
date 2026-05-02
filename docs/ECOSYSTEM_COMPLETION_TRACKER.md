@@ -35,7 +35,7 @@
 | E08 | Communications Library | `ecosystem_08_communications_library_complete.py` | ✅ |
 | E09 | Content Creation AI | `ecosystem_09_content_creation_ai_complete.py` | ✅ |
 | E10 | Compliance Manager | `ecosystem_10_compliance_manager_complete.py` | ✅ |
-| E11 | Budget Management | `ecosystem_11_budget_management_complete.py` | ✅ |
+| E11 | Budget Management | `ecosystem_11_budget_management.py` | ✅ |
 | E12 | Campaign Operations | `ecosystem_12_campaign_operations_complete.py` | ✅ |
 | E13 | AI Hub | `ecosystem_13_ai_hub_complete.py` | — |
 | E14 | Print Production | `ecosystem_14_print_production_complete.py` | — |
