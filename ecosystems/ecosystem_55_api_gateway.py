@@ -54,6 +54,61 @@ from collections import defaultdict
 from functools import wraps
 import aiohttp
 
+
+# ============================================================================
+# REPAIR NOTE
+# ============================================================================
+# Repaired 2026-05-02 after Cursor 'Auto-added by repair tool' damage.
+# Cursor injected module-level code (imports, exception classes, sometimes a
+# Config dataclass) at random positions inside method bodies, breaking indent
+# of the lines that follow. This repair removes those injected blocks and
+# hoists ONE deduplicated copy of the canonical exception classes to module
+# level. Behavior of original code is unchanged.
+# ============================================================================
+
+
+# ============================================================================
+# CUSTOM EXCEPTIONS (relocated from in-method injection)
+# ============================================================================
+
+import traceback
+from functools import wraps
+
+
+class E55ApiGatewayCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+
+class E55ApiGatewayCompleteValidationError(E55ApiGatewayCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+
+class E55ApiGatewayCompleteDatabaseError(E55ApiGatewayCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+
+class E55ApiGatewayCompleteAPIError(E55ApiGatewayCompleteError):
+    """API error in this ecosystem"""
+    pass
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('ecosystem55.api_gateway')
 
@@ -408,60 +463,6 @@ class APIGateway:
             return {'Authorization': f"Bearer {token}"}
         elif credential.auth_type == AuthType.BASIC:
             import base64
-
-# === CONFIGURATION MANAGEMENT (Auto-added by repair tool) ===
-import os
-from dataclasses import dataclass
-
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class E55ApiGatewayCompleteError(Exception):
-    """Base exception for this ecosystem"""
-    pass
-
-class E55ApiGatewayCompleteValidationError(E55ApiGatewayCompleteError):
-    """Validation error in this ecosystem"""
-    pass
-
-class E55ApiGatewayCompleteDatabaseError(E55ApiGatewayCompleteError):
-    """Database error in this ecosystem"""
-    pass
-
-class E55ApiGatewayCompleteAPIError(E55ApiGatewayCompleteError):
-    """API error in this ecosystem"""
-    pass
-# === END CUSTOM EXCEPTIONS ===
-
-
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class E55ApiGatewayCompleteError(Exception):
-    """Base exception for this ecosystem"""
-    pass
-
-class E55ApiGatewayCompleteValidationError(E55ApiGatewayCompleteError):
-    """Validation error in this ecosystem"""
-    pass
-
-class E55ApiGatewayCompleteDatabaseError(E55ApiGatewayCompleteError):
-    """Database error in this ecosystem"""
-    pass
-
-class E55ApiGatewayCompleteAPIError(E55ApiGatewayCompleteError):
-    """API error in this ecosystem"""
-    pass
-# === END CUSTOM EXCEPTIONS ===
-
-
-@dataclass
-class Config:
-    """Configuration settings loaded from environment"""
-    DATABASE_URL: str = os.getenv('DATABASE_URL', 'postgresql://localhost/broyhillgop')
-    API_KEY: str = os.getenv('API_KEY', '')
-    DEBUG: bool = os.getenv('DEBUG', 'false').lower() == 'true'
-    LOG_LEVEL: str = os.getenv('LOG_LEVEL', 'INFO')
-
-config = Config()
-# === END CONFIGURATION ===
-
             auth_str = f"{credential.api_key}:{credential.api_secret or ''}"
             encoded = base64.b64encode(auth_str.encode()).decode()
             return {'Authorization': f"Basic {encoded}"}
