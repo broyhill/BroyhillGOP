@@ -34,6 +34,61 @@ Version: 1.0.0
 
 # Load environment
 from dotenv import load_dotenv
+
+
+# ============================================================================
+# REPAIR NOTE
+# ============================================================================
+# Repaired 2026-05-02 after Cursor 'Auto-added by repair tool' damage.
+# Cursor injected module-level code (imports, exception classes, sometimes a
+# Config dataclass) at random positions inside method bodies, breaking indent
+# of the lines that follow. This repair removes those injected blocks and
+# hoists ONE deduplicated copy of the canonical exception classes to module
+# level. Behavior of original code is unchanged.
+# ============================================================================
+
+
+# ============================================================================
+# CUSTOM EXCEPTIONS (relocated from in-method injection)
+# ============================================================================
+
+import traceback
+from functools import wraps
+
+
+class E01PlatformSocialImportError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+
+class E01PlatformSocialImportValidationError(E01PlatformSocialImportError):
+    """Validation error in this ecosystem"""
+    pass
+
+
+class E01PlatformSocialImportDatabaseError(E01PlatformSocialImportError):
+    """Database error in this ecosystem"""
+    pass
+
+
+class E01PlatformSocialImportAPIError(E01PlatformSocialImportError):
+    """API error in this ecosystem"""
+    pass
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+
+
 load_dotenv("/opt/broyhillgop/config/supabase.env")
 import os
 import json
@@ -1370,43 +1425,6 @@ Supported Platforms (Social OAuth):
     
     elif command == "--detect-platform" and len(sys.argv) > 2:
         import csv
-
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class E01PlatformSocialImportError(Exception):
-    """Base exception for this ecosystem"""
-    pass
-
-class E01PlatformSocialImportValidationError(E01PlatformSocialImportError):
-    """Validation error in this ecosystem"""
-    pass
-
-class E01PlatformSocialImportDatabaseError(E01PlatformSocialImportError):
-    """Database error in this ecosystem"""
-    pass
-
-class E01PlatformSocialImportAPIError(E01PlatformSocialImportError):
-    """API error in this ecosystem"""
-    pass
-# === END CUSTOM EXCEPTIONS ===
-
-
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class E01PlatformSocialImportError(Exception):
-    """Base exception for this ecosystem"""
-    pass
-
-class E01PlatformSocialImportValidationError(E01PlatformSocialImportError):
-    """Validation error in this ecosystem"""
-    pass
-
-class E01PlatformSocialImportDatabaseError(E01PlatformSocialImportError):
-    """Database error in this ecosystem"""
-    pass
-
-class E01PlatformSocialImportAPIError(E01PlatformSocialImportError):
-    """API error in this ecosystem"""
-    pass
-# === END CUSTOM EXCEPTIONS ===
 
         file_path = sys.argv[2]
         with open(file_path, 'r') as f:

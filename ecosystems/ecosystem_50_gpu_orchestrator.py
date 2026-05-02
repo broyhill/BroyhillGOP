@@ -1143,74 +1143,48 @@ def crisis_video(script: str, image_url: str, **kwargs) -> Dict:
 
 
 # ============================================================================
-# MAIN - EXAMPLE USAGE
+# REPAIR NOTE
+# ============================================================================
+# Repaired 2026-05-02 after Cursor 'Auto-added by repair tool' damage.
+# The original file embedded module-level code (imports, 4 exception classes,
+# a decorator) INSIDE a print("""...""") banner string in __main__. The inner
+# classes' docstrings ("""Base exception for this ecosystem""") prematurely
+# closed the outer triple-quote, so ast.parse failed at line 1150.
+# This repair hoists the auto-added blocks to module level (deduplicated),
+# leaves a clean __main__ banner, and is otherwise non-functional.
 # ============================================================================
 
-if __name__ == "__main__":
-    print("""
-============================================================================
-ECOSYSTEM 50: GPU ORCHESTRATION ENGINE
-============================================================================
 
-COST SAVINGS:
-┌─────────────┬──────────┬─────────┐
-│ Service     │ Monthly  │ E50     │
-├─────────────┼──────────┼─────────┤
-│ ElevenLabs  │ $99      │ $0      │
-│ Kling       │ $32      │ $0      │
-│ HeyGen      │ $180     │ $0      │
-│ D-ID        │ $299     │ $0      │
-├─────────────┼──────────┼─────────┤
-│ TOTAL       │ $610     │ $200    │
-└─────────────┴──────────┴─────────┘
+# ============================================================================
+# ERROR HANDLING (relocated from __main__ banner)
+# ============================================================================
 
-At 1,000 videos/month: $0.20/video
-At 10,000 videos/month: $0.02/video
-
-USAGE:
-------
-from ecosystem_50_gpu_orchestrator import E50Client
-
-# === ERROR HANDLING (Auto-added by repair tool) ===
 import traceback
 from functools import wraps
 
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+
+# ============================================================================
+# CUSTOM EXCEPTIONS
+# ============================================================================
+
 class E50GpuOrchestratorCompleteError(Exception):
     """Base exception for this ecosystem"""
     pass
+
 
 class E50GpuOrchestratorCompleteValidationError(E50GpuOrchestratorCompleteError):
     """Validation error in this ecosystem"""
     pass
 
-class E50GpuOrchestratorCompleteDatabaseError(E50GpuOrchestratorCompleteError):
-    """Database error in this ecosystem"""
-    pass
-
-class E50GpuOrchestratorCompleteAPIError(E50GpuOrchestratorCompleteError):
-    """API error in this ecosystem"""
-    pass
-# === END CUSTOM EXCEPTIONS ===
-
-
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class E50GpuOrchestratorCompleteError(Exception):
-    """Base exception for this ecosystem"""
-    pass
-
-class E50GpuOrchestratorCompleteValidationError(E50GpuOrchestratorCompleteError):
-    """Validation error in this ecosystem"""
-    pass
 
 class E50GpuOrchestratorCompleteDatabaseError(E50GpuOrchestratorCompleteError):
     """Database error in this ecosystem"""
     pass
 
+
 class E50GpuOrchestratorCompleteAPIError(E50GpuOrchestratorCompleteError):
     """API error in this ecosystem"""
     pass
-# === END CUSTOM EXCEPTIONS ===
 
 
 def handle_errors(func):
@@ -1224,37 +1198,65 @@ def handle_errors(func):
             logger.debug(traceback.format_exc())
             raise
     return wrapper
-# === END ERROR HANDLING ===
 
 
-client = E50Client("https://gpu.yourdomain.com")
+# ============================================================================
+# MAIN - EXAMPLE USAGE
+# ============================================================================
 
-# Generate video spot
-result = client.generate_spot(
-    script="My name is Dave Boliek and I'm running for NC State Auditor...",
-    image_url="https://example.com/candidate-photo.png",
-    voice_clone_id="dave-boliek-v1",
-    emotion="passionate"
-)
-
-video = client.wait_for_completion(result['job_id'])
-print(video['video_url'])
-
-# Crisis response (Priority 10)
-crisis = client.crisis_response(
-    script="I want to address the false accusations...",
-    image_url="https://example.com/candidate-photo.png"
-)
+_BANNER = """
 ============================================================================
-    """)
-    
+ECOSYSTEM 50: GPU ORCHESTRATION ENGINE
+============================================================================
+
+COST SAVINGS:
+  Service       Monthly        E50
+  ----------    -----------    ------
+  ElevenLabs    $99/mo         $0
+  Kling         $32/mo         $0
+  HeyGen        $180/mo        $0
+  D-ID          $299/mo        $0
+  ----------    -----------    ------
+  TOTAL         $610/mo        $200/mo flat (Hetzner RTX 4090)
+
+At 1,000 videos/month:  $0.20/video
+At 10,000 videos/month: $0.02/video
+
+USAGE:
+------
+  from ecosystem_50_gpu_orchestrator import E50Client
+
+  client = E50Client('https://gpu.yourdomain.com')
+
+  # Generate video spot
+  result = client.generate_spot(
+      script='My name is Dave Boliek and I am running for NC State Auditor...',
+      image_url='https://example.com/candidate-photo.png',
+      voice_clone_id='dave-boliek-v1',
+      emotion='passionate'
+  )
+  video = client.wait_for_completion(result['job_id'])
+  print(video['video_url'])
+
+  # Crisis response (Priority 10)
+  crisis = client.crisis_response(
+      script='I want to address the false accusations...',
+      image_url='https://example.com/candidate-photo.png'
+  )
+============================================================================
+"""
+
+
+if __name__ == "__main__":
+    print(_BANNER)
+
     # Initialize orchestrator
     orchestrator = GPUOrchestrator()
-    
+
     # Health check
     health = orchestrator.health_check()
     print(f"System Health: {health}")
-    
+
     # Example job submission
     # job_id = orchestrator.generate_spot_job(
     #     script="Hello, I'm running for office...",

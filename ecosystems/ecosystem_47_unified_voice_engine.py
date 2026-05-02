@@ -39,6 +39,61 @@ from enum import Enum
 from abc import ABC, abstractmethod
 import aiohttp
 
+
+# ============================================================================
+# REPAIR NOTE
+# ============================================================================
+# Repaired 2026-05-02 after Cursor 'Auto-added by repair tool' damage.
+# Cursor injected module-level code (imports, exception classes, sometimes a
+# Config dataclass) at random positions inside method bodies, breaking indent
+# of the lines that follow. This repair removes those injected blocks and
+# hoists ONE deduplicated copy of the canonical exception classes to module
+# level. Behavior of original code is unchanged.
+# ============================================================================
+
+
+# ============================================================================
+# CUSTOM EXCEPTIONS (relocated from in-method injection)
+# ============================================================================
+
+import traceback
+from functools import wraps
+
+
+class E47UnifiedVoiceEngineError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+
+class E47UnifiedVoiceEngineValidationError(E47UnifiedVoiceEngineError):
+    """Validation error in this ecosystem"""
+    pass
+
+
+class E47UnifiedVoiceEngineDatabaseError(E47UnifiedVoiceEngineError):
+    """Database error in this ecosystem"""
+    pass
+
+
+class E47UnifiedVoiceEngineAPIError(E47UnifiedVoiceEngineError):
+    """API error in this ecosystem"""
+    pass
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+
+
+
 # Optional imports
 try:
     import numpy as np
@@ -318,43 +373,6 @@ class AudioPostProcessor:
             return output_path
         except:
             import shutil
-
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class E47UnifiedVoiceEngineError(Exception):
-    """Base exception for this ecosystem"""
-    pass
-
-class E47UnifiedVoiceEngineValidationError(E47UnifiedVoiceEngineError):
-    """Validation error in this ecosystem"""
-    pass
-
-class E47UnifiedVoiceEngineDatabaseError(E47UnifiedVoiceEngineError):
-    """Database error in this ecosystem"""
-    pass
-
-class E47UnifiedVoiceEngineAPIError(E47UnifiedVoiceEngineError):
-    """API error in this ecosystem"""
-    pass
-# === END CUSTOM EXCEPTIONS ===
-
-
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class E47UnifiedVoiceEngineError(Exception):
-    """Base exception for this ecosystem"""
-    pass
-
-class E47UnifiedVoiceEngineValidationError(E47UnifiedVoiceEngineError):
-    """Validation error in this ecosystem"""
-    pass
-
-class E47UnifiedVoiceEngineDatabaseError(E47UnifiedVoiceEngineError):
-    """Database error in this ecosystem"""
-    pass
-
-class E47UnifiedVoiceEngineAPIError(E47UnifiedVoiceEngineError):
-    """API error in this ecosystem"""
-    pass
-# === END CUSTOM EXCEPTIONS ===
 
             shutil.copy(input_path, output_path)
             return output_path
