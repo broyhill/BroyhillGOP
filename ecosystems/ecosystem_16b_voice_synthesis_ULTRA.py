@@ -51,7 +51,7 @@ INTEGRATIONS:
 - E0 DataHub: Voice profiles, generation history
 - E20 Intelligence Brain: Priority routing, cost optimization
 - E48 Communication DNA: Candidate voice profiles
-- E49 GPU Orchestrator: Queue management, load balancing
+- E50 GPU Orchestrator: Queue management, load balancing
 - RunPod Fallback: Overflow processing
 
 ============================================================================
@@ -2073,43 +2073,6 @@ COMMENT ON TABLE voice_synthesis_settings IS 'Control panel settings';
 def main():
     """CLI interface for ULTRA Voice Synthesis"""
     import argparse
-
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class E16BVoiceSynthesisUltraCompleteError(Exception):
-    """Base exception for this ecosystem"""
-    pass
-
-class E16BVoiceSynthesisUltraCompleteValidationError(E16BVoiceSynthesisUltraCompleteError):
-    """Validation error in this ecosystem"""
-    pass
-
-class E16BVoiceSynthesisUltraCompleteDatabaseError(E16BVoiceSynthesisUltraCompleteError):
-    """Database error in this ecosystem"""
-    pass
-
-class E16BVoiceSynthesisUltraCompleteAPIError(E16BVoiceSynthesisUltraCompleteError):
-    """API error in this ecosystem"""
-    pass
-# === END CUSTOM EXCEPTIONS ===
-
-
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class E16BVoiceSynthesisUltraCompleteError(Exception):
-    """Base exception for this ecosystem"""
-    pass
-
-class E16BVoiceSynthesisUltraCompleteValidationError(E16BVoiceSynthesisUltraCompleteError):
-    """Validation error in this ecosystem"""
-    pass
-
-class E16BVoiceSynthesisUltraCompleteDatabaseError(E16BVoiceSynthesisUltraCompleteError):
-    """Database error in this ecosystem"""
-    pass
-
-class E16BVoiceSynthesisUltraCompleteAPIError(E16BVoiceSynthesisUltraCompleteError):
-    """API error in this ecosystem"""
-    pass
-# === END CUSTOM EXCEPTIONS ===
 
     
     parser = argparse.ArgumentParser(
