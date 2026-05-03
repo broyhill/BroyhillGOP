@@ -35,6 +35,61 @@ from decimal import Decimal
 import io
 import base64
 
+
+# ============================================================================
+# REPAIR NOTE
+# ============================================================================
+# Repaired 2026-05-02 after Cursor 'Auto-added by repair tool' damage.
+# Cursor injected module-level code (imports, exception classes, sometimes a
+# Config dataclass) at random positions inside method bodies, breaking indent
+# of the lines that follow. This repair removes those injected blocks and
+# hoists ONE deduplicated copy of the canonical exception classes to module
+# level. Behavior of original code is unchanged.
+# ============================================================================
+
+
+# ============================================================================
+# CUSTOM EXCEPTIONS (relocated from in-method injection)
+# ============================================================================
+
+import traceback
+from functools import wraps
+
+
+class E53DocumentGenerationCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+
+class E53DocumentGenerationCompleteValidationError(E53DocumentGenerationCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+
+class E53DocumentGenerationCompleteDatabaseError(E53DocumentGenerationCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+
+class E53DocumentGenerationCompleteAPIError(E53DocumentGenerationCompleteError):
+    """API error in this ecosystem"""
+    pass
+
+
+def handle_errors(func):
+    """Decorator for standardized error handling"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+    return wrapper
+
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('ecosystem53.document_generation')
 
@@ -670,60 +725,6 @@ class DocumentGenerator:
         # For now, return HTML as bytes (placeholder)
         try:
             from weasyprint import HTML
-
-# === CONFIGURATION MANAGEMENT (Auto-added by repair tool) ===
-import os
-from dataclasses import dataclass
-
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class E53DocumentGenerationCompleteError(Exception):
-    """Base exception for this ecosystem"""
-    pass
-
-class E53DocumentGenerationCompleteValidationError(E53DocumentGenerationCompleteError):
-    """Validation error in this ecosystem"""
-    pass
-
-class E53DocumentGenerationCompleteDatabaseError(E53DocumentGenerationCompleteError):
-    """Database error in this ecosystem"""
-    pass
-
-class E53DocumentGenerationCompleteAPIError(E53DocumentGenerationCompleteError):
-    """API error in this ecosystem"""
-    pass
-# === END CUSTOM EXCEPTIONS ===
-
-
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class E53DocumentGenerationCompleteError(Exception):
-    """Base exception for this ecosystem"""
-    pass
-
-class E53DocumentGenerationCompleteValidationError(E53DocumentGenerationCompleteError):
-    """Validation error in this ecosystem"""
-    pass
-
-class E53DocumentGenerationCompleteDatabaseError(E53DocumentGenerationCompleteError):
-    """Database error in this ecosystem"""
-    pass
-
-class E53DocumentGenerationCompleteAPIError(E53DocumentGenerationCompleteError):
-    """API error in this ecosystem"""
-    pass
-# === END CUSTOM EXCEPTIONS ===
-
-
-@dataclass
-class Config:
-    """Configuration settings loaded from environment"""
-    DATABASE_URL: str = os.getenv('DATABASE_URL', 'postgresql://localhost/broyhillgop')
-    API_KEY: str = os.getenv('API_KEY', '')
-    DEBUG: bool = os.getenv('DEBUG', 'false').lower() == 'true'
-    LOG_LEVEL: str = os.getenv('LOG_LEVEL', 'INFO')
-
-config = Config()
-# === END CONFIGURATION ===
-
             pdf_bytes = HTML(string=html_content).write_pdf()
             return pdf_bytes
         except ImportError:
