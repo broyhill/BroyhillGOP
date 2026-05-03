@@ -72,6 +72,11 @@ ECO_CLASSIFIERS = {
     "E56": ["visitor deanonymization","website visitor","ip lookup","anonymous visitor"],
     "E57": ["messaging center","inbox","unified messaging","notification center"],
     "E58": ["business model","pricing","subscription","candidate network","data acquisition","saas"],
+    # === BUG FIX (2026-05-03): add E59/E60/E61 to classifier ===
+    "E59": ["nervous net","cost ledger","ifttt","iftt","rule fire","cost event","ml optimizer","bandit","brain orchestrator"],
+    "E60": ["poll","survey","county intensity","catawba","meredith","high point university","cygnal","civitas","yougov","voter archetype","onsp","issue intensity","poll source","nc county","calibration"],
+    "E61": ["source ingestion","identity resolution","master data","mdm","source registry","entity resolution","raw_sources"],
+    # === END FIX ===
 }
 ECOSYSTEM_NAMES = {
     "E00":"DataHub / Master Database","E01":"Donor Intelligence Engine","E02":"Donation Processing",
@@ -94,6 +99,9 @@ ECOSYSTEM_NAMES = {
     "E51":"Nexus Dashboard","E52":"Contact Intelligence","E53":"Document Generation",
     "E54":"Calendar/Scheduling","E55":"API Gateway","E56":"Visitor Deanonymization",
     "E57":"Messaging Center","E58":"Business Model / Network",
+    # === BUG FIX (2026-05-03): names for E59/E60/E61 ===
+    "E59":"Nervous Net (Cost+IFTTT)","E60":"Poll & Survey Intelligence","E61":"Source Ingestion / Identity",
+    # === END FIX ===
 }
 
 # ── Read V7 data ──────────────────────────────────────────────────────
@@ -157,6 +165,82 @@ def extract_deep_content(filepath):
         snippets.append("ECOSYSTEMS: " + " ".join(sorted(set(eco_refs))))
     eco_class = classify_ecosystem(text, os.path.basename(filepath))
     return " || ".join(snippets), eco_class
+
+# === BUG FIX (2026-05-03): docx topic-extraction helper ===
+def extract_docx_topics(filepath):
+    """Parse .docx via python-docx and apply the same topic extraction used for .md/.sql/.py.
+    Adds .docx files to topic-indexing without modifying extract_deep_content."""
+    try:
+        from docx import Document  # python-docx
+    except ImportError:
+        return "", []
+    try:
+        doc = Document(filepath)
+    except Exception:
+        return "", []
+    paras = [pp.text for pp in doc.paragraphs[:600] if pp.text and pp.text.strip()]
+    for tbl in doc.tables[:5]:
+        for row in tbl.rows[:50]:
+            cells = [c.text.strip() for c in row.cells[:6] if c.text and c.text.strip()]
+            if cells: paras.append(' | '.join(cells))
+    text = '\n'.join(paras)
+    if not text:
+        return "", []
+    snippets = []
+    # Use first ~10 paragraphs as headings (DOCX rarely has markdown #)
+    if paras:
+        snippets.append('HEADINGS: ' + ' | '.join(p[:80] for p in paras[:10]))
+    eco_refs = re.findall(r'\bE\d{2}\b', text)
+    if eco_refs: snippets.append('ECOSYSTEMS: ' + ' '.join(sorted(set(eco_refs))))
+    tables = re.findall(r'(?:public|core|staging|archive|norm|audit|raw|nc_)\.?\w+', text)
+    if tables: snippets.append('TABLES: ' + ' '.join(sorted(set(tables))[:30]))
+    dollars = re.findall(r'\$[\d,]+(?:\.\d+)?[KMB]?', text)
+    if dollars: snippets.append('AMOUNTS: ' + ' '.join(sorted(set(dollars))[:20]))
+    eco_class = classify_ecosystem(text, os.path.basename(filepath))
+    return " || ".join(snippets), eco_class
+# === END FIX ===
+
+# === BUG FIX (2026-05-03): title extraction (H1 / first heading / filename fallback) ===
+def extract_title(filepath, ftype):
+    """Extract a clean title for display.
+    Returns empty string if nothing distinct -- caller falls back to filename."""
+    if not os.path.isfile(filepath):
+        return ""
+    try:
+        if ftype == 'docx':
+            try:
+                from docx import Document
+                doc = Document(filepath)
+                for pp in doc.paragraphs[:60]:
+                    if pp.style and 'Heading' in (pp.style.name or '') and pp.text.strip():
+                        return pp.text.strip()[:140]
+                for pp in doc.paragraphs[:60]:
+                    if pp.text.strip():
+                        return pp.text.strip()[:140]
+                return ""
+            except Exception:
+                return ""
+        with open(filepath, 'r', encoding='utf-8', errors='ignore') as fh:
+            head = fh.read(8000)
+        if ftype == 'md':
+            m = re.search(r'^#\s+(.+?)$', head, re.MULTILINE)
+            if m: return m.group(1).strip()[:140]
+        if ftype == 'html':
+            m = re.search(r'<title[^>]*>(.+?)</title>', head, re.IGNORECASE | re.DOTALL)
+            if m: return m.group(1).strip()[:140]
+            m = re.search(r'<h1[^>]*>(.+?)</h1>', head, re.IGNORECASE | re.DOTALL)
+            if m: return re.sub(r'<[^>]+>', '', m.group(1)).strip()[:140]
+        if ftype == 'py':
+            m = re.search(r'^"""\s*\n?(.+?)\n', head, re.MULTILINE)
+            if m: return m.group(1).strip()[:140]
+        if ftype == 'sql':
+            m = re.search(r'^--\s*(.+?)$', head, re.MULTILINE)
+            if m: return m.group(1).strip()[:140]
+        return ""
+    except Exception:
+        return ""
+# === END FIX ===
+
 # ── Human-readable category names ─────────────────────────────────────
 def human_category(filepath, filetype, filename):
     """Return a plain-English category an amateur would understand."""
@@ -248,22 +332,34 @@ for f in FILES:
     fname = f.get('n', '')
     # Human-readable category
     f['c'] = human_category(path, ftype, fname)
+    # === BUG FIX (2026-05-03): extract title for display ===
+    if ftype in ('md','html','py','sql','docx'):
+        try:
+            f['title'] = extract_title(path, ftype)
+        except Exception:
+            f['title'] = ''
+    # === END FIX ===
     # Deep-index .md and .sql files
+    deep, eco_class = "", []
     if ftype in ('md', 'sql', 'py') and os.path.isfile(path):
         deep, eco_class = extract_deep_content(path)
-        if deep:
-            existing_q = f.get('q', '')
-            f['q'] = (existing_q + " || " + deep) if existing_q else deep
-            f['dc'] = 1
-            enhanced += 1
-        # Auto-classify into ecosystems if not already tagged
-        if eco_class:
-            existing_ecos = set(f.get('e', '').split(',')) if f.get('e') else set()
-            new_ecos = set(eco_class) - existing_ecos - {''}
-            if new_ecos:
-                all_ecos = sorted((existing_ecos | new_ecos) - {''})
-                f['e'] = ','.join(all_ecos)
-                new_eco_assignments += 1
+    # === BUG FIX (2026-05-03): .docx topic-extraction (parallel to existing) ===
+    elif ftype == 'docx' and os.path.isfile(path):
+        deep, eco_class = extract_docx_topics(path)
+    # === END FIX ===
+    if deep:
+        existing_q = f.get('q', '')
+        f['q'] = (existing_q + " || " + deep) if existing_q else deep
+        f['dc'] = 1
+        enhanced += 1
+    # Auto-classify into ecosystems if not already tagged
+    if eco_class:
+        existing_ecos = set(f.get('e', '').split(',')) if f.get('e') else set()
+        new_ecos = set(eco_class) - existing_ecos - {''}
+        if new_ecos:
+            all_ecos = sorted((existing_ecos | new_ecos) - {''})
+            f['e'] = ','.join(all_ecos)
+            new_eco_assignments += 1
     # File description
     eco_ids = f.get('e', '').split(',') if f.get('e') else []
     f['desc'] = describe_file(fname, ftype, eco_ids)
@@ -402,7 +498,36 @@ function buildSidebar(){
   const ecoBox=document.getElementById('eco-grid');
   for(let i=0;i<=58;i++){const id='E'+String(i).padStart(2,'0');ecoBox.innerHTML+=`<div class="eco-chip" data-eco="${id}" onclick="toggleEco('${id}')" title="${ECO_NAMES[id]||id}">${id}</div>`;}
 }
-function makePill(label,val,group,active=false){return `<span class="pill${active?' active':''}" data-val="${val}" onclick="togglePill(this,'${group}')">${label}</span>`;}
+function makePill(label,val,group,active=false){return `<span class="pill${active?' active':''}" data-val="${val}" data-pill-group="${group}" onclick="togglePill(this,'${group}')">${label}</span>`;}
+// === ADDITION (2026-05-03): rollup counts -- dynamic per-pill match counts ===
+function updatePillCounts(){
+  const filtered=state.filtered;
+  // Count matches per category and type
+  const catCounts={},typeCounts={};
+  filtered.forEach(f=>{catCounts[f.c]=(catCounts[f.c]||0)+1;typeCounts[f.t]=(typeCounts[f.t]||0)+1;});
+  document.querySelectorAll('.pill').forEach(p=>{
+    const grp=p.getAttribute('data-pill-group');
+    const val=p.getAttribute('data-val');
+    if(!grp||val==='all-'+grp)return;
+    const n=(grp==='cat'?catCounts[val]:typeCounts[val])||0;
+    // Strip any prior " (N)" suffix and re-append
+    let txt=p.textContent.replace(/\s*\(\d[\d,]*\)\s*$/,'');
+    p.textContent=txt+' ('+n.toLocaleString()+')';
+  });
+  // Eco chip counts
+  const ecoCounts={};
+  filtered.forEach(f=>{if(f.e){f.e.split(',').forEach(e=>{if(e)ecoCounts[e]=(ecoCounts[e]||0)+1;});}});
+  document.querySelectorAll('.eco-chip').forEach(c=>{
+    const id=c.getAttribute('data-eco');
+    const n=ecoCounts[id]||0;
+    c.setAttribute('title',(ECO_NAMES[id]||id)+' -- '+n+' matching');
+    // Add a small superscript count
+    let span=c.querySelector('.eco-cnt');
+    if(!span){span=document.createElement('span');span.className='eco-cnt';span.style.cssText='font-size:8px;color:#484f58;margin-left:3px';c.appendChild(span);}
+    span.textContent=n>0?'·'+n:'';
+  });
+}
+// === END ADDITION ===
 
 function applyFilters(){
   const q=state.search.toLowerCase().trim();
@@ -422,6 +547,9 @@ function applyFilters(){
   });
   state.page=0;
   document.getElementById('stats-bar').textContent=state.filtered.length+' / '+FILES.length+' files';
+  // === ADDITION (2026-05-03): refresh rollup counts ===
+  try{updatePillCounts();}catch(e){}
+  // === END ADDITION ===
   render();
 }
 
@@ -439,7 +567,9 @@ function loadMore(){state.page++;render();}
 function renderCard(f,q){
   const tc=TYPE_COLORS[f.t]||'#8b949e';
   const sz=f.s>1048576?(f.s/1048576).toFixed(1)+'MB':f.s>1024?(f.s/1024).toFixed(0)+'KB':f.s+'B';
-  let name=esc(f.n);
+  // === BUG FIX (2026-05-03): show extracted title in filename slot when available ===
+  let name=esc(f.title&&f.title.length?f.title:f.n);
+  // === END FIX ===
   if(q){q.split(' ').filter(Boolean).forEach(term=>{name=name.replace(new RegExp(escRe(term),'gi'),m=>`<span class="highlight">${m}</span>`);});}
   // Topics (original only, before ||)
   let topicHtml='';
@@ -495,18 +625,39 @@ async function openFile(path,fileType){
   if(location.protocol==='file:'){window.open(fileUrl,'_blank');return;}
   showPathModal('Bridge offline. Open manually:',path);
 }
+// === BUG FIX (2026-05-03): REVEAL no longer dumps into folder of thousands ===
 async function revealFile(path){
+  // Bridge does `open -R "$path"` -> Finder opens parent AND highlights the file.
   const bridged=await bridgeCall('reveal',{path});
   if(bridged)return;
-  if(location.protocol==='file:'){window.open('file://'+path.substring(0,path.lastIndexOf('/')),'_blank');return;}
-  showPathModal('Bridge offline. Reveal manually:',path);
+  // Bridge offline: ALWAYS surface the modal with the path so the user can use
+  // Finder's Go > Go to Folder (Cmd+Shift+G). Never window.open the parent dir
+  // -- that's what was dumping users into folders of thousands.
+  showPathModal('Bridge offline. To reveal in Finder: copy the path below, then in Finder press Cmd+Shift+G and paste.',path);
 }
+// === END FIX ===
+// === BUG FIX (2026-05-03): COPY now actually works on file:// URLs ===
 async function copyPath(path,el){
   const done=()=>{el.textContent='COPIED';el.classList.add('copied');setTimeout(()=>{el.textContent='COPY';el.classList.remove('copied');},2000);};
-  const bridged=await bridgeCall('copy',{text:path});if(bridged){done();return;}
-  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(path).then(done).catch(()=>execCopy(path,el,done));}else execCopy(path,el,done);
+  // Tier 1: bridge (works in any context)
+  try{const bridged=await bridgeCall('copy',{text:path});if(bridged){done();return;}}catch(e){}
+  // Tier 2: navigator.clipboard (works in https/localhost contexts)
+  if(navigator.clipboard&&navigator.clipboard.writeText&&window.isSecureContext){
+    try{await navigator.clipboard.writeText(path);done();return;}catch(e){}
+  }
+  // Tier 3: ALWAYS works -- visible textarea (offscreen textareas are blocked on file://)
+  // + execCommand('copy'). If that also fails, surface the modal so the user can Cmd+C manually.
+  const ta=document.createElement('textarea');
+  ta.value=path; ta.style.cssText='position:fixed;top:0;left:0;width:1px;height:1px;opacity:0.01;z-index:9999';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try{
+    const ok=document.execCommand('copy');
+    document.body.removeChild(ta);
+    if(ok){done();return;}
+  }catch(e){try{document.body.removeChild(ta);}catch(_){}}
+  showPathModal('Auto-copy unavailable. Path is selected -- press Cmd+C to copy:',path);
 }
-function execCopy(path,el,done){const ta=document.createElement('textarea');ta.value=path;ta.style.cssText='position:fixed;top:-9999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){prompt('Copy:',path);}document.body.removeChild(ta);}
+// === END FIX ===
 function showPathModal(msg,path){const ex=document.getElementById('path-modal');if(ex)ex.remove();const m=document.createElement('div');m.id='path-modal';m.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:#000a;z-index:9999;display:flex;align-items:center;justify-content:center';m.innerHTML=`<div style="background:#161b22;border:1px solid #388bfd;border-radius:10px;padding:24px;max-width:700px;width:90%"><div style="font-size:12px;color:#8b949e;margin-bottom:10px">${msg}</div><input style="width:100%;background:#0d1117;border:1px solid #30363d;color:#e6edf3;padding:8px;border-radius:5px;font-family:monospace" value="${path}" readonly onclick="this.select()"><button style="margin-top:12px;padding:6px 16px;background:#21262d;border:1px solid #30363d;color:#e6edf3;border-radius:5px;cursor:pointer" onclick="this.closest('#path-modal').remove()">Close</button></div>`;m.onclick=e=>{if(e.target===m)m.remove();};document.body.appendChild(m);}
 
 function addTopicSearch(t){document.getElementById('search-box').value=t;state.search=t;applyFilters();}
