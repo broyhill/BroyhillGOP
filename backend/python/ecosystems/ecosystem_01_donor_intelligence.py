@@ -51,6 +51,219 @@ logger = logging.getLogger('ecosystem1.donor_intelligence')
 
 
 # ============================================================================
+# UNIFIED GRADING — Single source of truth for E01 (Section 1 of Pentad)
+# ============================================================================
+# This is the canonical PUBLIC entry point for donor grading after the
+# 2026-05-02 Section 1 consolidation. All Brain modules MUST call
+# `grade_donor(rnc_regid)` and consume the returned GradedDonor — they MUST
+# NOT instantiate ThreeDGradingEngine, DualGradingQueries, RFMAnalyzer, or
+# any other internal grader directly. Those classes are kept for their
+# internal use within DonorIntelligenceSystem only.
+#
+# Determinism: same input row -> same GradedDonor (modulo graded_at metadata).
+# Read-only: NO writes to any DB table or view.
+# Source views: core.v_donor_profile_trusted (78,037 rows), 
+#               core.v_donor_profile_needs_review (2,568 rows).
+# ============================================================================
+
+import hashlib as _hashlib_e01
+import json as _json_e01
+from typing import Optional as _Optional_e01
+
+# Import shared Pentad contracts (the wire-format definitions).
+# E01 imports from `shared.brain_pentad_contracts` and from no other ecosystem.
+try:
+    from shared.brain_pentad_contracts import (
+        GradedDonor as _GradedDonor,
+        MatchTier as _MatchTier,
+    )
+except ImportError:  # pragma: no cover — import path fallback for tests
+    import sys as _sys, pathlib as _pathlib
+    _ROOT = _pathlib.Path(__file__).resolve().parent.parent
+    _sys.path.insert(0, str(_ROOT))
+    from shared.brain_pentad_contracts import GradedDonor as _GradedDonor, MatchTier as _MatchTier
+
+
+# Confidence floor by match tier. Combined with grade clarity to produce
+# the final confidence score in (0, 1].
+_TIER_CONFIDENCE = {
+    _MatchTier.A_EXACT:      1.00,
+    _MatchTier.B_ALIAS:      0.90,
+    _MatchTier.C_FIRST3:     0.75,
+    _MatchTier.D_HOUSEHOLD:  0.55,
+    _MatchTier.E_WRONG_LAST: 0.25,
+    _MatchTier.UNMATCHED:    0.0,
+}
+
+# Fields from the donor view that contribute to the grade. Only these fields
+# are folded into inputs_hash — adding/removing any field is a breaking
+# change to the determinism contract.
+_GRADE_INPUT_FIELDS = (
+    "rnc_regid",
+    "txn_count",
+    "lifetime_total",
+    "largest_gift",
+    "first_gift_date",
+    "last_gift_date",
+    "committee_count",
+    "candidate_count",
+    "match_tier",
+)
+
+
+def _canonical_inputs_hash(row: dict) -> str:
+    """Return a SHA-256 hex digest over the deterministic input projection."""
+    projected = {k: row.get(k) for k in _GRADE_INPUT_FIELDS}
+    # Canonical JSON: sorted keys, default str-coerce for date/Decimal.
+    payload = _json_e01.dumps(projected, sort_keys=True, default=str)
+    return _hashlib_e01.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _composite_score(row: dict) -> float:
+    """Compute a single composite 0-100 score from the donor row.
+
+    Pure function: same row -> same score. No DB access, no time, no random.
+    Mirrors the spirit of ThreeDGradingEngine but distilled to one number so
+    the public API can return a single grade letter A/B/C/D/F.
+    """
+    import math
+    lifetime = float(row.get("lifetime_total") or 0.0)
+    txn_count = int(row.get("txn_count") or 0)
+    candidate_count = int(row.get("candidate_count") or 0)
+
+    # Amount component: log-scale on lifetime giving (0..50)
+    if lifetime <= 0:
+        amount_score = 0.0
+    else:
+        amount_score = min(50.0, math.log10(lifetime + 1) * 12.5)
+
+    # Engagement component: txn_count + candidate breadth (0..30)
+    engagement_score = min(30.0, txn_count * 1.5 + candidate_count * 2.0)
+
+    # Recency component (best with last_gift_date in last 365 days) (0..20)
+    last_gift = row.get("last_gift_date")
+    if last_gift is None:
+        recency_score = 0.0
+    else:
+        # Use a deterministic anchor: days since 2025-01-01 (independent of "now")
+        # This keeps the grade reproducible across runs while still rewarding
+        # recent activity from the dataset's own reference frame.
+        try:
+            from datetime import date
+            if isinstance(last_gift, str):
+                from datetime import datetime as _dt
+                last_gift = _dt.fromisoformat(last_gift).date()
+            anchor = date(2025, 1, 1)
+            days_after_anchor = max(0, (last_gift - anchor).days)
+            recency_score = min(20.0, days_after_anchor / 30.0)
+        except Exception:
+            recency_score = 0.0
+
+    return amount_score + engagement_score + recency_score
+
+
+def _score_to_letter(score: float) -> str:
+    """Map composite 0-100 score to letter grade A/B/C/D/F."""
+    if score >= 80.0: return "A"
+    if score >= 60.0: return "B"
+    if score >= 40.0: return "C"
+    if score >= 20.0: return "D"
+    return "F"
+
+
+def _read_donor_row(rnc_regid: str, db_url: _Optional_e01[str] = None) -> _Optional_e01[dict]:
+    """Look up the donor row in trusted then needs_review views.
+
+    Returns the row as a dict, or None if not found in either view.
+    Read-only: only SELECT statements are issued.
+    """
+    db_url = db_url or DonorConfig.DATABASE_URL
+    conn = psycopg2.connect(db_url)
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(
+                "SELECT * FROM core.v_donor_profile_trusted WHERE rnc_regid = %s LIMIT 1",
+                (rnc_regid,),
+            )
+            row = cur.fetchone()
+            if row:
+                return dict(row)
+            cur.execute(
+                "SELECT * FROM core.v_donor_profile_needs_review WHERE rnc_regid = %s LIMIT 1",
+                (rnc_regid,),
+            )
+            row = cur.fetchone()
+            if row:
+                return dict(row)
+    finally:
+        conn.close()
+    return None
+
+
+def grade_donor(rnc_regid: str, db_url: _Optional_e01[str] = None,
+                row: _Optional_e01[dict] = None) -> _GradedDonor:
+    """
+    Public unified grading function — the SINGLE SOURCE OF TRUTH for E01.
+
+    Args:
+        rnc_regid:  Stable donor key from the spine.
+        db_url:     Optional DB URL override (defaults to DonorConfig.DATABASE_URL).
+        row:        Optional pre-fetched row dict (test injection point — bypass DB).
+
+    Returns:
+        GradedDonor (frozen Pydantic model from shared.brain_pentad_contracts).
+
+    Determinism:
+        Given the same input row, returns the same (grade, match_tier,
+        confidence, inputs_hash). graded_at is metadata only.
+
+    Read-only: issues only SELECT against
+        core.v_donor_profile_trusted   (78,037 rows)
+        core.v_donor_profile_needs_review (2,568 rows)
+    """
+    if row is None:
+        row = _read_donor_row(rnc_regid, db_url=db_url)
+
+    # Unmatched / not found case: return a low-confidence UNMATCHED grade.
+    if row is None:
+        empty_row = {"rnc_regid": rnc_regid, "match_tier": _MatchTier.UNMATCHED.value}
+        return _GradedDonor(
+            rnc_regid=rnc_regid,
+            grade="F",
+            match_tier=_MatchTier.UNMATCHED,
+            confidence=0.0,
+            inputs_hash=_canonical_inputs_hash(empty_row),
+        )
+
+    # Pass-through match_tier from the view (defaults to UNMATCHED if missing).
+    raw_tier = row.get("match_tier") or _MatchTier.UNMATCHED.value
+    try:
+        tier = _MatchTier(raw_tier)
+    except ValueError:
+        tier = _MatchTier.UNMATCHED
+
+    score = _composite_score(row)
+    letter = _score_to_letter(score)
+
+    # Confidence: combine match-tier confidence with grade-clarity factor.
+    # Grade clarity is highest near A and F (clear signal), softer in the middle.
+    distance_from_midpoint = abs(score - 50.0) / 50.0  # 0..1
+    grade_clarity = 0.5 + 0.5 * distance_from_midpoint
+    tier_floor = _TIER_CONFIDENCE[tier]
+    confidence = round(min(1.0, max(0.0, tier_floor * grade_clarity)), 4)
+
+    return _GradedDonor(
+        rnc_regid=rnc_regid,
+        grade=letter,
+        match_tier=tier,
+        confidence=confidence,
+        inputs_hash=_canonical_inputs_hash(row),
+    )
+
+
+
+
+# ============================================================================
 # CONFIGURATION
 # ============================================================================
 
@@ -1455,6 +1668,44 @@ def deploy_donor_intelligence():
 
 if __name__ == "__main__":
     import sys
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class E01DonorIntelligenceCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class E01DonorIntelligenceCompleteValidationError(E01DonorIntelligenceCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class E01DonorIntelligenceCompleteDatabaseError(E01DonorIntelligenceCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class E01DonorIntelligenceCompleteAPIError(E01DonorIntelligenceCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
+
+# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
+class E01DonorIntelligenceCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+class E01DonorIntelligenceCompleteValidationError(E01DonorIntelligenceCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+class E01DonorIntelligenceCompleteDatabaseError(E01DonorIntelligenceCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+class E01DonorIntelligenceCompleteAPIError(E01DonorIntelligenceCompleteError):
+    """API error in this ecosystem"""
+    pass
+# === END CUSTOM EXCEPTIONS ===
+
     
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_donor_intelligence()
