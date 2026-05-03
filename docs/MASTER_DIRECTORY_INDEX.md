@@ -160,8 +160,7 @@ Each file implements one ecosystem's backend logic — API endpoints, data model
 | ecosystem_08_communications_library_complete.py | E08 Comms Library | Template CRUD, version control |
 | ecosystem_09_content_creation_ai_complete.py | E09 AI Content | LLM integration, copy generation, tone matching |
 | ecosystem_10_compliance_manager_complete.py | E10 Compliance | FEC validation, filing automation |
-| ecosystem_11_budget_management_complete.py | E11 Budget | Budget CRUD, burn rate calculation |
-| ecosystem_11_budget_dual_grading.py | E11 Grading | Budget line dual grading |
+| ecosystem_11_budget_management.py | E11 Budget | Budget CRUD, burn rate calculation |
 | ecosystem_12_campaign_operations_complete.py | E12 Campaign Ops | Field ops routing, GOTV targeting |
 | ecosystem_13_ai_hub_complete.py | E13 AI Hub | Central AI model registry, inference routing |
 | ecosystem_14_print_production_complete.py | E14 Print | Print job management, VDP templates |

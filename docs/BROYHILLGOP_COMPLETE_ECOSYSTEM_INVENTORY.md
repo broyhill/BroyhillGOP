@@ -45,9 +45,8 @@
 | | | ecosystem_8_library_api.py | Variant | |
 | E9 | Content Creation AI | ecosystem_09_content_creation_ai_complete.py | ✅ | $70K |
 | E10 | Compliance Manager | ecosystem_10_compliance_manager_complete.py | ✅ | $60K |
-| E11 | Budget Management | ecosystem_11_budget_management_complete.py | ✅ | $65K |
-| | Training LMS | ecosystem_11_training_lms_complete.py | Variant | $45K |
-| | | ecosystem_11_budget_dual_grading.py | Variant | |
+| E11 | Budget Management | ecosystem_11_budget_management.py | ✅ | $65K |
+| E11B | Training & LMS | ecosystem_11b_training_lms.py | ✅ | $100K |
 | E12 | Campaign Operations | ecosystem_12_campaign_operations_complete.py | ✅ | $70K |
 | E13 | AI Hub | ecosystem_13_ai_hub_complete.py | ✅ | $85K |
 | E14 | Print Production | ecosystem_14_print_production_complete.py | ✅ | $50K |
