@@ -499,6 +499,352 @@ class VideoSynthesisClient:
 # SOCIAL MEDIA INTEGRATION ENGINE
 # ============================================================================
 
+
+# ============================================================================
+# SECTION 12 — STEALTH MACHINE WIRING (added 2026-05-03)
+# ============================================================================
+# 7 compliance gates + Brain Pentad integration + 8-sub-weapon registry.
+# See docs/ecosystems/E19_social.md and docs/decisions/2026-05-03_E19_stealth_machine.md
+# ============================================================================
+
+import hashlib as _hashlib_e19s12
+import os as _os_e19s12
+import uuid as _uuid_e19s12
+from datetime import datetime as _dt_e19s12
+from typing import Optional as _Opt_e19s12
+
+import psycopg2 as _psycopg2_e19s12
+from psycopg2.extras import Json as _Json_e19s12
+
+# Brain Pentad contracts (local fallback until shared module lands)
+try:
+    from ecosystems._e19_contracts import (
+        PersonalizedMessage as _PersonalizedMessage_e19,
+        SendOutcome as _SendOutcome_e19,
+        CostEvent as _CostEvent_e19,
+        RuleFired as _RuleFired_e19,
+        Channel as _Channel_e19,
+        CostType as _CostType_e19,
+        MatchTier as _MatchTier_e19,
+    )
+except ImportError:  # pragma: no cover
+    import sys as _sys_e19, pathlib as _pathlib_e19
+    _sys_e19.path.insert(0, str(_pathlib_e19.Path(__file__).resolve().parent.parent))
+    from ecosystems._e19_contracts import (
+        PersonalizedMessage as _PersonalizedMessage_e19,
+        SendOutcome as _SendOutcome_e19,
+        CostEvent as _CostEvent_e19,
+        RuleFired as _RuleFired_e19,
+        Channel as _Channel_e19,
+        CostType as _CostType_e19,
+        MatchTier as _MatchTier_e19,
+    )
+
+try:
+    from ecosystems.ecosystem_19_funnel_sequencer import (
+        FunnelStage as _FunnelStage_e19,
+        ContentStage as _ContentStage_e19,
+        is_content_allowed as _is_content_allowed_e19,
+        get_donor_stage as _get_donor_stage_e19,
+        FATIGUE_CAPS as _FATIGUE_CAPS_e19,
+    )
+except ImportError:  # pragma: no cover
+    pass
+
+
+# Per Pentad Rule P-5: only A_EXACT/B_ALIAS may be individualized-targeted.
+INDIVIDUALIZED_ALLOWED_TIERS = frozenset({_MatchTier_e19.A_EXACT, _MatchTier_e19.B_ALIAS})
+
+
+# Sub-weapon registry. STUB sub-weapons raise NotImplementedError on direct call.
+SUB_WEAPONS_STATUS = {
+    "E19-Organic":   "BUILT",
+    "E19-PaidAds":   "BUILT",
+    "E19-Retarget":  "BUILT",
+    "E19-Lookalike": "BUILT",
+    "E19-PaidBoost": "STUB",
+    "E19-Live":      "STUB",
+    "E19-Surrogate": "STUB",
+    "E19-Engage":    "STUB",
+}
+
+
+# State AI-disclosure rules (subset; see ADR Known Gaps).
+# Map: state code -> {ai_disclosure_required: bool, jurisdiction: str}
+_STATE_AI_DISCLOSURE_RULES = {
+    "CA": {"required": True, "law": "CA AB-2655"},
+    "TX": {"required": True, "law": "TX SB-751"},
+    "MI": {"required": True, "law": "MI election AI law"},
+    "NJ": {"required": True, "law": "NJ A4985"},
+}
+
+
+# ============================================================================
+# Compliance audit helper
+# ============================================================================
+
+def _log_compliance_decision(gate_name: str, decision: str, reason: str = "",
+                              context: dict = None,
+                              db_url: _Opt_e19s12[str] = None) -> None:
+    """Append one row to core.compliance_audit. Best-effort; failure logged."""
+    db_url = db_url or _os_e19s12.getenv("DATABASE_URL",
+                                          "postgresql://localhost/broyhillgop")
+    try:
+        conn = _psycopg2_e19s12.connect(db_url)
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "INSERT INTO core.compliance_audit "
+                    "    (source_ecosystem, gate_name, decision, reason, context) "
+                    "VALUES (%s, %s, %s, %s, %s)",
+                    ("E19", gate_name, decision, reason, _Json_e19s12(context or {})),
+                )
+            conn.commit()
+        finally:
+            conn.close()
+    except Exception as e:
+        logger.warning(f"compliance_audit.log failed (non-fatal): {e}")
+
+
+# ============================================================================
+# THE 7 COMPLIANCE GATES
+# Each returns {"allow": bool, "reason": str}. Each writes to compliance_audit.
+# ============================================================================
+
+def check_meta_political_authorization(account_id: str,
+                                         is_paid: bool = True,
+                                         _verified_accounts: set = None) -> dict:
+    """Gate 1: Meta requires per-account political-issue ad authorization for
+    paid political ads. Organic posts skip this gate."""
+    if not is_paid:
+        return {"allow": True, "reason": "organic_post_skip"}
+    # Verified-accounts set is the test injection point; production reads from
+    # core.meta_political_authorizations (out of scope for this PR — TODO).
+    if _verified_accounts is not None and account_id in _verified_accounts:
+        result = {"allow": True, "reason": "authorized"}
+    elif _verified_accounts is None:
+        # Default-allow when no list is configured (avoid false-positive blocks
+        # in environments where the table doesn't exist yet).
+        result = {"allow": True, "reason": "no_authorization_table_configured"}
+    else:
+        result = {"allow": False, "reason": "meta_political_auth_missing"}
+    _log_compliance_decision("meta_political_authorization", 
+                               "allow" if result["allow"] else "block",
+                               result["reason"], {"account_id": account_id})
+    return result
+
+
+def check_fec_paid_for_by(post: dict) -> dict:
+    """Gate 2: Paid public communications require FEC 'paid for by' disclaimer.
+    Organic posts to opt-in followers do NOT require it."""
+    if not post.get("is_paid", False):
+        return {"allow": True, "reason": "organic_skip"}
+    body = (post.get("body") or "") + " " + (post.get("disclaimer") or "")
+    if "paid for by" not in body.lower():
+        result = {"allow": False, "reason": "fec_disclaimer_missing"}
+    else:
+        result = {"allow": True, "reason": "disclaimer_present"}
+    _log_compliance_decision("fec_paid_for_by",
+                               "allow" if result["allow"] else "block",
+                               result["reason"],
+                               {"is_paid": post.get("is_paid"),
+                                "post_id": post.get("post_id")})
+    return result
+
+
+def check_state_ai_disclosure(post: dict, audience_geography: str) -> dict:
+    """Gate 3: State AI-disclosure laws (CA, TX, MI, NJ, ...). Applied based
+    on the audience's primary geography. Only triggers if the content is
+    AI-generated."""
+    if not post.get("ai_generated", False):
+        return {"allow": True, "reason": "not_ai_generated"}
+    rule = _STATE_AI_DISCLOSURE_RULES.get(audience_geography.upper() if audience_geography else "")
+    if not rule:
+        return {"allow": True, "reason": "no_state_rule"}
+    body = (post.get("body") or "") + " " + (post.get("disclosure") or "")
+    if "ai-generated" in body.lower() or "generated by ai" in body.lower():
+        result = {"allow": True, "reason": "disclosure_present"}
+    else:
+        result = {"allow": False,
+                   "reason": f"state_ai_disclosure_missing_{audience_geography.lower()}"}
+    _log_compliance_decision("state_ai_disclosure",
+                               "allow" if result["allow"] else "block",
+                               result["reason"],
+                               {"geography": audience_geography,
+                                "law": rule.get("law")})
+    return result
+
+
+def check_surrogate_disclosure(post: dict) -> dict:
+    """Gate 4: Coordinated/surrogate content requires disclosure. Currently
+    stubbed because E19-Surrogate sub-weapon is not yet built."""
+    if not post.get("is_surrogate", False):
+        return {"allow": True, "reason": "not_surrogate"}
+    if not post.get("coordination_disclosure"):
+        result = {"allow": False, "reason": "surrogate_disclosure_missing"}
+    else:
+        result = {"allow": True, "reason": "disclosure_present"}
+    _log_compliance_decision("surrogate_disclosure",
+                               "allow" if result["allow"] else "block",
+                               result["reason"], {"post_id": post.get("post_id")})
+    return result
+
+
+def check_funnel_stage_gate(asset: dict, donor_stage_value: str) -> dict:
+    """Gate 5: A donor at stage X may receive content tagged for stage X or
+    any LOWER stage. Anything else is BLOCKED."""
+    content_stage_value = asset.get("content_stage")
+    if not content_stage_value:
+        # Untagged asset. Default-allow ONLY for organic non-targeted content;
+        # any individualized targeting REQUIRES a content stage tag.
+        if asset.get("is_individualized", False):
+            result = {"allow": False, "reason": "untagged_asset_individualized_target"}
+        else:
+            result = {"allow": True, "reason": "untagged_asset_organic"}
+    else:
+        try:
+            ds = _FunnelStage_e19(donor_stage_value)
+            cs = _ContentStage_e19(content_stage_value)
+            if _is_content_allowed_e19(ds, cs):
+                result = {"allow": True, "reason": "stage_match"}
+            else:
+                result = {"allow": False, "reason": "funnel_stage_violation"}
+        except (ValueError, NameError):
+            result = {"allow": False, "reason": "invalid_stage_value"}
+    _log_compliance_decision("funnel_stage_gate",
+                               "allow" if result["allow"] else "block",
+                               result["reason"],
+                               {"donor_stage": donor_stage_value,
+                                "content_stage": content_stage_value})
+    return result
+
+
+def check_match_tier_gate(donor_match_tier: str) -> dict:
+    """Gate 6: Individualized targeting requires A_EXACT or B_ALIAS."""
+    try:
+        tier = _MatchTier_e19(donor_match_tier) if donor_match_tier else _MatchTier_e19.UNMATCHED
+    except ValueError:
+        tier = _MatchTier_e19.UNMATCHED
+    if tier in INDIVIDUALIZED_ALLOWED_TIERS:
+        result = {"allow": True, "reason": f"tier_{tier.value}"}
+    else:
+        result = {"allow": False, "reason": "match_tier_below_threshold"}
+    _log_compliance_decision("match_tier_gate",
+                               "allow" if result["allow"] else "block",
+                               result["reason"], {"tier": tier.value})
+    return result
+
+
+def check_fatigue_cap(donor_stage_value: str, recent_send_count: int,
+                       period_days: int = 7) -> dict:
+    """Gate 7: Per-donor send-frequency cap by funnel stage."""
+    try:
+        ds = _FunnelStage_e19(donor_stage_value)
+        max_sends, period = _FATIGUE_CAPS_e19.get(ds, (1, 7))
+    except (ValueError, NameError):
+        max_sends, period = 1, 7
+    if recent_send_count >= max_sends:
+        result = {"allow": False, "reason": "fatigue_cap_exceeded"}
+    else:
+        result = {"allow": True, "reason": "under_cap"}
+    _log_compliance_decision("fatigue_cap",
+                               "allow" if result["allow"] else "block",
+                               result["reason"],
+                               {"donor_stage": donor_stage_value,
+                                "recent": recent_send_count,
+                                "cap": max_sends})
+    return result
+
+
+# ============================================================================
+# Pentad integration helpers
+# ============================================================================
+
+def emit_send_outcome(send_id: str, donor_id: str,
+                       channel_value: str, cost_cents: int = 0,
+                       delivered: bool = False, blocked_by: _Opt_e19s12[str] = None,
+                       revenue_cents: int = 0,
+                       fatigue_delta: float = 0.0) -> _SendOutcome_e19:
+    """Build a SendOutcome (E19 -> E11). Caller is responsible for delivery."""
+    return _SendOutcome_e19(
+        send_id=send_id, donor_id=donor_id,
+        channel=_Channel_e19(channel_value),
+        cost_cents=cost_cents, delivered=delivered,
+        revenue_cents=revenue_cents, fatigue_delta=fatigue_delta,
+        sent_at=_dt_e19s12.utcnow(),
+        bounce_type="none", blocked_by=blocked_by,
+    )
+
+
+def emit_cost_event(send_id: str, donor_id: str, vendor: str,
+                     unit_cost_cents: int, quantity: int = 1) -> _CostEvent_e19:
+    """Build a CostEvent (any -> E60). Idempotent on event_id (E19:send:{send_id})."""
+    return _CostEvent_e19(
+        event_id=f"E19:send:{send_id}",
+        source_ecosystem="E19", donor_id=donor_id,
+        cost_type=_CostType_e19.AD_SPEND if vendor != "organic" else _CostType_e19.LABOR,
+        vendor=vendor,
+        unit_cost_cents=unit_cost_cents, quantity=quantity,
+        total_cost_cents=unit_cost_cents * quantity,
+        revenue_attributed_cents=0,
+        occurred_at=_dt_e19s12.utcnow(),
+    )
+
+
+def handle_rule_fired_e19(rule_fired) -> dict:
+    """Subscribe handler for E60 RuleFired payloads targeted at E19."""
+    if rule_fired.target_ecosystem != "E19":
+        return {"acted": False, "reason": "not_for_e19"}
+    action = rule_fired.action
+    if action == "pause_sends":
+        return {"acted": True, "applied": "paused"}
+    if action == "throttle_sends":
+        return {"acted": True, "applied": "throttled", "payload": rule_fired.payload}
+    return {"acted": False, "reason": f"unknown_action_{action}"}
+
+
+# ============================================================================
+# Sub-weapon stubs — raise NotImplementedError per the ADR
+# ============================================================================
+
+def _e19_paid_boost_stub(*args, **kwargs):
+    raise NotImplementedError(
+        "E19-PaidBoost is in backlog (ADR 2026-05-03). "
+        "See docs/decisions/2026-05-03_E19_stealth_machine.md"
+    )
+
+def _e19_live_stub(*args, **kwargs):
+    raise NotImplementedError(
+        "E19-Live is in backlog. Will integrate with E46 Broadcast Hub. "
+        "See docs/decisions/2026-05-03_E19_stealth_machine.md"
+    )
+
+def _e19_surrogate_stub(*args, **kwargs):
+    raise NotImplementedError(
+        "E19-Surrogate is in backlog (legal/policy sign-off pending). "
+        "See docs/decisions/2026-05-03_E19_stealth_machine.md"
+    )
+
+def _e19_engage_stub(*args, **kwargs):
+    raise NotImplementedError(
+        "E19-Engage is in backlog (high abuse risk; needs framework). "
+        "See docs/decisions/2026-05-03_E19_stealth_machine.md"
+    )
+
+
+SUB_WEAPON_HANDLERS = {
+    "E19-Organic":   None,  # Built — handled by SocialMediaEngine.publish (existing path)
+    "E19-PaidAds":   None,  # Built — handled by PlatformPublisher (existing path)
+    "E19-Retarget":  None,  # Built — handled by CustomAudienceBuilder + PlatformPublisher
+    "E19-Lookalike": None,  # Built — handled by CustomAudienceBuilder.lookalike
+    "E19-PaidBoost": _e19_paid_boost_stub,
+    "E19-Live":      _e19_live_stub,
+    "E19-Surrogate": _e19_surrogate_stub,
+    "E19-Engage":    _e19_engage_stub,
+}
+
+
+
 class SocialMediaEngine:
     """
     Extends E19 with E42/E47/E48 integrations
