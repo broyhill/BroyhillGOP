@@ -375,6 +375,59 @@ for f in FILES:
 
 print(f"Deep-indexed: {enhanced} files")
 print(f"New ecosystem assignments: {new_eco_assignments} files")
+
+# === BUG FIX (2026-05-03): walk ECOSYSTEM_REPORTS for blueprints NOT in V7 manifest ===
+# V8 inherited V7's file list, which has a cutoff date. Any blueprint .docx/.md created
+# after that cutoff was invisible to V8 search. This block walks ECOSYSTEM_REPORTS,
+# finds files not already in FILES, parses + classifies them, and folds them in.
+# Why this matters: the actual blueprints Ed is auditing against (E60_POLL_SURVEY,
+# E61_SOURCE_INGESTION, etc.) live here and were created after V7 was generated.
+ECOSYSTEM_REPORTS = "/Users/Broyhill/Desktop/BroyhillGOP-CURSOR/ECOSYSTEM_REPORTS"
+known_paths = {f.get('p','') for f in FILES}
+walked_count = 0
+walked_classified = 0
+if os.path.isdir(ECOSYSTEM_REPORTS):
+    for root, _, names in os.walk(ECOSYSTEM_REPORTS):
+        for name in names:
+            if not name.lower().endswith(('.docx', '.md', '.txt', '.pdf', '.sql')):
+                continue
+            full = os.path.join(root, name)
+            if full in known_paths:
+                continue
+            ftype = name.rsplit('.', 1)[-1].lower()
+            try:
+                size = os.path.getsize(full)
+            except Exception:
+                size = 0
+            new_rec = {
+                'n': name, 'p': full, 't': ftype,
+                'c': human_category(full, ftype, name),
+                's': size, 'q': '', 'd': '', 'e': '', 'x': False,
+            }
+            # Topic-extract for the types we know how to parse
+            deep, eco_class = '', []
+            if ftype in ('md', 'sql', 'py'):
+                deep, eco_class = extract_deep_content(full)
+            elif ftype == 'docx':
+                deep, eco_class = extract_docx_topics(full)
+            if deep:
+                new_rec['q'] = deep
+                new_rec['dc'] = 1
+            if eco_class:
+                new_rec['e'] = ','.join(sorted(set(eco_class)))
+                walked_classified += 1
+            # Title for display annotation (still secondary — filename is primary)
+            try:
+                if ftype in ('md','docx','py','sql','html'):
+                    new_rec['title'] = extract_title(full, ftype)
+            except Exception:
+                new_rec['title'] = ''
+            new_rec['desc'] = describe_file(name, ftype, eco_class)
+            FILES.append(new_rec)
+            walked_count += 1
+print(f"ECOSYSTEM_REPORTS walk: +{walked_count} new files added, {walked_classified} classified")
+# === END FIX ===
+
 # ── Generate V8 HTML ──────────────────────────────────────────────────
 FILES_JSON = json.dumps(FILES, separators=(',',':'))
 ECO_NAMES_JS = json.dumps(ECOSYSTEM_NAMES)
@@ -576,9 +629,12 @@ function loadMore(){state.page++;render();}
 function renderCard(f,q){
   const tc=TYPE_COLORS[f.t]||'#8b949e';
   const sz=f.s>1048576?(f.s/1048576).toFixed(1)+'MB':f.s>1024?(f.s/1024).toFixed(0)+'KB':f.s+'B';
-  // === BUG FIX (2026-05-03): show extracted title in filename slot when available ===
-  let name=esc(f.title&&f.title.length?f.title:f.n);
-  // === END FIX ===
+  // === REVERTED 2026-05-03: filename IS the primary name (Ed composes the filename, not Claude). ===
+  // The extract_title helper (still in this script) is harmless — its output goes into f.title
+  // but the display below uses ONLY f.n. If we ever want title visible, render it as a SEPARATE
+  // annotation below the filename, never replacing it.
+  // === END REVERT ===
+  let name=esc(f.n);
   if(q){q.split(' ').filter(Boolean).forEach(term=>{name=name.replace(new RegExp(escRe(term),'gi'),m=>`<span class="highlight">${m}</span>`);});}
   // Topics (original only, before ||)
   let topicHtml='';
