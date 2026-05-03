@@ -51,6 +51,31 @@ logger = logging.getLogger('ecosystem1.donor_intelligence')
 
 
 # ============================================================================
+# CANONICAL EXCEPTIONS (relocated from Cursor-injected duplicates, Section 1 cleanup)
+# ============================================================================
+
+class E01DonorIntelligenceCompleteError(Exception):
+    """Base exception for this ecosystem"""
+    pass
+
+
+class E01DonorIntelligenceCompleteValidationError(E01DonorIntelligenceCompleteError):
+    """Validation error in this ecosystem"""
+    pass
+
+
+class E01DonorIntelligenceCompleteDatabaseError(E01DonorIntelligenceCompleteError):
+    """Database error in this ecosystem"""
+    pass
+
+
+class E01DonorIntelligenceCompleteAPIError(E01DonorIntelligenceCompleteError):
+    """API error in this ecosystem"""
+    pass
+
+
+
+# ============================================================================
 # UNIFIED GRADING — Single source of truth for E01 (Section 1 of Pentad)
 # ============================================================================
 # This is the canonical PUBLIC entry point for donor grading after the
@@ -1668,45 +1693,6 @@ def deploy_donor_intelligence():
 
 if __name__ == "__main__":
     import sys
-
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class E01DonorIntelligenceCompleteError(Exception):
-    """Base exception for this ecosystem"""
-    pass
-
-class E01DonorIntelligenceCompleteValidationError(E01DonorIntelligenceCompleteError):
-    """Validation error in this ecosystem"""
-    pass
-
-class E01DonorIntelligenceCompleteDatabaseError(E01DonorIntelligenceCompleteError):
-    """Database error in this ecosystem"""
-    pass
-
-class E01DonorIntelligenceCompleteAPIError(E01DonorIntelligenceCompleteError):
-    """API error in this ecosystem"""
-    pass
-# === END CUSTOM EXCEPTIONS ===
-
-
-# === CUSTOM EXCEPTIONS (Auto-added by repair tool) ===
-class E01DonorIntelligenceCompleteError(Exception):
-    """Base exception for this ecosystem"""
-    pass
-
-class E01DonorIntelligenceCompleteValidationError(E01DonorIntelligenceCompleteError):
-    """Validation error in this ecosystem"""
-    pass
-
-class E01DonorIntelligenceCompleteDatabaseError(E01DonorIntelligenceCompleteError):
-    """Database error in this ecosystem"""
-    pass
-
-class E01DonorIntelligenceCompleteAPIError(E01DonorIntelligenceCompleteError):
-    """API error in this ecosystem"""
-    pass
-# === END CUSTOM EXCEPTIONS ===
-
-    
     if len(sys.argv) > 1 and sys.argv[1] == "--deploy":
         deploy_donor_intelligence()
     elif len(sys.argv) > 1 and sys.argv[1] == "--score-all":
