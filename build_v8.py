@@ -73,7 +73,16 @@ ECO_CLASSIFIERS = {
     "E57": ["messaging center","inbox","unified messaging","notification center"],
     "E58": ["business model","pricing","subscription","candidate network","data acquisition","saas"],
     # === BUG FIX (2026-05-03): add E59/E60/E61 to classifier ===
-    "E59": ["nervous net","cost ledger","ifttt","iftt","rule fire","cost event","ml optimizer","bandit","brain orchestrator"],
+    # E59 corrected 2026-05-03 per Nexus drift log: E59 is Microsegment Intelligence,
+    # NOT Nervous Net. Nervous Net keywords removed entirely; they need a home that
+    # doesn't exist yet (deferred until blueprint audit reaches that question).
+    "E59": ["microsegment","micro-segment","segment selection","segmentation",
+            "archetype calibration","voter archetype","donor archetype",
+            "intent classification","audience intelligence",
+            "psychographic","demographic cluster",
+            "evangelical","maga","establishment","libertarian","rural_ag",
+            "defense_leo","anti_woke","healthcare_prof",
+            "salesforce einstein"],
     "E60": ["poll","survey","county intensity","catawba","meredith","high point university","cygnal","civitas","yougov","voter archetype","onsp","issue intensity","poll source","nc county","calibration"],
     "E61": ["source ingestion","identity resolution","master data","mdm","source registry","entity resolution","raw_sources"],
     # === END FIX ===
@@ -100,7 +109,7 @@ ECOSYSTEM_NAMES = {
     "E54":"Calendar/Scheduling","E55":"API Gateway","E56":"Visitor Deanonymization",
     "E57":"Messaging Center","E58":"Business Model / Network",
     # === BUG FIX (2026-05-03): names for E59/E60/E61 ===
-    "E59":"Nervous Net (Cost+IFTTT)","E60":"Poll & Survey Intelligence","E61":"Source Ingestion / Identity",
+    "E59":"Microsegment Intelligence","E60":"Poll & Survey Intelligence","E61":"Source Ingestion / Identity",
     # === END FIX ===
 }
 
