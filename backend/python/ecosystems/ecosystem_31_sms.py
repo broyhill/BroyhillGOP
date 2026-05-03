@@ -1014,6 +1014,46 @@ class MessagingABTestingEngine:
 
 
 
+
+
+# ============================================================================
+# E60 NERVOUS NET WIRING (Section 8) — single-line cost emission helper
+# ============================================================================
+
+def emit_send_cost_to_e60(send_outcome_dict: dict, vendor: str = "twilio",
+                          db_url: str = None) -> bool:
+    """
+    Emit a CostEvent to E60's cost ledger after a send.
+
+    send_outcome_dict is the dict-form of an E31 SendResult or the legacy
+    omnichannel result; we only require ('send_id', 'donor_id', 'cost_cents',
+    'revenue_cents', 'sent_at'). Channel defaults to SMS.
+
+    Returns True on first persistence, False if already present (idempotent).
+    """
+    try:
+        from shared.brain_pentad_contracts import CostEvent as _CE, CostType as _CT
+        from ecosystems.e60.cost_ledger import log_cost as _e60_log_cost
+    except ImportError:
+        import sys, pathlib
+        sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+        from shared.brain_pentad_contracts import CostEvent as _CE, CostType as _CT
+        from e60.cost_ledger import log_cost as _e60_log_cost
+
+    sid = send_outcome_dict["send_id"]
+    cents = int(send_outcome_dict.get("cost_cents", 0))
+    event = _CE(
+        event_id=f"E31:send:{sid}",
+        source_ecosystem="E31",
+        donor_id=send_outcome_dict.get("donor_id"),
+        cost_type=_CT.SEND, vendor=vendor,
+        unit_cost_cents=cents, quantity=1, total_cost_cents=cents,
+        revenue_attributed_cents=int(send_outcome_dict.get("revenue_cents", 0)),
+        occurred_at=send_outcome_dict["sent_at"],
+    )
+    return _e60_log_cost(event, db_url=db_url or MessagingConfig.DATABASE_URL)
+
+
 class OmnichannelMessagingEngine:
     """Enterprise Omnichannel Messaging System"""
     

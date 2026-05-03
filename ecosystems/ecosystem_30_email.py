@@ -1653,6 +1653,23 @@ class EnterpriseEmailSender:
             occurred_at=outcome.sent_at,
         )
 
+    def emit_cost_to_e60(self, outcome: "_SendOutcome",
+                         vendor: str = "sendgrid", db_url: _Optional_e30[str] = None) -> bool:
+        """Send the CostEvent for this outcome into E60's cost ledger.
+
+        Returns True on first persistence, False if already present (idempotent).
+        Imports E60 at call time to avoid a hard dependency at module load
+        (Pentad Rule P-1 says modules talk via shared.brain_pentad_contracts;
+        the import below is allowed because it's the cost-ledger sink, not a
+        cross-ecosystem business call — but kept lazy for clarity).
+        """
+        try:
+            from ecosystems.e60.cost_ledger import log_cost as _e60_log_cost
+        except ImportError:
+            from e60.cost_ledger import log_cost as _e60_log_cost
+        cost_event = self.build_cost_event_for(outcome, vendor=vendor)
+        return _e60_log_cost(cost_event, db_url=db_url or self.db_url)
+
     def handle_rule_fired(self, fired: "_RuleFired") -> dict:
         """Subscribe handler for E60 RuleFired payloads. Returns audit dict."""
         if fired.target_ecosystem != "E30":
