@@ -40,7 +40,7 @@ from abc import ABC, abstractmethod
 
 class MasterConfig:
     """Master configuration for all ecosystems"""
-    DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:password@db.isbgjpnbocdkeslofota.supabase.co:5432/postgres")
+    DATABASE_URL = os.getenv("DATABASE_URL", "")  # 2026-05-03 SCRUBBED — placeholder removed
     SUPABASE_URL = os.getenv("SUPABASE_URL", "https://isbgjpnbocdkeslofota.supabase.co")
     REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
     

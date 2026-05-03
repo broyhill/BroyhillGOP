@@ -69,7 +69,7 @@ logger = logging.getLogger('ecosystem1.social_oauth')
 class SocialConfig:
     """Central configuration for all social platform OAuth"""
     
-    DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres.isbgjpnbocdkeslofota:BroyhillGOP2026!@aws-0-us-east-1.pooler.supabase.com:6543/postgres")
+    DATABASE_URL = os.getenv("DATABASE_URL", "")  # 2026-05-03 SCRUBBED — was leaking Supabase password
     
     # OAuth App Credentials (stored securely, loaded from env)
     FACEBOOK_APP_ID = os.getenv("FACEBOOK_APP_ID", "")

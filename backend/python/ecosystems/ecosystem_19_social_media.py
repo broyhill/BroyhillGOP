@@ -56,12 +56,12 @@ logger = logging.getLogger('ecosystem19.integration')
 # ============================================================================
 
 class IntegrationConfig:
-    DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:Melanie2026$@db.isbgjpnbocdkeslofota.supabase.co:5432/postgres")
+    DATABASE_URL = os.getenv("DATABASE_URL", "")  # 2026-05-03 SCRUBBED — was leaking Supabase password
     REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
     REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
     
     # RunPod AI Endpoints
-    RUNPOD_API_KEY = os.getenv("RUNPOD_API_KEY", "rpa_ACAEJKYCMH2JST9HPQIK0IA6T4G3E0G2DMUXBTEW10a2x")
+    RUNPOD_API_KEY = os.getenv("RUNPOD_API_KEY", "")  # 2026-05-03 SCRUBBED — was leaking RunPod API key
     VOICE_ENDPOINT = os.getenv("VOICE_ENDPOINT", "ebctno9p73twoa")
     VIDEO_ENDPOINT = os.getenv("VIDEO_ENDPOINT", "qsqdjzzpatxwn1")
     FULLBODY_ENDPOINT = os.getenv("FULLBODY_ENDPOINT", "ju6mx6fnseu7hi")

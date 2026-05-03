@@ -96,7 +96,7 @@ class E50Config:
     """Configuration for Contact Intelligence Engine"""
     
     # Database (same as rest of platform)
-    DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres.isbgjpnbocdkeslofofa:ChairM%40n2024%21@aws-0-us-east-1.pooler.supabase.com:6543/postgres")
+    DATABASE_URL = os.getenv("DATABASE_URL", "")  # 2026-05-03 SCRUBBED — was leaking Supabase password (URL-encoded)
     
     # Apollo.io API (for HIGH-VALUE donors only)
     # Pricing: $49/user/month (Basic), includes credits
