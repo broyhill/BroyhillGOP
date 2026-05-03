@@ -74,7 +74,9 @@ class MatchTierPassthroughTest(unittest.TestCase):
         self.assertEqual(g.match_tier, MatchTier.UNMATCHED)
 
     def test_unmatched_donor_returns_zero_confidence_and_F(self):
-        g = e01.grade_donor("RNC-NOT-FOUND", row=None)
+        from unittest.mock import patch
+        with patch.object(e01, "_read_donor_row", return_value=None):
+            g = e01.grade_donor("RNC-NOT-FOUND")
         self.assertEqual(g.match_tier, MatchTier.UNMATCHED)
         self.assertEqual(g.grade, "F")
         self.assertEqual(g.confidence, 0.0)

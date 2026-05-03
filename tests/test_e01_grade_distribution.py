@@ -69,10 +69,9 @@ class GradeBoundaryTest(unittest.TestCase):
         self.assertEqual(e01.grade_donor("ZERO", row=row).grade, "F")
 
     def test_unmatched_donor_is_F(self):
-        # Pure UNMATCHED with otherwise OK giving still gets F (low confidence)
-        # No — our spec is grade is derived from giving regardless of tier.
-        # But with row=None (not found in either view) we return F.
-        result = e01.grade_donor("MISSING", row=None)
+        from unittest.mock import patch
+        with patch.object(e01, "_read_donor_row", return_value=None):
+            result = e01.grade_donor("MISSING")
         self.assertEqual(result.grade, "F")
         self.assertEqual(result.confidence, 0.0)
 
@@ -88,7 +87,7 @@ class GradeDistributionShapeTest(unittest.TestCase):
         import math
         rows = []
         for i in range(200):
-            lifetime = 10 ** (i / 50)            # $1..$10000
+            lifetime = 10 ** (i / 33)            # $1..~$1M (spans full grade range)
             rows.append(_row(
                 rnc=f"RNC-{i:04d}",
                 lifetime_total=lifetime,

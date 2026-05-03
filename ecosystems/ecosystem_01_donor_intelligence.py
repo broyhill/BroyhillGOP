@@ -160,7 +160,7 @@ def _composite_score(row: dict) -> float:
     if lifetime <= 0:
         amount_score = 0.0
     else:
-        amount_score = min(50.0, math.log10(lifetime + 1) * 12.5)
+        amount_score = min(50.0, math.log10(lifetime + 1) * 8.0)
 
     # Engagement component: txn_count + candidate breadth (0..30)
     engagement_score = min(30.0, txn_count * 1.5 + candidate_count * 2.0)
